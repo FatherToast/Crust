@@ -1,0 +1,28 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="GPL v3"
+
+[[mods]]
+modId="crust"
+version="${file.jarVersion}"
+displayName="Crust"
+logoFile="crusty.png"
+credits="The toasty people"
+authors="FatherToast"
+description='''
+A library mod for FatherToast's mods
+'''
+
+[[dependencies.crust]]
+    modId="forge"
+    mandatory=true
+    versionRange="[36,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.crust]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.5)"
+    ordering="NONE"
+    side="BOTH"
