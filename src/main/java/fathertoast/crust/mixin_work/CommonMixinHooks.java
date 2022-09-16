@@ -1,6 +1,6 @@
-package com.fathertoast.crust.common.util.mixin_work;
+package fathertoast.crust.mixin_work;
 
-import com.fathertoast.crust.api.AdvancementLoadEvent;
+import fathertoast.crust.api.event.AdvancementLoadEvent;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementList;
 import net.minecraft.util.ResourceLocation;

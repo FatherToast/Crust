@@ -1,6 +1,6 @@
-package com.fathertoast.crust.common.mixin;
+package fathertoast.crust.mixin;
 
-import com.fathertoast.crust.common.util.mixin_work.CommonMixinHooks;
+import fathertoast.crust.mixin_work.CommonMixinHooks;
 import com.google.gson.Gson;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementList;

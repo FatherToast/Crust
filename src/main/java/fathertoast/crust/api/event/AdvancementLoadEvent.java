@@ -1,4 +1,4 @@
-package com.fathertoast.crust.api;
+package fathertoast.crust.api.event;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.util.ResourceLocation;

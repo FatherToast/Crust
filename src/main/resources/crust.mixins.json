@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "com.fathertoast.crust.common.mixin",
+  "package": "fathertoast.crust.mixin",
   "compatibilityLevel": "JAVA_8",
   "minVersion": "0.8",
   "refmap": "crust.mixins.refmap.json",
