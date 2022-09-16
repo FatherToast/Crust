@@ -1,4 +1,4 @@
-package com.fathertoast.common.core.config;
+package com.fathertoast.crust.common.core.config;
 
 public interface IToastyConfigInterface {
 
