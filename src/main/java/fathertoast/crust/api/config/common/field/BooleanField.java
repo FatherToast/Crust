@@ -28,6 +28,7 @@ public class BooleanField extends AbstractConfigField {
     public boolean get() { return value; }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
+    @Override
     public void appendFieldInfo( List<String> comment ) {
         comment.add( TomlHelper.fieldInfoValidValues( "Boolean", valueDefault, true, false ) );
     }
@@ -73,5 +74,6 @@ public class BooleanField extends AbstractConfigField {
     
     /** @return The raw toml value that should be assigned to this field in the config file. */
     @Override
+    @Nullable
     public Object getRaw() { return value; }
 }

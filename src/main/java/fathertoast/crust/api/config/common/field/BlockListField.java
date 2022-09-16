@@ -33,6 +33,7 @@ public class BlockListField extends GenericField<BlockList> {
     }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
+    @Override
     public void appendFieldInfo( List<String> comment ) {
         comment.add( TomlHelper.fieldInfoFormat( "Block List", valueDefault, "[ \"namespace:block_name[properties]\", ... ]" ) );
     }
@@ -66,6 +67,7 @@ public class BlockListField extends GenericField<BlockList> {
      * Represents two block list fields, a blacklist and a whitelist, combined into one.
      */
     public static class Combined {
+        
         /** The whitelist. To match, the entry must be present here. */
         public final BlockListField WHITELIST;
         /** The blacklist. Entries present here are ignored entirely. */

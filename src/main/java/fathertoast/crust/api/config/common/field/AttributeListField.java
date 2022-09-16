@@ -43,6 +43,7 @@ public class AttributeListField extends GenericField<AttributeList> {
     }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
+    @Override
     public void appendFieldInfo( List<String> comment ) {
         comment.add( TomlHelper.fieldInfoFormat( "Attribute List", valueDefault,
                 "[ \"namespace:attribute_name operation value\", ... ]" ) );

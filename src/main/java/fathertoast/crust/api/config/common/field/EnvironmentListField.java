@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.config.common.value.EnvironmentEntry;
 import fathertoast.crust.api.config.common.value.EnvironmentList;
 import fathertoast.crust.api.config.common.value.environment.AbstractEnvironment;
 import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
@@ -10,7 +11,6 @@ import fathertoast.crust.api.config.common.value.environment.dimension.Dimension
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionTypeGroupEnvironment;
 import fathertoast.crust.api.config.common.value.environment.position.*;
 import fathertoast.crust.api.config.common.value.environment.time.*;
-import fathertoast.crust.api.config.common.value.EnvironmentEntry;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -148,6 +148,7 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
     }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
+    @Override
     public void appendFieldInfo( List<String> comment ) {
         comment.add( TomlHelper.fieldInfoFormat( "Environment List", valueDefault, "[ \"value condition1 state1 & condition2 state2 & ...\", ... ]" ) );
         comment.add( "   Range for Values: " + TomlHelper.fieldRange( valueDefault.getMinValue(), valueDefault.getMaxValue() ) );
@@ -293,7 +294,7 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
                 ENV_DIFFICULTY, ENV_SPECIAL_DIFFICULTY, ENV_WEATHER, ENV_MOON_BRIGHTNESS, ENV_MOON_PHASE, ENV_DAY_TIME,
                 ENV_TIME_FROM_MIDNIGHT, ENV_WORLD_TIME, ENV_CHUNK_TIME
         };
-        final AbstractEnvironment fallback = new YEnvironment( ComparisonOperator.LESS_THAN, 0 );
+        final AbstractEnvironment fallback = new WorldTimeEnvironment( ComparisonOperator.LESS_THAN, 0 );
         Crust.LOG.warn( "Invalid environment '{}' for {} \"{}\"! Falling back to \"{}\". Environment name must be in the set [ {} ]. Invalid environment: {}",
                 args[0], getClass(), getKey(), fallback, TomlHelper.literalList( (Object[]) environmentNames ), line );
         return fallback;

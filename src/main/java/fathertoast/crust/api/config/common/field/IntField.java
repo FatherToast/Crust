@@ -40,6 +40,7 @@ public class IntField extends AbstractConfigField {
     public int get() { return value; }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
+    @Override
     public void appendFieldInfo( List<String> comment ) {
         comment.add( TomlHelper.fieldInfoRange( valueDefault, valueMin, valueMax ) );
     }
@@ -122,6 +123,7 @@ public class IntField extends AbstractConfigField {
      * This has convenience methods for returning a random value between the min and the max (inclusive).
      */
     public static class RandomRange {
+        
         /** The minimum. Defines the lower limit of the range (inclusive). */
         private final IntField MINIMUM;
         /** The maximum. Defines the upper limit of the range (inclusive). */

@@ -28,6 +28,7 @@ public class InjectionWrapperField<T extends AbstractConfigField> extends Abstra
     public T field() { return wrappedField; }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
+    @Override
     public void appendFieldInfo( List<String> comment ) { wrappedField.appendFieldInfo( comment ); }
     
     /**

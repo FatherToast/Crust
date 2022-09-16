@@ -68,6 +68,7 @@ public abstract class AbstractConfigField {
     public abstract void load( @Nullable Object raw );
     
     /** @return The raw toml value that should be assigned to this field in the config file. */
+    @Nullable
     public abstract Object getRaw();
     
     /** Writes this field's value to file. */
