@@ -1,28 +1,36 @@
-modLoader="javafml"
-loaderVersion="[36,)"
-license="GPL v3"
+modLoader = "javafml"
+loaderVersion = "[36,)"
+license = "GNU General Public License v3.0"
+issueTrackerURL = "https://github.com/FatherToast/Crust/issues/"
 
 [[mods]]
-modId="crust"
-version="${file.jarVersion}"
-displayName="Crust"
-logoFile="crusty.png"
-credits="The toasty people"
-authors="FatherToast"
-description='''
-A library mod for FatherToast's mods
+logoFile = "banner.png"
+authors = "Father Toast"
+credits = "The toasty people"
+version = "${file.jarVersion}"
+displayName = "Crust"
+modId = "crust"
+description = '''
+A library mod for FatherToast's mods.
+
+
+Download: https://www.curseforge.com/members/fathertoast/projects/
+
+Source: https://github.com/FatherToast/
+
+Discussion: https://discord.gg/GFTzTdX
 '''
 
 [[dependencies.crust]]
-    modId="forge"
-    mandatory=true
-    versionRange="[36,)"
-    ordering="NONE"
-    side="BOTH"
+modId = "forge"
+mandatory = true
+versionRange = "[36,)"
+ordering = "NONE"
+side = "BOTH"
 
 [[dependencies.crust]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[1.16.5)"
-    ordering="NONE"
-    side="BOTH"
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.16.5,1.17)"
+ordering = "NONE"
+side = "BOTH"
