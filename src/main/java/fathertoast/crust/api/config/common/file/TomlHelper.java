@@ -2,18 +2,22 @@ package fathertoast.crust.api.config.common.file;
 
 import com.electronwill.nightconfig.core.NullObject;
 import com.electronwill.nightconfig.core.utils.StringUtils;
-import fathertoast.crust.api.config.common.value.IStringArray;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.DoubleField;
 import fathertoast.crust.api.config.common.field.IntField;
+import fathertoast.crust.api.config.common.value.IStringArray;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 @SuppressWarnings( "unused" )
 public final class TomlHelper {
+    
+    /** While positive, integers are written in hex with this many minimum digits. */
+    public static int HEX_MODE = 0;
     
     /** Attempts to convert a toml literal to a string list. May or may not be accurate. */
     public static List<String> parseStringList( Object value ) {
@@ -78,7 +82,16 @@ public final class TomlHelper {
             return "\"" + ((Enum<?>) value).name().toLowerCase() + "\"";
         }
         else if( value instanceof String ) {
-            return "\"" + value + "\"";
+            return "\"" + ((String) value).replace( "\"", "\\\"" ) + "\"";
+        }
+        else if( HEX_MODE > 0 && value instanceof Integer ) {
+            String hex = Integer.toHexString( (Integer) value ).toUpperCase( Locale.ROOT );
+            if( HEX_MODE > hex.length() ) {
+                StringBuilder padding = new StringBuilder();
+                for( int i = HEX_MODE - hex.length(); i-- > 0; ) padding.append( '0' );
+                hex = padding + hex;
+            }
+            return "0x" + hex;
         }
         // Infinite values not supported
         //else if( value instanceof Double && ((Double) value).isInfinite() ) {
@@ -99,15 +112,15 @@ public final class TomlHelper {
             return "[]";
         }
         else {
-            return "[ " + literalList( values ) + " ]";
+            return "[ " + toLiteralList( values ) + " ]";
         }
     }
     
     /** Attempts to convert an object list to a list of toml literals. May or may not be accurate. */
-    public static String literalList( Object... list ) { return literalList( Arrays.asList( list ) ); }
+    public static String toLiteralList( Object... list ) { return literalList( Arrays.asList( list ) ); }
     
     /** Attempts to convert an object list to a list of toml literals. May or may not be accurate. */
-    public static String literalList( @Nullable List<Object> list ) {
+    public static String literalList( @Nullable List<?> list ) {
         if( list == null || list.isEmpty() ) return "";
         StringBuilder literals = new StringBuilder();
         for( Object obj : list ) {
@@ -115,6 +128,11 @@ public final class TomlHelper {
         }
         literals.delete( literals.length() - 2, literals.length() );
         return literals.toString();
+    }
+    
+    /** @return The default field info for a field that must provide its help in the field comment. */
+    public static String fieldInfoNoHelp( String typeName, Object defaultValue ) {
+        return String.format( "<%s> Default: %s", typeName, toLiteralForComment( defaultValue ) );
     }
     
     /** @return The default field info for a field with a value format/structure. */
@@ -125,7 +143,7 @@ public final class TomlHelper {
     /** @return The default field info for a field with a limited set of valid values. */
     public static String fieldInfoValidValues( String typeName, Object defaultValue, Object... validValues ) {
         return String.format( "<%s> Valid Values: { %s }, Default: %s",
-                typeName, TomlHelper.literalList( validValues ), toLiteralForComment( defaultValue ) );
+                typeName, TomlHelper.toLiteralList( validValues ), toLiteralForComment( defaultValue ) );
     }
     
     /** @return The default field info for a series of int fields (no defaults listed). */

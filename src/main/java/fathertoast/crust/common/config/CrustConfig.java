@@ -15,6 +15,6 @@ public final class CrustConfig {
     /** Crust's config manager. Defines the mod config folder. */
     private static final ConfigManager MANAGER = ConfigManager.create( "Crust" );
     
-    //public static final MainCrustConfigFile MAIN = new MainCrustConfigFile( MANAGER, "test/main" );
+    /** File for configuring default game rules. */
     public static final GameRulesCrustConfigFile DEFAULT_GAME_RULES = new GameRulesCrustConfigFile( MANAGER, "default_game_rules" );
 }

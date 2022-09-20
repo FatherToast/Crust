@@ -55,7 +55,7 @@ public class CrustConfigSpec {
         }
         catch( ParsingException ex ) {
             Crust.LOG.error( "Failed first-time loading of config file {} - this is bad!",
-                    ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+                    ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
         }
         
         try {
@@ -64,7 +64,7 @@ public class CrustConfigSpec {
         }
         catch( IOException ex ) {
             Crust.LOG.error( "Failed to watch config file {} - this file will NOT update in-game until restarted!",
-                    ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+                    ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
         }
         
         initialized = true;
@@ -301,7 +301,7 @@ public class CrustConfigSpec {
                 NIGHT_CONFIG_FILE.load();
             }
             catch( ParsingException ex ) {
-                Crust.LOG.error( "Failed to reload config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+                Crust.LOG.error( "Failed to reload config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
             }
         }
     }
@@ -312,7 +312,7 @@ public class CrustConfigSpec {
             NIGHT_CONFIG_FILE.save();
         }
         catch( WritingException ex ) {
-            Crust.LOG.error( "Failed to save config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+            Crust.LOG.error( "Failed to save config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
         }
     }
     

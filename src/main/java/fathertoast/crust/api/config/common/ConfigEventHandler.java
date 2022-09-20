@@ -1,17 +1,19 @@
 package fathertoast.crust.api.config.common;
 
 import fathertoast.crust.common.core.Crust;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 
-@Mod.EventBusSubscriber( modid = Crust.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE )
+@Mod.EventBusSubscriber( modid = Crust.MOD_ID )
 public class ConfigEventHandler {
     
-    /** The current "version" of the dynamic registries. This is incremented each time dynamic registries are loaded. */
-    public static byte DYNAMIC_REGISTRY_VERSION;
+    private static byte DYNAMIC_REGISTRY_VERSION;
     
-    /** Called when a server (integrated or dedicated) is about to start. */
+    /** @return The current "version" of the dynamic registries. This is incremented each time resources are loaded. */
+    public static byte getDynamicRegVersion() { return DYNAMIC_REGISTRY_VERSION; }
+    
+    /** Called each time resources are loaded. */
     @SubscribeEvent
-    public static void onServerAboutToStart( FMLServerAboutToStartEvent event ) { DYNAMIC_REGISTRY_VERSION++; }
+    static void onResourceReload( AddReloadListenerEvent event ) { DYNAMIC_REGISTRY_VERSION++; }
 }

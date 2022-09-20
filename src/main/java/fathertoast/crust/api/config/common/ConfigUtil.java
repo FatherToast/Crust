@@ -1,12 +1,14 @@
 package fathertoast.crust.api.config.common;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.Locale;
 
 /**
  * A static helper class that contains some helper utilities for making pretty configs.
@@ -20,6 +22,9 @@ public final class ConfigUtil {
     public static final String LESS_OR_EQUAL = "\u2264";
     /** The greater than or equal to symbol (>=). */
     public static final String GREATER_OR_EQUAL = "\u2265";
+    
+    /** @return The string with all spaces replaced by underscores. Useful for file names. */
+    public static String toLowerCaseNoSpaces( String str ) { return noSpaces( str.toLowerCase( Locale.ROOT ) ); }
     
     /** @return The string with all spaces replaced by underscores. Useful for file names. */
     public static String noSpaces( String str ) { return str.replace( ' ', '_' ); }
@@ -54,6 +59,9 @@ public final class ConfigUtil {
     
     /** @return Returns a Forge registry entry as a string, or "null" if it is null. */
     public static String toString( @Nullable ForgeRegistryEntry<?> regEntry ) { return regEntry == null ? "null" : toString( regEntry.getRegistryName() ); }
+    
+    /** @return Returns a dynamic registry entry as a string, or "null" if it is null. */
+    public static String toString( @Nullable RegistryKey<?> regKey ) { return regKey == null ? "null" : toString( regKey.location() ); }
     
     /** @return Returns the resource location as a string, or "null" if it is null. */
     public static String toString( @Nullable ResourceLocation res ) { return res == null ? "null" : res.toString(); }

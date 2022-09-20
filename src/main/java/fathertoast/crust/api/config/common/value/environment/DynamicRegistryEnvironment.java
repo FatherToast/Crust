@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.common.value.environment;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.ConfigEventHandler;
+import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
@@ -62,8 +62,8 @@ public abstract class DynamicRegistryEnvironment<T> extends AbstractEnvironment 
     /** @return The target registry object. */
     @Nullable
     public final T getRegistryEntry( ServerWorld world ) {
-        if( version != ConfigEventHandler.DYNAMIC_REGISTRY_VERSION ) {
-            version = ConfigEventHandler.DYNAMIC_REGISTRY_VERSION;
+        if( version != ConfigEventHandler.getDynamicRegVersion() ) {
+            version = ConfigEventHandler.getDynamicRegVersion();
             
             final Registry<T> registry = world.getServer().registryAccess().registryOrThrow( getRegistry() );
             registryEntry = registry.get( REGISTRY_KEY );
