@@ -40,6 +40,7 @@ public class EntityListField extends GenericField<EntityList> {
     }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
+    @Override
     public void appendFieldInfo( List<String> comment ) {
         // Number of values to include
         final int reqValues = valueDefault.getRequiredValues();
@@ -228,6 +229,7 @@ public class EntityListField extends GenericField<EntityList> {
      * The blacklist cannot contain values, but the whitelist can have any settings.
      */
     public static class Combined {
+        
         /** The whitelist. To match, the entry must be present here. */
         private final EntityListField WHITELIST;
         /** The blacklist. Entries present here are ignored entirely. */

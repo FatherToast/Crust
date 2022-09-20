@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import com.electronwill.nightconfig.core.io.CharacterOutput;
+import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.common.core.Crust;
 
@@ -40,6 +42,7 @@ public class IntField extends AbstractConfigField {
     public int get() { return value; }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
+    @Override
     public void appendFieldInfo( List<String> comment ) {
         comment.add( TomlHelper.fieldInfoRange( valueDefault, valueMin, valueMax ) );
     }
@@ -118,10 +121,56 @@ public class IntField extends AbstractConfigField {
     }
     
     /**
+     * Represents a config field with an integer value that displays values in hexadecimal.
+     */
+    public static class Hex extends IntField {
+        
+        /** Minimum hex digits to output. */
+        private final int minDigits;
+        
+        /**
+         * Creates a new field that accepts a specialized range of values and prints a minimum number of digits.
+         * Since hex is unsigned, negatives are not supported unless using Range.ANY.
+         */
+        public Hex( String key, int defaultValue, int digitsMin, int min, int max, @Nullable String... description ) {
+            super( key, defaultValue, min, max, description );
+            minDigits = digitsMin;
+            if( (min < 0 || max < 0) && (min != Range.ANY.MIN || max != Range.ANY.MAX) ) {
+                throw new IllegalArgumentException( "Negatives are unsupported by hex int unless allowing any value!" );
+            }
+        }
+        
+        /**
+         * Creates a new field that accepts a specialized range of values.
+         * Since hex is unsigned, negatives are not supported unless using Range.ANY.
+         */
+        public Hex( String key, int defaultValue, int min, int max, @Nullable String... description ) {
+            this( key, defaultValue, 1, min, max, description );
+        }
+        
+        /** Adds info about the field type, format, and bounds to the end of a field's description. */
+        @Override
+        public void appendFieldInfo( List<String> comment ) {
+            TomlHelper.HEX_MODE = minDigits;
+            super.appendFieldInfo( comment );
+            TomlHelper.HEX_MODE = 0;
+        }
+        
+        /** Writes this field's value to file. */
+        @Override
+        public void writeValue( CrustTomlWriter writer, CharacterOutput output ) {
+            TomlHelper.HEX_MODE = minDigits;
+            super.writeValue( writer, output );
+            TomlHelper.HEX_MODE = 0;
+        }
+    }
+    
+    /**
      * Represents two number fields, a minimum and a maximum, combined into one.
      * This has convenience methods for returning a random value between the min and the max (inclusive).
      */
     public static class RandomRange {
+        
         /** The minimum. Defines the lower limit of the range (inclusive). */
         private final IntField MINIMUM;
         /** The maximum. Defines the upper limit of the range (inclusive). */

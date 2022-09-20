@@ -28,6 +28,7 @@ public class EnumField<T extends Enum<T>> extends GenericField<T> {
     }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
+    @Override
     public void appendFieldInfo( List<String> comment ) {
         comment.add( TomlHelper.fieldInfoValidValues( "Enum", valueDefault, (Object[]) valuesValid ) );
     }

@@ -30,7 +30,7 @@ public abstract class EnumEnvironment<T extends Enum<T>> extends AbstractEnviron
         }
         // Value cannot be parsed
         Crust.LOG.warn( "Invalid entry for {} \"{}\"! Value not defined (must be in the set [ {} ]). Defaulting to {}. Invalid entry: {}",
-                field.getClass(), field.getKey(), TomlHelper.literalList( (Object[]) validValues ), TomlHelper.toLiteral(), line );
+                field.getClass(), field.getKey(), TomlHelper.toLiteralList( (Object[]) validValues ), TomlHelper.toLiteral(), line );
         return validValues[0];
     }
     

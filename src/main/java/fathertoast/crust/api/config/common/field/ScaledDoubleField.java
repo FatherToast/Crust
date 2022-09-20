@@ -49,6 +49,7 @@ public class ScaledDoubleField extends DoubleField {
      * Represents a config field with a double value. The entered config value is converted from 'per second' to 'per tick' when loaded.
      */
     public static class Rate extends ScaledDoubleField {
+        
         /** Conversion factor to convert from more meaningful units (blocks per second or m/s) to blocks per tick. */
         private static final double PER_SECOND_TO_PER_TICK = 0.05;
         

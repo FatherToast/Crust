@@ -86,25 +86,23 @@ public class GameRulesCrustConfigFile extends AbstractConfigFile {
         /** Defines a config option in the spec to control the default setting of a boolean game rule. */
         private void defineFor( GameRules.RuleKey<GameRules.BooleanValue> gameRule, boolean defaultValue ) {
             String id = ConfigUtil.camelCaseToLowerUnderscore( gameRule.getId() );
-            SPEC.define( new InjectionWrapperField<>(
-                    new BooleanField( id, defaultValue, (String[]) null ),
-                    ( wrapped ) -> {
-                        if( CrustConfig.DEFAULT_GAME_RULES.enabled.get() )
-                            GameRules.GAME_RULE_TYPES.put( gameRule, GameRules.BooleanValue.create( wrapped.get() ) );
-                    }
-            ) );
+            BooleanField wrappedField = new BooleanField( id, defaultValue, (String[]) null );
+            SPEC.define( new InjectionWrapperField<>( wrappedField, ( wrapped ) -> {
+                if( CrustConfig.DEFAULT_GAME_RULES.enabled.get() )
+                    GameRules.GAME_RULE_TYPES.put( gameRule, GameRules.BooleanValue.create( wrapped.get() ) );
+            } ) );
+            //return wrappedField; // If we want to poll the value, we can return the underlying field
         }
         
         /** Defines a config option in the spec to control the default setting of an integer game rule. */
         private void defineFor( GameRules.RuleKey<GameRules.IntegerValue> gameRule, int defaultValue ) {
             String id = ConfigUtil.camelCaseToLowerUnderscore( gameRule.getId() );
-            SPEC.define( new InjectionWrapperField<>(
-                    new IntField( id, defaultValue, IntField.Range.ANY, (String[]) null ),
-                    ( wrapped ) -> {
-                        if( CrustConfig.DEFAULT_GAME_RULES.enabled.get() )
-                            GameRules.GAME_RULE_TYPES.put( gameRule, GameRules.IntegerValue.create( wrapped.get() ) );
-                    }
-            ) );
+            IntField wrappedField = new IntField( id, defaultValue, IntField.Range.ANY, (String[]) null );
+            SPEC.define( new InjectionWrapperField<>( wrappedField, ( wrapped ) -> {
+                if( CrustConfig.DEFAULT_GAME_RULES.enabled.get() )
+                    GameRules.GAME_RULE_TYPES.put( gameRule, GameRules.IntegerValue.create( wrapped.get() ) );
+            } ) );
+            //return wrappedField; // If we want to poll the value, we can return the underlying field
         }
     }
     

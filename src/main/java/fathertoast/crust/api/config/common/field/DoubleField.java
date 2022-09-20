@@ -48,6 +48,7 @@ public class DoubleField extends AbstractConfigField {
     public boolean rollChance( Random random ) { return random.nextDouble() < value; }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
+    @Override
     public void appendFieldInfo( List<String> comment ) {
         comment.add( TomlHelper.fieldInfoRange( valueDefault, valueMin, valueMax ) );
     }
@@ -99,10 +100,12 @@ public class DoubleField extends AbstractConfigField {
     
     /** @return The raw toml value that should be assigned to this field in the config file. */
     @Override
+    @Nullable
     public Object getRaw() { return value; }
     
     /** A set of commonly used ranges for this field type. */
     public enum Range {
+        
         /** Accepts any value. */
         ANY( Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY ),
         /** Accepts any non-negative value (>= 0). */
@@ -128,6 +131,7 @@ public class DoubleField extends AbstractConfigField {
      * This has convenience methods for returning a random value between the min (inclusive) and the max (exclusive).
      */
     public static class RandomRange {
+        
         /** The minimum. Defines the lower limit of the range (inclusive). */
         private final DoubleField MINIMUM;
         /** The maximum. Defines the upper limit of the range (exclusive). */
@@ -168,6 +172,7 @@ public class DoubleField extends AbstractConfigField {
      * This has convenience methods for returning the value that should be used based on the environment.
      */
     public static class EnvironmentSensitive {
+        
         /** The base value. */
         private final DoubleField BASE;
         /** The environment exceptions list. */
@@ -245,6 +250,7 @@ public class DoubleField extends AbstractConfigField {
         }
         
         private static class Entry<T> {
+            
             final T VALUE;
             final EnvironmentSensitive WEIGHT;
             

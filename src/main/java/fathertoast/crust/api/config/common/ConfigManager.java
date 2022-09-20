@@ -51,6 +51,21 @@ public final class ConfigManager {
     @Nullable
     public static ConfigManager get( String modId ) { return MOD_ID_TO_CM_MAP.get( modId ); }
     
+    /**
+     * Gets the config manager for a particular mod.
+     *
+     * @param modId The id of the mod we want the config manager for.
+     * @return The mod's config manager.
+     * @throws IllegalStateException If the mod doesn't have a config manager.
+     */
+    public static ConfigManager getRequired( String modId ) {
+        ConfigManager cfgManager = get( modId );
+        if( cfgManager == null ) {
+            throw new IllegalStateException( "Required config manager for '" + modId + "' is not present!" );
+        }
+        return cfgManager;
+    }
+    
     
     // ---- Instance Methods ---- //
     

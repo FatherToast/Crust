@@ -64,8 +64,8 @@ public abstract class DynamicRegistryGroupEnvironment<T> extends AbstractEnviron
     
     /** @return The target registry object. */
     protected final List<T> getRegistryEntries( ServerWorld world ) {
-        if( version != ConfigEventHandler.DYNAMIC_REGISTRY_VERSION ) {
-            version = ConfigEventHandler.DYNAMIC_REGISTRY_VERSION;
+        if( version != ConfigEventHandler.getDynamicRegVersion() ) {
+            version = ConfigEventHandler.getDynamicRegVersion();
             
             registryEntries = new ArrayList<>();
             final Registry<T> registry = world.getServer().registryAccess().registryOrThrow( getRegistry() );

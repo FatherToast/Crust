@@ -29,5 +29,6 @@ public abstract class GenericField<T> extends AbstractConfigField {
     
     /** @return The raw toml value that should be assigned to this field in the config file. */
     @Override
+    @Nullable
     public Object getRaw() { return value; }
 }

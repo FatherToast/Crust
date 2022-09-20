@@ -32,7 +32,7 @@ public abstract class CompareLongEnvironment extends AbstractEnvironment {
             if( op == null ) {
                 COMPARATOR = ComparisonOperator.LESS_THAN;
                 Crust.LOG.warn( "Invalid entry for {} \"{}\"! Comparison not defined (must be in the set [ {} ]). Defaulting to \"{}\". Invalid entry: {}",
-                        field.getClass(), field.getKey(), TomlHelper.literalList( (Object[]) ComparisonOperator.values() ), COMPARATOR, line );
+                        field.getClass(), field.getKey(), TomlHelper.toLiteralList( (Object[]) ComparisonOperator.values() ), COMPARATOR, line );
             }
             else COMPARATOR = op;
             VALUE = parseValue( field, line, line.substring( COMPARATOR.toString().length() ).trim() );

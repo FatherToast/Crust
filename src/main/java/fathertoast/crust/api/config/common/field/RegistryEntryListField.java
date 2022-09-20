@@ -36,6 +36,7 @@ public class RegistryEntryListField<T extends IForgeRegistryEntry<T>> extends Ge
     }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
+    @Override
     public void appendFieldInfo( List<String> comment ) {
         comment.add( TomlHelper.fieldInfoFormat( "\"" + ConfigUtil.toString( valueDefault.getRegistry().getRegistryName() ) +
                 "\" Registry List", valueDefault, "[ \"namespace:entry_name\", ... ]" ) );

@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.config.common.value.EnvironmentEntry;
 import fathertoast.crust.api.config.common.value.EnvironmentList;
 import fathertoast.crust.api.config.common.value.environment.AbstractEnvironment;
 import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
@@ -10,7 +11,6 @@ import fathertoast.crust.api.config.common.value.environment.dimension.Dimension
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionTypeGroupEnvironment;
 import fathertoast.crust.api.config.common.value.environment.position.*;
 import fathertoast.crust.api.config.common.value.environment.time.*;
-import fathertoast.crust.api.config.common.value.EnvironmentEntry;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -82,7 +82,7 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
         comment.add( "Valid environment conditions are:" );
         // Dimension-based
         comment.add( "  \"" + ENV_DIMENSION_PROPERTY + " (!)property\":" );
-        comment.add( "    Valid property values: " + TomlHelper.literalList( (Object[]) DimensionPropertyEnvironment.Value.values() ) );
+        comment.add( "    Valid property values: " + TomlHelper.toLiteralList( (Object[]) DimensionPropertyEnvironment.Value.values() ) );
         comment.add( "    Dimension properties are the true/false values available to dimension types in data packs." );
         comment.add( "    See the wiki for more info: [https://minecraft.fandom.com/wiki/Custom_dimension#Syntax]." );
         comment.add( "  \"" + ENV_DIMENSION_TYPE + " (!)namespace:dimension_type_name\":" );
@@ -100,7 +100,7 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
         comment.add( "  \"" + ENV_TEMPERATURE + " op value\" or \"" + ENV_TEMPERATURE + " (!)" + TemperatureEnvironment.FREEZING + "\":" );
         comment.add( "    Height-adjusted temperature. For reference, freezing is < 0.15 and hot is generally considered > 0.95." );
         comment.add( "  \"" + ENV_BIOME_CATEGORY + " (!)category\":" );
-        comment.add( "    Valid category values: " + TomlHelper.literalList( (Object[]) BiomeCategory.values() ) );
+        comment.add( "    Valid category values: " + TomlHelper.toLiteralList( (Object[]) BiomeCategory.values() ) );
         comment.add( "  \"" + ENV_BIOME + " (!)namespace:biome_name\":" );
         comment.add( "    The biome. See the wiki for vanilla biome names (resource locations) [https://minecraft.fandom.com/wiki/Biome#Biome_IDs]." );
         // Position-based
@@ -111,7 +111,7 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
         comment.add( "  \"" + ENV_Y_FROM_SEA + " op value\":" );
         comment.add( "    The y-value from sea level. Expect the only air <= 0 to be in caves/ravines (which may still have direct view of the sky)." );
         comment.add( "  \"" + ENV_POSITION + " (!)state\":" );
-        comment.add( "    Valid state values: " + TomlHelper.literalList( (Object[]) PositionEnvironment.Value.values() ) );
+        comment.add( "    Valid state values: " + TomlHelper.toLiteralList( (Object[]) PositionEnvironment.Value.values() ) );
         comment.add( "    Miscellaneous conditions that generally do what you expect. For reference, 'near' a village is ~3 chunks, and redstone checks weak power." );
         // Time-based
         comment.add( "  \"" + ENV_DIFFICULTY + " op value\":" );
@@ -122,18 +122,18 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
         comment.add( "    The 'special multiplier' for regional difficulty (0 to 1). For reference, this is 0 when difficulty <= 2 and 1 when difficulty >= 4." );
         comment.add( "    This is always 0 in Easy and below. In Normal, it maxes at absolute peak regional difficulty. In Hard, it starts at 0.125 and maxes out in ~50 days." );
         comment.add( "  \"" + ENV_WEATHER + " (!)type\":" );
-        comment.add( "    Valid type values: " + TomlHelper.literalList( (Object[]) WeatherEnvironment.Value.values() ) );
+        comment.add( "    Valid type values: " + TomlHelper.toLiteralList( (Object[]) WeatherEnvironment.Value.values() ) );
         comment.add( "  \"" + ENV_MOON_BRIGHTNESS + " op value\":" );
         comment.add( "    The moon brightness (0 to 1). New moon has 0 brightness, full moon has 1 brightness. Intermediate phases are 0.25, 0.5, or 0.75." );
         comment.add( "  \"" + ENV_MOON_PHASE + " (!)phase\":" );
-        comment.add( "    Valid phase values: " + TomlHelper.literalList( (Object[]) MoonPhaseEnvironment.Value.values() ) );
+        comment.add( "    Valid phase values: " + TomlHelper.toLiteralList( (Object[]) MoonPhaseEnvironment.Value.values() ) );
         comment.add( "  \"" + ENV_DAY_TIME + " (!)time\":" );
-        comment.add( "    Valid time values: " + TomlHelper.literalList( (Object[]) DayTimeEnvironment.Value.values() ) );
+        comment.add( "    Valid time values: " + TomlHelper.toLiteralList( (Object[]) DayTimeEnvironment.Value.values() ) );
         comment.add( "    Note that the transition periods, sunset & sunrise, are considered as part of day & night, respectively." );
         comment.add( "  \"" + ENV_TIME_FROM_MIDNIGHT + " op value\":" );
         comment.add( "    The absolute time in ticks away from midnight. Value must be 0 to 12000." );
         comment.add( "  \"" + ENV_MOON_PHASE + " (!)phase\":" );
-        comment.add( "    Valid phase values: " + TomlHelper.literalList( (Object[]) MoonPhaseEnvironment.Value.values() ) );
+        comment.add( "    Valid phase values: " + TomlHelper.toLiteralList( (Object[]) MoonPhaseEnvironment.Value.values() ) );
         comment.add( "    For reference, the first day in a new world is always a full moon." );
         comment.add( "  \"" + ENV_WORLD_TIME + " op value\":" );
         comment.add( "    The total time the world has existed, in ticks. For reference, each day cycle is 24000 ticks and each lunar cycle is 192000 ticks." );
@@ -148,6 +148,7 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
     }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
+    @Override
     public void appendFieldInfo( List<String> comment ) {
         comment.add( TomlHelper.fieldInfoFormat( "Environment List", valueDefault, "[ \"value condition1 state1 & condition2 state2 & ...\", ... ]" ) );
         comment.add( "   Range for Values: " + TomlHelper.fieldRange( valueDefault.getMinValue(), valueDefault.getMaxValue() ) );
@@ -293,9 +294,9 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
                 ENV_DIFFICULTY, ENV_SPECIAL_DIFFICULTY, ENV_WEATHER, ENV_MOON_BRIGHTNESS, ENV_MOON_PHASE, ENV_DAY_TIME,
                 ENV_TIME_FROM_MIDNIGHT, ENV_WORLD_TIME, ENV_CHUNK_TIME
         };
-        final AbstractEnvironment fallback = new YEnvironment( ComparisonOperator.LESS_THAN, 0 );
+        final AbstractEnvironment fallback = new WorldTimeEnvironment( ComparisonOperator.LESS_THAN, 0 );
         Crust.LOG.warn( "Invalid environment '{}' for {} \"{}\"! Falling back to \"{}\". Environment name must be in the set [ {} ]. Invalid environment: {}",
-                args[0], getClass(), getKey(), fallback, TomlHelper.literalList( (Object[]) environmentNames ), line );
+                args[0], getClass(), getKey(), fallback, TomlHelper.toLiteralList( (Object[]) environmentNames ), line );
         return fallback;
     }
     
