@@ -1,6 +1,7 @@
 package fathertoast.crust.common.core;
 
 import fathertoast.crust.common.config.CrustConfig;
+import fathertoast.crust.common.event.EventListener;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -61,5 +62,7 @@ public class Crust {
     public Crust() {
         // Perform first-time loading of the config for this mod
         CrustConfig.DEFAULT_GAME_RULES.SPEC.initialize();
+
+        MinecraftForge.EVENT_BUS.register( new EventListener() );
     }
 }
