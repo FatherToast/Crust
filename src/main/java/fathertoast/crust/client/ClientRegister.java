@@ -1,12 +1,18 @@
 package fathertoast.crust.client;
 
+import com.mojang.brigadier.ParseResults;
+import com.mojang.brigadier.StringReader;
 import fathertoast.crust.api.config.client.ClientConfigUtil;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.common.core.Crust;
+import net.minecraft.client.Minecraft;
+import net.minecraft.command.ISuggestionProvider;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+
+import javax.annotation.Nullable;
 
 @Mod.EventBusSubscriber( value = Dist.CLIENT, modid = Crust.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
 public class ClientRegister {

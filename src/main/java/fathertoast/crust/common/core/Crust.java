@@ -27,8 +27,8 @@ public class Crust {
      *      - nbt
      *      - entity/level events
      *      - math library
-     *  + commands
-     *      + crustrecover (health|hunger|effects|all) [<value>] [<target>]
+     *  - commands
+     *      - crustrecover [all|health|hunger|effects] [<targets>]
      *      + crustcap <mode name> [<value>] [<target>] - set/toggle mode
      *      + crustportal (nether|end) [<pos>] - create dimension portal
      *      + crustclean [start|all] [<target>] - clear inventory to starting or empty
@@ -36,6 +36,8 @@ public class Crust {
      *      + starting inventory
      *      + hotkey to equip from creative inv - MMB by default
      *      - extra inventory buttons (command-driven)
+     *          + TODO option to hide while recipe book is open
+     *          + TODO render above effect tiles
      *          + can have hotkey assigned
      *          - built-in buttons
      *          - custom buttons (user-defined)
@@ -62,7 +64,7 @@ public class Crust {
     public Crust() {
         // Perform first-time loading of the config for this mod
         CrustConfig.DEFAULT_GAME_RULES.SPEC.initialize();
-
+        
         MinecraftForge.EVENT_BUS.register( new EventListener() );
     }
 }

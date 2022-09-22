@@ -16,13 +16,13 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber( value = Dist.CLIENT, modid = Crust.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE )
+@Mod.EventBusSubscriber( value = Dist.CLIENT, modid = Crust.MOD_ID )
 public class ScreenEvents {
     
     /** Called when a GUI is initialized. */
     @SubscribeEvent
     static void onGuiInit( GuiScreenEvent.InitGuiEvent.Post event ) {
-        if( !ClientRegister.EXTRA_INV_BUTTONS.GENERAL.buttons.isEmpty() &&
+        if( ClientRegister.EXTRA_INV_BUTTONS.GENERAL.enabled.get() &&
                 (event.getGui() instanceof CreativeScreen || event.getGui() instanceof InventoryScreen) ) {
             addExtraInventoryButtons( event, (DisplayEffectsScreen<?>) event.getGui() );
         }
@@ -33,12 +33,21 @@ public class ScreenEvents {
         Minecraft mc = screen.getMinecraft();
         ExtraInvButtonsCrustConfigFile.General config = ClientRegister.EXTRA_INV_BUTTONS.GENERAL;
         
-        //mc.player.getServer().getCommands()
-        
         List<ButtonInfo> buttons = new ArrayList<>();
         for( String buttonId : config.buttons.get() ) {
             ButtonInfo button = ButtonInfo.get( buttonId );
-            if( button != null ) buttons.add( button );
+            if( button != null ) {
+                button.setActive( true );
+                if( !button.isUsable() ) {
+                    button.setActive( false );
+                    if( config.hideUnusable.get() ) continue;
+                }
+                if( !button.canEnable() ) {
+                    button.setActive( false );
+                    if( config.hideDisabled.get() ) continue;
+                }
+                buttons.add( button );
+            }
             else Crust.LOG.warn( "Skipping button with invalid id \"{}\"!", buttonId );
         }
         if( buttons.isEmpty() ) return;

@@ -6,7 +6,6 @@ import fathertoast.crust.api.lib.CrustMath;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -35,6 +34,7 @@ public class ExtraInventoryButton extends Button {
                 new StringTextComponent( info.TEXT ), info.ON_PRESS,
                 new ButtonTooltip( screen, info.TOOLTIP ) );
         INFO = info;
+        active = info.isActive();
     }
     
     @Override
@@ -43,6 +43,7 @@ public class ExtraInventoryButton extends Button {
         
         // Draw button tile
         mc.getTextureManager().bind( BUTTON_TEXTURE );
+        //noinspection deprecation
         RenderSystem.color4f( 1.0F, 1.0F, 1.0F, alpha );
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -52,16 +53,19 @@ public class ExtraInventoryButton extends Button {
                 BUTTON_SIZE, BUTTON_SIZE, BUTTON_SIZE, BUTTON_SIZE * 3 );
         
         // Draw button detail (icon/text)
+        float colorFac = active ? 1.0F : 0.666F; // darken detail if not clickable
         if( INFO.ICON == null ) {
-            RenderSystem.color4f( 1.0F, 1.0F, 1.0F, alpha );
+            //noinspection deprecation
+            RenderSystem.color4f( colorFac, colorFac, colorFac, alpha );
             drawCenteredString( matrixStack, mc.font, getMessage(),
                     x + TEXT_X, y + TEXT_Y,
                     INFO.COLOR | MathHelper.ceil( alpha * 0xFF ) << 24 );
         }
         else {
             mc.getTextureManager().bind( INFO.ICON );
-            RenderSystem.color4f( CrustMath.getRed( INFO.COLOR ), CrustMath.getGreen( INFO.COLOR ),
-                    CrustMath.getBlue( INFO.COLOR ), alpha );
+            //noinspection deprecation
+            RenderSystem.color4f( CrustMath.getRed( INFO.COLOR ) * colorFac, CrustMath.getGreen( INFO.COLOR ) * colorFac,
+                    CrustMath.getBlue( INFO.COLOR ) * colorFac, alpha );
             
             blit( matrixStack, x + ICON_BORDER, y + ICON_BORDER, 0.0F, 0.0F,
                     ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE );

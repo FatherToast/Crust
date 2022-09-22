@@ -49,6 +49,10 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
      */
     public static class General extends AbstractConfigCategory<ExtraInvButtonsCrustConfigFile> {
         
+        public final BooleanField enabled;
+        public final BooleanField hideUnusable;
+        public final BooleanField hideDisabled;
+        
         public final IntField buttonsPerRow;
         public final StringListField buttons;
         
@@ -64,18 +68,28 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                     "Extra inventory buttons are essentially macros that send commands for you.",
                     "You still need permission to run the commands." );
             
+            enabled = SPEC.define( new BooleanField( "enabled", true,
+                    "Set this to false to hide all extra inventory buttons." ) ); //TODO note about hotkeys later
+            hideUnusable = SPEC.define( new BooleanField( "hide_unusable", true,
+                    "If true, buttons that are unusable due to permissions will not be displayed." ) );
+            hideDisabled = SPEC.define( new BooleanField( "hide_disabled", false,
+                    "If true, built-in buttons that are disabled due to temporary conditions will not be displayed." ) );
+            
+            SPEC.newLine();
+            
             buttonsPerRow = SPEC.define( new IntField( "buttons_per_row", 3, IntField.Range.NON_NEGATIVE,
                     "The number of buttons that can be displayed per row. The number of rows is automatically calculated." ) );
             buttons = SPEC.define( new StringListField( "displayed_buttons", "Button", Arrays.asList(
                     "toggleRain", "weatherStorm", "gameMode",
-                    "day", "night", "killAll" ), // TODO temp - testing
+                    "day", "night", "killAll",
+                    "fullHeal" ), // TODO temp - testing
                     "The buttons displayed in the inventory, in the order you want them displayed.",
                     "These are ordered left-to-right, then wrapped into rows.",
                     //"You may assign a hotkey to any button, whether or not you choose to display it.", TODO when hotkeys exist
                     "Built-in buttons are " + TomlHelper.literalList( ButtonInfo.builtInIds().subList( 0, 7 ) ) + ",",
                     TomlHelper.literalList( ButtonInfo.builtInIds().subList( 7, 14 ) ) + ",", // TODO figure out a better way to wrap
                     TomlHelper.literalList( ButtonInfo.builtInIds().subList( 14, ButtonInfo.builtInIds().size() ) ) + ".",
-                    "Custom buttons are \"" + customId( 0 ) + "\", \"" + customId( 1 ) + "\", etc. - same as its category name." ) );
+                    "Custom buttons are \"" + customId( 0 ) + "\", \"" + customId( 1 ) + "\", etc. - same as the category name." ) );
             
             SPEC.newLine();
             
