@@ -43,12 +43,12 @@ public class ButtonInfo {
         builtIn( new ButtonInfo( "fullHeal", "Full recover", "instant_health.png", "crustrecover" ) );
         builtIn( new ButtonInfo( "killAll", "Kill all mobs", "creeper_slash.png", "kill @e[type=!player]" ) );
         builtIn( new ButtonInfo( "netherPortal", "Create a Nether portal", "portal_nether.png",
-                ButtonInfo::netherPortal ).condition( () -> {
+                ButtonInfo::netherPortal, Command.PORTAL_NETHER ).condition( () -> {
             Minecraft mc = Minecraft.getInstance();
             return mc.level != null && (mc.level.dimension() == World.OVERWORLD || mc.level.dimension() == World.NETHER);
         } ) );
         builtIn( new ButtonInfo( "endPortal", "Create an End portal", "portal_end.png",
-                ButtonInfo::endPortal ).condition( () -> {
+                ButtonInfo::endPortal, Command.PORTAL_END ).condition( () -> {
             Minecraft mc = Minecraft.getInstance();
             return mc.level != null && (mc.level.dimension() == World.OVERWORLD || mc.level.dimension() == World.END);
         } ) );
@@ -178,14 +178,14 @@ public class ButtonInfo {
     private static void netherPortal( Button button ) {
         Minecraft mc = Minecraft.getInstance();
         if( mc.level != null && (mc.level.dimension() == World.OVERWORLD || mc.level.dimension() == World.NETHER) ) {
-            //cmd( "" ); TODO
+            cmd( Command.PORTAL_NETHER );
         }
     }
     
     private static void endPortal( Button button ) {
         Minecraft mc = Minecraft.getInstance();
         if( mc.level != null && (mc.level.dimension() == World.OVERWORLD || mc.level.dimension() == World.END) ) {
-            //cmd( "" ); TODO
+            cmd( Command.PORTAL_END );
         }
     }
     
@@ -213,6 +213,7 @@ public class ButtonInfo {
         if( mc.player == null ) return;
         cmd( !mc.player.isCreative() ? Command.MODE_CREATIVE : Command.MODE_SURVIVAL ); // TODO allow player to config modes?
     }
+    
     
     /**
      * @return Parse results for a command based on the client player's command suggestion helper.
@@ -243,5 +244,8 @@ public class ButtonInfo {
         static final String WEATHER_THUNDER = "weather thunder";
         static final String MODE_SURVIVAL = "gamemode survival";
         static final String MODE_CREATIVE = "gamemode creative";
+        
+        static final String PORTAL_NETHER = "crustportal nether";
+        static final String PORTAL_END = "crustportal end";
     }
 }
