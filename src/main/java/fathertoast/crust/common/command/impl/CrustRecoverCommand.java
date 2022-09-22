@@ -24,7 +24,7 @@ public class CrustRecoverCommand {
     /** Command builder. */
     public static void register( CommandDispatcher<CommandSource> dispatcher ) {
         LiteralArgumentBuilder<CommandSource> argBuilder = CommandUtil.literal( Crust.MOD_ID + "recover" )
-                .requires( CommandUtil::isOP )
+                .requires( CommandUtil::canCheat )
                 .executes( ( context ) -> run( context.getSource(), Mode.ALL, CommandUtil.targets( context ) ) )
                 
                 .then( CommandUtil.argument( "targets", EntityArgument.entities() )

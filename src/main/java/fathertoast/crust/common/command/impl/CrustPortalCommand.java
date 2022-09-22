@@ -25,7 +25,7 @@ public class CrustPortalCommand {
     /** Command builder. */
     public static void register( CommandDispatcher<CommandSource> dispatcher ) {
         dispatcher.register( CommandUtil.literal( Crust.MOD_ID + "portal" )
-                .requires( CommandUtil::isOP )
+                .requires( CommandUtil::canCheat )
                 
                 .then( CommandUtil.literal( Mode.NETHER )
                         .executes( ( context ) -> run( context.getSource(), Mode.NETHER, CommandUtil.target( context ) ) )
