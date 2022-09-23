@@ -7,7 +7,11 @@ import net.minecraftforge.eventbus.api.Event;
 /**
  * Fired when advancements are loaded from json.
  * This event allows for easy modification of
- * an advancements criteria before it is built.
+ * an advancements criteria before it is built.<br>
+ * <br>
+ *
+ * This event is fired on the MinecraftForge bus, does not
+ * have a Result, and is not cancelable.
  */
 public final class AdvancementLoadEvent extends Event {
 
