@@ -16,31 +16,34 @@ import net.minecraft.potion.EffectType;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Locale;
 
 public class CrustRecoverCommand {
     
+    public enum Mode { ALL, HEALTH, HUNGER, EFFECTS }
+    
+    /** Command builder. */
     public static void register( CommandDispatcher<CommandSource> dispatcher ) {
         LiteralArgumentBuilder<CommandSource> argBuilder = CommandUtil.literal( Crust.MOD_ID + "recover" )
                 .requires( CommandUtil::isOP )
-                .executes( ( context ) -> recover( context.getSource(), Mode.ALL, CommandUtil.targetSelf( context ) ) )
+                .executes( ( context ) -> run( context.getSource(), Mode.ALL, CommandUtil.targets( context ) ) )
                 
                 .then( CommandUtil.argument( "targets", EntityArgument.entities() )
-                        .executes( ( context ) -> recover( context.getSource(), Mode.ALL, CommandUtil.targets( context, "targets" ) ) ) );
+                        .executes( ( context ) -> run( context.getSource(), Mode.ALL, CommandUtil.targets( context, "targets" ) ) ) );
         
         for( Mode mode : Mode.values() ) {
-            argBuilder.then( CommandUtil.literal( mode.name().toLowerCase( Locale.ROOT ) )
-                    .executes( ( context ) -> recover( context.getSource(), mode, CommandUtil.targetSelf( context ) ) )
+            argBuilder.then( CommandUtil.literal( mode )
+                    .executes( ( context ) -> run( context.getSource(), mode, CommandUtil.targets( context ) ) )
                     
                     .then( CommandUtil.argument( "targets", EntityArgument.entities() )
-                            .executes( ( context ) -> recover( context.getSource(), mode, CommandUtil.targets( context, "targets" ) ) ) )
+                            .executes( ( context ) -> run( context.getSource(), mode, CommandUtil.targets( context, "targets" ) ) ) )
             );
         }
         
         dispatcher.register( argBuilder );
     }
     
-    private static int recover( CommandSource source, Mode mode, Collection<? extends Entity> targets ) {
+    /** Command implementation. */
+    private static int run( CommandSource source, Mode mode, Collection<? extends Entity> targets ) {
         for( Entity target : targets ) {
             if( target instanceof LivingEntity ) recover( (LivingEntity) target, mode );
         }
@@ -51,6 +54,7 @@ public class CrustRecoverCommand {
         return targets.size();
     }
     
+    /** Recovers the target. */
     private static void recover( LivingEntity target, Mode mode ) {
         switch( mode ) {
             case ALL:
@@ -67,6 +71,7 @@ public class CrustRecoverCommand {
         }
     }
     
+    /** Sets the player's hunger to the max. */
     private static void recoverHunger( PlayerEntity player ) {
         CompoundNBT tag = new CompoundNBT();
         tag.putInt( "foodLevel", 20 );
@@ -74,6 +79,7 @@ public class CrustRecoverCommand {
         player.getFoodData().readAdditionalSaveData( tag );
     }
     
+    /** Clears all negative effects, removes burning, and restores air supply. */
     private static void clearNegativeEffects( LivingEntity target ) {
         ArrayList<Effect> negativeEffects = new ArrayList<>();
         for( EffectInstance effect : target.getActiveEffects() ) {
@@ -84,6 +90,4 @@ public class CrustRecoverCommand {
         target.setAirSupply( target.getMaxAirSupply() );
         target.clearFire();
     }
-    
-    public enum Mode { ALL, HEALTH, HUNGER, EFFECTS }
 }

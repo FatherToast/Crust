@@ -1,5 +1,6 @@
 package fathertoast.crust.common.core;
 
+import fathertoast.crust.common.command.impl.CrustPortalCommand;
 import fathertoast.crust.common.command.impl.CrustRecoverCommand;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -12,5 +13,6 @@ public class CrustForgeEvents {
     @SubscribeEvent
     static void registerCommands( RegisterCommandsEvent event ) {
         CrustRecoverCommand.register( event.getDispatcher() );
+        CrustPortalCommand.register( event.getDispatcher() );
     }
 }

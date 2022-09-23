@@ -14,12 +14,22 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Collection;
+import java.util.Locale;
 
 public class CommandUtil {
     
     public static void sendSuccess( CommandSource source, String event, Object... args ) {
         source.sendSuccess( new TranslationTextComponent( "commands." + Crust.MOD_ID + event +
                 ".success", args ), true );
+    }
+    
+    public static void sendFailure( CommandSource source, String event, Object... args ) {
+        source.sendFailure( new TranslationTextComponent( "commands." + Crust.MOD_ID + event +
+                ".failure", args ) );
+    }
+    
+    public static LiteralArgumentBuilder<CommandSource> literal( Enum<?> arg ) {
+        return literal( arg.name().toLowerCase( Locale.ROOT ) );
     }
     
     public static LiteralArgumentBuilder<CommandSource> literal( String arg ) {
@@ -32,8 +42,16 @@ public class CommandUtil {
     
     public static boolean isOP( CommandSource source ) { return source.hasPermission( 2 ); }
     
-    public static Collection<? extends Entity> targetSelf( CommandContext<CommandSource> context ) throws CommandSyntaxException {
-        return ImmutableList.of( context.getSource().getEntityOrException() );
+    public static Entity target( CommandContext<CommandSource> context ) throws CommandSyntaxException {
+        return context.getSource().getEntityOrException();
+    }
+    
+    public static Entity target( CommandContext<CommandSource> context, String arg ) throws CommandSyntaxException {
+        return EntityArgument.getEntity( context, arg );
+    }
+    
+    public static Collection<? extends Entity> targets( CommandContext<CommandSource> context ) throws CommandSyntaxException {
+        return ImmutableList.of( target( context ) );
     }
     
     public static Collection<? extends Entity> targets( CommandContext<CommandSource> context, String arg ) throws CommandSyntaxException {

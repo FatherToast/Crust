@@ -82,7 +82,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
             buttons = SPEC.define( new StringListField( "displayed_buttons", "Button", Arrays.asList(
                     "toggleRain", "weatherStorm", "gameMode",
                     "day", "night", "killAll",
-                    "fullHeal" ), // TODO temp - testing
+                    "netherPortal", "endPortal", "fullHeal" ), // TODO temp - testing
                     "The buttons displayed in the inventory, in the order you want them displayed.",
                     "These are ordered left-to-right, then wrapped into rows.",
                     //"You may assign a hotkey to any button, whether or not you choose to display it.", TODO when hotkeys exist
