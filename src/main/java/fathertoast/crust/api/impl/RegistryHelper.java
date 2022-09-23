@@ -10,4 +10,10 @@ public class RegistryHelper implements IRegistryHelper {
     public void registerPortalBuilder(ResourceLocation iconPath, PortalBuilder portalBuilder) {
         PortalBuilderRegistry.registerPortalBuilder(iconPath, portalBuilder);
     }
+
+    /** Internal mod registration */
+    public void registerInternal() {
+        //registerPortalBuilder(NETHER PORTAL GRRR);
+        //registerPortalBuilder(END PORTAL GGRRR);
+    }
 }
