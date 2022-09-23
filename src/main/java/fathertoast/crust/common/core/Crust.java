@@ -31,16 +31,17 @@ public class Crust {
      *      - math library
      *  - commands
      *      - crustrecover [all|health|hunger|effects] [<targets>]
-     *      + crustcap <mode name> [<value>] [<target>] - set/toggle mode
-     *      + crustportal (nether|end) [<pos>] - create dimension portal
-     *      + crustclean [start|all] [<target>] - clear inventory to starting or empty
+     *      - crustportal (nether|end) [<target>] - create dimension portal
+     *          + TODO allow registration of custom portals
+     *      + crustcap <mode name> [toggle|on|off] [<target>] - set/toggle mode
+     *      ? crustclean [<target>] - reset inventory to starting inventory
      *  - tools
      *      + starting inventory
      *      + hotkey to equip from creative inv - MMB by default
      *      - extra inventory buttons (command-driven)
      *          + TODO option to hide while recipe book is open
      *          + TODO render above effect tiles
-     *          + can have hotkey assigned
+     *          - can have hotkey assigned
      *          - built-in buttons
      *          - custom buttons (user-defined)
      *      - configure default game rules

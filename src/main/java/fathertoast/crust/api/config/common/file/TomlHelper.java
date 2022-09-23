@@ -78,6 +78,9 @@ public final class TomlHelper {
         if( value == null ) {
             return "";
         }
+        else if( value instanceof List<?> ) {
+            return toLiteral( ((List<?>) value).toArray() );
+        }
         else if( value instanceof Enum<?> ) {
             return "\"" + ((Enum<?>) value).name().toLowerCase() + "\"";
         }

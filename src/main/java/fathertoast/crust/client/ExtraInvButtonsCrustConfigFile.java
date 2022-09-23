@@ -69,7 +69,8 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                     "You still need permission to run the commands." );
             
             enabled = SPEC.define( new BooleanField( "enabled", true,
-                    "Set this to false to hide all extra inventory buttons." ) ); //TODO note about hotkeys later
+                    "Set this to false to hide all extra inventory buttons.",
+                    "Does not affect hotkeys (key bindings) assigned to buttons." ) );
             hideUnusable = SPEC.define( new BooleanField( "hide_unusable", true,
                     "If true, buttons that are unusable due to permissions will not be displayed." ) );
             hideDisabled = SPEC.define( new BooleanField( "hide_disabled", false,
@@ -81,11 +82,11 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                     "The number of buttons that can be displayed per row. The number of rows is automatically calculated." ) );
             buttons = SPEC.define( new StringListField( "displayed_buttons", "Button", Arrays.asList(
                     "toggleRain", "weatherStorm", "gameMode",
-                    "day", "night", "killAll",
-                    "netherPortal", "endPortal", "fullHeal" ), // TODO temp - testing
+                    "day", "night",
+                    "killAll", "fullHeal" ), // TODO temp - testing
                     "The buttons displayed in the inventory, in the order you want them displayed.",
                     "These are ordered left-to-right, then wrapped into rows.",
-                    //"You may assign a hotkey to any button, whether or not you choose to display it.", TODO when hotkeys exist
+                    "You may assign a hotkey to any button in your options, whether or not you choose to display it.",
                     "Built-in buttons are " + TomlHelper.literalList( ButtonInfo.builtInIds().subList( 0, 7 ) ) + ",",
                     TomlHelper.literalList( ButtonInfo.builtInIds().subList( 7, 14 ) ) + ",", // TODO figure out a better way to wrap
                     TomlHelper.literalList( ButtonInfo.builtInIds().subList( 14, ButtonInfo.builtInIds().size() ) ) + ".",
