@@ -1,5 +1,7 @@
 package fathertoast.crust.common.core;
 
+import fathertoast.crust.api.ICrustApi;
+import fathertoast.crust.api.impl.CrustApi;
 import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.event.EventListener;
 import net.minecraftforge.common.MinecraftForge;
@@ -59,9 +61,13 @@ public class Crust {
     
     /** Logger instance for the mod. */
     public static final Logger LOG = LogManager.getLogger( MOD_ID );
-    
+
+    /** API instance */
+    private final ICrustApi apiInstance;
+
     
     public Crust() {
+        apiInstance = new CrustApi();
         // Perform first-time loading of the config for this mod
         CrustConfig.DEFAULT_GAME_RULES.SPEC.initialize();
         
