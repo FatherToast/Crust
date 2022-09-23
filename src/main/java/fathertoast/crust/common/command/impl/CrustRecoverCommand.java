@@ -48,8 +48,12 @@ public class CrustRecoverCommand {
             if( target instanceof LivingEntity ) recover( (LivingEntity) target, mode );
         }
         
-        if( targets.size() > 0 ) {
-            CommandUtil.sendSuccess( source, "recover", targets.size() );
+        if( targets.size() == 1 ) {
+            CommandUtil.sendSuccess( source, "recover.single." + CommandUtil.toString( mode ),
+                    targets.iterator().next().getDisplayName() );
+        }
+        else {
+            CommandUtil.sendSuccess( source, "recover.multiple." + CommandUtil.toString( mode ), targets.size() );
         }
         return targets.size();
     }

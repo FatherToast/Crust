@@ -16,8 +16,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.Locale;
-
 public class CrustPortalCommand {
     
     public enum Mode { NETHER, END }
@@ -45,6 +43,11 @@ public class CrustPortalCommand {
     
     /** Command implementation. */
     private static int run( CommandSource source, Mode mode, Entity target ) {
+        if( !isDimensionValid( mode, target.level ) ) {
+            CommandUtil.sendFailure( source, "portal.dimension" );
+            return -1;
+        }
+        
         boolean failed = false;
         
         Direction forward = target.getDirection();
@@ -56,14 +59,20 @@ public class CrustPortalCommand {
         BlockPos pos = currentPos.immutable();
         
         if( failed ) { // || !canPlace( mode, target.level, currentPos, facing ) ) {
-            CommandUtil.sendFailure( source, "portal." + mode.name().toLowerCase( Locale.ROOT ) );
+            CommandUtil.sendFailure( source, "portal" );
             return 0;
         }
         
         place( mode, target.level, currentPos, forward );
-        CommandUtil.sendSuccess( source, "portal." + mode.name().toLowerCase( Locale.ROOT ),
+        CommandUtil.sendSuccess( source, "portal." + CommandUtil.toString( mode ),
                 pos.getX(), pos.getY(), pos.getZ() );
         return 1;
+    }
+    
+    public static boolean isDimensionValid( Mode mode, World world ) {
+        return world.dimension() == World.OVERWORLD ||
+                mode == Mode.NETHER && world.dimension() == World.NETHER ||
+                mode == Mode.END && world.dimension() == World.END;
     }
     
     /** Attempts to find the ground. Resets the position if none can be found. */

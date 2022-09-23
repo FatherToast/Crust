@@ -4,12 +4,12 @@ package fathertoast.crust.client.button;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import fathertoast.crust.client.ExtraInvButtonsCrustConfigFile;
+import fathertoast.crust.common.command.impl.CrustPortalCommand;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -42,16 +42,16 @@ public class ButtonInfo {
         // Utilities
         builtIn( new ButtonInfo( "fullHeal", "Full recover", "instant_health.png", "crustrecover" ) );
         builtIn( new ButtonInfo( "killAll", "Kill all mobs", "creeper_slash.png", "kill @e[type=!player]" ) );
-        builtIn( new ButtonInfo( "netherPortal", "Create a Nether portal", "portal_nether.png",
-                ButtonInfo::netherPortal, Command.PORTAL_NETHER ).condition( () -> {
-            Minecraft mc = Minecraft.getInstance();
-            return mc.level != null && (mc.level.dimension() == World.OVERWORLD || mc.level.dimension() == World.NETHER);
-        } ) );
-        builtIn( new ButtonInfo( "endPortal", "Create an End portal", "portal_end.png",
-                ButtonInfo::endPortal, Command.PORTAL_END ).condition( () -> {
-            Minecraft mc = Minecraft.getInstance();
-            return mc.level != null && (mc.level.dimension() == World.OVERWORLD || mc.level.dimension() == World.END);
-        } ) );
+        builtIn( new ButtonInfo( "netherPortal", "Create a Nether portal", "portal_nether.png", "crustportal nether" )
+                .condition( () -> {
+                    Minecraft mc = Minecraft.getInstance();
+                    return mc.level != null && CrustPortalCommand.isDimensionValid( CrustPortalCommand.Mode.NETHER, mc.level );
+                } ) );
+        builtIn( new ButtonInfo( "endPortal", "Create an End portal", "portal_end.png", "crustportal end" )
+                .condition( () -> {
+                    Minecraft mc = Minecraft.getInstance();
+                    return mc.level != null && CrustPortalCommand.isDimensionValid( CrustPortalCommand.Mode.END, mc.level );
+                } ) );
         
         // Time control
         builtIn( new ButtonInfo( "day", "Set time to day", "day.png", Command.TIME_DAY ) );
@@ -164,7 +164,7 @@ public class ButtonInfo {
         ButtonPressCommandChain( List<String> commands ) { COMMANDS = commands; }
         
         @Override
-        public void onPress( Button button ) {
+        public void onPress( @Nullable Button button ) {
             for( String command : COMMANDS ) cmd( command );
         }
     }
@@ -175,40 +175,26 @@ public class ButtonInfo {
     }
     
     
-    private static void netherPortal( Button button ) {
-        Minecraft mc = Minecraft.getInstance();
-        if( mc.level != null && (mc.level.dimension() == World.OVERWORLD || mc.level.dimension() == World.NETHER) ) {
-            cmd( Command.PORTAL_NETHER );
-        }
-    }
-    
-    private static void endPortal( Button button ) {
-        Minecraft mc = Minecraft.getInstance();
-        if( mc.level != null && (mc.level.dimension() == World.OVERWORLD || mc.level.dimension() == World.END) ) {
-            cmd( Command.PORTAL_END );
-        }
-    }
-    
-    private static void toggleDay( Button button ) {
+    private static void toggleDay( @Nullable Button button ) {
         Minecraft mc = Minecraft.getInstance();
         final int dayTime = mc.level == null ? 0 : (int) (mc.level.getDayTime() % 24_000L);
         cmd( dayTime < 1_000 || dayTime >= 13_000 ? Command.TIME_DAY : Command.TIME_NIGHT );
     }
     
-    private static void toggleRain( Button button ) {
+    private static void toggleRain( @Nullable Button button ) {
         Minecraft mc = Minecraft.getInstance();
         cmd( mc.level == null || mc.level.getLevelData().isRaining() || mc.level.getLevelData().isThundering() ?
                 Command.WEATHER_CLEAR : Command.WEATHER_RAIN );
     }
     
     // Not currently viable; isThundering() in not implemented client-side
-    //    private static void toggleStorm( Button button ) {
+    //    private static void toggleStorm( @Nullable Button button ) {
     //        Minecraft mc = Minecraft.getInstance();
     //        cmd( mc.level == null || !mc.level.getLevelData().isRaining() || mc.level.getLevelData().isThundering() ?
     //                Command.WEATHER_RAIN : Command.WEATHER_THUNDER );
     //    }
     
-    private static void gameMode( Button button ) {
+    private static void gameMode( @Nullable Button button ) {
         Minecraft mc = Minecraft.getInstance();
         if( mc.player == null ) return;
         cmd( !mc.player.isCreative() ? Command.MODE_CREATIVE : Command.MODE_SURVIVAL ); // TODO allow player to config modes?
@@ -244,8 +230,5 @@ public class ButtonInfo {
         static final String WEATHER_THUNDER = "weather thunder";
         static final String MODE_SURVIVAL = "gamemode survival";
         static final String MODE_CREATIVE = "gamemode creative";
-        
-        static final String PORTAL_NETHER = "crustportal nether";
-        static final String PORTAL_END = "crustportal end";
     }
 }

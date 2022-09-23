@@ -32,12 +32,15 @@ public class CommandUtil {
                 ".failure", args ) );
     }
     
+    /** @return The enum converted to the standard string used by commands. */
+    public static String toString( Enum<?> e ) { return e.name().toLowerCase( Locale.ROOT ); }
+    
     
     // ---- Command Nodes ---- //
     
     /** A command 'literal' representing the given enum value. This is an exact, case-sensitive keyword. */
     public static LiteralArgumentBuilder<CommandSource> literal( Enum<?> arg ) {
-        return literal( arg.name().toLowerCase( Locale.ROOT ) );
+        return literal( toString( arg ) );
     }
     
     /** A command 'literal'. This is an exact, case-sensitive keyword. */
