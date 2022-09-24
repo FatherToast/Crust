@@ -1,9 +1,7 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@OnClient
-package fathertoast.crust.client;
+package fathertoast.crust.common.mode;
 
-import fathertoast.crust.common.util.annotations.OnClient;
 import mcp.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

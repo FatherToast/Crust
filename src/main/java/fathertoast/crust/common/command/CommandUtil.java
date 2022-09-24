@@ -10,7 +10,9 @@ import fathertoast.crust.common.core.Crust;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
+import net.minecraft.command.arguments.EntitySelector;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Collection;
@@ -51,17 +53,43 @@ public class CommandUtil {
         return Commands.argument( arg, t );
     }
     
+    /** A command 'argument' that accepts a single-entity selector. */
+    public static RequiredArgumentBuilder<CommandSource, EntitySelector> argumentTarget( String arg ) {
+        return argument( arg, EntityArgument.entity() );
+    }
+    
+    /** A command 'argument' that accepts a multiple-entity selector. */
+    public static RequiredArgumentBuilder<CommandSource, EntitySelector> argumentTargets( String arg ) {
+        return argument( arg, EntityArgument.entities() );
+    }
+    
+    /** A command 'argument' that accepts a single-player entity selector. */
+    public static RequiredArgumentBuilder<CommandSource, EntitySelector> argumentPlayer( String arg ) {
+        return argument( arg, EntityArgument.player() );
+    }
+    
+    /** A command 'argument' that accepts a multiple-player entity selector. */
+    public static RequiredArgumentBuilder<CommandSource, EntitySelector> argumentPlayers( String arg ) {
+        return argument( arg, EntityArgument.players() );
+    }
+    
     
     // ---- Requirements ---- //
     
+    public static final byte PERMISSION_NONE = 0;
+    public static final byte PERMISSION_TRUSTED = 1;
+    public static final byte PERMISSION_CHEAT = 2;
+    public static final byte PERMISSION_MODERATE = 3;
+    public static final byte PERMISSION_SERVER_OP = 4;
+    
     /** @return True if the source is allowed to cheat (op level 2+). */
-    public static boolean canCheat( CommandSource source ) { return source.hasPermission( 2 ); }
+    public static boolean canCheat( CommandSource source ) { return source.hasPermission( PERMISSION_CHEAT ); }
     
     ///** @return True if the source is a moderator (op level 3+). */
-    //public static boolean isModerator( CommandSource source ) { return source.hasPermission( 3 ); }
+    //public static boolean isModerator( CommandSource source ) { return source.hasPermission( PERMISSION_MODERATOR ); }
     
     ///** @return True if the source is a server operator (op level 4). */
-    //public static boolean isServerOp( CommandSource source ) { return source.hasPermission( 4 ); }
+    //public static boolean isServerOp( CommandSource source ) { return source.hasPermission( PERMISSION_SERVER ); }
     
     
     // ---- Argument Parsers ---- //
@@ -84,5 +112,25 @@ public class CommandUtil {
     /** @return A collection of entity targets determined by the entity selector argument. */
     public static Collection<? extends Entity> targets( CommandContext<CommandSource> context, String arg ) throws CommandSyntaxException {
         return EntityArgument.getEntities( context, arg );
+    }
+    
+    /** @return A single entity target (the player sending the command). */
+    public static ServerPlayerEntity player( CommandContext<CommandSource> context ) throws CommandSyntaxException {
+        return context.getSource().getPlayerOrException();
+    }
+    
+    /** @return A single entity target determined by the entity selector argument. */
+    public static ServerPlayerEntity player( CommandContext<CommandSource> context, String arg ) throws CommandSyntaxException {
+        return EntityArgument.getPlayer( context, arg );
+    }
+    
+    /** @return A collection of entity targets (only containing the player sending the command). */
+    public static Collection<ServerPlayerEntity> players( CommandContext<CommandSource> context ) throws CommandSyntaxException {
+        return ImmutableList.of( player( context ) );
+    }
+    
+    /** @return A collection of entity targets determined by the entity selector argument. */
+    public static Collection<ServerPlayerEntity> players( CommandContext<CommandSource> context, String arg ) throws CommandSyntaxException {
+        return EntityArgument.getPlayers( context, arg );
     }
 }

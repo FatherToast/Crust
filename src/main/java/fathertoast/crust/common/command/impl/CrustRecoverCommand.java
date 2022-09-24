@@ -5,7 +5,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import fathertoast.crust.common.command.CommandUtil;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,18 +22,19 @@ public class CrustRecoverCommand {
     
     /** Command builder. */
     public static void register( CommandDispatcher<CommandSource> dispatcher ) {
+        // crustrecover [all|health|hunger|effects] [<targets>]
         LiteralArgumentBuilder<CommandSource> argBuilder = CommandUtil.literal( Crust.MOD_ID + "recover" )
                 .requires( CommandUtil::canCheat )
                 .executes( ( context ) -> run( context.getSource(), Mode.ALL, CommandUtil.targets( context ) ) )
                 
-                .then( CommandUtil.argument( "targets", EntityArgument.entities() )
+                .then( CommandUtil.argumentTargets( "targets" )
                         .executes( ( context ) -> run( context.getSource(), Mode.ALL, CommandUtil.targets( context, "targets" ) ) ) );
         
         for( Mode mode : Mode.values() ) {
             argBuilder.then( CommandUtil.literal( mode )
                     .executes( ( context ) -> run( context.getSource(), mode, CommandUtil.targets( context ) ) )
                     
-                    .then( CommandUtil.argument( "targets", EntityArgument.entities() )
+                    .then( CommandUtil.argumentTargets( "targets" )
                             .executes( ( context ) -> run( context.getSource(), mode, CommandUtil.targets( context, "targets" ) ) ) )
             );
         }
