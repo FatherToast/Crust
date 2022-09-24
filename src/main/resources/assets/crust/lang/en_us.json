@@ -13,6 +13,12 @@
   "commands.crustportal.dimension.failure": "Invalid dimension for portal",
   "commands.crustportal.failure": "Could not find valid portal position",
   
+  "commands.crustmode.query.success": "Active modes for %s: %s",
+  
+  "commands.crustmode.disable.single.success": "Disabled \"%s\" mode for %s",
+  "commands.crustmode.disable.multiple.success": "Disabled \"%s\" mode for %s players",
+  "commands.crustmode.enable.single.success": "Enabled \"%s\" mode for %s",
+  "commands.crustmode.enable.multiple.success": "Enabled \"%s\" mode for %s players",
   
   
   "key.categories.crust": "Crust",

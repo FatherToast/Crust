@@ -3,7 +3,6 @@ package fathertoast.crust.client;
 import fathertoast.crust.client.button.ButtonInfo;
 import fathertoast.crust.client.button.ExtraInventoryButton;
 import fathertoast.crust.common.core.Crust;
-import fathertoast.crust.common.mode.CrustModesData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
@@ -36,7 +35,7 @@ public class ScreenEvents {
     private static void addExtraInventoryButtons( GuiScreenEvent.InitGuiEvent event, DisplayEffectsScreen<?> screen ) {
         Minecraft mc = screen.getMinecraft();
         ExtraInvButtonsCrustConfigFile.General config = ClientRegister.EXTRA_INV_BUTTONS.GENERAL;
-        Crust.LOG.error( new CrustModesData( mc.player ) );//TODO temp testing note
+        
         List<ButtonInfo> buttons = new ArrayList<>();
         for( String buttonId : config.buttons.get() ) {
             ButtonInfo button = ButtonInfo.get( buttonId );

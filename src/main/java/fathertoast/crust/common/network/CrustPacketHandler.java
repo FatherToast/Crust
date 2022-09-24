@@ -27,7 +27,7 @@ public class CrustPacketHandler {
     
     /** Sends Crust modes data to its owner's client. */
     public static void sendCrustModesUpdate( ServerPlayerEntity player ) {
-        sendToClient( player, new S2CUpdateCrustModes( new CrustModesData( player ).getSaveTag() ) );
+        sendToClient( player, new S2CUpdateCrustModes( CrustModesData.of( player ).getSaveTag() ) );
     }
     
     /**

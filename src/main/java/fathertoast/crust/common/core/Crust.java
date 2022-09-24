@@ -81,8 +81,9 @@ public class Crust {
         CrustPacketHandler.registerMessages();
 
         // Perform first-time loading of the configs for this mod
-        CrustConfig.MODES.SPEC.initialize();
         CrustConfig.DEFAULT_GAME_RULES.SPEC.initialize();
+        CrustConfig.MODES.SPEC.initialize();
+        
 
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
 

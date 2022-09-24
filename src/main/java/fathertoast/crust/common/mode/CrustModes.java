@@ -34,6 +34,7 @@ public final class CrustModes {
     
     
     /** @return The mode by id, or null if no such mode exists. */
+    @SuppressWarnings( "unused" )
     @Nullable
     public static CrustMode<?> getMode( String id ) { return MODE_REGISTRY.get( id ); }
     
@@ -59,7 +60,9 @@ public final class CrustModes {
     /** Allows you to see in the dark, removes fog, and shows entity outlines. *///TODO NYI
     public static final CrustMode<Byte> SUPER_VISION = new CrustByteMode( "vision", CrustConfig.MODES.GENERAL.visionOpLevel.get() );
     /** Dramatically increases sprint and flight speed, and enables instant-mine. *///TODO NYI
-    public static final CrustMode<Float> SUPER_SPEED = new CrustFloatMode( "speed", CrustConfig.MODES.GENERAL.speedOpLevel.get() );
+    public static final CrustMode<Float> SUPER_SPEED = new CrustFloatMode( "speed", CrustConfig.MODES.GENERAL.speedOpLevel.get(),
+            ( player, value ) -> value == null || value <= 0.0F ? null :
+                    Math.min( value, CrustConfig.MODES.SPEED.speedLimit.getFloat() ) );
     /** Prevents picked-up items from being added to your inventory (like creative mode arrows). *///TODO NYI
     public static final CrustMode<Byte> DESTROY_ON_PICKUP = new CrustByteMode( "noPickup", CrustConfig.MODES.GENERAL.noPickupOpLevel.get() );
 }

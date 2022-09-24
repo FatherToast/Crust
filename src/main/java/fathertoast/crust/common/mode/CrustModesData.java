@@ -8,8 +8,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 
 public class CrustModesData {
+    
     /** The name for the Crust modes data tag. */
     public static final String TAG_NAME = "modes";
+    
+    /** @return A data helper that provides simple access to the player's Crust mode save data. */
+    // We can cache by player UUID here, if needed - might be a little messy
+    public static CrustModesData of( PlayerEntity player ) { return new CrustModesData( player ); }
     
     /** The player. */
     private final PlayerEntity PLAYER;
@@ -17,7 +22,7 @@ public class CrustModesData {
     private final CompoundNBT SAVE_TAG;
     
     /** Creates a new data helper that provides simple access to mode save data. */
-    public CrustModesData( PlayerEntity player ) {
+    private CrustModesData( PlayerEntity player ) {
         PLAYER = player;
         SAVE_TAG = NBTHelper.getPlayerData( player, Crust.MOD_ID, TAG_NAME );
     }
