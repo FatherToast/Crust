@@ -3,6 +3,7 @@ package fathertoast.crust.client.button;
 
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
+import fathertoast.crust.api.impl.InternalCrustPlugin;
 import fathertoast.crust.client.ExtraInvButtonsCrustConfigFile;
 import fathertoast.crust.common.command.impl.CrustPortalCommand;
 import fathertoast.crust.common.core.Crust;
@@ -45,12 +46,12 @@ public class ButtonInfo {
         builtIn( new ButtonInfo( "netherPortal", "Create a Nether portal", "portal_nether.png", "crustportal nether" )
                 .condition( () -> {
                     Minecraft mc = Minecraft.getInstance();
-                    return mc.level != null && CrustPortalCommand.isDimensionValid( CrustPortalCommand.Mode.NETHER, mc.level );
+                    return mc.level != null && CrustPortalCommand.isDimensionValid( InternalCrustPlugin.NETHER_PORTAL, mc.level );
                 } ) );
         builtIn( new ButtonInfo( "endPortal", "Create an End portal", "portal_end.png", "crustportal end" )
                 .condition( () -> {
                     Minecraft mc = Minecraft.getInstance();
-                    return mc.level != null && CrustPortalCommand.isDimensionValid( CrustPortalCommand.Mode.END, mc.level );
+                    return mc.level != null && CrustPortalCommand.isDimensionValid( InternalCrustPlugin.END_PORTAL, mc.level );
                 } ) );
         
         // Time control

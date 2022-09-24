@@ -2,48 +2,38 @@ package fathertoast.crust.common.command.impl;
 
 import com.mojang.brigadier.CommandDispatcher;
 import fathertoast.crust.api.lib.SetBlockFlags;
+import fathertoast.crust.api.portal.IPortalBuilder;
 import fathertoast.crust.common.command.CommandUtil;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.arguments.EntityArgument;
+import net.minecraft.command.Commands;
 import net.minecraft.entity.Entity;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 public class CrustPortalCommand {
-    
-    public enum Mode { NETHER, END }
     
     /** Command builder. */
     public static void register( CommandDispatcher<CommandSource> dispatcher ) {
-        dispatcher.register( CommandUtil.literal( Crust.MOD_ID + "portal" )
+        dispatcher.register(CommandUtil.literal( Crust.MOD_ID + "portal" )
                 .requires( CommandUtil::canCheat )
-                
-                .then( CommandUtil.literal( Mode.NETHER )
-                        .executes( ( context ) -> run( context.getSource(), Mode.NETHER, CommandUtil.target( context ) ) )
-                        
-                        .then( CommandUtil.argument( "target", EntityArgument.entity() )
-                                .executes( ( context ) -> run( context.getSource(), Mode.NETHER,
-                                        CommandUtil.target( context, "target" ) ) ) ) )
-                
-                .then( CommandUtil.literal( Mode.END )
-                        .executes( ( context ) -> run( context.getSource(), Mode.END, CommandUtil.target( context ) ) )
-                        
-                        .then( CommandUtil.argument( "target", EntityArgument.entity() )
-                                .executes( ( context ) -> run( context.getSource(), Mode.END,
-                                        CommandUtil.target( context, "target" ) ) ) ) )
-        );
+                .then(Commands.argument("portalType", PortalTypeArgument.portalType())
+                        .executes((context) -> run( context.getSource(), PortalTypeArgument.getPortalType(context, "portalType"), context.getSource().getPlayerOrException()))));
     }
+
     
     /** Command implementation. */
-    private static int run( CommandSource source, Mode mode, Entity target ) {
-        if( !isDimensionValid( mode, target.level ) ) {
+    private static int run(CommandSource source, IPortalBuilder portalBuilder, Entity target ) {
+        if( !isDimensionValid( portalBuilder, target.level ) ) {
             CommandUtil.sendFailure( source, "portal.dimension" );
             return -1;
         }
@@ -63,16 +53,24 @@ public class CrustPortalCommand {
             return 0;
         }
         
-        place( mode, target.level, currentPos, forward );
-        CommandUtil.sendSuccess( source, "portal." + CommandUtil.toString( mode ),
+        place( portalBuilder, target.level, currentPos, forward );
+        CommandUtil.sendSuccess( source, "portal." + portalBuilder.getId().getPath(),
                 pos.getX(), pos.getY(), pos.getZ() );
         return 1;
     }
     
-    public static boolean isDimensionValid( Mode mode, World world ) {
-        return world.dimension() == World.OVERWORLD ||
-                mode == Mode.NETHER && world.dimension() == World.NETHER ||
-                mode == Mode.END && world.dimension() == World.END;
+    public static boolean isDimensionValid( IPortalBuilder portalBuilder, World world ) {
+        ResourceLocation currentWorldId = world.dimension().location();
+        List<ResourceLocation> validDimensions = portalBuilder.getValidDimensions();
+
+        if (validDimensions.isEmpty())
+            return false;
+
+        for (ResourceLocation rl : portalBuilder.getValidDimensions()) {
+            if (rl.equals(currentWorldId))
+                return true;
+        }
+        return false;
     }
     
     /** Attempts to find the ground. Resets the position if none can be found. */
@@ -114,16 +112,8 @@ public class CrustPortalCommand {
     }
     
     /** Places the portal. */
-    private static void place( Mode mode, World level, BlockPos.Mutable currentPos, Direction forward ) {
-        switch( mode ) {
-            case NETHER:
-                placeNetherPortal( level, currentPos, forward );
-                return;
-            case END:
-                placeEndPortal( level, currentPos, forward );
-                return;
-        }
-        throw new IllegalArgumentException( "Invalid portal type!" );
+    private static void place( IPortalBuilder portalBuilder, World level, BlockPos.Mutable currentPos, Direction forward ) {
+        portalBuilder.getGenerator().generate(level, currentPos, forward);
     }
     
     /** Places a Nether portal. */

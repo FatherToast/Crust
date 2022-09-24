@@ -1,4 +1,4 @@
-package fathertoast.crust.api;
+package fathertoast.crust.api.portal;
 
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;

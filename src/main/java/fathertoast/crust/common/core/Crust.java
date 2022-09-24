@@ -1,12 +1,14 @@
 package fathertoast.crust.common.core;
 
-import fathertoast.crust.api.ICrustApi;
+import fathertoast.crust.api.CrustPlugin;
+import fathertoast.crust.api.ICrustPlugin;
 import fathertoast.crust.api.impl.CrustApi;
-import fathertoast.crust.api.impl.RegistryHelper;
 import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.event.EventListener;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -84,8 +86,35 @@ public class Crust {
     }
 
     void onCommonSetup(FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> {
-            ((RegistryHelper)apiInstance.getRegistryHelper()).registerInternal();
+        event.enqueueWork(this::processPlugins);
+    }
+
+    private void processPlugins() {
+        // Load mod plugins
+        ModList.get().getAllScanData().forEach(scanData -> {
+            scanData.getAnnotations().forEach(annotationData -> {
+
+                // Look for classes annotated with @CrustPlugin
+                if (annotationData.getAnnotationType().getClassName().equals(CrustPlugin.class.getName())) {
+                    try {
+                        Class<?> pluginClass = Class.forName(annotationData.getMemberName());
+
+                        if (ICrustPlugin.class.isAssignableFrom(pluginClass)) {
+                            ICrustPlugin plugin = (ICrustPlugin) pluginClass.newInstance();
+                            plugin.onLoad(apiInstance);
+                            LOG.info("Found Crust plugin at {} with plugin ID: {}", annotationData.getMemberName(), plugin.getId());
+                        }
+                    }
+                    catch (Exception e) {
+                        LOG.error("Failed to load a Crust plugin! Plugin class: {}", annotationData.getMemberName());
+                        e.printStackTrace();
+                    }
+                }
+            });
         });
+    }
+
+    public static ResourceLocation resLoc(String path) {
+        return new ResourceLocation(MOD_ID, path);
     }
 }
