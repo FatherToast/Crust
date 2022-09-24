@@ -1,11 +1,10 @@
 package fathertoast.crust.common.core;
 
-import fathertoast.crust.api.CrustPlugin;
-import fathertoast.crust.api.ICrustPlugin;
 import fathertoast.crust.api.impl.CrustApi;
+import fathertoast.crust.api.impl.RegistryHelper;
 import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.event.EventListener;
-import net.minecraft.util.ResourceLocation;
+import fathertoast.crust.common.network.CrustPacketHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
@@ -39,11 +38,12 @@ public class Crust {
      *      - crustrecover [all|health|hunger|effects] [<targets>]
      *      - crustportal (nether|end) [<target>] - create dimension portal
      *          + TODO allow registration of custom portals
-     *      + crustcap <mode name> [toggle|on|off] [<target>] - set/toggle mode
-     *      ? crustclean [<target>] - reset inventory to starting inventory
+     *      + crustmode [<player>] - check active modes
+     *      + crustmode <mode> (disable|<value>) [<players>] - enable/disable mode
+     *      ? crustclean [<players>] - reset inventory to starting inventory
      *  - tools
      *      + starting inventory
-     *      + hotkey to equip from creative inv - MMB by default
+     *      + hotkey to equip from creative inv - ideally MMB by default
      *      - extra inventory buttons (command-driven)
      *          + TODO option to hide while recipe book is open
      *          + TODO render above effect tiles
@@ -75,12 +75,15 @@ public class Crust {
     
     public Crust() {
         apiInstance = new CrustApi();
-        // Perform first-time loading of the config for this mod
+        CrustPacketHandler.registerMessages();
+
+        // Perform first-time loading of the configs for this mod
+        CrustConfig.MODES.SPEC.initialize();
         CrustConfig.DEFAULT_GAME_RULES.SPEC.initialize();
 
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        modBus.addListener(this::onCommonSetup);
+        modBus.addListener( this::onCommonSetup );
 
         MinecraftForge.EVENT_BUS.register( new EventListener() );
     }

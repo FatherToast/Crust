@@ -44,6 +44,9 @@ public class DoubleField extends AbstractConfigField {
     /** @return Returns the config field's value. */
     public double get() { return value; }
     
+    /** @return Returns the config field's value cast to a float. */
+    public float getFloat() { return (float) value; }
+    
     /** @return Treats the config field's value as a percent chance (from 0 to 1) and returns the result of a single roll. */
     public boolean rollChance( Random random ) { return random.nextDouble() < value; }
     
