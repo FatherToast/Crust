@@ -1,10 +1,13 @@
 package fathertoast.crust.common.core;
 
+import fathertoast.crust.api.CrustPlugin;
+import fathertoast.crust.api.ICrustPlugin;
 import fathertoast.crust.api.impl.CrustApi;
 import fathertoast.crust.api.impl.RegistryHelper;
 import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.event.EventListener;
 import fathertoast.crust.common.network.CrustPacketHandler;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
