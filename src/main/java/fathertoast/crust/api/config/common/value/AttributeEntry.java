@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.common.value;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -63,7 +63,7 @@ public class AttributeEntry {
         if( attribute != null ) return true;
         
         if( !ForgeRegistries.ATTRIBUTES.containsKey( ATTRIBUTE_KEY ) ) {
-            Crust.LOG.warn( "Invalid entry for {} \"{}\"! Invalid entry: {}",
+            ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Invalid entry: {}",
                     FIELD.getClass(), FIELD.getKey(), ATTRIBUTE_KEY.toString() );
             return false;
         }

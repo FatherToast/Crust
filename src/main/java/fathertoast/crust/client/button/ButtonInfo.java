@@ -6,6 +6,7 @@ import com.mojang.brigadier.StringReader;
 import fathertoast.crust.api.impl.InternalCrustPlugin;
 import fathertoast.crust.client.ClientRegister;
 import fathertoast.crust.client.ExtraInvButtonsCrustConfigFile;
+import fathertoast.crust.client.KeyBindingEvents;
 import fathertoast.crust.common.command.impl.CrustPortalCommand;
 import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.mode.CrustModes;
@@ -18,6 +19,7 @@ import net.minecraft.client.network.play.ClientPlayNetHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.settings.KeyModifier;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -84,12 +86,16 @@ public class ButtonInfo {
             "instant_health.png", "crustrecover" ) );
     public static final ButtonInfo KILL_ALL = builtIn( new ButtonInfo( "killAll", "Kill all mobs",
             "creeper_slash.png", "kill @e[type=!player]" ) );
+    @SuppressWarnings( "unused" )
     public static final ButtonInfo NETHER_PORTAL = builtIn( new ButtonInfo( "netherPortal", "Create a Nether portal",
-            "portal_nether.png", "crustportal nether" ).condition(
-            () -> CrustPortalCommand.isDimensionValid( InternalCrustPlugin.NETHER_PORTAL, world() ) ) );
+            "portal_nether.png", "crustportal nether" )
+            .condition( () -> CrustPortalCommand.isDimensionValid( InternalCrustPlugin.NETHER_PORTAL, world() ) )
+            .key( KeyModifier.CONTROL, "0" ) );
+    @SuppressWarnings( "unused" )
     public static final ButtonInfo END_PORTAL = builtIn( new ButtonInfo( "endPortal", "Create an End portal",
-            "portal_end.png", "crustportal end" ).condition(
-            () -> CrustPortalCommand.isDimensionValid( InternalCrustPlugin.END_PORTAL, world() ) ) );
+            "portal_end.png", "crustportal end" )
+            .condition( () -> CrustPortalCommand.isDimensionValid( InternalCrustPlugin.END_PORTAL, world() ) )
+            .key( KeyModifier.ALT, "0" ) );
     
     // Time control
     public static final ButtonInfo DAY = builtIn( new ButtonInfo( "day", "Set time to day",
@@ -114,17 +120,19 @@ public class ButtonInfo {
     
     // Mode toggles
     public static final ButtonInfo GAME_MODE = builtIn( new ButtonInfo( "gameMode", "Toggle game mode",
-            "grass.png", ButtonInfo::gameMode, Command.MODE_SURVIVAL, Command.MODE_CREATIVE ).toggle(
-            () -> player().isCreative() ) );
+            "grass.png", ButtonInfo::gameMode, Command.MODE_SURVIVAL, Command.MODE_CREATIVE )
+            .toggle( () -> player().isCreative() ) );
     public static final ButtonInfo MAGNET_MODE = builtIn( new ButtonInfo( "magnetMode", "Toggle magnet mode",
-            "magnet.png", ButtonInfo::magnetMode, Command.forMode( CrustModes.MAGNET ) ).toggle(
-            () -> modeEnabled( CrustModes.MAGNET ) ) );
+            "magnet.png", ButtonInfo::magnetMode, Command.forMode( CrustModes.MAGNET ) )
+            .toggle( () -> modeEnabled( CrustModes.MAGNET ) )
+            .key( KeyModifier.CONTROL, "m" ) );
     public static final ButtonInfo MULTI_MINE_MODE = builtIn( new ButtonInfo( "multiMineMode", "Toggle multi-mine mode",
-            "haste.png", ButtonInfo::multiMineMode, Command.forMode( CrustModes.MULTI_MINE ) ).toggle(
-            () -> modeEnabled( CrustModes.MULTI_MINE ) ) );
+            "haste.png", ButtonInfo::multiMineMode, Command.forMode( CrustModes.MULTI_MINE ) )
+            .toggle( () -> modeEnabled( CrustModes.MULTI_MINE ) )
+            .key( KeyModifier.ALT, "m" ) );
     public static final ButtonInfo GOD_MODE = builtIn( new ButtonInfo( "godMode", "Toggle god mode",
-            "undying.png", ButtonInfo::godMode ).toggle(
-            () -> {
+            "undying.png", ButtonInfo::godMode )
+            .toggle( () -> {
                 ExtraInvButtonsCrustConfigFile.BuiltInButtons buttonCfg = ClientRegister.EXTRA_INV_BUTTONS.BUILT_IN_BUTTONS;
                 CrustModesData playerModes = CrustModesData.of( player() );
                 return !(buttonCfg.godModeUndying.get() && !playerModes.enabled( CrustModes.UNDYING ) ||
@@ -132,14 +140,14 @@ public class ButtonInfo {
                         buttonCfg.godModeUneating.get() >= 0.0 && !playerModes.enabled( CrustModes.UNEATING ));
             } ) );
     public static final ButtonInfo SUPER_VISION_MODE = builtIn( new ButtonInfo( "superVisionMode", "Toggle super vision mode",
-            "night_vision.png", ButtonInfo::superVisionMode, Command.forMode( CrustModes.SUPER_VISION ) ).toggle(
-            () -> modeEnabled( CrustModes.SUPER_VISION ) ) );
+            "night_vision.png", ButtonInfo::superVisionMode, Command.forMode( CrustModes.SUPER_VISION ) )
+            .toggle( () -> modeEnabled( CrustModes.SUPER_VISION ) ) );
     public static final ButtonInfo SUPER_SPEED_MODE = builtIn( new ButtonInfo( "superSpeedMode", "Toggle super speed mode",
-            "swiftness.png", ButtonInfo::superSpeedMode, Command.forMode( CrustModes.SUPER_SPEED ) ).toggle(
-            () -> modeEnabled( CrustModes.SUPER_SPEED ) ) );
+            "swiftness.png", ButtonInfo::superSpeedMode, Command.forMode( CrustModes.SUPER_SPEED ) )
+            .toggle( () -> modeEnabled( CrustModes.SUPER_SPEED ) ) );
     public static final ButtonInfo NO_PICKUP_MODE = builtIn( new ButtonInfo( "noPickupMode", "Toggle destroy-on-pickup mode",
-            "weakness.png", ButtonInfo::noPickupMode, Command.forMode( CrustModes.DESTROY_ON_PICKUP ) ).toggle(
-            () -> modeEnabled( CrustModes.DESTROY_ON_PICKUP ) ) );
+            "weakness.png", ButtonInfo::noPickupMode, Command.forMode( CrustModes.DESTROY_ON_PICKUP ) )
+            .toggle( () -> modeEnabled( CrustModes.DESTROY_ON_PICKUP ) ) );
     
     static {
         BUILT_INS.trimToSize();
@@ -172,6 +180,9 @@ public class ButtonInfo {
     
     /** Whether the button is 'toggled on'. */
     private Supplier<Boolean> toggledOn;
+    
+    /** This button's default key binding. */
+    private KeyBindingEvents.Key keyBinding;
     
     
     // ---- Button Info Builders ---- //
@@ -225,6 +236,12 @@ public class ButtonInfo {
         return this;
     }
     
+    /** Builder-like method that adds a default key binding to this button. */
+    protected ButtonInfo key( KeyModifier modifier, String key ) {
+        keyBinding = KeyBindingEvents.Key.of( modifier, key );
+        return this;
+    }
+    
     
     // ---- Button Logic ---- //
     
@@ -266,6 +283,10 @@ public class ButtonInfo {
             for( String command : COMMANDS ) cmd( command );
         }
     }
+    
+    /** @return This button's default key binding, or null if it should be unbound by default. */
+    @Nullable
+    public KeyBindingEvents.Key getDefaultKey() { return keyBinding; }
     
     
     // ---- Built-In Button Impl ---- //

@@ -1,9 +1,10 @@
 package fathertoast.crust.api.config.common.field;
 
 import com.electronwill.nightconfig.core.io.CharacterOutput;
+import fathertoast.crust.api.config.common.file.CrustConfigSpec;
+import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.IStringArray;
-import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -15,11 +16,11 @@ import java.util.List;
  */
 public abstract class AbstractConfigField {
     
-    /** The base key prefix to use for all fields, based on the currently loading config category. */
-    public static String loadingCategory;
+    /** @see #getSpec() */
+    private CrustConfigSpec SPEC;
     
     /** @see #getKey() */
-    private final String KEY;
+    private String KEY;
     /** @see #getComment() */
     private List<String> COMMENT;
     
@@ -28,7 +29,7 @@ public abstract class AbstractConfigField {
      * If the description is null, it will cancel the entire comment, including the automatic field info text.
      */
     protected AbstractConfigField( String key, @Nullable String... description ) {
-        this( loadingCategory + key, description == null ? null : TomlHelper.newComment( description ) );
+        this( key, description == null ? null : TomlHelper.newComment( description ) );
     }
     
     /**
@@ -40,6 +41,9 @@ public abstract class AbstractConfigField {
         COMMENT = comment;
     }
     
+    /** @return The config spec this field exists in. */
+    public final CrustConfigSpec getSpec() { return SPEC; }
+    
     /** @return The unique config key that maps to this field in the config file. */
     public final String getKey() { return KEY; }
     
@@ -48,13 +52,31 @@ public abstract class AbstractConfigField {
     public final List<String> getComment() { return COMMENT; }
     
     /** Adds procedural information to the comment and then makes it unmodifiable. */
-    public final void finalizeComment( @Nullable RestartNote restartNote ) {
+    public final void finalizeComment( CrustConfigSpec spec, @Nullable RestartNote restartNote ) {
+        setSpec( spec );
         if( COMMENT == null ) return;
         RestartNote.appendComment( COMMENT, restartNote );
         appendFieldInfo( COMMENT );
         ((ArrayList<String>) COMMENT).trimToSize();
         COMMENT = Collections.unmodifiableList( COMMENT );
     }
+    
+    /** Called to set the config spec of this field. Once called, this field can no longer be registered to specs (#define). */
+    public final void setSpec( CrustConfigSpec spec ) {
+        if( SPEC != null ) {
+            throw new IllegalStateException( "Attempted to register field '" + KEY + "' in two locations; first in " +
+                    SPEC.NAME + " and then in " + spec.NAME );
+        }
+        SPEC = spec;
+        KEY = spec.loadingCategory + KEY;
+        onSpecSet();
+    }
+    
+    /**
+     * Called after the spec is set. Wrapper fields should override this method and call
+     * {@link #setSpec(CrustConfigSpec)} on any underlying fields.
+     */
+    protected void onSpecSet() { }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     public abstract void appendFieldInfo( List<String> comment );

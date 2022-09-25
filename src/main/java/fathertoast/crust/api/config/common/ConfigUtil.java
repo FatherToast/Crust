@@ -5,6 +5,8 @@ import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistryEntry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -15,6 +17,9 @@ import java.util.Locale;
  */
 @SuppressWarnings( "unused" )
 public final class ConfigUtil {
+    
+    /** Logger instance for the Crust Config API. */
+    public static final Logger LOG = LogManager.getLogger( "crust/configs" );
     
     /** The plus or minus symbol (+/-). */
     public static final String PLUS_OR_MINUS = "\u00b1";

@@ -1,6 +1,5 @@
 package fathertoast.crust.api.config.common;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 
@@ -32,10 +31,10 @@ public abstract class AbstractConfigCategory<T extends AbstractConfigFile> {
      *                            Each string is printed as a separate line.
      */
     public AbstractConfigCategory( T parent, String categoryName, String... categoryDescription ) {
-        AbstractConfigField.loadingCategory = categoryName + ".";
-        
         PARENT = parent;
         SPEC = parent.SPEC;
+        
+        parent.SPEC.loadingCategory = categoryName + ".";
         SPEC.category( categoryName, TomlHelper.newComment( categoryDescription ) );
     }
 }

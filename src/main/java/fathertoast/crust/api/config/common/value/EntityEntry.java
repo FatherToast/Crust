@@ -1,8 +1,8 @@
 package fathertoast.crust.api.config.common.value;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.EntityListField;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
@@ -68,7 +68,7 @@ public class EntityEntry {
         if( entityType != null || ENTITY_KEY == null ) return true; // Null entity key means this is a default entry
         
         if( !ForgeRegistries.ENTITIES.containsKey( ENTITY_KEY ) ) {
-            Crust.LOG.warn( "Invalid entry for {} \"{}\"! Invalid entry: {}",
+            ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Invalid entry: {}",
                     FIELD.getClass(), FIELD.getKey(), ENTITY_KEY.toString() );
             return false;
         }
@@ -87,7 +87,7 @@ public class EntityEntry {
                 }
             }
             catch( Exception ex ) {
-                Crust.LOG.warn( "Failed to load class of entity type {}!", entityType );
+                ConfigUtil.LOG.warn( "Failed to load class of entity type {}!", entityType );
                 ex.printStackTrace();
             }
         }

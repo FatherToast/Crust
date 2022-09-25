@@ -1,9 +1,9 @@
 package fathertoast.crust.api.config.common.value;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.field.IntField;
-import fathertoast.crust.common.core.Crust;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -64,7 +64,7 @@ public class WeightedList<T extends WeightedList.Value> {
             if( choice < 0 ) return entry.getValue();
         }
         
-        Crust.LOG.error( "Weighting error occurred while rolling random item! " +
+        ConfigUtil.LOG.error( "Weighting error occurred while rolling random item! " +
                 "This may have been caused by configs reloading during random roll (comod). Otherwise, it is very bad. :(" );
         return null;
     }

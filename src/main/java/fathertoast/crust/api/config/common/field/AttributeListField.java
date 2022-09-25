@@ -1,10 +1,10 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.AttributeEntry;
 import fathertoast.crust.api.config.common.value.AttributeList;
 import fathertoast.crust.api.config.common.value.ConfigDrivenAttributeModifierMap;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.util.ResourceLocation;
@@ -77,7 +77,7 @@ public class AttributeListField extends GenericField<AttributeList> {
         // Parse the attribute-operation-value array
         final String[] args = line.split( " ", 4 );
         if( args.length > 3 ) {
-            Crust.LOG.warn( "Entry has for {} \"{}\" is too long! Deleting excess. Invalid entry: {}",
+            ConfigUtil.LOG.warn( "Entry has for {} \"{}\" is too long! Deleting excess. Invalid entry: {}",
                     getClass(), getKey(), line );
         }
         
@@ -90,7 +90,7 @@ public class AttributeListField extends GenericField<AttributeList> {
         
         final byte operator;
         if( args.length < 2 ) {
-            Crust.LOG.warn( "Entry has no operator for {} \"{}\"! Replacing missing operator with +. Invalid entry: {}",
+            ConfigUtil.LOG.warn( "Entry has no operator for {} \"{}\"! Replacing missing operator with +. Invalid entry: {}",
                     getClass(), getKey(), line );
             operator = OP_ADD;
         }
@@ -103,7 +103,7 @@ public class AttributeListField extends GenericField<AttributeList> {
                 case "-": operator = OP_SUBTRACT;
                     break;
                 default: operator = OP_ADD;
-                    Crust.LOG.warn( "Entry has invalid operator {} for {} \"{}\"! Replacing operator with +. " +
+                    ConfigUtil.LOG.warn( "Entry has invalid operator {} for {} \"{}\"! Replacing operator with +. " +
                             "Invalid entry: {}", args[1], getClass(), getKey(), line );
                     break;
             }
@@ -112,7 +112,7 @@ public class AttributeListField extends GenericField<AttributeList> {
         
         final double value;
         if( args.length < 3 ) {
-            Crust.LOG.warn( "Entry has no value for {} \"{}\"! Replacing missing value with {}. Invalid entry: {}",
+            ConfigUtil.LOG.warn( "Entry has no value for {} \"{}\"! Replacing missing value with {}. Invalid entry: {}",
                     getClass(), getKey(), identityValue, line );
             value = identityValue;
         }
@@ -133,7 +133,7 @@ public class AttributeListField extends GenericField<AttributeList> {
         }
         catch( NumberFormatException ex ) {
             // This is thrown if the string is not a parsable number
-            Crust.LOG.warn( "Invalid value for {} \"{}\"! Falling back to {}. Invalid entry: {}",
+            ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to {}. Invalid entry: {}",
                     getClass(), getKey(), identity, line );
             value = identity;
         }

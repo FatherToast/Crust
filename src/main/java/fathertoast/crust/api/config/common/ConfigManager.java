@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common;
 
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 
@@ -81,6 +83,9 @@ public final class ConfigManager {
     /** @return A read-only list of all config files this manages. */
     public List<AbstractConfigFile> getConfigs() { return Collections.unmodifiableList( configs ); }
     
+    /** @return The current "version" of the dynamic registries. This is incremented each time resources are loaded. */
+    public byte getDynamicRegVersion() { return dynamicRegVersion; }
+    
     
     // ---- Internal Methods ---- //
     
@@ -102,8 +107,12 @@ public final class ConfigManager {
         return cfgManager;
     }
     
+    
     /** The config files this manages. */
     private final List<AbstractConfigFile> configs = new ArrayList<>();
+    
+    /** The current "version" of the dynamic registries. */
+    private byte dynamicRegVersion;
     
     private ConfigManager( File configDir ) {
         MOD_ID = ModLoadingContext.get().getActiveNamespace();
@@ -111,8 +120,13 @@ public final class ConfigManager {
         
         if( MOD_ID.equals( "minecraft" ) )
             throw new IllegalStateException( "Attempted to create config manager from invalid mod loading context!" );
+        
+        MinecraftForge.EVENT_BUS.addListener( this::onResourceReload );
     }
     
     /** Called by config files on creation to keep track of them. */
     void register( AbstractConfigFile cfg ) { configs.add( cfg ); }
+    
+    /** Called each time resources are loaded. */
+    private void onResourceReload( AddReloadListenerEvent event ) { dynamicRegVersion++; }
 }

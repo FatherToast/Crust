@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.common.value;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -95,7 +95,7 @@ public class LazyRegistryEntryList<T extends IForgeRegistryEntry<T>> extends Reg
             if( line.endsWith( "*" ) ) {
                 // Handle special case; add all entries in namespace
                 if( !mergeFromNamespace( line.substring( 0, line.length() - 1 ) ) ) {
-                    Crust.LOG.warn( "Namespace entry for {} \"{}\" did not match anything! Questionable entry: {}",
+                    ConfigUtil.LOG.warn( "Namespace entry for {} \"{}\" did not match anything! Questionable entry: {}",
                             FIELD.getClass(), FIELD.getKey(), line );
                 }
             }
@@ -103,7 +103,7 @@ public class LazyRegistryEntryList<T extends IForgeRegistryEntry<T>> extends Reg
                 // Add a single registry entry
                 final ResourceLocation regKey = new ResourceLocation( line );
                 if( !mergeFrom( regKey ) ) {
-                    Crust.LOG.warn( "Invalid or duplicate entry for {} \"{}\"! Invalid entry: {}",
+                    ConfigUtil.LOG.warn( "Invalid or duplicate entry for {} \"{}\"! Invalid entry: {}",
                             FIELD.getClass(), FIELD.getKey(), line );
                 }
             }

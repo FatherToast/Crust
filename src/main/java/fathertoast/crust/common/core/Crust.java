@@ -3,7 +3,6 @@ package fathertoast.crust.common.core;
 import fathertoast.crust.api.CrustPlugin;
 import fathertoast.crust.api.ICrustPlugin;
 import fathertoast.crust.api.impl.CrustApi;
-import fathertoast.crust.api.impl.RegistryHelper;
 import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.event.EventListener;
 import fathertoast.crust.common.network.CrustPacketHandler;
@@ -71,57 +70,57 @@ public class Crust {
     
     /** Logger instance for the mod. */
     public static final Logger LOG = LogManager.getLogger( MOD_ID );
-
+    
     /** API instance */
     private final CrustApi apiInstance;
-
+    
     
     public Crust() {
         apiInstance = new CrustApi();
         CrustPacketHandler.registerMessages();
-
+        
         // Perform first-time loading of the configs for this mod
         CrustConfig.DEFAULT_GAME_RULES.SPEC.initialize();
         CrustConfig.MODES.SPEC.initialize();
         
-
+        
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-
+        
         modBus.addListener( this::onCommonSetup );
-
+        
         MinecraftForge.EVENT_BUS.register( new EventListener() );
     }
-
-    void onCommonSetup(FMLCommonSetupEvent event) {
-        event.enqueueWork(this::processPlugins);
+    
+    void onCommonSetup( FMLCommonSetupEvent event ) {
+        event.enqueueWork( this::processPlugins );
     }
-
+    
     private void processPlugins() {
         // Load mod plugins
-        ModList.get().getAllScanData().forEach(scanData -> {
-            scanData.getAnnotations().forEach(annotationData -> {
-
+        ModList.get().getAllScanData().forEach( scanData -> {
+            scanData.getAnnotations().forEach( annotationData -> {
+                
                 // Look for classes annotated with @CrustPlugin
-                if (annotationData.getAnnotationType().getClassName().equals(CrustPlugin.class.getName())) {
+                if( annotationData.getAnnotationType().getClassName().equals( CrustPlugin.class.getName() ) ) {
                     try {
-                        Class<?> pluginClass = Class.forName(annotationData.getMemberName());
-
-                        if (ICrustPlugin.class.isAssignableFrom(pluginClass)) {
+                        Class<?> pluginClass = Class.forName( annotationData.getMemberName() );
+                        
+                        if( ICrustPlugin.class.isAssignableFrom( pluginClass ) ) {
                             ICrustPlugin plugin = (ICrustPlugin) pluginClass.newInstance();
-                            plugin.onLoad(apiInstance);
-                            LOG.info("Found Crust plugin at {} with plugin ID: {}", annotationData.getMemberName(), plugin.getId());
+                            plugin.onLoad( apiInstance );
+                            LOG.info( "Found Crust plugin at {} with plugin ID: {}", annotationData.getMemberName(), plugin.getId() );
                         }
                     }
-                    catch (Exception e) {
-                        LOG.error("Failed to load a Crust plugin! Plugin class: {}", annotationData.getMemberName());
+                    catch( Exception e ) {
+                        LOG.error( "Failed to load a Crust plugin! Plugin class: {}", annotationData.getMemberName() );
                         e.printStackTrace();
                     }
                 }
-            });
-        });
+            } );
+        } );
     }
-
-    public static ResourceLocation resLoc(String path) {
-        return new ResourceLocation(MOD_ID, path);
+    
+    public static ResourceLocation resLoc( String path ) {
+        return new ResourceLocation( MOD_ID, path );
     }
 }

@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.common.core.Crust;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -49,7 +49,7 @@ public class EnumField<T extends Enum<T>> extends GenericField<T> {
         if( newValue == null ) {
             // Value cannot be parsed to this field
             if( raw != null ) {
-                Crust.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
+                ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
                         getClass(), getKey(), raw );
             }
             newValue = valueDefault;

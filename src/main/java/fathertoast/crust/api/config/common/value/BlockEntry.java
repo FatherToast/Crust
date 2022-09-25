@@ -3,7 +3,6 @@ package fathertoast.crust.api.config.common.value;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -58,7 +57,7 @@ public class BlockEntry implements Cloneable {
         // Try to parse block states
         if( !pair[1].endsWith( "]" ) ) {
             // For now, this is okay; if we ever allow values to be added to block lists, this should fail
-            Crust.LOG.info( "Adding closing bracket on block state properties for {} \"{}\". Invalid entry: {}",
+            ConfigUtil.LOG.info( "Adding closing bracket on block state properties for {} \"{}\". Invalid entry: {}",
                     field.getClass(), field.getKey(), line );
             pair[1] = pair[1] + "]";
         }
@@ -121,10 +120,10 @@ public class BlockEntry implements Cloneable {
     /** @param other Merges all matching from another block entry with this entry's matchers. */
     void mergeFrom( BlockEntry other ) {
         if( MATCHERS.isEmpty() ) {
-            Crust.LOG.warn( "Ignoring attempt to add redundant block state to config with block state wildcard '{}'", other );
+            ConfigUtil.LOG.warn( "Ignoring attempt to add redundant block state to config with block state wildcard '{}'", other );
         }
         else if( other.MATCHERS.isEmpty() ) {
-            Crust.LOG.warn( "Adding block state wildcard to config with redundant block state(s) '{}'", this );
+            ConfigUtil.LOG.warn( "Adding block state wildcard to config with redundant block state(s) '{}'", this );
             MATCHERS.clear();
         }
         else {
@@ -146,7 +145,7 @@ public class BlockEntry implements Cloneable {
             // Parse an individual property key-value pair
             String[] pair = combinedEntry.trim().split( "=", 2 );
             if( pair.length != 2 ) {
-                Crust.LOG.warn( "Invalid block property for {} \"{}\". Format must be 'property=value'. " +
+                ConfigUtil.LOG.warn( "Invalid block property for {} \"{}\". Format must be 'property=value'. " +
                         "Deleting property. Invalid property: {}", field.getClass(), field.getKey(), combinedEntry.trim() );
                 continue;
             }
@@ -162,7 +161,7 @@ public class BlockEntry implements Cloneable {
                 for( Property<? extends Comparable<?>> allowed : stateContainer.getProperties() ) {
                     propertyNames.add( allowed.getName() );
                 }
-                Crust.LOG.warn( "Invalid block property key for {} \"{}\". Valid property keys for '{}' are {}. " +
+                ConfigUtil.LOG.warn( "Invalid block property key for {} \"{}\". Valid property keys for '{}' are {}. " +
                                 "Deleting property. Invalid property: {}", field.getClass(), field.getKey(),
                         ConfigUtil.toString( block ), TomlHelper.literalList( propertyNames ), combinedEntry.trim() );
                 continue;
@@ -175,7 +174,7 @@ public class BlockEntry implements Cloneable {
                 for( Comparable<?> allowed : property.getPossibleValues() ) {
                     valueNames.add( property.getName( value( allowed ) ) );
                 }
-                Crust.LOG.warn( "Invalid block property value for {} \"{}\". Valid values for property '{}' are {}. " +
+                ConfigUtil.LOG.warn( "Invalid block property value for {} \"{}\". Valid values for property '{}' are {}. " +
                                 "Deleting property. Invalid property: {}", field.getClass(), field.getKey(), property.getName(),
                         TomlHelper.literalList( valueNames ), combinedEntry.trim() );
                 continue;

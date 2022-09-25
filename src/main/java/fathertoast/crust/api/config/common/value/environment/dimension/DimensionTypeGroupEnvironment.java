@@ -1,5 +1,6 @@
 package fathertoast.crust.api.config.common.value.environment.dimension;
 
+import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.api.config.common.value.environment.DynamicRegistryGroupEnvironment;
@@ -15,9 +16,13 @@ import java.util.List;
 
 public class DimensionTypeGroupEnvironment extends DynamicRegistryGroupEnvironment<DimensionType> {
     
-    public DimensionTypeGroupEnvironment( RegistryKey<DimensionType> dimType, boolean invert ) { this( dimType.location(), invert ); }
+    public DimensionTypeGroupEnvironment( ConfigManager cfgManager, RegistryKey<DimensionType> dimType, boolean invert ) {
+        this( cfgManager, dimType.location(), invert );
+    }
     
-    public DimensionTypeGroupEnvironment( ResourceLocation regKey, boolean invert ) { super( regKey, invert ); }
+    public DimensionTypeGroupEnvironment( ConfigManager cfgManager, ResourceLocation regKey, boolean invert ) {
+        super( cfgManager, regKey, invert );
+    }
     
     public DimensionTypeGroupEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
     
