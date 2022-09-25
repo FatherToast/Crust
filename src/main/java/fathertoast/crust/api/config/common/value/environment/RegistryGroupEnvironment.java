@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.common.value.environment;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -60,7 +60,7 @@ public abstract class RegistryGroupEnvironment<T extends IForgeRegistryEntry<T>>
                 }
             }
             if( registryEntries.isEmpty() ) {
-                Crust.LOG.warn( "Namespace entry for {} \"{}\" did not match anything in registry \"{}\"! Questionable entry: {}",
+                ConfigUtil.LOG.warn( "Namespace entry for {} \"{}\" did not match anything in registry \"{}\"! Questionable entry: {}",
                         FIELD == null ? "DEFAULT" : FIELD.getClass(), FIELD == null ? "DEFAULT" : FIELD.getKey(), getRegistry().getRegistryName(), NAMESPACE );
             }
             registryEntries = Collections.unmodifiableList( registryEntries );

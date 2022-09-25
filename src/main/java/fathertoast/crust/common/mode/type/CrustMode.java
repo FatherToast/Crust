@@ -6,6 +6,7 @@ import fathertoast.crust.api.lib.NBTHelper;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
 import net.minecraft.command.CommandSource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 
@@ -31,6 +32,12 @@ public abstract class CrustMode<T> {
         CrustModes.register( this );
     }
     
+    /**
+     * @return True if the mode is enabled; that is, if any save data for the mode exists.
+     * This is a shortcut method handy when we don't need to do anything else with the mode data.
+     * @see CrustModesData#enabled(CrustMode)
+     */
+    public final boolean enabled( PlayerEntity player ) { return CrustModesData.of( player ).enabled( this ); }
     
     /** @return True if any save data for this mode exists. */
     public boolean enabled( CompoundNBT tag ) { return tag.contains( ID, NBTHelper.ID_NUMERICAL ); }
@@ -59,9 +66,8 @@ public abstract class CrustMode<T> {
     /** Validates and applies a command set request. */
     protected void validate( ServerPlayerEntity player, @Nullable T value ) {
         if( VALIDATOR != null ) value = VALIDATOR.validate( player, value );
-        CrustModesData playerModes = new CrustModesData( player );
-        if( value == null ) playerModes.disable( this );
-        else playerModes.enable( this, value );
+        if( value == null ) CrustModesData.of( player ).disable( this );
+        else CrustModesData.of( player ).enable( this, value );
     }
     
     public interface ICommandHandler<T> {

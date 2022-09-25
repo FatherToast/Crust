@@ -1,9 +1,9 @@
 package fathertoast.crust.api.config.common.field;
 
 import com.electronwill.nightconfig.core.io.CharacterOutput;
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.common.core.Crust;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -61,18 +61,18 @@ public class IntField extends AbstractConfigField {
             // Parse the value
             final int rawValue = ((Number) raw).intValue();
             if( rawValue < valueMin ) {
-                Crust.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
+                ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
                         getClass(), getKey(), valueMin, raw );
                 newValue = valueMin;
             }
             else if( rawValue > valueMax ) {
-                Crust.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
+                ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
                         getClass(), getKey(), valueMax, raw );
                 newValue = valueMax;
             }
             else {
                 if( (double) rawValue != ((Number) raw).doubleValue() ) {
-                    Crust.LOG.warn( "Value for {} \"{}\" is not an integer! Truncating value. Invalid value: {}",
+                    ConfigUtil.LOG.warn( "Value for {} \"{}\" is not an integer! Truncating value. Invalid value: {}",
                             getClass(), getKey(), raw );
                 }
                 newValue = rawValue;
@@ -80,7 +80,7 @@ public class IntField extends AbstractConfigField {
         }
         else if( raw instanceof String ) {
             // Try unboxing the string to another primitive type
-            Crust.LOG.info( "Unboxing string value for {} \"{}\" to a different primitive.",
+            ConfigUtil.LOG.info( "Unboxing string value for {} \"{}\" to a different primitive.",
                     getClass(), getKey() );
             load( TomlHelper.parseRaw( (String) raw ) );
             return;
@@ -88,7 +88,7 @@ public class IntField extends AbstractConfigField {
         else {
             // Value cannot be parsed to this field
             if( raw != null ) {
-                Crust.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
+                ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
                         getClass(), getKey(), raw );
             }
             newValue = valueDefault;
@@ -199,7 +199,7 @@ public class IntField extends AbstractConfigField {
                 return getMin() + random.nextInt( delta + 1 );
             }
             if( delta < 0 ) {
-                Crust.LOG.warn( "Value for range \"({},{})\" is invalid ({} > {})! Ignoring maximum value.",
+                ConfigUtil.LOG.warn( "Value for range \"({},{})\" is invalid ({} > {})! Ignoring maximum value.",
                         MINIMUM.getKey(), MAXIMUM.getKey(), getMin(), getMax() );
             }
             return getMin();

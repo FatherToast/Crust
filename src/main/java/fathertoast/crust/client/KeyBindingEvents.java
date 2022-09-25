@@ -80,8 +80,7 @@ public class KeyBindingEvents {
         for( ; index < builtInButtons.size(); index++ ) {
             ButtonInfo button = ButtonInfo.get( builtInButtons.get( index ) );
             if( button != null ) {
-                // Handle special cases; if we want to assign default key bindings to more buttons, we can make a system for it
-                if( button.ID.equals( "netherPortal" ) ) {
+                if( button.getDefaultKey() != null ) {
                     BUTTONS[index] = new SortedKeyBinding( index, key + button.ID.toLowerCase( Locale.ROOT ),
                             KeyConflictContext.UNIVERSAL, KeyModifier.CONTROL,
                             InputMappings.getKey( "key.keyboard.0" ), KEY_CAT_BUTTONS );
@@ -102,6 +101,25 @@ public class KeyBindingEvents {
         for( int i = 0; i < ClientRegister.EXTRA_INV_BUTTONS.CUSTOM_BUTTONS.length; i++ ) {
             BUTTONS[index + i] = new SortedKeyBinding( index + i, key + "custom" + (i + 1),
                     InputMappings.UNKNOWN.getValue(), KEY_CAT_BUTTONS );
+        }
+    }
+    
+    public static class Key {
+        
+        /** @return A new object that holds info about a specific keystroke with no modifiers. */
+        public static Key of( String key ) { return of( KeyModifier.NONE, key ); }
+        
+        /** @return A new object that holds info about a specific keystroke, including required modifier. */
+        public static Key of( KeyModifier modifier, String key ) {
+            return new Key( modifier, InputMappings.getKey( "key.keyboard." + key ) );
+        }
+        
+        final KeyModifier MODIFIER;
+        final InputMappings.Input KEY_CODE;
+        
+        private Key( KeyModifier modifier, InputMappings.Input keyCode ) {
+            MODIFIER = modifier;
+            KEY_CODE = keyCode;
         }
     }
 }

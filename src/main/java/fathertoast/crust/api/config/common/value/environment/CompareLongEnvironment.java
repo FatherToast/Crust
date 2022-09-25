@@ -1,8 +1,8 @@
 package fathertoast.crust.api.config.common.value.environment;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -24,14 +24,14 @@ public abstract class CompareLongEnvironment extends AbstractEnvironment {
         if( line.isEmpty() ) {
             COMPARATOR = ComparisonOperator.LESS_THAN;
             VALUE = 0L;
-            Crust.LOG.warn( "Invalid entry for {} \"{}\"! Not defined. Defaulting to \"{}\". Invalid entry: {}",
+            ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Not defined. Defaulting to \"{}\". Invalid entry: {}",
                     field.getClass(), field.getKey(), value(), line );
         }
         else {
             final ComparisonOperator op = ComparisonOperator.parse( line );
             if( op == null ) {
                 COMPARATOR = ComparisonOperator.LESS_THAN;
-                Crust.LOG.warn( "Invalid entry for {} \"{}\"! Comparison not defined (must be in the set [ {} ]). Defaulting to \"{}\". Invalid entry: {}",
+                ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Comparison not defined (must be in the set [ {} ]). Defaulting to \"{}\". Invalid entry: {}",
                         field.getClass(), field.getKey(), TomlHelper.toLiteralList( (Object[]) ComparisonOperator.values() ), COMPARATOR, line );
             }
             else COMPARATOR = op;
@@ -47,18 +47,18 @@ public abstract class CompareLongEnvironment extends AbstractEnvironment {
             value = Long.parseLong( arg );
         }
         catch( NumberFormatException ex ) {
-            Crust.LOG.warn( "Invalid entry for {} \"{}\"! Value not defined (must be a long). Defaulting to '0'. Invalid entry: {}",
+            ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Value not defined (must be a long). Defaulting to '0'. Invalid entry: {}",
                     field.getClass(), field.getKey(), line );
             value = 0;
         }
         // Verify value is within range
         if( value < getMinValue() ) {
-            Crust.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
+            ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
                     field.getClass(), field.getKey(), getMinValue(), value );
             value = getMinValue();
         }
         else if( value > getMaxValue() ) {
-            Crust.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
+            ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
                     field.getClass(), field.getKey(), getMaxValue(), value );
             value = getMaxValue();
         }

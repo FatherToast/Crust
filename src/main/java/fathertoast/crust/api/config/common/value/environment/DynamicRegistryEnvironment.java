@@ -1,8 +1,8 @@
 package fathertoast.crust.api.config.common.value.environment;
 
-import fathertoast.crust.api.config.common.ConfigEventHandler;
+import fathertoast.crust.api.config.common.ConfigManager;
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -17,6 +17,8 @@ import javax.annotation.Nullable;
  */
 public abstract class DynamicRegistryEnvironment<T> extends AbstractEnvironment {
     
+    /** The config manager responsible for this entry. */
+    private final ConfigManager MANAGER;
     /** The field containing this entry. We save a reference to help improve error/warning reports. */
     private final AbstractConfigField FIELD;
     
@@ -26,16 +28,18 @@ public abstract class DynamicRegistryEnvironment<T> extends AbstractEnvironment 
     private final ResourceLocation REGISTRY_KEY;
     
     private T registryEntry;
-    /** The value of ConfigUtil#DYNAMIC_REGISTRY_VERSION at the time of last poll. */
+    /** The value of {@link ConfigManager#getDynamicRegVersion()} at the time of last poll. */
     private byte version = -1;
     
-    public DynamicRegistryEnvironment( ResourceLocation regKey, boolean invert ) {
+    public DynamicRegistryEnvironment( ConfigManager cfgManager, ResourceLocation regKey, boolean invert ) {
+        MANAGER = cfgManager;
         FIELD = null;
         INVERT = invert;
         REGISTRY_KEY = regKey;
     }
     
     public DynamicRegistryEnvironment( AbstractConfigField field, String line ) {
+        MANAGER = field.getSpec().MANAGER;
         FIELD = field;
         INVERT = line.startsWith( "!" );
         REGISTRY_KEY = new ResourceLocation( INVERT ? line.substring( 1 ) : line );
@@ -62,13 +66,13 @@ public abstract class DynamicRegistryEnvironment<T> extends AbstractEnvironment 
     /** @return The target registry object. */
     @Nullable
     public final T getRegistryEntry( ServerWorld world ) {
-        if( version != ConfigEventHandler.getDynamicRegVersion() ) {
-            version = ConfigEventHandler.getDynamicRegVersion();
+        if( version != MANAGER.getDynamicRegVersion() ) {
+            version = MANAGER.getDynamicRegVersion();
             
             final Registry<T> registry = world.getServer().registryAccess().registryOrThrow( getRegistry() );
             registryEntry = registry.get( REGISTRY_KEY );
             if( registryEntry == null ) {
-                Crust.LOG.info( "Missing entry for {} \"{}\"! Not present in registry \"{}\". Missing entry: {}",
+                ConfigUtil.LOG.info( "Missing entry for {} \"{}\"! Not present in registry \"{}\". Missing entry: {}",
                         FIELD.getClass(), FIELD.getKey(), getRegistry().location(), REGISTRY_KEY );
             }
         }

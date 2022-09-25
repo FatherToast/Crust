@@ -2,8 +2,8 @@ package fathertoast.crust.api.config.common.file;
 
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.io.*;
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.common.core.Crust;
 
 import javax.annotation.Nullable;
 import java.io.Writer;
@@ -45,7 +45,7 @@ public class CrustTomlWriter implements ConfigWriter {
     @Override
     public void write( UnmodifiableConfig config, Writer writer ) {
         CONFIG_SPEC.writing = true;
-        Crust.LOG.debug( "Writing config file! ({}{})", CONFIG_SPEC.NAME, CrustConfigFormat.FILE_EXT );
+        ConfigUtil.LOG.debug( "Writing config file! ({}{})", CONFIG_SPEC.NAME, CrustConfigFormat.FILE_EXT );
         CharacterOutput output = new WriterOutput( writer );
         currentIndentLevel = 0;
         CONFIG_SPEC.write( this, output );

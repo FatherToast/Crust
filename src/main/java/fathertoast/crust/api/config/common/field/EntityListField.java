@@ -1,9 +1,9 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.api.config.common.value.EntityList;
 import fathertoast.crust.api.config.common.value.EntityEntry;
-import fathertoast.crust.common.core.Crust;
+import fathertoast.crust.api.config.common.value.EntityList;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
@@ -123,7 +123,7 @@ public class EntityListField extends GenericField<EntityList> {
         // Variable-value; just needs at least one value
         if( reqValues < 0 ) {
             if( actualValues < 1 ) {
-                Crust.LOG.warn( "Entry has too few values for {} \"{}\"! Expected at least one value. " +
+                ConfigUtil.LOG.warn( "Entry has too few values for {} \"{}\"! Expected at least one value. " +
                                 "Replacing missing value with 0. Invalid entry: {}",
                         getClass(), getKey(), line );
                 valuesList.add( 0.0 );
@@ -138,12 +138,12 @@ public class EntityListField extends GenericField<EntityList> {
         // Specified value; must have the exact number of values
         else {
             if( reqValues > actualValues ) {
-                Crust.LOG.warn( "Entry has too few values for {} \"{}\"! " +
+                ConfigUtil.LOG.warn( "Entry has too few values for {} \"{}\"! " +
                                 "Expected {} values, but detected {}. Replacing missing values with 0. Invalid entry: {}",
                         getClass(), getKey(), reqValues, actualValues, line );
             }
             else if( reqValues < actualValues ) {
-                Crust.LOG.warn( "Entry has too many values for {} \"{}\"! " +
+                ConfigUtil.LOG.warn( "Entry has too many values for {} \"{}\"! " +
                                 "Expected {} values, but detected {}. Deleting additional values. Invalid entry: {}",
                         getClass(), getKey(), reqValues, actualValues, line );
             }
@@ -176,18 +176,18 @@ public class EntityListField extends GenericField<EntityList> {
         }
         catch( NumberFormatException ex ) {
             // This is thrown if the string is not a parsable number
-            Crust.LOG.warn( "Invalid value for {} \"{}\"! Falling back to 0. Invalid entry: {}",
+            ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to 0. Invalid entry: {}",
                     getClass(), getKey(), line );
             value = 0.0;
         }
         // Verify value is within range
         if( value < valueDefault.getMinValue() ) {
-            Crust.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
+            ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
                     getClass(), getKey(), valueDefault.getMinValue(), value );
             value = valueDefault.getMinValue();
         }
         else if( value > valueDefault.getMaxValue() ) {
-            Crust.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
+            ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
                     getClass(), getKey(), valueDefault.getMaxValue(), value );
             value = valueDefault.getMaxValue();
         }

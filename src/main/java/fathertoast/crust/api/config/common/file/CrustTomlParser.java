@@ -8,7 +8,6 @@ import com.electronwill.nightconfig.core.io.ParsingException;
 import com.electronwill.nightconfig.core.io.ParsingMode;
 import com.electronwill.nightconfig.toml.TomlParser;
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.common.core.Crust;
 
 import java.io.Reader;
 
@@ -38,7 +37,7 @@ public class CrustTomlParser implements ConfigParser<CommentedConfig> {
      */
     @Override
     public CommentedConfig parse( Reader reader ) {
-        Crust.LOG.error( "Attempting to parse NEW config file! ({})", ConfigUtil.toRelativePath( CONFIG_SPEC.getFile() ) );
+        ConfigUtil.LOG.error( "Attempting to parse NEW config file! ({})", ConfigUtil.toRelativePath( CONFIG_SPEC.getFile() ) );
         throw new ParsingException( "Attempted to generate new config! This is not supported." );
     }
     
@@ -51,7 +50,7 @@ public class CrustTomlParser implements ConfigParser<CommentedConfig> {
      */
     @Override
     public void parse( Reader reader, Config destination, ParsingMode parsingMode ) {
-        Crust.LOG.debug( "Parsing config file! ({}{})", CONFIG_SPEC.NAME, CrustConfigFormat.FILE_EXT );
+        ConfigUtil.LOG.debug( "Parsing config file! ({}{})", CONFIG_SPEC.NAME, CrustConfigFormat.FILE_EXT );
         WRAPPED_PARSER.parse( reader, destination, parsingMode );
         CONFIG_SPEC.onLoad();
     }

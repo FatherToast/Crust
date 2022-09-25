@@ -14,6 +14,7 @@ import net.minecraft.util.text.StringTextComponent;
 public class ExtraInventoryButton extends Button {
     
     public static final ResourceLocation BUTTON_TEXTURE = new ResourceLocation( Crust.MOD_ID, "textures/button.png" );
+    public static final ResourceLocation BUTTON_TEXTURE_ON = new ResourceLocation( Crust.MOD_ID, "textures/button_on.png" );
     
     public static final int ICON_SIZE = 9;
     public static final int ICON_BORDER = 3;
@@ -42,7 +43,7 @@ public class ExtraInventoryButton extends Button {
         Minecraft mc = Minecraft.getInstance();
         
         // Draw button tile
-        mc.getTextureManager().bind( BUTTON_TEXTURE );
+        mc.getTextureManager().bind( INFO.isToggledOn() ? BUTTON_TEXTURE_ON : BUTTON_TEXTURE );
         //noinspection deprecation
         RenderSystem.color4f( 1.0F, 1.0F, 1.0F, alpha );
         RenderSystem.enableBlend();

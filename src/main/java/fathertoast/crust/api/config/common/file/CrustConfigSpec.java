@@ -5,11 +5,10 @@ import com.electronwill.nightconfig.core.file.FileWatcher;
 import com.electronwill.nightconfig.core.io.CharacterOutput;
 import com.electronwill.nightconfig.core.io.ParsingException;
 import com.electronwill.nightconfig.core.io.WritingException;
-import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.common.core.Crust;
+import fathertoast.crust.api.config.common.field.*;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -34,6 +33,9 @@ public class CrustConfigSpec {
     /** The name of the config. The file name is this plus the file extension. */
     public final String NAME;
     
+    /** The base key prefix to use for all fields, based on the currently loading config category. */
+    public String loadingCategory;
+    
     /** @return The file this config spec loads to/from. */
     public File getFile() { return NIGHT_CONFIG_FILE.getFile(); }
     
@@ -49,21 +51,21 @@ public class CrustConfigSpec {
      * You must call this method when you want the initialization to occur. This method immediately loads, so the config file's values will be immediately ready to use
      */
     public void initialize() {
-        Crust.LOG.info( "First-time loading config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+        ConfigUtil.LOG.info( "First-time loading config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
         try {
             NIGHT_CONFIG_FILE.load();
         }
         catch( ParsingException ex ) {
-            Crust.LOG.error( "Failed first-time loading of config file {} - this is bad!",
+            ConfigUtil.LOG.error( "Failed first-time loading of config file {} - this is bad!",
                     ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
         }
         
         try {
             FileWatcher.defaultInstance().addWatch( NIGHT_CONFIG_FILE.getFile(), this::onFileChanged );
-            Crust.LOG.info( "Started watching config file {} for updates", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+            ConfigUtil.LOG.info( "Started watching config file {} for updates", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
         }
         catch( IOException ex ) {
-            Crust.LOG.error( "Failed to watch config file {} - this file will NOT update in-game until restarted!",
+            ConfigUtil.LOG.error( "Failed to watch config file {} - this file will NOT update in-game until restarted!",
                     ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
         }
         
@@ -99,12 +101,6 @@ public class CrustConfigSpec {
      * @throws IllegalStateException If the spec already has a field defined for the same key.
      */
     public <T extends AbstractConfigField> T define( T field, @Nullable RestartNote restartNote ) {
-        // Double check just to make sure we don't screw up the spec
-        for( Action action : ACTIONS ) {
-            if( action instanceof Field && field.getKey().equalsIgnoreCase( ((Field) action).FIELD.getKey() ) ) {
-                throw new IllegalStateException( "Attempted to register duplicate field key '" + field.getKey() + "' in config " + NAME );
-            }
-        }
         ACTIONS.add( new Field( this, field, restartNote ) );
         return field;
     }
@@ -264,7 +260,7 @@ public class CrustConfigSpec {
         
         // Make sure the directory exists
         if( !dir.exists() && !dir.mkdirs() ) {
-            Crust.LOG.error( "Failed to make config folder! Things will likely explode. " +
+            ConfigUtil.LOG.error( "Failed to make config folder! Things will likely explode. " +
                     "Create the folder manually to avoid this problem in the future: {}", dir );
         }
         
@@ -273,15 +269,15 @@ public class CrustConfigSpec {
         
         // Make sure the file exists (an empty file is all we need at this point)
         if( !NIGHT_CONFIG_FILE.getFile().exists() ) {
-            Crust.LOG.info( "Generating default config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+            ConfigUtil.LOG.info( "Generating default config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
             try {
                 if( !NIGHT_CONFIG_FILE.getFile().createNewFile() ) {
-                    Crust.LOG.error( "Failed to make blank config file! Things will likely explode. " +
+                    ConfigUtil.LOG.error( "Failed to make blank config file! Things will likely explode. " +
                             "Create the file manually to avoid this problem in the future: {}", NIGHT_CONFIG_FILE.getFile() );
                 }
             }
             catch( IOException ex ) {
-                Crust.LOG.error( "Caught exception while generating blank config file! Things will likely explode. " +
+                ConfigUtil.LOG.error( "Caught exception while generating blank config file! Things will likely explode. " +
                         "Create the file manually to avoid this problem in the future: {}", NIGHT_CONFIG_FILE.getFile(), ex );
             }
         }
@@ -290,18 +286,18 @@ public class CrustConfigSpec {
     /** Called when a change to the config file is detected. */
     private void onFileChanged() {
         if( writing ) {
-            Crust.LOG.debug( "Skipping config file reload (it is currently saving) {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+            ConfigUtil.LOG.debug( "Skipping config file reload (it is currently saving) {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
         }
         else if( MANAGER.freezeFileWatcher ) {
-            Crust.LOG.debug( "Skipping config file reload (file watcher paused) {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+            ConfigUtil.LOG.debug( "Skipping config file reload (file watcher paused) {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
         }
         else {
-            Crust.LOG.info( "Reloading config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+            ConfigUtil.LOG.info( "Reloading config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
             try {
                 NIGHT_CONFIG_FILE.load();
             }
             catch( ParsingException ex ) {
-                Crust.LOG.error( "Failed to reload config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
+                ConfigUtil.LOG.error( "Failed to reload config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
             }
         }
     }
@@ -312,7 +308,7 @@ public class CrustConfigSpec {
             NIGHT_CONFIG_FILE.save();
         }
         catch( WritingException ex ) {
-            Crust.LOG.error( "Failed to save config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
+            ConfigUtil.LOG.error( "Failed to save config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
         }
     }
     
@@ -337,6 +333,7 @@ public class CrustConfigSpec {
     
     /** Represents a single action performed by the spec when reading or writing the config file. */
     private interface Action {
+        
         /** Called when the config is loaded. */
         boolean onLoad();
         
@@ -346,6 +343,7 @@ public class CrustConfigSpec {
     
     /** Represents a write-only spec action. */
     private static abstract class Format implements Action {
+        
         /** Called when the config is loaded. */
         @Override
         public final boolean onLoad() { return false; } // Formatting actions do not affect file reading
@@ -357,6 +355,7 @@ public class CrustConfigSpec {
     
     /** Represents a variable number of new lines. */
     private static class NewLines extends Format {
+        
         /** The number of new lines to write. */
         private final int COUNT;
         
@@ -374,6 +373,7 @@ public class CrustConfigSpec {
     
     /** Represents a variable number of indent increases or decreases. */
     private static class Indent extends Format {
+        
         /** The amount to change the indent by. */
         private final int AMOUNT;
         
@@ -387,6 +387,7 @@ public class CrustConfigSpec {
     
     /** Represents a comment. */
     private static class Comment extends Format {
+        
         /** The spec this action belongs to. */
         private final List<String> COMMENT;
         
@@ -400,6 +401,7 @@ public class CrustConfigSpec {
     
     /** Represents a file header comment. */
     private static class Header extends Format {
+        
         /** The spec this action belongs to. */
         private final CrustConfigSpec PARENT;
         /** The file comment. */
@@ -414,7 +416,7 @@ public class CrustConfigSpec {
         /** Called when the config is saved. */
         @Override
         public void write( CrustTomlWriter writer, CharacterOutput output ) {
-            writer.writeComment( Crust.MOD_ID + ":" + PARENT.NAME + CrustConfigFormat.FILE_EXT, output );
+            writer.writeComment( PARENT.MANAGER.MOD_ID + ":" + PARENT.NAME + CrustConfigFormat.FILE_EXT, output );
             writer.writeComment( COMMENT, output );
             
             writer.increaseIndentLevel();
@@ -423,6 +425,7 @@ public class CrustConfigSpec {
     
     /** Represents an appendix header comment. */
     private static class AppendixHeader extends Format {
+        
         /** The appendix comment. */
         private final List<String> COMMENT;
         
@@ -445,6 +448,7 @@ public class CrustConfigSpec {
     
     /** Represents a category comment. */
     private static class Category extends Format {
+        
         /** The category comment. */
         private final List<String> COMMENT;
         
@@ -470,6 +474,7 @@ public class CrustConfigSpec {
     
     /** Represents a subcategory comment. */
     private static class Subcategory extends Format {
+        
         /** The subcategory comment. */
         private final List<String> COMMENT;
         
@@ -494,6 +499,7 @@ public class CrustConfigSpec {
     
     /** Represents a read-only spec action. */
     private static class ReadCallback implements Action {
+        
         /** The method to call on read. */
         private final Runnable CALLBACK;
         
@@ -514,6 +520,7 @@ public class CrustConfigSpec {
     
     /** Represents a spec action that reads and writes to a field. */
     private static class Field implements Action {
+        
         /** The spec this action belongs to. */
         private final CrustConfigSpec PARENT;
         /** The underlying config field to perform actions for. */
@@ -523,8 +530,11 @@ public class CrustConfigSpec {
         private Field( CrustConfigSpec parent, AbstractConfigField field, @Nullable RestartNote restartNote ) {
             PARENT = parent;
             FIELD = field;
-            field.finalizeComment( restartNote );
+            field.finalizeComment( parent, restartNote );
             
+            if( parent.FIELD_MAP.containsKey( field.getKey() ) ) {
+                throw new IllegalStateException( "Attempted to register duplicate field key '" + field.getKey() + "' in config " + parent.NAME );
+            }
             parent.FIELD_MAP.put( FIELD.getKey(), FIELD );
         }
         

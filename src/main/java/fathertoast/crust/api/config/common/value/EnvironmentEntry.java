@@ -1,5 +1,6 @@
 package fathertoast.crust.api.config.common.value;
 
+import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.value.environment.AbstractEnvironment;
 import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
 import fathertoast.crust.api.config.common.value.environment.biome.*;
@@ -75,10 +76,10 @@ public class EnvironmentEntry {
     // ---- Builder Implementation ---- //
     
     /** Creates a new entry builder. The value is rounded to 2 decimal place precision. */
-    public static Builder builder( float value ) { return new Builder( Math.round( value * 100.0 ) / 100.0 ); }
+    public static Builder builder( ConfigManager cfgManager, float value ) { return new Builder( cfgManager, Math.round( value * 100.0 ) / 100.0 ); }
     
     /** Creates a new entry builder. */
-    public static Builder builder( double value ) { return new Builder( value ); }
+    public static Builder builder( ConfigManager cfgManager, double value ) { return new Builder( cfgManager, value ); }
     
     /**
      * Builder class used to simplify creation of environment entries for default configs,
@@ -88,10 +89,14 @@ public class EnvironmentEntry {
      */
     public static class Builder {
         
+        private final ConfigManager MANAGER;
         private final double VALUE;
         private final ArrayList<AbstractEnvironment> CONDITIONS = new ArrayList<>();
         
-        private Builder( double value ) { VALUE = value; }
+        private Builder( ConfigManager cfgManager, double value ) {
+            MANAGER = cfgManager;
+            VALUE = value;
+        }
         
         public EnvironmentEntry build() { return new EnvironmentEntry( VALUE, CONDITIONS ); }
         
@@ -132,13 +137,19 @@ public class EnvironmentEntry {
         
         public Builder notInTheEnd() { return inDimensionType( DimensionType.END_LOCATION, true ); }
         
-        private Builder inDimensionType( RegistryKey<DimensionType> dimType, boolean invert ) { return in( new DimensionTypeEnvironment( dimType, invert ) ); }
+        private Builder inDimensionType( RegistryKey<DimensionType> dimType, boolean invert ) {
+            return in( new DimensionTypeEnvironment( MANAGER, dimType, invert ) );
+        }
         
         /** Check if the dimension type is vanilla (registered with the "minecraft" namespace). */
-        public Builder inVanillaDimension() { return in( new DimensionTypeGroupEnvironment( new ResourceLocation( "" ), false ) ); }
+        public Builder inVanillaDimension() {
+            return in( new DimensionTypeGroupEnvironment( MANAGER, new ResourceLocation( "" ), false ) );
+        }
         
         /** Check if the dimension type is vanilla (registered with the "minecraft" namespace). */
-        public Builder notInVanillaDimension() { return in( new DimensionTypeGroupEnvironment( new ResourceLocation( "" ), true ) ); }
+        public Builder notInVanillaDimension() {
+            return in( new DimensionTypeGroupEnvironment( MANAGER, new ResourceLocation( "" ), true ) );
+        }
         
         
         // ---- Biome-based ---- //
@@ -212,10 +223,10 @@ public class EnvironmentEntry {
         public Builder notInBiomeCategory( BiomeCategory category ) { return in( new BiomeCategoryEnvironment( category, true ) ); }
         
         /** Check if the biome is a specific one. */
-        public Builder inBiome( RegistryKey<Biome> biome ) { return in( new BiomeEnvironment( biome, false ) ); }
+        public Builder inBiome( RegistryKey<Biome> biome ) { return in( new BiomeEnvironment( MANAGER, biome, false ) ); }
         
         /** Check if the biome is a specific one. */
-        public Builder notInBiome( RegistryKey<Biome> biome ) { return in( new BiomeEnvironment( biome, true ) ); }
+        public Builder notInBiome( RegistryKey<Biome> biome ) { return in( new BiomeEnvironment( MANAGER, biome, true ) ); }
         
         
         // ---- Position-based ---- //

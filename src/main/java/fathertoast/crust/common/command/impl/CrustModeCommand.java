@@ -53,7 +53,7 @@ public class CrustModeCommand {
     
     /** Command implementation. */
     private static int runQuery( CommandSource source, ServerPlayerEntity player ) {
-        CrustModesData playerModes = new CrustModesData( player );
+        CrustModesData playerModes = CrustModesData.of( player );
         StringBuilder output = new StringBuilder( "[ " );
         int modes = 0;
         for( CrustMode<?> mode : CrustModes.registry().values() ) {
@@ -78,10 +78,10 @@ public class CrustModeCommand {
         String event = "mode." + (valueArg == null ? "disable" : "enable");
         if( players.size() == 1 ) {
             CommandUtil.sendSuccess( context.getSource(), event + ".single",
-                    mode, valueArg, players.iterator().next().getDisplayName() );
+                    mode.ID, players.iterator().next().getDisplayName() );
         }
         else {
-            CommandUtil.sendSuccess( context.getSource(), event + ".multiple", mode, valueArg, players.size() );
+            CommandUtil.sendSuccess( context.getSource(), event + ".multiple", mode.ID, players.size() );
         }
         return players.size(); // return the number of players affected
     }

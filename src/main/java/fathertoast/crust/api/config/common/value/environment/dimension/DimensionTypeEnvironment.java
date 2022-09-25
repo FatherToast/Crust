@@ -1,8 +1,9 @@
 package fathertoast.crust.api.config.common.value.environment.dimension;
 
+import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.value.environment.DynamicRegistryEnvironment;
 import fathertoast.crust.api.config.common.field.EnvironmentListField;
+import fathertoast.crust.api.config.common.value.environment.DynamicRegistryEnvironment;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -13,7 +14,9 @@ import javax.annotation.Nullable;
 
 public class DimensionTypeEnvironment extends DynamicRegistryEnvironment<DimensionType> {
     
-    public DimensionTypeEnvironment( RegistryKey<DimensionType> dimType, boolean invert ) { super( dimType.location(), invert ); }
+    public DimensionTypeEnvironment( ConfigManager cfgManager, RegistryKey<DimensionType> dimType, boolean invert ) {
+        super( cfgManager, dimType.location(), invert );
+    }
     
     public DimensionTypeEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
     

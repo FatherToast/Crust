@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.common.core.Crust;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -50,13 +50,13 @@ public class BooleanField extends AbstractConfigField {
         else if( raw instanceof Number ) {
             // Convert the value
             final double rawValue = ((Number) raw).doubleValue();
-            Crust.LOG.warn( "Value for {} \"{}\" is numerical! Converting value. Invalid value: {}",
+            ConfigUtil.LOG.warn( "Value for {} \"{}\" is numerical! Converting value. Invalid value: {}",
                     getClass(), getKey(), raw );
             newValue = rawValue != 0.0; // 0 is false, anything else is true
         }
         else if( raw instanceof String ) {
             // Try unboxing the string to another primitive type
-            Crust.LOG.info( "Unboxing string value for {} \"{}\" to a different primitive.",
+            ConfigUtil.LOG.info( "Unboxing string value for {} \"{}\" to a different primitive.",
                     getClass(), getKey() );
             load( TomlHelper.parseRaw( (String) raw ) );
             return;
@@ -64,7 +64,7 @@ public class BooleanField extends AbstractConfigField {
         else {
             // Value cannot be parsed to this field
             if( raw != null ) {
-                Crust.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
+                ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
                         getClass(), getKey(), raw );
             }
             newValue = valueDefault;

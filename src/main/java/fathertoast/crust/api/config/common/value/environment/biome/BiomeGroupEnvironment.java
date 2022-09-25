@@ -1,5 +1,6 @@
 package fathertoast.crust.api.config.common.value.environment.biome;
 
+import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.api.config.common.value.environment.DynamicRegistryGroupEnvironment;
@@ -15,9 +16,13 @@ import java.util.List;
 
 public class BiomeGroupEnvironment extends DynamicRegistryGroupEnvironment<Biome> {
     
-    public BiomeGroupEnvironment( RegistryKey<Biome> biome, boolean invert ) { this( biome.location(), invert ); }
+    public BiomeGroupEnvironment( ConfigManager cfgManager, RegistryKey<Biome> biome, boolean invert ) {
+        this( cfgManager, biome.location(), invert );
+    }
     
-    public BiomeGroupEnvironment( ResourceLocation regKey, boolean invert ) { super( regKey, invert ); }
+    public BiomeGroupEnvironment( ConfigManager cfgManager, ResourceLocation regKey, boolean invert ) {
+        super( cfgManager, regKey, invert );
+    }
     
     public BiomeGroupEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
     

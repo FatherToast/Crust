@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.common.value.environment;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -48,7 +48,7 @@ public abstract class RegistryEnvironment<T extends IForgeRegistryEntry<T>> exte
     protected final T getRegistryEntry() {
         if( registryEntry == null ) {
             if( !getRegistry().containsKey( REGISTRY_KEY ) ) {
-                Crust.LOG.warn( "Invalid entry for {} \"{}\"! Not present in registry \"{}\". Invalid entry: {}",
+                ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Not present in registry \"{}\". Invalid entry: {}",
                         FIELD.getClass(), FIELD.getKey(), getRegistry().getRegistryName(), REGISTRY_KEY );
             }
             registryEntry = getRegistry().getValue( REGISTRY_KEY );

@@ -1,5 +1,6 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.EnvironmentEntry;
 import fathertoast.crust.api.config.common.value.EnvironmentList;
@@ -11,7 +12,6 @@ import fathertoast.crust.api.config.common.value.environment.dimension.Dimension
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionTypeGroupEnvironment;
 import fathertoast.crust.api.config.common.value.environment.position.*;
 import fathertoast.crust.api.config.common.value.environment.time.*;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -188,7 +188,7 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
             }
         }
         if( conditions.isEmpty() ) {
-            Crust.LOG.warn( "No environments defined in entry for {} \"{}\"! Invalid entry: {}",
+            ConfigUtil.LOG.warn( "No environments defined in entry for {} \"{}\"! Invalid entry: {}",
                     getClass(), getKey(), line );
         }
         
@@ -204,18 +204,18 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
         }
         catch( NumberFormatException ex ) {
             // This is thrown if the string is not a parsable number
-            Crust.LOG.warn( "Invalid value for {} \"{}\"! Falling back to 0. Invalid entry: {}",
+            ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to 0. Invalid entry: {}",
                     getClass(), getKey(), line );
             value = 0.0;
         }
         // Verify value is within range
         if( value < valueDefault.getMinValue() ) {
-            Crust.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
+            ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
                     getClass(), getKey(), valueDefault.getMinValue(), value );
             value = valueDefault.getMinValue();
         }
         else if( value > valueDefault.getMaxValue() ) {
-            Crust.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
+            ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
                     getClass(), getKey(), valueDefault.getMaxValue(), value );
             value = valueDefault.getMaxValue();
         }
@@ -295,7 +295,7 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
                 ENV_TIME_FROM_MIDNIGHT, ENV_WORLD_TIME, ENV_CHUNK_TIME
         };
         final AbstractEnvironment fallback = new WorldTimeEnvironment( ComparisonOperator.LESS_THAN, 0 );
-        Crust.LOG.warn( "Invalid environment '{}' for {} \"{}\"! Falling back to \"{}\". Environment name must be in the set [ {} ]. Invalid environment: {}",
+        ConfigUtil.LOG.warn( "Invalid environment '{}' for {} \"{}\"! Falling back to \"{}\". Environment name must be in the set [ {} ]. Invalid environment: {}",
                 args[0], getClass(), getKey(), fallback, TomlHelper.toLiteralList( (Object[]) environmentNames ), line );
         return fallback;
     }

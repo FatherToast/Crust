@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -70,12 +70,12 @@ public class DoubleField extends AbstractConfigField {
             // Parse the value
             final double rawValue = ((Number) raw).doubleValue();
             if( rawValue < valueMin ) {
-                Crust.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
+                ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
                         getClass(), getKey(), valueMin, raw );
                 newValue = valueMin;
             }
             else if( rawValue > valueMax ) {
-                Crust.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
+                ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
                         getClass(), getKey(), valueMax, raw );
                 newValue = valueMax;
             }
@@ -85,7 +85,7 @@ public class DoubleField extends AbstractConfigField {
         }
         else if( raw instanceof String ) {
             // Try unboxing the string to another primitive type
-            Crust.LOG.info( "Unboxing string value for {} \"{}\" to a different primitive.",
+            ConfigUtil.LOG.info( "Unboxing string value for {} \"{}\" to a different primitive.",
                     getClass(), getKey() );
             load( TomlHelper.parseRaw( (String) raw ) );
             return;
@@ -93,7 +93,7 @@ public class DoubleField extends AbstractConfigField {
         else {
             // Value cannot be parsed to this field
             if( raw != null ) {
-                Crust.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
+                ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
                         getClass(), getKey(), raw );
             }
             newValue = valueDefault;
@@ -163,7 +163,7 @@ public class DoubleField extends AbstractConfigField {
                 return getMin() + random.nextDouble() * delta;
             }
             if( delta < 0.0 ) {
-                Crust.LOG.warn( "Value for range \"({},{})\" is invalid ({} > {})! Ignoring maximum value.",
+                ConfigUtil.LOG.warn( "Value for range \"({},{})\" is invalid ({} > {})! Ignoring maximum value.",
                         MINIMUM.getKey(), MAXIMUM.getKey(), getMin(), getMax() );
             }
             return getMin();
@@ -247,7 +247,7 @@ public class DoubleField extends AbstractConfigField {
                 if( targetWeight < 0.0 ) return UNDERLYING_LIST.get( i ).VALUE;
             }
             
-            Crust.LOG.error( "Environment-sensitive weight list was unable to return a value when it should have! " +
+            ConfigUtil.LOG.error( "Environment-sensitive weight list was unable to return a value when it should have! " +
                     "This is probably due to error in floating point calculations, perhaps try changing the scale of weights." );
             return null;
         }

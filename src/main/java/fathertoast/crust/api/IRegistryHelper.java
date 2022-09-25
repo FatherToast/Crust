@@ -21,8 +21,8 @@ public interface IRegistryHelper {
      * and optionally bound to a custom Crust inventory button for easy access.<br>
      * <br>
      *
-     * @param id The ID of this portal builder. Should consist of the namespace of the mod adding the portal builder, and a unique name.<br>
-     *           <br>
+     * @param id              The ID of this portal builder. Should consist of the namespace of the mod adding the portal builder, and a unique name.<br>
+     *                        <br>
      * @param textureLocation A {@link ResourceLocation} pointing to this portal builder's Crust button icon (Optional).<br>
      *                        <br>
      * @param validDimensions A List of dimension/world IDs where this portal builder can be used.<br>
@@ -35,5 +35,5 @@ public interface IRegistryHelper {
      *         returns null otherwise.
      */
     @Nullable
-    IPortalBuilder registerPortalBuilder(ResourceLocation id, @Nullable ResourceLocation textureLocation, List<ResourceLocation> validDimensions, IPortalGenerator portalGenerator);
+    IPortalBuilder registerPortalBuilder( ResourceLocation id, @Nullable ResourceLocation textureLocation, List<ResourceLocation> validDimensions, IPortalGenerator portalGenerator );
 }

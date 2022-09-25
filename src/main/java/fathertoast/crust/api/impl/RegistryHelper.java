@@ -9,9 +9,10 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class RegistryHelper implements IRegistryHelper {
-
+    
+    @Nullable
     @Override
-    public IPortalBuilder registerPortalBuilder(ResourceLocation id, @Nullable ResourceLocation textureLocation, List<ResourceLocation> validDimensions, IPortalGenerator portalGenerator) {
-        return PortalBuilderRegistry.registerPortalBuilder(id, textureLocation, validDimensions, portalGenerator);
+    public IPortalBuilder registerPortalBuilder( ResourceLocation id, @Nullable ResourceLocation textureLocation, List<ResourceLocation> validDimensions, IPortalGenerator portalGenerator ) {
+        return PortalBuilderRegistry.registerPortalBuilder( id, textureLocation, validDimensions, portalGenerator );
     }
 }

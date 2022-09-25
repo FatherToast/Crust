@@ -1,8 +1,8 @@
 package fathertoast.crust.api.config.common.value.environment;
 
-import fathertoast.crust.api.config.common.ConfigEventHandler;
+import fathertoast.crust.api.config.common.ConfigManager;
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -20,6 +20,8 @@ import java.util.List;
  */
 public abstract class DynamicRegistryGroupEnvironment<T> extends AbstractEnvironment {
     
+    /** The config manager responsible for this entry. */
+    private final ConfigManager MANAGER;
     /** The field containing this entry. We save a reference to help improve error/warning reports. */
     private final AbstractConfigField FIELD;
     
@@ -29,16 +31,18 @@ public abstract class DynamicRegistryGroupEnvironment<T> extends AbstractEnviron
     private final String NAMESPACE;
     
     private List<T> registryEntries;
-    /** The value of ConfigUtil#DYNAMIC_REGISTRY_VERSION at the time of last poll. */
+    /** The value of {@link ConfigManager#getDynamicRegVersion()} at the time of last poll. */
     private byte version = -1;
     
-    public DynamicRegistryGroupEnvironment( ResourceLocation regKey, boolean invert ) {
+    public DynamicRegistryGroupEnvironment( ConfigManager cfgManager, ResourceLocation regKey, boolean invert ) {
+        MANAGER = cfgManager;
         FIELD = null;
         INVERT = invert;
         NAMESPACE = regKey.toString();
     }
     
     public DynamicRegistryGroupEnvironment( AbstractConfigField field, String line ) {
+        MANAGER = field.getSpec().MANAGER;
         FIELD = field;
         INVERT = line.startsWith( "!" );
         NAMESPACE = line.substring( INVERT ? 1 : 0, line.length() - 1 );
@@ -64,8 +68,8 @@ public abstract class DynamicRegistryGroupEnvironment<T> extends AbstractEnviron
     
     /** @return The target registry object. */
     protected final List<T> getRegistryEntries( ServerWorld world ) {
-        if( version != ConfigEventHandler.getDynamicRegVersion() ) {
-            version = ConfigEventHandler.getDynamicRegVersion();
+        if( version != MANAGER.getDynamicRegVersion() ) {
+            version = MANAGER.getDynamicRegVersion();
             
             registryEntries = new ArrayList<>();
             final Registry<T> registry = world.getServer().registryAccess().registryOrThrow( getRegistry() );
@@ -76,7 +80,7 @@ public abstract class DynamicRegistryGroupEnvironment<T> extends AbstractEnviron
                 }
             }
             if( registryEntries.isEmpty() ) {
-                Crust.LOG.info( "Namespace entry for {} \"{}\" did not match anything in registry \"{}\"! Questionable entry: {}",
+                ConfigUtil.LOG.info( "Namespace entry for {} \"{}\" did not match anything in registry \"{}\"! Questionable entry: {}",
                         FIELD == null ? "DEFAULT" : FIELD.getClass(), FIELD == null ? "DEFAULT" : FIELD.getKey(), getRegistry().location(), NAMESPACE );
             }
             registryEntries = Collections.unmodifiableList( registryEntries );

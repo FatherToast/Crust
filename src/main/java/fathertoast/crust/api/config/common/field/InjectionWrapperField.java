@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.common.file.CrustConfigSpec;
+
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
@@ -26,6 +28,13 @@ public class InjectionWrapperField<T extends AbstractConfigField> extends Abstra
     
     /** @return Returns the wrapped config field. */
     public T field() { return wrappedField; }
+    
+    /**
+     * Called after the spec is set. Wrapper fields should override this method and call
+     * {@link #setSpec(CrustConfigSpec)} on any underlying fields.
+     */
+    @Override
+    protected void onSpecSet() { wrappedField.setSpec( getSpec() ); }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override

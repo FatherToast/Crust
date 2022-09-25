@@ -21,9 +21,9 @@ import java.util.List;
  */
 public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
     
-    private static String customId( int index ) { return "custom" + (index + 1); }
-    
     public final General GENERAL;
+    
+    public final BuiltInButtons BUILT_IN_BUTTONS;
     public final Button[] CUSTOM_BUTTONS = new Button[16];
     
     /**
@@ -39,6 +39,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
         
         GENERAL = new General( this );
         
+        BUILT_IN_BUTTONS = new BuiltInButtons( this );
         for( int i = 0; i < CUSTOM_BUTTONS.length; i++ ) {
             CUSTOM_BUTTONS[i] = new Button( this, i );
         }
@@ -78,19 +79,20 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
             
             SPEC.newLine();
             
-            buttonsPerRow = SPEC.define( new IntField( "buttons_per_row", 3, IntField.Range.NON_NEGATIVE,
+            buttonsPerRow = SPEC.define( new IntField( "buttons_per_row", 4, IntField.Range.NON_NEGATIVE,
                     "The number of buttons that can be displayed per row. The number of rows is automatically calculated." ) );
             buttons = SPEC.define( new StringListField( "displayed_buttons", "Button", Arrays.asList(
-                    "toggleRain", "weatherStorm", "gameMode",
-                    "day", "night",
-                    "killAll", "fullHeal" ), // TODO temp - testing
+                    ButtonInfo.MAGNET_MODE.ID, ButtonInfo.MULTI_MINE_MODE.ID, ButtonInfo.TOGGLE_RAIN.ID, ButtonInfo.WEATHER_STORM.ID,
+                    ButtonInfo.SUPER_VISION_MODE.ID, ButtonInfo.SUPER_SPEED_MODE.ID, ButtonInfo.DAY.ID, ButtonInfo.NIGHT.ID,
+                    ButtonInfo.NO_PICKUP_MODE.ID, ButtonInfo.GOD_MODE.ID, ButtonInfo.KILL_ALL.ID, ButtonInfo.FULL_HEAL.ID ),
                     "The buttons displayed in the inventory, in the order you want them displayed.",
                     "These are ordered left-to-right, then wrapped into rows.",
                     "You may assign a hotkey to any button in your options, whether or not you choose to display it.",
                     "Built-in buttons are " + TomlHelper.literalList( ButtonInfo.builtInIds().subList( 0, 7 ) ) + ",",
                     TomlHelper.literalList( ButtonInfo.builtInIds().subList( 7, 14 ) ) + ",", // TODO figure out a better way to wrap
                     TomlHelper.literalList( ButtonInfo.builtInIds().subList( 14, ButtonInfo.builtInIds().size() ) ) + ".",
-                    "Custom buttons are \"" + customId( 0 ) + "\", \"" + customId( 1 ) + "\", etc. - same as the category name." ) );
+                    "Custom buttons are \"" + ButtonInfo.customId( 0 ) + "\", \"" + ButtonInfo.customId( 1 ) +
+                            "\", ..., \"" + ButtonInfo.customId( parent.CUSTOM_BUTTONS.length - 1 ) + "\".  (same as the category name)." ) );
             
             SPEC.newLine();
             
@@ -111,6 +113,54 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
     }
     
     /**
+     * Category for built-in buttons.
+     */
+    public static class BuiltInButtons extends AbstractConfigCategory<ExtraInvButtonsCrustConfigFile> {
+        
+        public final IntField weatherDuration;
+        
+        public final DoubleField magnetMaxRange;
+        
+        public final BooleanField godModeUndying;
+        public final BooleanField godModeUnbreaking;
+        public final DoubleField godModeUneating;
+        
+        public final DoubleField superSpeedMulti;
+        
+        BuiltInButtons( ExtraInvButtonsCrustConfigFile parent ) {
+            super( parent, "built_in_buttons",
+                    "Options for built-in buttons." );
+            
+            weatherDuration = SPEC.define( new IntField( "weather.duration", 6_000, 0, 1_000_000,
+                    "The duration (seconds) to set the weather for when using the various built-in weather buttons.",
+                    "If 0, the duration is decided 'naturally' by the world." ) );
+            
+            SPEC.newLine();
+            
+            magnetMaxRange = SPEC.define( new DoubleField( "magnet_mode.max_range", 3.4e38, 0.0, 3.4e38,
+                    "The max range (blocks) to request for magnet mode when using the \"" + ButtonInfo.MAGNET_MODE.ID + "\" button.",
+                    "Leaving this at a very high value effectively just sets your range to the max allowed by the server." ) );
+            
+            SPEC.newLine();
+            
+            godModeUndying = SPEC.define( new BooleanField( "god_mode.undying", true,
+                    "Whether undying mode (prevents death) should be toggled when using the \"" + ButtonInfo.GOD_MODE.ID + "\" button." ) );
+            godModeUnbreaking = SPEC.define( new BooleanField( "god_mode.unbreaking", true,
+                    "Whether unbreaking mode (prevents item break) should be toggled when using the \"" + ButtonInfo.GOD_MODE.ID + "\" button." ) );
+            godModeUneating = SPEC.define( new DoubleField( "god_mode.uneating", 30.0, 0.0, 40.0,
+                    "The level for uneating mode (minimum hunger + saturation) to request when using the \"" + ButtonInfo.GOD_MODE.ID + "\" button.",
+                    "Set this to a negative value if you don't want to toggle uneating mode." ) );
+            SPEC.callback( () -> ButtonInfo.updateGodModePerms( this ) );
+            
+            SPEC.newLine();
+            
+            superSpeedMulti = SPEC.define( new DoubleField( "super_speed.max_range", 3.4e38, 0.0, 3.4e38,
+                    "The speed multiplier to request for super-speed mode when using the \"" + ButtonInfo.SUPER_SPEED_MODE.ID + "\" button.",
+                    "Leaving this at a very high value effectively just sets your speed to the max allowed by the server." ) );
+        }
+    }
+    
+    /**
      * Category for a single extra button.
      */
     public static class Button extends AbstractConfigCategory<ExtraInvButtonsCrustConfigFile> {
@@ -121,7 +171,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
         public final StringListField commands;
         
         Button( ExtraInvButtonsCrustConfigFile parent, int index ) {
-            super( parent, customId( index ),
+            super( parent, ButtonInfo.customId( index ),
                     "Options defining the look and function of custom button #" + (index + 1) + "." );
             
             String[] defaults = getDefaults( index );
@@ -140,7 +190,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                     "These are sent to the server in the order listed, as if you typed them into chat." ) );
             
             // Have the spec automatically register this on load
-            String id = customId( index );
+            String id = ButtonInfo.customId( index );
             SPEC.callback( () -> ButtonInfo.loadCustomButton( id, this ) );
         }
         
@@ -193,7 +243,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
             }
             
             // Defaults to a button that gives you the name and button number; also it kills you if you press it
-            return new String[] { ExtraInvButtonsCrustConfigFile.customId( index ), "" + (index + 1), "kill" };
+            return new String[] { ButtonInfo.customId( index ), "" + (index + 1), "kill" };
         }
     }
     

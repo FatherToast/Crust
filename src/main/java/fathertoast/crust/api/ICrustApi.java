@@ -10,6 +10,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
  * {@link FMLCommonSetupEvent}
  */
 public interface ICrustApi {
-
+    
     IRegistryHelper getRegistryHelper();
 }

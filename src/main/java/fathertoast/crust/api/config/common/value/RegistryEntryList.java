@@ -3,7 +3,6 @@ package fathertoast.crust.api.config.common.value;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -52,7 +51,7 @@ public class RegistryEntryList<T extends IForgeRegistryEntry<T>> implements IStr
                 // Handle special case; add all entries in namespace
                 if( !mergeFromNamespace( line.substring( 0, line.length() - 1 ) ) ) {
                     // Don't delete this kind of entry
-                    Crust.LOG.warn( "Namespace entry for {} \"{}\" did not match anything! Questionable entry: {}",
+                    ConfigUtil.LOG.warn( "Namespace entry for {} \"{}\" did not match anything! Questionable entry: {}",
                             field.getClass(), field.getKey(), line );
                 }
                 PRINT_LIST.add( line );
@@ -64,7 +63,7 @@ public class RegistryEntryList<T extends IForgeRegistryEntry<T>> implements IStr
                     PRINT_LIST.add( regKey.toString() );
                 }
                 else {
-                    Crust.LOG.warn( "Invalid or duplicate entry for {} \"{}\"! Deleting entry. Invalid entry: {}",
+                    ConfigUtil.LOG.warn( "Invalid or duplicate entry for {} \"{}\"! Deleting entry. Invalid entry: {}",
                             field.getClass(), field.getKey(), line );
                 }
             }

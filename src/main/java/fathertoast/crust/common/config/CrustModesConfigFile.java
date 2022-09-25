@@ -10,13 +10,14 @@ import fathertoast.crust.api.config.common.field.ScaledDoubleField;
 import fathertoast.crust.common.command.CommandUtil;
 
 /**
- * File for configuring Crust's modes.
+ * File for configuring rules & limitations for Crust's modes.
  */
 public class CrustModesConfigFile extends AbstractConfigFile {
     
     public final General GENERAL;
     
     public final Magnet MAGNET;
+    public final Speed SPEED;
     
     /**
      * @param cfgManager The mod's config manager.
@@ -24,11 +25,16 @@ public class CrustModesConfigFile extends AbstractConfigFile {
      */
     CrustModesConfigFile( ConfigManager cfgManager, String cfgName ) {
         super( cfgManager, cfgName,
-                "This config contains options that apply to the Crust mod as a whole." );
+                "This config contains options to control the 'modes' added by Crust.",
+                "Some examples of Crust modes are magnet mode, multi-mine mode, and undying mode.",
+                "",
+                "This config is for server-side settings. Client preferences are requested by using",
+                "/crustmode or Crust's extra inventory buttons (client_extra_inv_buttons.toml)." );
         
         GENERAL = new General( this );
         
         MAGNET = new Magnet( this );
+        SPEED = new Speed( this );
     }
     
     /**
@@ -47,8 +53,7 @@ public class CrustModesConfigFile extends AbstractConfigFile {
         
         General( CrustModesConfigFile parent ) {
             super( parent, "general",
-                    "Options that apply to the 'modes' added by Crust.",
-                    "Some examples of modes are magnet mode, multi-mine mode, and undying mode." );
+                    "Options that apply to the 'modes' added by Crust, in general." );
             
             magnetOpLevel = SPEC.define( new IntField( "op_level.magnet",
                     CommandUtil.PERMISSION_NONE, IntField.Range.ANY,
@@ -86,13 +91,29 @@ public class CrustModesConfigFile extends AbstractConfigFile {
         
         Magnet( CrustModesConfigFile parent ) {
             super( parent, "magnet_mode",
-                    "Options that apply to magnet mode." );
+                    "Options that apply to Crust's magnet mode." );
             
             maxRangeLimit = SPEC.define( new DoubleField( "max_range_limit", 8.0, DoubleField.Range.NON_NEGATIVE,
                     "The highest maximum range (blocks) allowed for magnet mode. Max range is a client preference." ) );
             maxSpeed = SPEC.define( new ScaledDoubleField.Rate( "max_speed", 10.0, DoubleField.Range.NON_NEGATIVE,
                     "The maximum speed (blocks/sec) for items pulled by magnet mode.",
                     "Speed is higher the closer the item is to the player, scaling down to 0 m/s at the player's max range." ) );
+        }
+    }
+    
+    /**
+     * Category for super-speed mode.
+     */
+    public static class Speed extends AbstractConfigCategory<CrustModesConfigFile> {
+        
+        public final DoubleField speedLimit;
+        
+        Speed( CrustModesConfigFile parent ) {
+            super( parent, "super_speed_mode",
+                    "Options that apply to Crust's super-speed mode." );
+            
+            speedLimit = SPEC.define( new DoubleField( "speed_limit", 10.0, DoubleField.Range.NON_NEGATIVE,
+                    "The highest maximum speed multiplier allowed for super-speed mode. Actual speed is a client preference." ) );
         }
     }
 }

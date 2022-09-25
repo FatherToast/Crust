@@ -1,8 +1,8 @@
 package fathertoast.crust.api.config.common.value;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -50,7 +50,7 @@ public class BlockList implements IStringArray {
                 // Add a single block entry
                 BlockEntry entry = new BlockEntry( field, line );
                 if( entry.BLOCK == Blocks.AIR ) {
-                    Crust.LOG.warn( "Invalid entry for {} \"{}\"! Deleting entry. Invalid entry: {}",
+                    ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Deleting entry. Invalid entry: {}",
                             field.getClass(), field.getKey(), line );
                 }
                 else {

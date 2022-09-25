@@ -11,13 +11,14 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 @Mod.EventBusSubscriber( value = Dist.CLIENT, modid = Crust.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
 public class ClientRegister {
     
-    public static final ExtraInvButtonsCrustConfigFile EXTRA_INV_BUTTONS =
-            new ExtraInvButtonsCrustConfigFile( ConfigManager.getRequired( Crust.MOD_ID ), "extra_inv_buttons" );
+    /** File for configuring extra inventory button client preferences. */
+    public static final ExtraInvButtonsCrustConfigFile EXTRA_INV_BUTTONS = new ExtraInvButtonsCrustConfigFile(
+            ConfigManager.getRequired( Crust.MOD_ID ), "client_extra_inv_buttons" );
     
     /** Called after common setup to perform client-side-only setup. */
     @SubscribeEvent
     static void onClientSetup( FMLClientSetupEvent event ) {
-        // Perform first-time loading of the client-only config
+        // Perform first-time loading of the client-only configs
         EXTRA_INV_BUTTONS.SPEC.initialize();
         
         // Tell Forge to open our config folder when our mod's "Config" button is clicked in the Mods screen
