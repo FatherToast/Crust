@@ -64,6 +64,6 @@ public final class CrustModes {
     public static final CrustMode<Float> SUPER_SPEED = new CrustFloatMode( "speed", CrustConfig.MODES.GENERAL.speedOpLevel.get(),
             ( player, value ) -> value == null || value <= 0.0F ? null :
                     Math.min( value, CrustConfig.MODES.SPEED.speedLimit.getFloat() ) );
-    /** Prevents picked-up items from being added to your inventory (like creative mode arrows). *///TODO NYI
+    /** Prevents picked-up items from being added to your inventory (like creative mode arrows). */
     public static final CrustMode<Byte> DESTROY_ON_PICKUP = new CrustByteMode( "noPickup", CrustConfig.MODES.GENERAL.noPickupOpLevel.get() );
 }

@@ -4,8 +4,12 @@ import fathertoast.crust.common.core.Crust;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.FoodStats;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -22,6 +26,22 @@ public class CrustModeEvents {
                 player.setHealth( player.getMaxHealth() );
                 event.setCanceled( true );
             }
+        }
+    }
+    
+    /** Called when a player touches an item entity. */
+    @SubscribeEvent
+    static void onItemPickup( EntityItemPickupEvent event ) {
+        PlayerEntity player = event.getPlayer();
+        if( CrustModes.DESTROY_ON_PICKUP.enabled( player ) ) {
+            event.getItem().setDefaultPickUpDelay();
+            event.getItem().remove();
+            player.level.playSound( null, player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F,
+                    (player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 1.4F + 2.0F );
+            
+            event.setResult( Event.Result.DENY );
+            event.setCanceled( true );
         }
     }
     
