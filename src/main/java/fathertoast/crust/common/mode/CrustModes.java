@@ -42,7 +42,7 @@ public final class CrustModes {
     public static Map<String, CrustMode<?>> registry() { return Collections.unmodifiableMap( MODE_REGISTRY ); }
     
     
-    /** Pulls nearby items toward you. *///TODO NYI
+    /** Pulls nearby items toward you. */
     public static final CrustMode<Float> MAGNET = new CrustFloatMode( "magnet", CrustConfig.MODES.GENERAL.magnetOpLevel.get(),
             ( player, value ) -> value == null || value <= 0.0F ? null :
                     Math.min( value, CrustConfig.MODES.MAGNET.maxRangeLimit.getFloat() ) );

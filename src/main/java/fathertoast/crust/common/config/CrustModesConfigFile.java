@@ -93,9 +93,9 @@ public class CrustModesConfigFile extends AbstractConfigFile {
             super( parent, "magnet_mode",
                     "Options that apply to Crust's magnet mode." );
             
-            maxRangeLimit = SPEC.define( new DoubleField( "max_range_limit", 8.0, 0.0, 3.4e38,
+            maxRangeLimit = SPEC.define( new DoubleField( "max_range_limit", 10.0, 0.0, 3.4e38,
                     "The highest maximum range (blocks) allowed for magnet mode. Max range is a client preference." ) );
-            maxSpeed = SPEC.define( new ScaledDoubleField.Rate( "max_speed", 10.0, DoubleField.Range.NON_NEGATIVE,
+            maxSpeed = SPEC.define( new ScaledDoubleField.Rate( "max_speed", 16.0, DoubleField.Range.NON_NEGATIVE,
                     "The maximum speed (blocks/sec) for items pulled by magnet mode.",
                     "Speed is higher the closer the item is to the player, scaling down to 0 m/s at the player's max range." ) );
         }

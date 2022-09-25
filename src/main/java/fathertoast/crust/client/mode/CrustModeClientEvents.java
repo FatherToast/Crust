@@ -1,6 +1,7 @@
 package fathertoast.crust.client.mode;
 
 import fathertoast.crust.common.core.Crust;
+import fathertoast.crust.common.mode.CrustModeEvents;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
 import net.minecraft.client.Minecraft;
@@ -22,34 +23,38 @@ public class CrustModeClientEvents {
      */
     @SubscribeEvent
     static void onPlayerTick( TickEvent.PlayerTickEvent event ) {
-        if( event.phase == TickEvent.Phase.END && event.player == Minecraft.getInstance().player ) {
-            PlayerEntity player = event.player;
-            CrustModesData playerModes = CrustModesData.of( player );
-            
-            // Various timers
-            //            int clock32 = player.tickCount & 0b1_1111;
-            //            int clock16 = clock32 & 0b1111;
-            int clock4 = player.tickCount & 0b11;
-            
-            if( clock4 == 3 ) {
-                if( player.isSprinting() && playerModes.enabled( CrustModes.SUPER_SPEED ) ) {
-                    if( originalStepHeight == null ) originalStepHeight = player.maxUpStep;
-                    player.maxUpStep = Math.max( originalStepHeight, 1.0F );
-                    
-                    if( player.abilities.flying ) {
-                        if( originalFlySpeed == null ) originalFlySpeed = player.abilities.getFlyingSpeed();
-                        player.abilities.setFlyingSpeed( originalFlySpeed * playerModes.get( CrustModes.SUPER_SPEED ) );
-                    }
+        if( event.phase != TickEvent.Phase.END || event.player != Minecraft.getInstance().player ) return;
+        
+        PlayerEntity player = event.player;
+        CrustModesData playerModes = CrustModesData.of( player );
+        
+        // Various timers
+        //            int clock32 = player.tickCount & 0b1_1111;
+        //            int clock16 = clock32 & 0b1111;
+        int clock4 = player.tickCount & 0b11;
+        
+        if( (player.tickCount & 1) == 1 && playerModes.enabled( CrustModes.MAGNET ) ) {
+            CrustModeEvents.onMagnetTick( player, playerModes.get( CrustModes.MAGNET ) );
+        }
+        
+        if( clock4 == 3 ) {
+            if( player.isSprinting() && playerModes.enabled( CrustModes.SUPER_SPEED ) ) {
+                if( originalStepHeight == null ) originalStepHeight = player.maxUpStep;
+                player.maxUpStep = Math.max( originalStepHeight, 1.0F );
+                
+                if( player.abilities.flying ) {
+                    if( originalFlySpeed == null ) originalFlySpeed = player.abilities.getFlyingSpeed();
+                    player.abilities.setFlyingSpeed( originalFlySpeed * playerModes.get( CrustModes.SUPER_SPEED ) );
                 }
-                else {
-                    if( originalStepHeight != null ) {
-                        player.maxUpStep = originalStepHeight;
-                        originalStepHeight = null;
-                    }
-                    if( originalFlySpeed != null ) {
-                        player.abilities.setFlyingSpeed( originalFlySpeed );
-                        originalFlySpeed = null;
-                    }
+            }
+            else {
+                if( originalStepHeight != null ) {
+                    player.maxUpStep = originalStepHeight;
+                    originalStepHeight = null;
+                }
+                if( originalFlySpeed != null ) {
+                    player.abilities.setFlyingSpeed( originalFlySpeed );
+                    originalFlySpeed = null;
                 }
             }
         }
