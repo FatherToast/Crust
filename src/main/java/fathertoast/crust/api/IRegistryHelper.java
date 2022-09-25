@@ -28,7 +28,12 @@ public interface IRegistryHelper {
      * @param validDimensions A List of dimension/world IDs where this portal builder can be used.<br>
      *                        <br>
      * @param portalGenerator The {@link IPortalGenerator} implementation for this portal builder. Responsible for actually placing
-     *                        the portal in the world.
+     *                        the portal in the world.<br>
+     *                        <br>
+     *
+     * @return The registered IPortalBuilder if nothing went wrong (e.g. portal builder with the same ID already exists),
+     *         returns null otherwise.
      */
+    @Nullable
     IPortalBuilder registerPortalBuilder(ResourceLocation id, @Nullable ResourceLocation textureLocation, List<ResourceLocation> validDimensions, IPortalGenerator portalGenerator);
 }

@@ -3,7 +3,6 @@ package fathertoast.crust.common.core;
 import fathertoast.crust.api.CrustPlugin;
 import fathertoast.crust.api.ICrustPlugin;
 import fathertoast.crust.api.impl.CrustApi;
-import fathertoast.crust.api.impl.RegistryHelper;
 import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.event.EventListener;
 import fathertoast.crust.common.network.CrustPacketHandler;
@@ -40,7 +39,7 @@ public class Crust {
      *  - commands
      *      - crustrecover [all|health|hunger|effects] [<targets>]
      *      - crustportal (nether|end) [<target>] - create dimension portal
-     *          + TODO allow registration of custom portals
+     *          - allow registration of custom portals
      *      + crustmode [<player>] - check active modes
      *      + crustmode <mode> (disable|<value>) [<players>] - enable/disable mode
      *      ? crustclean [<players>] - reset inventory to starting inventory

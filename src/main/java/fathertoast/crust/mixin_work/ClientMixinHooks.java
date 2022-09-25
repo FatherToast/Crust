@@ -1,7 +1,7 @@
 package fathertoast.crust.mixin_work;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import fathertoast.crust.common.util.tile.ITileBoundingBoxProvider;
+import fathertoast.crust.api.config.client.ITileBoundingBoxProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
