@@ -52,10 +52,11 @@ public final class CrustModes {
     
     /** Cancels death and restores full health instead. */
     public static final CrustMode<Byte> UNDYING = new CrustByteMode( "undying", CrustConfig.MODES.GENERAL.undyingOpLevel.get() );
-    /** Restores durability to items periodically. */
+    /** Fully repairs items periodically. */
     public static final CrustMode<Byte> UNBREAKING = new CrustByteMode( "unbreaking", CrustConfig.MODES.GENERAL.unbreakingOpLevel.get() );
-    /** Restores hunger and saturation at set thresholds. *///TODO NYI
-    public static final CrustMode<Float> UNEATING = new CrustFloatMode( "uneating", CrustConfig.MODES.GENERAL.uneatingOpLevel.get() );
+    /** Restores hunger and saturation when food level drops below a set threshold (1-20). */
+    public static final CrustMode<Byte> UNEATING = new CrustByteMode( "uneating", CrustConfig.MODES.GENERAL.uneatingOpLevel.get(),
+            ( player, value ) -> value == null || value <= 0 ? null : (byte) Math.min( value, 20 ) );
     
     /** Allows you to see in the dark, removes fog, and shows entity outlines. *///TODO NYI
     public static final CrustMode<Byte> SUPER_VISION = new CrustByteMode( "vision", CrustConfig.MODES.GENERAL.visionOpLevel.get() );

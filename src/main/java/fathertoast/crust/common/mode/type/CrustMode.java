@@ -18,8 +18,12 @@ public abstract class CrustMode<T> {
     public final String ID;
     /** Permission level required to control this mode. */
     public final int OP_LEVEL;
-    /** Command handler used to validate requests. */
-    private final ICommandHandler<T> VALIDATOR;
+    
+    /**
+     * Command handler used to validate requests. A simple default implementation for this validation
+     * is provided by {@link #validate(ServerPlayerEntity, T)}.
+     */
+    protected final ICommandHandler<T> VALIDATOR;
     
     /** Creates a new auto-registered mode. */
     public CrustMode( String id, int opLevel ) { this( id, opLevel, null ); }
@@ -70,7 +74,9 @@ public abstract class CrustMode<T> {
         else CrustModesData.of( player ).enable( this, value );
     }
     
+    /** Provides validation for command input. This allows simple management of the mode's save data. */
     public interface ICommandHandler<T> {
+        /** @return The value, corrected or bounded if necessary. */
         @Nullable
         T validate( ServerPlayerEntity player, @Nullable T value );
     }

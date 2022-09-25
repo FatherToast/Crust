@@ -32,22 +32,23 @@ public class CrustModeEvents {
             PlayerEntity player = event.player;
             CrustModesData playerModes = CrustModesData.of( player );
             
-            // Would be nice if we can generally enable infinite items like 'player.abilities.instabuild'
-            if( playerModes.enabled( CrustModes.UNBREAKING ) ) {
-                int index = player.tickCount % player.inventory.getContainerSize();
-                ItemStack item = player.inventory.getItem( index );
-                if( !item.isEmpty() && item.isDamaged() ) {
-                    item.setDamageValue( 0 );
+            // Various timers
+            int clock32 = player.tickCount & 0b1_1111;
+            int clock16 = clock32 & 0b1111;
+            
+            // Would be nice if we can generally enable infinite items instead; like 'player.abilities.instabuild'
+            if( playerModes.enabled( CrustModes.UNBREAKING ) && clock32 == 7 ) {
+                for( int s = 0; s < player.inventory.getContainerSize(); s++ ) {
+                    ItemStack item = player.inventory.getItem( s );
+                    if( !item.isEmpty() && item.isDamaged() ) item.setDamageValue( 0 );
                 }
             }
             
-            //            if( playerModes.enabled( CrustModes.UNEATING ) && (player.tickCount & 0b11111) == 1 ) { // ~1.5 sec
-            //                float minimum = playerModes.get( CrustModes.UNEATING );
-            //                FoodStats hunger = player.getFoodData();
-            //                if( hunger.getFoodLevel() < Math.min( (int) minimum, 20 ) || hunger.getSaturationLevel() < minimum - 20.0F ) {
-            //                    hunger.eat( 20, 1.0F );
-            //                }
-            //            }
+            if( playerModes.enabled( CrustModes.UNEATING ) && clock16 == 4 ) {
+                int minimum = playerModes.get( CrustModes.UNEATING );
+                FoodStats foodData = player.getFoodData();
+                if( foodData.getFoodLevel() < minimum ) foodData.eat( 20, 0.125F );
+            }
         }
     }
 }

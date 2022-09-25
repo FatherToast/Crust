@@ -84,7 +84,8 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
             buttons = SPEC.define( new StringListField( "displayed_buttons", "Button", Arrays.asList(
                     ButtonInfo.MAGNET_MODE.ID, ButtonInfo.MULTI_MINE_MODE.ID, ButtonInfo.TOGGLE_RAIN.ID, ButtonInfo.WEATHER_STORM.ID,
                     ButtonInfo.SUPER_VISION_MODE.ID, ButtonInfo.SUPER_SPEED_MODE.ID, ButtonInfo.DAY.ID, ButtonInfo.NIGHT.ID,
-                    ButtonInfo.NO_PICKUP_MODE.ID, ButtonInfo.GOD_MODE.ID, ButtonInfo.KILL_ALL.ID, ButtonInfo.FULL_HEAL.ID ),
+                    ButtonInfo.NO_PICKUP_MODE.ID, ButtonInfo.GOD_MODE.ID, ButtonInfo.CLEAR_EFFECTS.ID, ButtonInfo.FULL_HEAL.ID,
+                    ButtonInfo.KILL_ALL.ID, ButtonInfo.GAME_MODE.ID ),
                     "The buttons displayed in the inventory, in the order you want them displayed.",
                     "These are ordered left-to-right, then wrapped into rows.",
                     "You may assign a hotkey to any button in your options, whether or not you choose to display it.",
@@ -123,7 +124,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
         
         public final BooleanField godModeUndying;
         public final BooleanField godModeUnbreaking;
-        public final DoubleField godModeUneating;
+        public final IntField godModeUneating;
         
         public final DoubleField superSpeedMulti;
         
@@ -147,9 +148,9 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                     "Whether undying mode (prevents death) should be toggled when using the \"" + ButtonInfo.GOD_MODE.ID + "\" button." ) );
             godModeUnbreaking = SPEC.define( new BooleanField( "god_mode.unbreaking", true,
                     "Whether unbreaking mode (prevents item break) should be toggled when using the \"" + ButtonInfo.GOD_MODE.ID + "\" button." ) );
-            godModeUneating = SPEC.define( new DoubleField( "god_mode.uneating", 30.0, 0.0, 40.0,
-                    "The level for uneating mode (minimum hunger + saturation) to request when using the \"" + ButtonInfo.GOD_MODE.ID + "\" button.",
-                    "Set this to a negative value if you don't want to toggle uneating mode." ) );
+            godModeUneating = SPEC.define( new IntField( "god_mode.uneating", 6, 0, 20,
+                    "The level for uneating mode (minimum food level in half-drumsticks) to request when using the",
+                    "\"" + ButtonInfo.GOD_MODE.ID + "\" button. Set this to 0 if you don't want to toggle uneating mode." ) );
             SPEC.callback( () -> ButtonInfo.updateGodModePerms( this ) );
             
             SPEC.newLine();

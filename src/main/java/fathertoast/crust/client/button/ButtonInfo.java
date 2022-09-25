@@ -67,7 +67,7 @@ public class ButtonInfo {
             godModeButton.COMMANDS.add( Command.forMode( CrustModes.UNDYING ) );
         if( buttonCfg.godModeUnbreaking.get() )
             godModeButton.COMMANDS.add( Command.forMode( CrustModes.UNBREAKING ) );
-        if( buttonCfg.godModeUneating.get() >= 0.0 )
+        if( buttonCfg.godModeUneating.get() > 0 )
             godModeButton.COMMANDS.add( Command.forMode( CrustModes.UNEATING ) );
     }
     
@@ -84,7 +84,9 @@ public class ButtonInfo {
     // Utilities
     public static final ButtonInfo FULL_HEAL = builtIn( new ButtonInfo( "fullHeal", "Full recover",
             "instant_health.png", "crustrecover" ) );
-    public static final ButtonInfo KILL_ALL = builtIn( new ButtonInfo( "killAll", "Kill all mobs",
+    public static final ButtonInfo CLEAR_EFFECTS = builtIn( new ButtonInfo( "clearEffects", "Clear all potion effects",
+            "milk.png", "effect clear" ) );
+    public static final ButtonInfo KILL_ALL = builtIn( new ButtonInfo( "killAll", "Kill all entities",
             "creeper_slash.png", "kill @e[type=!player]" ) );
     @SuppressWarnings( "unused" )
     public static final ButtonInfo NETHER_PORTAL = builtIn( new ButtonInfo( "netherPortal", "Create a Nether portal",
@@ -137,7 +139,7 @@ public class ButtonInfo {
                 CrustModesData playerModes = CrustModesData.of( player() );
                 return !(buttonCfg.godModeUndying.get() && !playerModes.enabled( CrustModes.UNDYING ) ||
                         buttonCfg.godModeUnbreaking.get() && !playerModes.enabled( CrustModes.UNBREAKING ) ||
-                        buttonCfg.godModeUneating.get() >= 0.0 && !playerModes.enabled( CrustModes.UNEATING ));
+                        buttonCfg.godModeUneating.get() > 0 && !playerModes.enabled( CrustModes.UNEATING ));
             } ) );
     public static final ButtonInfo SUPER_VISION_MODE = builtIn( new ButtonInfo( "superVisionMode", "Toggle super vision mode",
             "night_vision.png", ButtonInfo::superVisionMode, Command.forMode( CrustModes.SUPER_VISION ) )
@@ -328,8 +330,8 @@ public class ButtonInfo {
             cmd( Command.forMode( CrustModes.UNDYING, toggleOff ? null : (byte) 1 ) );
         if( buttonCfg.godModeUnbreaking.get() )
             cmd( Command.forMode( CrustModes.UNBREAKING, toggleOff ? null : (byte) 1 ) );
-        if( buttonCfg.godModeUneating.get() >= 0.0 )
-            cmd( Command.forMode( CrustModes.UNEATING, toggleOff ? null : buttonCfg.godModeUneating.getFloat() ) );
+        if( buttonCfg.godModeUneating.get() > 0 )
+            cmd( Command.forMode( CrustModes.UNEATING, toggleOff ? null : buttonCfg.godModeUneating.getByte() ) );
     }
     
     private static void superVisionMode( @Nullable Button button ) {
