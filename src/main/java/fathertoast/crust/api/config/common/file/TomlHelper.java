@@ -17,7 +17,7 @@ import java.util.Locale;
 public final class TomlHelper {
     
     /** While positive, integers are written in hex with this many minimum digits. */
-    public static int HEX_MODE = 0;
+    public static int HEX_MODE = 0; // TODO make this non-static somehow
     
     /** Attempts to convert a toml literal to a string list. May or may not be accurate. */
     public static List<String> parseStringList( Object value ) {
