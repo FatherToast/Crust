@@ -59,12 +59,14 @@ public class Crust {
      *  - modes
      *      + magnet - pulls nearby items toward you
      *      + multi-mine - break multiple blocks at once
-     *      + undying - fully heal if you would have died
-     *      + unbreaking - fully repair items periodically
-     *      + uneating - restore hunger when a threshold is reached
-     *      + destroy-on-pickup - items are not added to inventory when picked up
+     *      - undying - fully heal if you would have died
+     *      - unbreaking - fully repair items periodically
+     *          ? can this be extended to give 'instant build' player ability?
+     *      - uneating - restore food level when it drops below a threshold
+     *      - destroy-on-pickup - items are not added to inventory when picked up
      *      + super vision - continuous night vision to you and glowing to all mobs
-     *      + super speed - move very fast and instant mine
+     *      - super speed - move very fast
+     *          ? should super speed grant instant mine?
      */
     
     /** The mod's id. */

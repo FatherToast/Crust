@@ -155,9 +155,10 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
             
             SPEC.newLine();
             
-            superSpeedMulti = SPEC.define( new DoubleField( "super_speed.max_range", 3.4e38, 0.0, 3.4e38,
+            superSpeedMulti = SPEC.define( new DoubleField( "super_speed.multiplier", 8.0, 1.0, 3.4e38,
                     "The speed multiplier to request for super-speed mode when using the \"" + ButtonInfo.SUPER_SPEED_MODE.ID + "\" button.",
-                    "Leaving this at a very high value effectively just sets your speed to the max allowed by the server." ) );
+                    "Setting this at a very high value effectively just sets your speed to the max allowed by the server.",
+                    "Note: Very large speed multipliers might break the game's physics." ) );
         }
     }
     
