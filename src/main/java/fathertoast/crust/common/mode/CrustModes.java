@@ -50,9 +50,9 @@ public final class CrustModes {
     public static final CrustMode<Byte> MULTI_MINE = new CrustByteMode( "multiMine", CrustConfig.MODES.GENERAL.multiMineOpLevel.get(),
             ( player, value ) -> value );//TODO
     
-    /** Cancels death and restores full health instead. *///TODO NYI
+    /** Cancels death and restores full health instead. */
     public static final CrustMode<Byte> UNDYING = new CrustByteMode( "undying", CrustConfig.MODES.GENERAL.undyingOpLevel.get() );
-    /** Cancels item breaking and restores to full durability instead. *///TODO NYI
+    /** Restores durability to items periodically. */
     public static final CrustMode<Byte> UNBREAKING = new CrustByteMode( "unbreaking", CrustConfig.MODES.GENERAL.unbreakingOpLevel.get() );
     /** Restores hunger and saturation at set thresholds. *///TODO NYI
     public static final CrustMode<Float> UNEATING = new CrustFloatMode( "uneating", CrustConfig.MODES.GENERAL.uneatingOpLevel.get() );

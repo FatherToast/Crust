@@ -24,7 +24,6 @@ public class Crust {
      * (KEY: - = complete in current version, o = incomplete feature from previous version,
      *       + = incomplete new feature, ? = feature to consider adding)
      *  - configs
-     *      - implementable
      *      - config button opens config folder
      *      ? in-game config editor gui
      *      + variable field min/max limits
@@ -38,6 +37,9 @@ public class Crust {
      *      - math library
      *  - commands
      *      - crustrecover [all|health|hunger|effects] [<targets>]
+     *      - crustportal (nether|end|<other portal>) [<target>] - create dimension portal
+     *      - crustmode [<player>] - check active modes
+     *      - crustmode <mode> (disable|<value>) [<players>] - enable/disable mode
      *      - crustportal (nether|end) [<target>] - create dimension portal
      *          - allow registration of custom portals
      *      + crustmode [<player>] - check active modes
@@ -54,11 +56,11 @@ public class Crust {
      *          - custom buttons (user-defined)
      *      - configure default game rules
      *      ? in-game nbt editor gui (does the mod still exist?)
-     *  + modes
+     *  - modes
      *      + magnet - pulls nearby items toward you
      *      + multi-mine - break multiple blocks at once
      *      + undying - fully heal if you would have died
-     *      + unbreaking - fully repair items if they would have broken
+     *      + unbreaking - fully repair items periodically
      *      + uneating - restore hunger when a threshold is reached
      *      + destroy-on-pickup - items are not added to inventory when picked up
      *      + super vision - continuous night vision to you and glowing to all mobs
