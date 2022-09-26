@@ -41,6 +41,12 @@ public class IntField extends AbstractConfigField {
     /** @return Returns the config field's value. */
     public int get() { return value; }
     
+    /** @return Returns the config field's value cast down to a short. */
+    public short getShort() { return (short) value; }
+    
+    /** @return Returns the config field's value cast down to a byte. */
+    public byte getByte() { return (byte) value; }
+    
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {

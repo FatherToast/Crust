@@ -93,9 +93,9 @@ public class CrustModesConfigFile extends AbstractConfigFile {
             super( parent, "magnet_mode",
                     "Options that apply to Crust's magnet mode." );
             
-            maxRangeLimit = SPEC.define( new DoubleField( "max_range_limit", 8.0, DoubleField.Range.NON_NEGATIVE,
+            maxRangeLimit = SPEC.define( new DoubleField( "max_range_limit", 10.0, 0.0, 3.4e38,
                     "The highest maximum range (blocks) allowed for magnet mode. Max range is a client preference." ) );
-            maxSpeed = SPEC.define( new ScaledDoubleField.Rate( "max_speed", 10.0, DoubleField.Range.NON_NEGATIVE,
+            maxSpeed = SPEC.define( new ScaledDoubleField.Rate( "max_speed", 16.0, DoubleField.Range.NON_NEGATIVE,
                     "The maximum speed (blocks/sec) for items pulled by magnet mode.",
                     "Speed is higher the closer the item is to the player, scaling down to 0 m/s at the player's max range." ) );
         }
@@ -112,8 +112,9 @@ public class CrustModesConfigFile extends AbstractConfigFile {
             super( parent, "super_speed_mode",
                     "Options that apply to Crust's super-speed mode." );
             
-            speedLimit = SPEC.define( new DoubleField( "speed_limit", 10.0, DoubleField.Range.NON_NEGATIVE,
-                    "The highest maximum speed multiplier allowed for super-speed mode. Actual speed is a client preference." ) );
+            speedLimit = SPEC.define( new DoubleField( "speed_limit", 12.0, 1.0, 3.4e38,
+                    "The highest maximum speed multiplier allowed for super-speed mode. Actual speed is a client preference.",
+                    "Note: Very large speed multipliers might break the game's physics." ) );
         }
     }
 }
