@@ -9,14 +9,15 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 public class CrustLongMode extends CrustMode<Long> {
     
     /** Creates a new auto-registered mode. */
-    public CrustLongMode( String id, int opLevel ) { super( id, opLevel ); }
+    public CrustLongMode( String id, Supplier<Integer> opLevel ) { super( id, opLevel ); }
     
     /** Creates a new auto-registered mode. */
-    public CrustLongMode( String id, int opLevel, @Nullable ICommandHandler<Long> validator ) { super( id, opLevel, validator ); }
+    public CrustLongMode( String id, Supplier<Integer> opLevel, @Nullable ICommandHandler<Long> validator ) { super( id, opLevel, validator ); }
     
     
     /** @return This mode's saved data. */

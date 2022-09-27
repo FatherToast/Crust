@@ -1,12 +1,8 @@
 package fathertoast.crust.common.core;
 
-import fathertoast.crust.common.command.impl.CrustModeCommand;
-import fathertoast.crust.common.command.impl.CrustPortalCommand;
-import fathertoast.crust.common.command.impl.CrustRecoverCommand;
 import fathertoast.crust.common.network.CrustPacketHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -26,14 +22,6 @@ public class CrustForgeEvents {
     /** Queues the player for a Crust mode update to notify the client of changes. */
     public static void markModesDirty( PlayerEntity player ) {
         NEED_CRUST_MODE_UPDATE.add( (ServerPlayerEntity) player );
-    }
-    
-    /** Called each time commands are loaded. */
-    @SubscribeEvent
-    static void registerCommands( RegisterCommandsEvent event ) {
-        CrustRecoverCommand.register( event.getDispatcher() );
-        CrustPortalCommand.register( event.getDispatcher() );
-        CrustModeCommand.register( event.getDispatcher() );
     }
     
     /** Called when an entity is spawned/added into the world. */

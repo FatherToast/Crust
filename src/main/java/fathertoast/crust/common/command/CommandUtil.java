@@ -6,6 +6,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import fathertoast.crust.common.command.impl.CrustModeCommand;
+import fathertoast.crust.common.command.impl.CrustPortalCommand;
+import fathertoast.crust.common.command.impl.CrustRecoverCommand;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
@@ -14,11 +17,24 @@ import net.minecraft.command.arguments.EntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.Collection;
 import java.util.Locale;
 
+@Mod.EventBusSubscriber( modid = Crust.MOD_ID )
 public class CommandUtil {
+    
+    /** Called each time commands are loaded. */
+    @SubscribeEvent
+    static void registerCommands( RegisterCommandsEvent event ) {
+        CrustRecoverCommand.register( event.getDispatcher() );
+        CrustPortalCommand.register( event.getDispatcher() );
+        CrustModeCommand.register( event.getDispatcher() );
+    }
+    
     
     // ---- Command Feedback ---- //
     

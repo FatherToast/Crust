@@ -30,7 +30,7 @@ public class CrustModeCommand {
         // crustmode <mode> (disable|<value>) [<players>]
         for( CrustMode<?> mode : CrustModes.registry().values() ) {
             argBuilder.then( CommandUtil.literal( mode.ID )
-                    .requires( ( source ) -> source.hasPermission( mode.OP_LEVEL ) )
+                    .requires( ( source ) -> source.hasPermission( mode.OP_LEVEL.get() ) )
                     
                     .then( CommandUtil.literal( "disable" )
                             .executes( ( context ) -> runSet( context, mode, null,

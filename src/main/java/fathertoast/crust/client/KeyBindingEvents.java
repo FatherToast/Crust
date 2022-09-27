@@ -82,13 +82,8 @@ public class KeyBindingEvents {
             if( button != null ) {
                 if( button.getDefaultKey() != null ) {
                     BUTTONS[index] = new SortedKeyBinding( index, key + button.ID.toLowerCase( Locale.ROOT ),
-                            KeyConflictContext.UNIVERSAL, KeyModifier.CONTROL,
-                            InputMappings.getKey( "key.keyboard.0" ), KEY_CAT_BUTTONS );
-                }
-                else if( button.ID.equals( "endPortal" ) ) {
-                    BUTTONS[index] = new SortedKeyBinding( index, key + button.ID.toLowerCase( Locale.ROOT ),
-                            KeyConflictContext.UNIVERSAL, KeyModifier.ALT,
-                            InputMappings.getKey( "key.keyboard.0" ), KEY_CAT_BUTTONS );
+                            KeyConflictContext.UNIVERSAL, button.getDefaultKey().MODIFIER,
+                            button.getDefaultKey().KEY_CODE, KEY_CAT_BUTTONS );
                 }
                 else {
                     BUTTONS[index] = new SortedKeyBinding( index, key + button.ID.toLowerCase( Locale.ROOT ),

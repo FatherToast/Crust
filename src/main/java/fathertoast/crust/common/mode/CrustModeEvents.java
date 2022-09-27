@@ -34,6 +34,10 @@ public class CrustModeEvents {
             
             if( CrustModes.UNDYING.enabled( player ) ) {
                 player.setHealth( player.getMaxHealth() );
+                // Also stop non-temporary damaging effects
+                player.setAirSupply( Math.max( player.getAirSupply(), player.getMaxAirSupply() ) );
+                FoodStats playerFood = player.getFoodData();
+                playerFood.setFoodLevel( Math.max( playerFood.getFoodLevel(), 6 ) );
                 event.setCanceled( true );
             }
         }

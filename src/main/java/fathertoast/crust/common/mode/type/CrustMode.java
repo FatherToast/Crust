@@ -11,13 +11,14 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 public abstract class CrustMode<T> {
     
     /** The unique mode identifier. */
     public final String ID;
     /** Permission level required to control this mode. */
-    public final int OP_LEVEL;
+    public final Supplier<Integer> OP_LEVEL;
     
     /**
      * Command handler used to validate requests. A simple default implementation for this validation
@@ -26,10 +27,10 @@ public abstract class CrustMode<T> {
     protected final ICommandHandler<T> VALIDATOR;
     
     /** Creates a new auto-registered mode. */
-    public CrustMode( String id, int opLevel ) { this( id, opLevel, null ); }
+    public CrustMode( String id, Supplier<Integer> opLevel ) { this( id, opLevel, null ); }
     
     /** Creates a new auto-registered mode. */
-    public CrustMode( String id, int opLevel, @Nullable ICommandHandler<T> validator ) {
+    public CrustMode( String id, Supplier<Integer> opLevel, @Nullable ICommandHandler<T> validator ) {
         ID = id;
         OP_LEVEL = opLevel;
         VALIDATOR = validator;
