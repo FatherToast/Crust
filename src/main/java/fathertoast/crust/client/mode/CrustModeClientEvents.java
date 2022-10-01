@@ -5,8 +5,13 @@ import fathertoast.crust.common.mode.CrustModeEvents;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -16,6 +21,25 @@ public class CrustModeClientEvents {
     
     private static Float originalStepHeight;
     private static Float originalFlySpeed;
+    
+    /** Called before rendering fog. */
+    @SubscribeEvent
+    static void onFogDensity( EntityViewRenderEvent.FogDensity event ) {
+        if( CrustModes.SUPER_VISION.enabled( Minecraft.getInstance().player ) ) {
+            event.setDensity( 0.0F );
+            event.setCanceled( true ); // Event must be canceled to apply changes
+        }
+    }
+    
+    /** Called each client tick. */
+    @SubscribeEvent
+    static void onClientTick( TickEvent.ClientTickEvent event ) {
+        if( event.phase == TickEvent.Phase.START ) {
+            if( Minecraft.getInstance().level != null ) {
+                CrustModeEvents.onWorldTickStart( Minecraft.getInstance().level );
+            }
+        }
+    }
     
     /**
      * Called each player tick. Server event is handled in
@@ -29,14 +53,11 @@ public class CrustModeClientEvents {
         CrustModesData playerModes = CrustModesData.of( player );
         
         // Various timers
-        //            int clock32 = player.tickCount & 0b1_1111;
-        //            int clock16 = clock32 & 0b1111;
+        //int clock32 = player.tickCount & 0b1_1111;
+        //int clock16 = player.tickCount & 0b1111;
         int clock4 = player.tickCount & 0b11;
         
-        if( (player.tickCount & 1) == 1 && playerModes.enabled( CrustModes.MAGNET ) ) {
-            CrustModeEvents.onMagnetTick( player, playerModes.get( CrustModes.MAGNET ) );
-        }
-        
+        // Super speed
         if( clock4 == 3 ) {
             if( player.isSprinting() && playerModes.enabled( CrustModes.SUPER_SPEED ) ) {
                 if( originalStepHeight == null ) originalStepHeight = player.maxUpStep;

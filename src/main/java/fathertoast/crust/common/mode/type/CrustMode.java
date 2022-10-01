@@ -42,7 +42,7 @@ public abstract class CrustMode<T> {
      * This is a shortcut method handy when we don't need to do anything else with the mode data.
      * @see CrustModesData#enabled(CrustMode)
      */
-    public final boolean enabled( PlayerEntity player ) { return CrustModesData.of( player ).enabled( this ); }
+    public final boolean enabled( @Nullable PlayerEntity player ) { return player != null && CrustModesData.of( player ).enabled( this ); }
     
     /** @return True if any save data for this mode exists. */
     public boolean enabled( CompoundNBT tag ) { return tag.contains( ID, NBTHelper.ID_NUMERICAL ); }

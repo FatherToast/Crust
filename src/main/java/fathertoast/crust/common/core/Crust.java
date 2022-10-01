@@ -42,8 +42,9 @@ public class Crust {
      *      - crustmode <mode> (disable|<value>) [<players>] - enable/disable mode
      *      - crustportal (nether|end) [<target>] - create dimension portal
      *          - allow registration of custom portals
-     *      + crustmode [<player>] - check active modes
-     *      + crustmode <mode> (disable|<value>) [<players>] - enable/disable mode
+     *      - crustmode [<player>] - check active modes
+     *      - crustmode <mode> (disable|<value>) [<players>] - enable/disable mode
+     *      + crustclean pointer [<player>] - destroy item on pointer
      *      ? crustclean [<players>] - reset inventory to starting inventory
      *  - tools
      *      + starting inventory
@@ -52,21 +53,22 @@ public class Crust {
      *          + TODO option to hide while recipe book is open
      *          + TODO render above effect tiles
      *          - can have hotkey assigned
-     *          - built-in buttons
+     *          - built-in buttons TODO destroy item on cursor button
      *          - custom buttons (user-defined)
      *      - configure default game rules
      *      ? in-game nbt editor gui (does the mod still exist?)
      *  - modes
-     *      + magnet - pulls nearby items toward you
-     *      + multi-mine - break multiple blocks at once
+     *      - magnet - pulls nearby items toward you
+     *      ? multi-mine - break multiple blocks at once; perhaps compat to an existing mod instead (like "Ore Excavation")
      *      - undying - fully heal if you would have died
      *      - unbreaking - fully repair items periodically
-     *          ? can this be extended to give 'instant build' player ability?
+     *          ? grant 'instant build' player ability
      *      - uneating - restore food level when it drops below a threshold
      *      - destroy-on-pickup - items are not added to inventory when picked up
-     *      + super vision - continuous night vision to you and glowing to all mobs
+     *      - super vision - continuous night vision, removes fog/blindness
+     *          ? make all entities glow
      *      - super speed - move very fast
-     *          ? should super speed grant instant mine?
+     *          ? grant instant (or very fast) mining
      */
     
     /** The mod's id. */

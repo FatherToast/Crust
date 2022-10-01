@@ -24,7 +24,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
     public final General GENERAL;
     
     public final BuiltInButtons BUILT_IN_BUTTONS;
-    public final Button[] CUSTOM_BUTTONS = new Button[16];
+    public final CustomButton[] CUSTOM_BUTTONS = new CustomButton[16];
     
     /**
      * @param cfgManager The mod's config manager.
@@ -41,7 +41,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
         
         BUILT_IN_BUTTONS = new BuiltInButtons( this );
         for( int i = 0; i < CUSTOM_BUTTONS.length; i++ ) {
-            CUSTOM_BUTTONS[i] = new Button( this, i );
+            CUSTOM_BUTTONS[i] = new CustomButton( this, i );
         }
     }
     
@@ -82,7 +82,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
             buttonsPerRow = SPEC.define( new IntField( "buttons_per_row", 4, IntField.Range.NON_NEGATIVE,
                     "The number of buttons that can be displayed per row. The number of rows is automatically calculated." ) );
             buttons = SPEC.define( new StringListField( "displayed_buttons", "Button", Arrays.asList(
-                    ButtonInfo.MAGNET_MODE.ID, ButtonInfo.MULTI_MINE_MODE.ID, ButtonInfo.TOGGLE_RAIN.ID, ButtonInfo.WEATHER_STORM.ID,
+                    ButtonInfo.MAGNET_MODE.ID, ButtonInfo.KILL_ALL.ID, ButtonInfo.TOGGLE_RAIN.ID, ButtonInfo.WEATHER_STORM.ID,
                     ButtonInfo.SUPER_VISION_MODE.ID, ButtonInfo.SUPER_SPEED_MODE.ID, ButtonInfo.DAY.ID, ButtonInfo.NIGHT.ID,
                     ButtonInfo.NO_PICKUP_MODE.ID, ButtonInfo.GOD_MODE.ID, ButtonInfo.CLEAR_EFFECTS.ID, ButtonInfo.FULL_HEAL.ID,
                     ButtonInfo.KILL_ALL.ID, ButtonInfo.GAME_MODE.ID ),
@@ -163,16 +163,16 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
     }
     
     /**
-     * Category for a single extra button.
+     * Category for a single user-defined button.
      */
-    public static class Button extends AbstractConfigCategory<ExtraInvButtonsCrustConfigFile> {
+    public static class CustomButton extends AbstractConfigCategory<ExtraInvButtonsCrustConfigFile> {
         
         public final StringField tooltip;
         public final StringField icon;
         public final ColorIntField iconColor;
         public final StringListField commands;
         
-        Button( ExtraInvButtonsCrustConfigFile parent, int index ) {
+        CustomButton( ExtraInvButtonsCrustConfigFile parent, int index ) {
             super( parent, ButtonInfo.customId( index ),
                     "Options defining the look and function of custom button #" + (index + 1) + "." );
             

@@ -43,7 +43,7 @@ public class CrustModesConfigFile extends AbstractConfigFile {
     public static class General extends AbstractConfigCategory<CrustModesConfigFile> {
         
         public final IntField magnetOpLevel;
-        public final IntField multiMineOpLevel;
+        //public final IntField multiMineOpLevel;
         public final IntField noPickupOpLevel;
         public final IntField undyingOpLevel;
         public final IntField unbreakingOpLevel;
@@ -58,14 +58,15 @@ public class CrustModesConfigFile extends AbstractConfigFile {
             magnetOpLevel = SPEC.define( new IntField( "op_level.magnet",
                     CommandUtil.PERMISSION_NONE, IntField.Range.ANY,
                     "The op levels (aka permission levels) required to enable/disable Crust's various modes.",
+                    "You can disable any mode by setting this level very high (e.g., " + (CommandUtil.PERMISSION_SERVER_OP + 1) + ").",
                     "Vanilla op levels used are:",
                     "  " + CommandUtil.PERMISSION_NONE + " - Chat/whispers, Access to limited info",
                     "  " + CommandUtil.PERMISSION_TRUSTED + " - Can bypass spawn protection",
                     "  " + CommandUtil.PERMISSION_CHEAT + " - Can use cheats, Access to info that can be used to cheat",
                     "  " + CommandUtil.PERMISSION_MODERATE + " - Can ban/whitelist players, 'Moderator'",
                     "  " + CommandUtil.PERMISSION_SERVER_OP + " - All permissions, Server management" ), RestartNote.WORLD );
-            multiMineOpLevel = SPEC.define( new IntField( "op_level.multi_mine",
-                    CommandUtil.PERMISSION_NONE, IntField.Range.ANY ) );
+            //multiMineOpLevel = SPEC.define( new IntField( "op_level.multi_mine",
+            //        CommandUtil.PERMISSION_NONE, IntField.Range.ANY ) );
             undyingOpLevel = SPEC.define( new IntField( "op_level.undying",
                     CommandUtil.PERMISSION_CHEAT, IntField.Range.ANY ) );
             unbreakingOpLevel = SPEC.define( new IntField( "op_level.unbreaking",
@@ -88,6 +89,7 @@ public class CrustModesConfigFile extends AbstractConfigFile {
         
         public final DoubleField maxRangeLimit;
         public final DoubleField maxSpeed;
+        public final IntField delay;
         
         Magnet( CrustModesConfigFile parent ) {
             super( parent, "magnet_mode",
@@ -95,9 +97,13 @@ public class CrustModesConfigFile extends AbstractConfigFile {
             
             maxRangeLimit = SPEC.define( new DoubleField( "max_range_limit", 10.0, 0.0, 3.4e38,
                     "The highest maximum range (blocks) allowed for magnet mode. Max range is a client preference." ) );
-            maxSpeed = SPEC.define( new ScaledDoubleField.Rate( "max_speed", 16.0, DoubleField.Range.NON_NEGATIVE,
+            maxSpeed = SPEC.define( new ScaledDoubleField.Rate( "max_speed", 10.0, DoubleField.Range.NON_NEGATIVE,
                     "The maximum speed (blocks/sec) for items pulled by magnet mode.",
                     "Speed is higher the closer the item is to the player, scaling down to 0 m/s at the player's max range." ) );
+            delay = SPEC.define( new IntField( "delay", 40, IntField.Range.NON_NEGATIVE,
+                    "The time delay (ticks) before freshly dropped items are pulled by magnet mode.",
+                    "Setting this to a low value will cause items to fly around your face until their pickup delay expires.",
+                    "The default prevents face-flying for vanilla drops, but many drops only have a pickup delay of 10." ) );
         }
     }
     

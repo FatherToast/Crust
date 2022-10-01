@@ -4,6 +4,7 @@ import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.mode.type.CrustByteMode;
 import fathertoast.crust.common.mode.type.CrustFloatMode;
 import fathertoast.crust.common.mode.type.CrustMode;
+import net.minecraft.potion.Effects;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -46,9 +47,9 @@ public final class CrustModes {
     public static final CrustMode<Float> MAGNET = new CrustFloatMode( "magnet", CrustConfig.MODES.GENERAL.magnetOpLevel::get,
             ( player, value ) -> value == null || value <= 0.0F ? null :
                     Math.min( value, CrustConfig.MODES.MAGNET.maxRangeLimit.getFloat() ) );
-    /** Break multiple blocks at once. *///TODO NYI
-    public static final CrustMode<Byte> MULTI_MINE = new CrustByteMode( "multiMine", CrustConfig.MODES.GENERAL.multiMineOpLevel::get,
-            ( player, value ) -> value );//TODO
+    ///** Break multiple blocks at once. */
+    //public static final CrustMode<Long> MULTI_MINE = new CrustLongMode( "multiMine", CrustConfig.MODES.GENERAL.multiMineOpLevel::get,
+    //        ( player, value ) -> value );
     
     /** Cancels death and restores full health instead. */
     public static final CrustMode<Byte> UNDYING = new CrustByteMode( "undying", CrustConfig.MODES.GENERAL.undyingOpLevel::get );
@@ -58,8 +59,12 @@ public final class CrustModes {
     public static final CrustMode<Byte> UNEATING = new CrustByteMode( "uneating", CrustConfig.MODES.GENERAL.uneatingOpLevel::get,
             ( player, value ) -> value == null || value <= 0 ? null : (byte) Math.min( value, 20 ) );
     
-    /** Allows you to see in the dark, removes fog, and shows entity outlines. *///TODO NYI
-    public static final CrustMode<Byte> SUPER_VISION = new CrustByteMode( "vision", CrustConfig.MODES.GENERAL.visionOpLevel::get );
+    /** Grants night vision, removes fog, and clears blindness. */
+    public static final CrustMode<Byte> SUPER_VISION = new CrustByteMode( "vision", CrustConfig.MODES.GENERAL.visionOpLevel::get,
+            ( player, value ) -> {
+                if( value == null ) player.removeEffect( Effects.NIGHT_VISION );
+                return value;
+            } );
     /** Dramatically increases sprint speed. */
     public static final CrustMode<Float> SUPER_SPEED = new CrustFloatMode( "speed", CrustConfig.MODES.GENERAL.speedOpLevel::get,
             ( player, value ) -> value == null || value <= 1.0F ? null :

@@ -53,7 +53,7 @@ public class ButtonInfo {
     // ---- Config Hooks ---- //
     
     /** Called each time a custom button config category is loaded. */
-    public static void loadCustomButton( String id, ExtraInvButtonsCrustConfigFile.Button buttonCfg ) {
+    public static void loadCustomButton( String id, ExtraInvButtonsCrustConfigFile.CustomButton buttonCfg ) {
         BUTTON_REGISTRY.put( id, new ButtonInfo( id, buttonCfg.tooltip.get(), buttonCfg.icon.get(),
                 buttonCfg.iconColor.get(), buttonCfg.commands.get() ) );
     }
@@ -128,10 +128,10 @@ public class ButtonInfo {
             "magnet.png", ButtonInfo::magnetMode, Command.forMode( CrustModes.MAGNET ) )
             .toggle( () -> modeEnabled( CrustModes.MAGNET ) )
             .key( KeyModifier.CONTROL, "m" ) );
-    public static final ButtonInfo MULTI_MINE_MODE = builtIn( new ButtonInfo( "multiMineMode", "Toggle multi-mine mode",
-            "haste.png", ButtonInfo::multiMineMode, Command.forMode( CrustModes.MULTI_MINE ) )
-            .toggle( () -> modeEnabled( CrustModes.MULTI_MINE ) )
-            .key( KeyModifier.ALT, "m" ) );
+    //public static final ButtonInfo MULTI_MINE_MODE = builtIn( new ButtonInfo( "multiMineMode", "Toggle multi-mine mode",
+    //        "haste.png", ButtonInfo::multiMineMode, Command.forMode( CrustModes.MULTI_MINE ) )
+    //        .toggle( () -> modeEnabled( CrustModes.MULTI_MINE ) )
+    //        .key( KeyModifier.ALT, "m" ) );
     public static final ButtonInfo GOD_MODE = builtIn( new ButtonInfo( "godMode", "Toggle god mode",
             "undying.png", ButtonInfo::godMode )
             .toggle( () -> {
@@ -318,9 +318,9 @@ public class ButtonInfo {
         toggleCrustMode( CrustModes.MAGNET, ClientRegister.EXTRA_INV_BUTTONS.BUILT_IN_BUTTONS.magnetMaxRange.getFloat() );
     }
     
-    private static void multiMineMode( @Nullable Button button ) {
-        toggleCrustMode( CrustModes.MULTI_MINE, (byte) 1 );
-    }
+    //private static void multiMineMode( @Nullable Button button ) {
+    //    toggleCrustMode( CrustModes.MULTI_MINE, 1 );
+    //}
     
     private static void godMode( @Nullable Button button ) {
         ExtraInvButtonsCrustConfigFile.BuiltInButtons buttonCfg = ClientRegister.EXTRA_INV_BUTTONS.BUILT_IN_BUTTONS;

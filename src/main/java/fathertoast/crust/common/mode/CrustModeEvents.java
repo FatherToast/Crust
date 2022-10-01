@@ -8,9 +8,13 @@ import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.FoodStats;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -18,13 +22,19 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber( modid = Crust.MOD_ID )
 public class CrustModeEvents {
     
     public static final UUID SUPER_SPEED_UUID = UUID.fromString( "B9766B69-9569-4202-BC1F-2EE2A276D836" );
+    
+    /** Used to allow the nearest magnet pull effect to take priority. */
+    private static final Map<ItemEntity, Double> MAGNET_PULL_MAP = new HashMap<>();
     
     /** Called when an entity dies. */
     @SubscribeEvent
@@ -59,6 +69,17 @@ public class CrustModeEvents {
         }
     }
     
+    /** Called each integrated/dedicated server tick. */
+    @SubscribeEvent
+    static void onServerTick( TickEvent.ServerTickEvent event ) {
+        if( event.phase == TickEvent.Phase.START ) {
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+            if( server != null ) {
+                for( World world : server.getAllLevels() ) onWorldTickStart( world );
+            }
+        }
+    }
+    
     /**
      * Called each player tick. Client event is handled in
      * {@link fathertoast.crust.client.mode.CrustModeClientEvents#onPlayerTick(TickEvent.PlayerTickEvent)}.
@@ -75,10 +96,7 @@ public class CrustModeEvents {
         int clock16 = clock32 & 0b1111;
         int clock4 = clock32 & 0b11;
         
-        if( (player.tickCount & 1) == 1 && playerModes.enabled( CrustModes.MAGNET ) ) {
-            onMagnetTick( player, playerModes.get( CrustModes.MAGNET ) );
-        }
-        
+        // Super speed
         if( clock4 == 3 ) {
             ModifiableAttributeInstance moveSpeed = player.getAttribute( Attributes.MOVEMENT_SPEED );
             ModifiableAttributeInstance swimSpeed = player.getAttribute( ForgeMod.SWIM_SPEED.get() );
@@ -96,12 +114,23 @@ public class CrustModeEvents {
             }
         }
         
+        // Uneating
         if( clock16 == 5 && playerModes.enabled( CrustModes.UNEATING ) ) {
             int minimum = playerModes.get( CrustModes.UNEATING );
             FoodStats foodData = player.getFoodData();
             if( foodData.getFoodLevel() < minimum ) foodData.eat( 20, 0.125F );
         }
+        // Super vision
+        else if( clock16 == 13 && playerModes.enabled( CrustModes.SUPER_VISION ) ) {
+            if( !player.hasEffect( Effects.NIGHT_VISION ) ) {
+                player.addEffect( new EffectInstance( Effects.NIGHT_VISION, Integer.MAX_VALUE,
+                        0, true, false, false ) );
+            }
+            // Not needed, but looks nicer this way
+            if( player.hasEffect( Effects.BLINDNESS ) ) player.removeEffect( Effects.BLINDNESS );
+        }
         
+        // Unbreaking
         if( clock32 == 7 && playerModes.enabled( CrustModes.UNBREAKING ) ) {
             // Would be nice if we can generally enable infinite items instead; like 'player.abilities.instabuild'
             for( int s = 0; s < player.inventory.getContainerSize(); s++ ) {
@@ -109,18 +138,32 @@ public class CrustModeEvents {
                 if( !item.isEmpty() && item.isDamaged() ) item.setDamageValue( 0 );
             }
         }
+    }
+    
+    
+    /** Called each tick for each world, on both the client and server side. */
+    public static void onWorldTickStart( World world ) {
+        if( (world.getGameTime() & 1) == 0 ) return;
         
+        for( PlayerEntity player : world.players() ) {
+            CrustModesData playerModes = CrustModesData.of( player );
+            if( playerModes.enabled( CrustModes.MAGNET ) ) {
+                onMagnetTick( player, playerModes.get( CrustModes.MAGNET ) );
+            }
+        }
+        MAGNET_PULL_MAP.clear();
     }
     
     /** Called every other tick on each player that has magnet mode enabled. */
-    public static void onMagnetTick( PlayerEntity player, float maxRange ) {
+    private static void onMagnetTick( PlayerEntity player, float maxRange ) {
         float rangeSqr = maxRange * maxRange;
         for( ItemEntity item : player.level.getEntitiesOfClass( ItemEntity.class,
                 player.getBoundingBox().inflate( maxRange ) ) ) {
-            if( item.isAlive() && !item.getItem().isEmpty() && item.tickCount > 10 ) {
+            // Actual pickup delay is not available on the client, so we use tick count instead
+            if( item.isAlive() && !item.getItem().isEmpty() && item.tickCount > CrustConfig.MODES.MAGNET.delay.get() ) {
                 double distSq = player.distanceToSqr( item );
                 if( distSq < rangeSqr && hasSpaceFor( player, item.getItem() ) ) {
-                    magnetPullItem( player, item, (rangeSqr - distSq) / rangeSqr );
+                    magnetPullItem( player, item, distSq, (rangeSqr - distSq) / rangeSqr );
                 }
             }
         }
@@ -132,8 +175,12 @@ public class CrustModeEvents {
     }
     
     /** Applies magnet pull velocity to the item. */
-    private static void magnetPullItem( PlayerEntity player, ItemEntity item, double power ) {
-        item.setDeltaMovement( player.position().subtract( item.position() ).normalize()
+    private static void magnetPullItem( PlayerEntity player, ItemEntity item, double distSq, double power ) {
+        Double closestDistSq = MAGNET_PULL_MAP.get( item );
+        if( closestDistSq != null && closestDistSq < distSq ) return;
+        MAGNET_PULL_MAP.put( item, distSq );
+        
+        item.setDeltaMovement( player.getEyePosition( 1.0F ).subtract( item.position() ).normalize()
                 .scale( power * CrustConfig.MODES.MAGNET.maxSpeed.get() ).add( 0.0, 0.04, 0.0 ) );
     }
 }
