@@ -3,9 +3,11 @@ package fathertoast.crust.client.button;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import fathertoast.crust.api.lib.CrustMath;
+import fathertoast.crust.client.ClientRegister;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -28,19 +30,32 @@ public class ExtraInventoryButton extends Button {
     public static final int TEXT_Y = MathHelper.ceil( (BUTTON_SIZE - 8) / 2.0F );
     
     
+    private final Screen PARENT;
     private final ButtonInfo INFO;
     
     public ExtraInventoryButton( Screen screen, int leftPos, int topPos, ButtonInfo info ) {
         super( leftPos, topPos, BUTTON_SIZE, BUTTON_SIZE,
                 new StringTextComponent( info.TEXT ), info.ON_PRESS,
                 new ButtonTooltip( screen, info.TOOLTIP ) );
+        PARENT = screen;
         INFO = info;
         active = info.isActive();
     }
     
     @Override
+    public void render( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks ) {
+        if( ClientRegister.EXTRA_INV_BUTTONS.GENERAL.hideForRecipeBook.get() && PARENT instanceof InventoryScreen ) {
+            visible = !((InventoryScreen) PARENT).getRecipeBookComponent().isVisible();
+        }
+        super.render( matrixStack, mouseX, mouseY, partialTicks );
+    }
+    
+    @Override
     public void renderButton( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks ) {
         Minecraft mc = Minecraft.getInstance();
+        
+        matrixStack.pushPose();
+        matrixStack.translate( 0.0, 0.0, 399.0 ); // Right behind tooltips
         
         // Draw button tile
         mc.getTextureManager().bind( INFO.isToggledOn() ? BUTTON_TEXTURE_ON : BUTTON_TEXTURE );
@@ -71,6 +86,8 @@ public class ExtraInventoryButton extends Button {
             blit( matrixStack, x + ICON_BORDER, y + ICON_BORDER, 0.0F, 0.0F,
                     ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE );
         }
+        
+        matrixStack.popPose();
         
         // Draw tooltip
         if( isHovered() ) {

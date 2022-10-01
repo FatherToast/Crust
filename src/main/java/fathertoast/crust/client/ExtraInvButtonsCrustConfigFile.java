@@ -53,6 +53,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
         public final BooleanField enabled;
         public final BooleanField hideUnusable;
         public final BooleanField hideDisabled;
+        public final BooleanField hideForRecipeBook;
         
         public final IntField buttonsPerRow;
         public final StringListField buttons;
@@ -76,6 +77,8 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                     "If true, buttons that are unusable due to permissions will not be displayed." ) );
             hideDisabled = SPEC.define( new BooleanField( "hide_disabled", false,
                     "If true, built-in buttons that are disabled due to temporary conditions will not be displayed." ) );
+            hideForRecipeBook = SPEC.define( new BooleanField( "hide_for_recipe_book", true,
+                    "If true, extra inventory buttons will be hidden while the recipe book is open." ) );
             
             SPEC.newLine();
             

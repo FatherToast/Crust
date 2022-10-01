@@ -50,8 +50,6 @@ public class Crust {
      *      + starting inventory
      *      + hotkey to equip from creative inv - ideally MMB by default
      *      - extra inventory buttons (command-driven)
-     *          + TODO option to hide while recipe book is open
-     *          + TODO render above effect tiles
      *          - can have hotkey assigned
      *          - built-in buttons TODO destroy item on cursor button
      *          - custom buttons (user-defined)
