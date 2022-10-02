@@ -36,16 +36,12 @@ public class Crust {
      *      - entity/level events
      *      - math library
      *  - commands
-     *      - crustrecover [all|health|hunger|effects] [<targets>]
-     *      - crustportal (nether|end|<other portal>) [<target>] - create dimension portal
-     *      - crustmode [<player>] - check active modes
-     *      - crustmode <mode> (disable|<value>) [<players>] - enable/disable mode
-     *      - crustportal (nether|end) [<target>] - create dimension portal
-     *          - allow registration of custom portals
-     *      - crustmode [<player>] - check active modes
-     *      - crustmode <mode> (disable|<value>) [<players>] - enable/disable mode
-     *      + crustclean pointer [<player>] - destroy item on pointer
+     *      - crustclean pointer [<player>] - destroy item on pointer
      *      ? crustclean [<players>] - reset inventory to starting inventory
+     *      - crustmode [<player>] - check active modes
+     *      - crustmode <mode> (disable|<value>) [<players>] - enable/disable mode
+     *      - crustportal (nether|end|<other portal>) [<target>] - create dimension portal
+     *      - crustrecover [all|health|hunger|effects] [<targets>]
      *  - tools
      *      + starting inventory
      *      + hotkey to equip from creative inv - ideally MMB by default

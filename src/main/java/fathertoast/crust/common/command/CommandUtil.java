@@ -1,11 +1,13 @@
 package fathertoast.crust.common.command;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import fathertoast.crust.common.command.impl.CrustCleanCommand;
 import fathertoast.crust.common.command.impl.CrustModeCommand;
 import fathertoast.crust.common.command.impl.CrustPortalCommand;
 import fathertoast.crust.common.command.impl.CrustRecoverCommand;
@@ -30,9 +32,11 @@ public class CommandUtil {
     /** Called each time commands are loaded. */
     @SubscribeEvent
     static void registerCommands( RegisterCommandsEvent event ) {
-        CrustRecoverCommand.register( event.getDispatcher() );
-        CrustPortalCommand.register( event.getDispatcher() );
-        CrustModeCommand.register( event.getDispatcher() );
+        CommandDispatcher<CommandSource> dispatcher = event.getDispatcher();
+        CrustCleanCommand.register( dispatcher );
+        CrustModeCommand.register( dispatcher );
+        CrustPortalCommand.register( dispatcher );
+        CrustRecoverCommand.register( dispatcher );
     }
     
     

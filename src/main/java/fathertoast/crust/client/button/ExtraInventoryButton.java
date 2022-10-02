@@ -6,6 +6,7 @@ import fathertoast.crust.api.lib.CrustMath;
 import fathertoast.crust.client.ClientRegister;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.gui.widget.button.Button;
@@ -30,16 +31,22 @@ public class ExtraInventoryButton extends Button {
     public static final int TEXT_Y = MathHelper.ceil( (BUTTON_SIZE - 8) / 2.0F );
     
     
-    private final Screen PARENT;
+    private final DisplayEffectsScreen<?> PARENT;
     private final ButtonInfo INFO;
     
-    public ExtraInventoryButton( Screen screen, int leftPos, int topPos, ButtonInfo info ) {
+    public ExtraInventoryButton( DisplayEffectsScreen<?> screen, int leftPos, int topPos, ButtonInfo info ) {
         super( leftPos, topPos, BUTTON_SIZE, BUTTON_SIZE,
                 new StringTextComponent( info.TEXT ), info.ON_PRESS,
                 new ButtonTooltip( screen, info.TOOLTIP ) );
         PARENT = screen;
         INFO = info;
         active = info.isActive();
+    }
+    
+    @Override
+    public void onPress() {
+        super.onPress();
+        PARENT.skipNextRelease = true;
     }
     
     @Override

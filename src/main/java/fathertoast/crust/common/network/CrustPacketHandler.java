@@ -2,6 +2,7 @@ package fathertoast.crust.common.network;
 
 import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.mode.CrustModesData;
+import fathertoast.crust.common.network.message.S2CDestroyItemOnPointer;
 import fathertoast.crust.common.network.message.S2CUpdateCrustModes;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -26,6 +27,11 @@ public class CrustPacketHandler {
     private static int messageIndex;
     
     /** Sends Crust modes data to its owner's client. */
+    public static void sendDestroyItemOnPointerUpdate( ServerPlayerEntity player ) {
+        sendToClient( player, new S2CDestroyItemOnPointer() );
+    }
+    
+    /** Sends Crust modes data to its owner's client. */
     public static void sendCrustModesUpdate( ServerPlayerEntity player ) {
         sendToClient( player, new S2CUpdateCrustModes( CrustModesData.of( player ).getSaveTag() ) );
     }
@@ -44,6 +50,7 @@ public class CrustPacketHandler {
     /** Registers this mod's messages. */
     public static void registerMessages() {
         registerMessage( S2CUpdateCrustModes.class, S2CUpdateCrustModes::encode, S2CUpdateCrustModes::decode, S2CUpdateCrustModes::handle );
+        registerMessage( S2CDestroyItemOnPointer.class, S2CDestroyItemOnPointer::encode, S2CDestroyItemOnPointer::decode, S2CDestroyItemOnPointer::handle );
     }
     
     /** Registers a message with an auto-assigned 'message index'. */

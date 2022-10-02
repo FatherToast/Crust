@@ -85,10 +85,10 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
             buttonsPerRow = SPEC.define( new IntField( "buttons_per_row", 4, IntField.Range.NON_NEGATIVE,
                     "The number of buttons that can be displayed per row. The number of rows is automatically calculated." ) );
             buttons = SPEC.define( new StringListField( "displayed_buttons", "Button", Arrays.asList(
-                    ButtonInfo.MAGNET_MODE.ID, ButtonInfo.KILL_ALL.ID, ButtonInfo.TOGGLE_RAIN.ID, ButtonInfo.WEATHER_STORM.ID,
+                    ButtonInfo.MAGNET_MODE.ID, ButtonInfo.DESTROY_POINTER_ITEM.ID, ButtonInfo.TOGGLE_RAIN.ID, ButtonInfo.WEATHER_STORM.ID,
                     ButtonInfo.SUPER_VISION_MODE.ID, ButtonInfo.SUPER_SPEED_MODE.ID, ButtonInfo.DAY.ID, ButtonInfo.NIGHT.ID,
-                    ButtonInfo.NO_PICKUP_MODE.ID, ButtonInfo.GOD_MODE.ID, ButtonInfo.CLEAR_EFFECTS.ID, ButtonInfo.FULL_HEAL.ID,
-                    ButtonInfo.KILL_ALL.ID, ButtonInfo.GAME_MODE.ID ),
+                    ButtonInfo.NO_PICKUP_MODE.ID, ButtonInfo.GOD_MODE.ID, ButtonInfo.GAME_MODE.ID, ButtonInfo.KILL_ALL.ID,
+                    ButtonInfo.CLEAR_EFFECTS.ID, ButtonInfo.FULL_HEAL.ID ),
                     "The buttons displayed in the inventory, in the order you want them displayed.",
                     "These are ordered left-to-right, then wrapped into rows.",
                     "You may assign a hotkey to any button in your options, whether or not you choose to display it.",
@@ -203,8 +203,6 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
         public static String[] getDefaults( int index ) {
             // "Mega super-chill switch statement"
             int i = -1;
-            if( ++i == index )
-                return new String[] { "Clear all potion effects", "milk.png", "effect clear" };
             if( ++i == index )
                 return new String[] { "+5 levels", "xp_plus.png", "experience add @s 5 levels" };
             if( ++i == index )

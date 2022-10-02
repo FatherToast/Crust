@@ -86,6 +86,8 @@ public class ButtonInfo {
             "instant_health.png", "crustrecover" ) );
     public static final ButtonInfo CLEAR_EFFECTS = builtIn( new ButtonInfo( "clearEffects", "Clear all potion effects",
             "milk.png", "effect clear" ) );
+    public static final ButtonInfo DESTROY_POINTER_ITEM = builtIn( new ButtonInfo( "destroyOnPointer", "Destroy item on cursor",
+            "fire.png", "crustclean pointer" ) );
     public static final ButtonInfo KILL_ALL = builtIn( new ButtonInfo( "killAll", "Kill all entities",
             "creeper_slash.png", "kill @e[type=!player]" ) );
     @SuppressWarnings( "unused" )
