@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 /**
  * Represents a config field with a double value. The entered config value is converted by a specified scale factor when loaded.
@@ -22,6 +23,13 @@ public class ScaledDoubleField extends DoubleField {
     
     /** Creates a new field that accepts a specialized range of values. */
     public ScaledDoubleField( String key, double defaultValue, double scale, double min, double max, @Nullable String... description ) {
+        super( key, defaultValue, min, max, description );
+        SCALE = scale;
+    }
+    
+    /** Creates a new field that accepts a specialized range of values. */
+    public ScaledDoubleField( String key, double defaultValue, double scale, Supplier<Double> min, Supplier<Double> max,
+                              @Nullable String... description ) {
         super( key, defaultValue, min, max, description );
         SCALE = scale;
     }

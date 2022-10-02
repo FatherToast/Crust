@@ -26,7 +26,6 @@ public class Crust {
      *  - configs
      *      - config button opens config folder
      *      ? in-game config editor gui
-     *      + variable field min/max limits
      *  - helpers
      *      - advancement load event
      *      - data gen

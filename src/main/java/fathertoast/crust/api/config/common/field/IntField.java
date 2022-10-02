@@ -8,6 +8,7 @@ import fathertoast.crust.api.config.common.file.TomlHelper;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 /**
  * Represents a config field with an integer value.
@@ -18,9 +19,9 @@ public class IntField extends AbstractConfigField {
     /** The default field value. */
     private final int valueDefault;
     /** The minimum field value. */
-    private final int valueMin;
+    private final Supplier<Integer> valueMin;
     /** The maximum field value. */
-    private final int valueMax;
+    private final Supplier<Integer> valueMax;
     
     /** The underlying field value. */
     private int value;
@@ -32,6 +33,11 @@ public class IntField extends AbstractConfigField {
     
     /** Creates a new field that accepts a specialized range of values. */
     public IntField( String key, int defaultValue, int min, int max, @Nullable String... description ) {
+        this( key, defaultValue, () -> min, () -> max, description );
+    }
+    
+    /** Creates a new field that accepts a specialized range of values. */
+    public IntField( String key, int defaultValue, Supplier<Integer> min, Supplier<Integer> max, @Nullable String... description ) {
         super( key, description );
         valueDefault = defaultValue;
         valueMin = min;
@@ -50,7 +56,7 @@ public class IntField extends AbstractConfigField {
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoRange( valueDefault, valueMin, valueMax ) );
+        comment.add( TomlHelper.fieldInfoRange( valueDefault, valueMin.get(), valueMax.get() ) );
     }
     
     /**
@@ -64,17 +70,19 @@ public class IntField extends AbstractConfigField {
         // Use a final local variable to make sure the value gets set exactly one time
         final int newValue;
         if( raw instanceof Number ) {
+            int min = valueMin.get();
+            int max = valueMax.get();
             // Parse the value
             final int rawValue = ((Number) raw).intValue();
-            if( rawValue < valueMin ) {
+            if( rawValue < min ) {
                 ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
-                        getClass(), getKey(), valueMin, raw );
-                newValue = valueMin;
+                        getClass(), getKey(), min, raw );
+                newValue = min;
             }
-            else if( rawValue > valueMax ) {
+            else if( rawValue > max ) {
                 ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
-                        getClass(), getKey(), valueMax, raw );
-                newValue = valueMax;
+                        getClass(), getKey(), max, raw );
+                newValue = max;
             }
             else {
                 if( (double) rawValue != ((Number) raw).doubleValue() ) {

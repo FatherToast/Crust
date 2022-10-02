@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Represents a config field with a double value.
@@ -21,9 +22,9 @@ public class DoubleField extends AbstractConfigField {
     /** The default field value. */
     private final double valueDefault;
     /** The minimum field value. */
-    private final double valueMin;
+    private final Supplier<Double> valueMin;
     /** The maximum field value. */
-    private final double valueMax;
+    private final Supplier<Double> valueMax;
     
     /** The underlying field value. */
     private double value;
@@ -35,6 +36,11 @@ public class DoubleField extends AbstractConfigField {
     
     /** Creates a new field that accepts a specialized range of values. */
     public DoubleField( String key, double defaultValue, double min, double max, @Nullable String... description ) {
+        this( key, defaultValue, () -> min, () -> max, description );
+    }
+    
+    /** Creates a new field that accepts a specialized range of values. */
+    public DoubleField( String key, double defaultValue, Supplier<Double> min, Supplier<Double> max, @Nullable String... description ) {
         super( key, description );
         valueDefault = defaultValue;
         valueMin = min;
@@ -53,7 +59,7 @@ public class DoubleField extends AbstractConfigField {
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoRange( valueDefault, valueMin, valueMax ) );
+        comment.add( TomlHelper.fieldInfoRange( valueDefault, valueMin.get(), valueMax.get() ) );
     }
     
     /**
@@ -67,17 +73,19 @@ public class DoubleField extends AbstractConfigField {
         // Use a final local variable to make sure the value gets set exactly one time
         final double newValue;
         if( raw instanceof Number ) {
+            double min = valueMin.get();
+            double max = valueMax.get();
             // Parse the value
             final double rawValue = ((Number) raw).doubleValue();
-            if( rawValue < valueMin ) {
+            if( rawValue < min ) {
                 ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
-                        getClass(), getKey(), valueMin, raw );
-                newValue = valueMin;
+                        getClass(), getKey(), min, raw );
+                newValue = min;
             }
-            else if( rawValue > valueMax ) {
+            else if( rawValue > max ) {
                 ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
-                        getClass(), getKey(), valueMax, raw );
-                newValue = valueMax;
+                        getClass(), getKey(), max, raw );
+                newValue = max;
             }
             else {
                 newValue = rawValue;
@@ -213,7 +221,7 @@ public class DoubleField extends AbstractConfigField {
                 list.add( new Entry<>( values[i], new EnvironmentSensitive( baseWeights[i], weightExceptions[i] ) ) );
                 
                 // Do a bit of error checking; allows us to ignore the possibility of negative weights
-                if( baseWeights[i].valueMin < 0.0 || weightExceptions[i].valueDefault.getMinValue() < 0.0 ) {
+                if( baseWeights[i].valueMin.get() < 0.0 || weightExceptions[i].valueDefault.getMinValue() < 0.0 ) {
                     throw new IllegalArgumentException( "Weight is not allowed to be negative! See " +
                             baseWeights[i].getKey() + " and/or " + weightExceptions[i].getKey() );
                 }
