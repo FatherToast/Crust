@@ -29,15 +29,15 @@ public class Crust {
      *      + variable field min/max limits
      *  - helpers
      *      - advancement load event
-     *      + data gen
-     *          + loot table
+     *      - data gen
+     *          - loot table
      *      - set block flags
      *      - nbt
      *      - entity/level events
      *      - math library
      *  - commands
      *      - crustclean pointer [<player>] - destroy item on pointer
-     *      ? crustclean [<players>] - reset inventory to starting inventory
+     *      + crustclean [<players>] - reset inventory to starting inventory
      *      - crustmode [<player>] - check active modes
      *      - crustmode <mode> (disable|<value>) [<players>] - enable/disable mode
      *      - crustportal (nether|end|<other portal>) [<target>] - create dimension portal
