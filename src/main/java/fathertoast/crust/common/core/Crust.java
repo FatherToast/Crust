@@ -47,7 +47,7 @@ public class Crust {
      *      + hotkey to equip from creative inv - ideally MMB by default
      *      - extra inventory buttons (command-driven)
      *          - can have hotkey assigned
-     *          - built-in buttons TODO destroy item on cursor button
+     *          - built-in buttons
      *          - custom buttons (user-defined)
      *      - configure default game rules
      *      ? in-game nbt editor gui (does the mod still exist?)
