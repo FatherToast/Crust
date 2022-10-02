@@ -6,9 +6,9 @@ import fathertoast.crust.api.lib.CrustMath;
 import fathertoast.crust.client.ClientRegister;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.DisplayEffectsScreen;
+import net.minecraft.client.gui.recipebook.IRecipeShownListener;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.InventoryScreen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -31,16 +31,17 @@ public class ExtraInventoryButton extends Button {
     public static final int TEXT_Y = MathHelper.ceil( (BUTTON_SIZE - 8) / 2.0F );
     
     
-    private final DisplayEffectsScreen<?> PARENT;
+    private final ContainerScreen<?> PARENT;
+    private final boolean HAS_RECIPE_BOOK;
     private final ButtonInfo INFO;
     
-    public ExtraInventoryButton( DisplayEffectsScreen<?> screen, int leftPos, int topPos, ButtonInfo info ) {
+    public ExtraInventoryButton( ContainerScreen<?> screen, int leftPos, int topPos, ButtonInfo info ) {
         super( leftPos, topPos, BUTTON_SIZE, BUTTON_SIZE,
                 new StringTextComponent( info.TEXT ), info.ON_PRESS,
                 new ButtonTooltip( screen, info.TOOLTIP ) );
         PARENT = screen;
+        HAS_RECIPE_BOOK = screen instanceof IRecipeShownListener;
         INFO = info;
-        active = info.isActive();
     }
     
     @Override
@@ -51,9 +52,10 @@ public class ExtraInventoryButton extends Button {
     
     @Override
     public void render( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks ) {
-        if( ClientRegister.EXTRA_INV_BUTTONS.GENERAL.hideForRecipeBook.get() && PARENT instanceof InventoryScreen ) {
-            visible = !((InventoryScreen) PARENT).getRecipeBookComponent().isVisible();
+        if( ClientRegister.EXTRA_INV_BUTTONS.GENERAL.hideForRecipeBook.get() && HAS_RECIPE_BOOK ) {
+            visible = !((IRecipeShownListener) PARENT).getRecipeBookComponent().isVisible();
         }
+        active = INFO.canBeActive() && (!ClientRegister.EXTRA_INV_BUTTONS.GENERAL.disableInvalid.get() || INFO.canEnable());
         super.render( matrixStack, mouseX, mouseY, partialTicks );
     }
     
@@ -62,7 +64,7 @@ public class ExtraInventoryButton extends Button {
         Minecraft mc = Minecraft.getInstance();
         
         matrixStack.pushPose();
-        matrixStack.translate( 0.0, 0.0, 399.0 ); // Right behind tooltips
+        matrixStack.translate( 0.0, 0.0, 31.0 ); // Right behind item on pointer
         
         // Draw button tile
         mc.getTextureManager().bind( INFO.isToggledOn() ? BUTTON_TEXTURE_ON : BUTTON_TEXTURE );

@@ -51,8 +51,8 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
     public static class General extends AbstractConfigCategory<ExtraInvButtonsCrustConfigFile> {
         
         public final BooleanField enabled;
+        public final BooleanField disableInvalid;
         public final BooleanField hideUnusable;
-        public final BooleanField hideDisabled;
         public final BooleanField hideForRecipeBook;
         
         public final IntField buttonsPerRow;
@@ -73,10 +73,10 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
             enabled = SPEC.define( new BooleanField( "enabled", true,
                     "Set this to false to hide all extra inventory buttons.",
                     "Does not affect hotkeys (key bindings) assigned to buttons." ) );
+            disableInvalid = SPEC.define( new BooleanField( "disable_invalid", true,
+                    "If true, built-in buttons that are invalid due to temporary conditions will be grayed-out." ) );
             hideUnusable = SPEC.define( new BooleanField( "hide_unusable", true,
                     "If true, buttons that are unusable due to permissions will not be displayed." ) );
-            hideDisabled = SPEC.define( new BooleanField( "hide_disabled", false,
-                    "If true, built-in buttons that are disabled due to temporary conditions will not be displayed." ) );
             hideForRecipeBook = SPEC.define( new BooleanField( "hide_for_recipe_book", true,
                     "If true, extra inventory buttons will be hidden while the recipe book is open." ) );
             
@@ -151,7 +151,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                     "Whether undying mode (prevents death) should be toggled when using the \"" + ButtonInfo.GOD_MODE.ID + "\" button." ) );
             godModeUnbreaking = SPEC.define( new BooleanField( "god_mode.unbreaking", true,
                     "Whether unbreaking mode (prevents item break) should be toggled when using the \"" + ButtonInfo.GOD_MODE.ID + "\" button." ) );
-            godModeUneating = SPEC.define( new IntField( "god_mode.uneating", 6, 0, 20,
+            godModeUneating = SPEC.define( new IntField( "god_mode.uneating", 7, 0, 20,
                     "The level for uneating mode (minimum food level in half-drumsticks) to request when using the",
                     "\"" + ButtonInfo.GOD_MODE.ID + "\" button. Set this to 0 if you don't want to toggle uneating mode." ) );
             SPEC.callback( () -> ButtonInfo.updateGodModePerms( this ) );

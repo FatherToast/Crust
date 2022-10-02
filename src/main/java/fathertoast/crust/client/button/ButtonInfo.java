@@ -14,10 +14,12 @@ import fathertoast.crust.common.mode.CrustModesData;
 import fathertoast.crust.common.mode.type.CrustMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.network.play.ClientPlayNetHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.ISuggestionProvider;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.settings.KeyModifier;
 
@@ -85,9 +87,11 @@ public class ButtonInfo {
     public static final ButtonInfo FULL_HEAL = builtIn( new ButtonInfo( "fullHeal", "Full recover",
             "instant_health.png", "crustrecover" ) );
     public static final ButtonInfo CLEAR_EFFECTS = builtIn( new ButtonInfo( "clearEffects", "Clear all potion effects",
-            "milk.png", "effect clear" ) );
+            "milk.png", "effect clear" )
+            .condition( () -> !player().getActiveEffectsMap().isEmpty() ) );
     public static final ButtonInfo DESTROY_POINTER_ITEM = builtIn( new ButtonInfo( "destroyOnPointer", "Destroy item on cursor",
-            "fire.png", "crustclean pointer" ) );
+            "fire.png", ButtonInfo::destroyOnPointer, Command.CLEAN_POINTER )
+            .condition( () -> !player().inventory.getCarried().isEmpty() ) );
     public static final ButtonInfo KILL_ALL = builtIn( new ButtonInfo( "killAll", "Kill all entities",
             "creeper_slash.png", "kill @e[type=!player]" ) );
     @SuppressWarnings( "unused" )
@@ -261,17 +265,14 @@ public class ButtonInfo {
         return true;
     }
     
-    /**
-     * @return True if the button should be enabled.
-     * Causes the button to be grayed-out or hidden based on configs.
-     */
+    /** @return True if the button should be enabled. Causes the button to be grayed-out when false. */
     public boolean canEnable() { return enabled == null || enabled.get(); }
     
-    /** Sets this button's active state. */
-    public void setActive( boolean value ) { active = value; }
+    /** Sets this button's active state. When false, the button will be forcibly disabled. */
+    public void setCanBeActive( boolean value ) { active = value; }
     
     /** @return True if the button should be active. Inactive buttons are grayed-out and non-pressable. */
-    public boolean isActive() { return active; }
+    public boolean canBeActive() { return active; }
     
     /** @return True if the button should appear 'toggled on'. */
     public boolean isToggledOn() { return toggledOn != null && toggledOn.get(); }
@@ -294,6 +295,15 @@ public class ButtonInfo {
     
     
     // ---- Built-In Button Impl ---- //
+    
+    private static void destroyOnPointer( @Nullable Button button ) {
+        if( Minecraft.getInstance().screen instanceof CreativeScreen ) {
+            player().inventory.setCarried( ItemStack.EMPTY );
+        }
+        else {
+            cmd( Command.CLEAN_POINTER );
+        }
+    }
     
     private static void toggleDay( @Nullable Button button ) {
         final int dayTime = (int) (world().getDayTime() % 24_000L);
@@ -398,6 +408,8 @@ public class ButtonInfo {
         
         static final String MODE_SURVIVAL = "gamemode survival";
         static final String MODE_CREATIVE = "gamemode creative";
+        
+        static final String CLEAN_POINTER = "crustclean pointer";
         
         static String clear() { return WEATHER_CLEAR + " " + ClientRegister.EXTRA_INV_BUTTONS.BUILT_IN_BUTTONS.weatherDuration.get(); }
         

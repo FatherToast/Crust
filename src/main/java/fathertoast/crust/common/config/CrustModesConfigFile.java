@@ -3,10 +3,7 @@ package fathertoast.crust.common.config;
 import fathertoast.crust.api.config.common.AbstractConfigCategory;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
-import fathertoast.crust.api.config.common.field.DoubleField;
-import fathertoast.crust.api.config.common.field.IntField;
-import fathertoast.crust.api.config.common.field.RestartNote;
-import fathertoast.crust.api.config.common.field.ScaledDoubleField;
+import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.common.command.CommandUtil;
 
 /**
@@ -44,19 +41,29 @@ public class CrustModesConfigFile extends AbstractConfigFile {
         
         public final IntField magnetOpLevel;
         //public final IntField multiMineOpLevel;
-        public final IntField noPickupOpLevel;
         public final IntField undyingOpLevel;
         public final IntField unbreakingOpLevel;
         public final IntField uneatingOpLevel;
         public final IntField visionOpLevel;
         public final IntField speedOpLevel;
+        public final IntField noPickupOpLevel;
+        
+        public final DoubleField magnetDefault;
+        //public final ??? multiMineDefault;
+        public final BooleanField undyingDefault;
+        public final BooleanField unbreakingDefault;
+        public final IntField uneatingDefault;
+        public final BooleanField visionDefault;
+        public final DoubleField speedDefault;
+        public final BooleanField noPickupDefault;
         
         General( CrustModesConfigFile parent ) {
             super( parent, "general",
                     "Options that apply to the 'modes' added by Crust, in general." );
             
-            magnetOpLevel = SPEC.define( new IntField( "op_level.magnet",
-                    CommandUtil.PERMISSION_NONE, IntField.Range.ANY,
+            SPEC.increaseIndent();
+            
+            SPEC.subcategory( "op_level",
                     "The op levels (aka permission levels) required to enable/disable Crust's various modes.",
                     "You can disable any mode by setting this level very high (e.g., " + (CommandUtil.PERMISSION_SERVER_OP + 1) + ").",
                     "Vanilla op levels used are:",
@@ -64,7 +71,10 @@ public class CrustModesConfigFile extends AbstractConfigFile {
                     "  " + CommandUtil.PERMISSION_TRUSTED + " - Can bypass spawn protection",
                     "  " + CommandUtil.PERMISSION_CHEAT + " - Can use cheats, Access to info that can be used to cheat",
                     "  " + CommandUtil.PERMISSION_MODERATE + " - Can ban/whitelist players, 'Moderator'",
-                    "  " + CommandUtil.PERMISSION_SERVER_OP + " - All permissions, Server management" ), RestartNote.WORLD );
+                    "  " + CommandUtil.PERMISSION_SERVER_OP + " - All permissions, Server management",
+                    RestartNote.WORLD.COMMENT );
+            magnetOpLevel = SPEC.define( new IntField( "op_level.magnet",
+                    CommandUtil.PERMISSION_NONE, IntField.Range.ANY ) );
             //multiMineOpLevel = SPEC.define( new IntField( "op_level.multi_mine",
             //        CommandUtil.PERMISSION_NONE, IntField.Range.ANY ) );
             undyingOpLevel = SPEC.define( new IntField( "op_level.undying",
@@ -79,6 +89,25 @@ public class CrustModesConfigFile extends AbstractConfigFile {
                     CommandUtil.PERMISSION_CHEAT, IntField.Range.ANY ) );
             noPickupOpLevel = SPEC.define( new IntField( "op_level.destroy_on_pickup",
                     CommandUtil.PERMISSION_CHEAT, IntField.Range.ANY ) );
+            
+            SPEC.subcategory( "default",
+                    "The default settings for Crust's various modes initially applied to players.",
+                    "Note that these mode settings will be applied regardless of op level; if the player does not have",
+                    "permission to enable/disable the mode, they will be 'stuck' with whatever is assigned here." );
+            magnetDefault = SPEC.define( new DoubleField( "default.magnet", 10.0, 0.0, 3.4e38,
+                    "The maximum range (blocks) for magnet mode. If 0, magnet mode will be off by default." ) );
+            //multiMineDefault = SPEC.define( new ???( "default.multi_mine", 0, 0, 0 ) );
+            undyingDefault = SPEC.define( new BooleanField( "default.undying", false ) );
+            unbreakingDefault = SPEC.define( new BooleanField( "default.unbreaking", false ) );
+            uneatingDefault = SPEC.define( new IntField( "default.uneating", 0, 0, 20,
+                    "When dropping below this food level (half-drumsticks), uneating mode restores hunger.",
+                    "If 0, uneating mode will be off by default." ) );
+            visionDefault = SPEC.define( new BooleanField( "default.super_vision", false ) );
+            speedDefault = SPEC.define( new DoubleField( "default.super_speed", 1.0, 1.0, 3.4e38,
+                    "The speed multiplier applied while sprinting. If 1, super speed mode will be off by default." ) );
+            noPickupDefault = SPEC.define( new BooleanField( "default.destroy_on_pickup", false ) );
+            
+            SPEC.decreaseIndent();
         }
     }
     

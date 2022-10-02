@@ -49,6 +49,7 @@ public class Crust {
      *          - built-in buttons
      *          - custom buttons (user-defined)
      *      - configure default game rules
+     *      - configure default 'modes' (see below)
      *      ? in-game nbt editor gui (does the mod still exist?)
      *  - modes
      *      - magnet - pulls nearby items toward you

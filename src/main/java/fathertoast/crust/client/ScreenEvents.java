@@ -4,7 +4,7 @@ import fathertoast.crust.client.button.ButtonInfo;
 import fathertoast.crust.client.button.ExtraInventoryButton;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.DisplayEffectsScreen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.multiplayer.PlayerController;
@@ -24,15 +24,16 @@ public class ScreenEvents {
     @SubscribeEvent
     static void onGuiInit( GuiScreenEvent.InitGuiEvent.Post event ) {
         PlayerController gameMode = Minecraft.getInstance().gameMode;
-        boolean creative = gameMode != null && gameMode.hasInfiniteItems(); // Avoid double-initializing our buttons
-        if( ClientRegister.EXTRA_INV_BUTTONS.GENERAL.enabled.get() &&
-                (creative ? event.getGui() instanceof CreativeScreen : event.getGui() instanceof InventoryScreen) ) {
-            addExtraInventoryButtons( event, (DisplayEffectsScreen<?>) event.getGui() );
+        if( ClientRegister.EXTRA_INV_BUTTONS.GENERAL.enabled.get() && event.getGui() instanceof ContainerScreen ) {
+            boolean creative = gameMode != null && gameMode.hasInfiniteItems(); // Avoid double-initializing our buttons
+            if( !(creative && event.getGui() instanceof InventoryScreen) && !(!creative && event.getGui() instanceof CreativeScreen) ) {
+                addExtraInventoryButtons( event, (ContainerScreen<?>) event.getGui() );
+            }
         }
     }
     
     /** Adds the extra buttons to the player's (creative) inventory, if enabled. */
-    private static void addExtraInventoryButtons( GuiScreenEvent.InitGuiEvent event, DisplayEffectsScreen<?> screen ) {
+    private static void addExtraInventoryButtons( GuiScreenEvent.InitGuiEvent event, ContainerScreen<?> screen ) {
         Minecraft mc = screen.getMinecraft();
         ExtraInvButtonsCrustConfigFile.General config = ClientRegister.EXTRA_INV_BUTTONS.GENERAL;
         
@@ -40,14 +41,12 @@ public class ScreenEvents {
         for( String buttonId : config.buttons.get() ) {
             ButtonInfo button = ButtonInfo.get( buttonId );
             if( button != null ) {
-                button.setActive( true );
-                if( !button.isUsable() ) {
-                    button.setActive( false );
-                    if( config.hideUnusable.get() ) continue;
+                if( button.isUsable() ) {
+                    button.setCanBeActive( true );
                 }
-                if( !button.canEnable() ) {
-                    button.setActive( false );
-                    if( config.hideDisabled.get() ) continue;
+                else {
+                    button.setCanBeActive( false );
+                    if( config.hideUnusable.get() ) continue;
                 }
                 buttons.add( button );
             }

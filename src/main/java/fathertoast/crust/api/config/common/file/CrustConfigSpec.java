@@ -151,7 +151,7 @@ public class CrustConfigSpec {
     
     
     /**
-     * Adds a subcategory header, optionally including a comment to describe/summarize the contents of the file.
+     * Adds a subcategory header, optionally including a comment to describe/summarize the contents of the section.
      * <p>
      * The header and its comment are printed at the current indent level - 1. Therefore, it is good practice to always
      * increase the indent before the first subcategory and then decrease the indent after the final subcategory.

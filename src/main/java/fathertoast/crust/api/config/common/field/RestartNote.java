@@ -18,7 +18,7 @@ public enum RestartNote {
         if( note != null ) comment.add( note.COMMENT );
     }
     
-    private final String COMMENT;
+    public final String COMMENT;
     
     RestartNote( String comment ) { COMMENT = comment; }
 }

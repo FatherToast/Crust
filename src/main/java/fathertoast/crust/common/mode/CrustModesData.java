@@ -1,6 +1,8 @@
 package fathertoast.crust.common.mode;
 
 import fathertoast.crust.api.lib.NBTHelper;
+import fathertoast.crust.common.config.CrustConfig;
+import fathertoast.crust.common.config.CrustModesConfigFile;
 import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.core.CrustForgeEvents;
 import fathertoast.crust.common.mode.type.CrustMode;
@@ -24,7 +26,22 @@ public class CrustModesData {
     /** Creates a new data helper that provides simple access to mode save data. */
     private CrustModesData( PlayerEntity player ) {
         PLAYER = player;
-        SAVE_TAG = NBTHelper.getPlayerData( player, Crust.MOD_ID, TAG_NAME );
+        CompoundNBT modTag = NBTHelper.getPlayerData( player, Crust.MOD_ID );
+        boolean setDefaults = !player.level.isClientSide() && !modTag.contains( TAG_NAME, NBTHelper.ID_COMPOUND );
+        SAVE_TAG = NBTHelper.getOrCreateCompound( modTag, TAG_NAME );
+        
+        if( setDefaults ) {
+            CrustModesConfigFile.General config = CrustConfig.MODES.GENERAL;
+            
+            if( config.magnetDefault.get() > 0.0 ) enable( CrustModes.MAGNET, config.magnetDefault.getFloat() );
+            //if( config.multiMineDefault.get() > 0 ) enable( CrustModes.MULTI_MINE, config.multiMineDefault.get() );
+            if( config.undyingDefault.get() ) enable( CrustModes.UNDYING, (byte) 1 );
+            if( config.unbreakingDefault.get() ) enable( CrustModes.UNBREAKING, (byte) 1 );
+            if( config.uneatingDefault.get() > 0 ) enable( CrustModes.UNEATING, config.uneatingDefault.getByte() );
+            if( config.visionDefault.get() ) enable( CrustModes.SUPER_VISION, (byte) 1 );
+            if( config.speedDefault.get() > 0.0 ) enable( CrustModes.SUPER_SPEED, config.speedDefault.getFloat() );
+            if( config.noPickupDefault.get() ) enable( CrustModes.DESTROY_ON_PICKUP, (byte) 1 );
+        }
     }
     
     /** A string representation of this object. */
