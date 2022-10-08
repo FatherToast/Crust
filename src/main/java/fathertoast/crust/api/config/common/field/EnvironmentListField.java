@@ -66,9 +66,11 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
      */
     public static List<String> verboseDescription() {
         List<String> comment = new ArrayList<>();
-        comment.add( "Environment List fields: General format = [ \"value environment1 condition1 & environment2 condition2 & ...\", ... ]" );
-        comment.add( "  Environment lists are arrays of environment entries. Each entry is a value followed by the environment conditions that must be" );
-        comment.add( "    satisfied for the value to be chosen. The environments are tested in the order listed, and the first matching entry is chosen." );
+        comment.add( "Environment List fields: General format =" );
+        comment.add( "    [ \"value environment1 condition1 & environment2 condition2 & ...\", ... ]" );
+        comment.add( "  Environment lists are arrays of environment entries. Each entry is a value followed by the " +
+                "environment conditions that must be satisfied for the value to be chosen. The environments are tested " +
+                "in the order listed, and the first matching entry is chosen." );
         comment.add( "  See the bottom of this file for an explanation on each environment condition available." );
         return comment;
     }
@@ -77,68 +79,88 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
     public static List<String> environmentDescriptions() {
         List<String> comment = new ArrayList<>();
         comment.add( "Environment conditions (for Environment List entries):" );
-        comment.add( "  Many environment conditions can be inverted by using \"!\"; these are shown with (!) in the appropriate location." );
-        comment.add( "  Other environment conditions are numerical comparisons; these use the operators (shown as op) <, >, =, <=, >=, or != to compare value." );
+        comment.add( "  Many environment conditions can be inverted by using \"!\"; these are shown with (!) in the " +
+                "appropriate location." );
+        comment.add( "  Other environment conditions are numerical comparisons; these use the operators (shown as op) " +
+                "<, >, =, <=, >=, or != to compare value." );
         comment.add( "Valid environment conditions are:" );
         // Dimension-based
         comment.add( "  \"" + ENV_DIMENSION_PROPERTY + " (!)property\":" );
         comment.add( "    Valid property values: " + TomlHelper.toLiteralList( (Object[]) DimensionPropertyEnvironment.Value.values() ) );
-        comment.add( "    Dimension properties are the true/false values available to dimension types in data packs." );
-        comment.add( "    See the wiki for more info: [https://minecraft.fandom.com/wiki/Custom_dimension#Syntax]." );
+        comment.add( "    Dimension properties are the true/false values available to dimension types in data packs. " +
+                "See the wiki for more info: [https://minecraft.fandom.com/wiki/Custom_dimension#Syntax]." );
         comment.add( "  \"" + ENV_DIMENSION_TYPE + " (!)namespace:dimension_type_name\":" );
-        comment.add( "    The world's dimension type. In vanilla, these are only \"minecraft:overworld\", \"minecraft:the_nether\", or \"minecraft:the_end\"." );
+        comment.add( "    The world's dimension type. In vanilla, these are only \"minecraft:overworld\", " +
+                "\"minecraft:the_nether\", or \"minecraft:the_end\"." );
         // Biome-based
         comment.add( "  \"" + ENV_TERRAIN_DEPTH + " op value\":" );//TODO see if this changes in MC 1.18
-        comment.add( "    Biome's depth parameter. A measure of how high the terrain generates; depth < 0 makes a watery biome. For reference, generally vanilla" );
-        comment.add( "      plateaus are 1.5, mountains are 1, plains are 0.125, swamps are -0.2, rivers are -0.5, oceans are -1, and deep oceans are -1.8." );
+        comment.add( "    Biome's depth parameter. A measure of how high the terrain generates; depth < 0 makes a " +
+                "watery biome. For reference, generally vanilla plateaus are 1.5, mountains are 1, plains are 0.125, " +
+                "swamps are -0.2, rivers are -0.5, oceans are -1, and deep oceans are -1.8." );
         comment.add( "  \"" + ENV_TERRAIN_SCALE + " op value\":" );
-        comment.add( "    Biome's scale parameter. A measure of how 'wavy' the terrain generates. For reference, generally vanilla mountains are 0.5 and plains are 0.05." );
+        comment.add( "    Biome's scale parameter. A measure of how 'wavy' the terrain generates. For reference, " +
+                "generally vanilla mountains are 0.5 and plains are 0.05." );
         comment.add( "  \"" + ENV_RAINFALL + " op value\":" );
-        comment.add( "    Biome's rainfall parameter. If this is \"= 0\", it checks that rain is disabled. For reference, rainfall > 0.85 suppresses fire." );
+        comment.add( "    Biome's rainfall parameter. If this is \"= 0\", it checks that rain is disabled. For " +
+                "reference, rainfall > 0.85 suppresses fire." );
         comment.add( "  \"" + ENV_BIOME_TEMPERATURE + " op value\" or \"" + ENV_BIOME_TEMPERATURE + " (!)" + TemperatureEnvironment.FREEZING + "\":" );
-        comment.add( "    Biome's temperature parameter. For reference, freezing is < 0.15 and hot is generally considered > 0.95." );
+        comment.add( "    Biome's temperature parameter. For reference, freezing is < 0.15 and hot is generally " +
+                "considered > 0.95." );
         comment.add( "  \"" + ENV_TEMPERATURE + " op value\" or \"" + ENV_TEMPERATURE + " (!)" + TemperatureEnvironment.FREEZING + "\":" );
-        comment.add( "    Height-adjusted temperature. For reference, freezing is < 0.15 and hot is generally considered > 0.95." );
+        comment.add( "    Height-adjusted temperature. For reference, freezing is < 0.15 and hot is generally " +
+                "considered > 0.95." );
         comment.add( "  \"" + ENV_BIOME_CATEGORY + " (!)category\":" );
         comment.add( "    Valid category values: " + TomlHelper.toLiteralList( (Object[]) BiomeCategory.values() ) );
         comment.add( "  \"" + ENV_BIOME + " (!)namespace:biome_name\":" );
-        comment.add( "    The biome. See the wiki for vanilla biome names (resource locations) [https://minecraft.fandom.com/wiki/Biome#Biome_IDs]." );
+        comment.add( "    The biome. See the wiki for vanilla biome names (resource locations) " +
+                "[https://minecraft.fandom.com/wiki/Biome#Biome_IDs]." );
         // Position-based
         comment.add( "  \"" + ENV_STRUCTURE + " (!)namespace:structure_name\":" );
-        comment.add( "    The structure. See the wiki for vanilla structure names [https://minecraft.fandom.com/wiki/Generated_structures#Locating]." );
+        comment.add( "    The structure. See the wiki for vanilla structure names " +
+                "[https://minecraft.fandom.com/wiki/Generated_structures#Locating]." );
         comment.add( "  \"" + ENV_Y + " op value\":" );
         comment.add( "    The y-value. For reference, sea level is normally 63 and lava level is normally 10." );//TODO change lava level to -54 for MC 1.18
         comment.add( "  \"" + ENV_Y_FROM_SEA + " op value\":" );
-        comment.add( "    The y-value from sea level. Expect the only air <= 0 to be in caves/ravines (which may still have direct view of the sky)." );
+        comment.add( "    The y-value from sea level. Expect the only air <= 0 to be in caves/ravines (which may " +
+                "still have direct view of the sky)." );
         comment.add( "  \"" + ENV_POSITION + " (!)state\":" );
         comment.add( "    Valid state values: " + TomlHelper.toLiteralList( (Object[]) PositionEnvironment.Value.values() ) );
-        comment.add( "    Miscellaneous conditions that generally do what you expect. For reference, 'near' a village is ~3 chunks, and redstone checks weak power." );
+        comment.add( "    Miscellaneous conditions that generally do what you expect. For reference, 'near' a village " +
+                "is ~3 chunks, and redstone checks weak power." );
         // Time-based
         comment.add( "  \"" + ENV_DIFFICULTY + " op value\":" );
-        comment.add( "    The regional difficulty (0 to 6.75). This is based on many factors such as difficulty setting, moon brightness, chunk inhabited time, and world time." );
-        comment.add( "    For reference, this scales up to the max after 63 days in the world and 150 days in a particular chunk, and peaks during full moons." );
-        comment.add( "    On Peaceful this is always 0, on Easy this is 0.75 to 1.5, on Normal this is 1.5 to 4.0, and on Hard this is 2.25 to 6.75." );
+        comment.add( "    The regional difficulty (0 to 6.75). This is based on many factors such as difficulty " +
+                "setting, moon brightness, chunk inhabited time, and world time." );
+        comment.add( "    For reference, this scales up to the max after 63 days in the world and 150 days in a " +
+                "particular chunk, and peaks during full moons. On Peaceful this is always 0, on Easy this is 0.75 to " +
+                "1.5, on Normal this is 1.5 to 4.0, and on Hard this is 2.25 to 6.75." );
         comment.add( "  \"" + ENV_SPECIAL_DIFFICULTY + " op value\":" );
-        comment.add( "    The 'special multiplier' for regional difficulty (0 to 1). For reference, this is 0 when difficulty <= 2 and 1 when difficulty >= 4." );
-        comment.add( "    This is always 0 in Easy and below. In Normal, it maxes at absolute peak regional difficulty. In Hard, it starts at 0.125 and maxes out in ~50 days." );
+        comment.add( "    The 'special multiplier' for regional difficulty (0 to 1). For reference, this is 0 when " +
+                "difficulty <= 2 and 1 when difficulty >= 4." );
+        comment.add( "    This is always 0 in Easy and below. In Normal, it maxes at absolute peak regional " +
+                "difficulty. In Hard, it starts at 0.125 and maxes out in ~50 days." );
         comment.add( "  \"" + ENV_WEATHER + " (!)type\":" );
         comment.add( "    Valid type values: " + TomlHelper.toLiteralList( (Object[]) WeatherEnvironment.Value.values() ) );
         comment.add( "  \"" + ENV_MOON_BRIGHTNESS + " op value\":" );
-        comment.add( "    The moon brightness (0 to 1). New moon has 0 brightness, full moon has 1 brightness. Intermediate phases are 0.25, 0.5, or 0.75." );
+        comment.add( "    The moon brightness (0 to 1). New moon has 0 brightness, full moon has 1 brightness. " +
+                "Intermediate phases are 0.25, 0.5, or 0.75." );
         comment.add( "  \"" + ENV_MOON_PHASE + " (!)phase\":" );
         comment.add( "    Valid phase values: " + TomlHelper.toLiteralList( (Object[]) MoonPhaseEnvironment.Value.values() ) );
         comment.add( "  \"" + ENV_DAY_TIME + " (!)time\":" );
         comment.add( "    Valid time values: " + TomlHelper.toLiteralList( (Object[]) DayTimeEnvironment.Value.values() ) );
-        comment.add( "    Note that the transition periods, sunset & sunrise, are considered as part of day & night, respectively." );
+        comment.add( "    Note that the transition periods, sunset & sunrise, are considered as part of day & night, " +
+                "respectively." );
         comment.add( "  \"" + ENV_TIME_FROM_MIDNIGHT + " op value\":" );
         comment.add( "    The absolute time in ticks away from midnight. Value must be 0 to 12000." );
         comment.add( "  \"" + ENV_MOON_PHASE + " (!)phase\":" );
         comment.add( "    Valid phase values: " + TomlHelper.toLiteralList( (Object[]) MoonPhaseEnvironment.Value.values() ) );
         comment.add( "    For reference, the first day in a new world is always a full moon." );
         comment.add( "  \"" + ENV_WORLD_TIME + " op value\":" );
-        comment.add( "    The total time the world has existed, in ticks. For reference, each day cycle is 24000 ticks and each lunar cycle is 192000 ticks." );
+        comment.add( "    The total time the world has existed, in ticks. For reference, each day cycle is 24000 " +
+                "ticks and each lunar cycle is 192000 ticks." );
         comment.add( "  \"" + ENV_CHUNK_TIME + " op value\":" );
-        comment.add( "    The total time the chunk has been loaded, in ticks. For reference, each day cycle is 24000 ticks and each lunar cycle is 192000 ticks." );
+        comment.add( "    The total time the chunk has been loaded, in ticks. For reference, each day cycle is 24000 " +
+                "ticks and each lunar cycle is 192000 ticks." );
         return comment;
     }
     
@@ -150,7 +172,8 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoFormat( "Environment List", valueDefault, "[ \"value condition1 state1 & condition2 state2 & ...\", ... ]" ) );
+        comment.add( TomlHelper.fieldInfoFormat( "Environment List", valueDefault,
+                "[ \"value condition1 state1 & condition2 state2 & ...\", ... ]" ) );
         comment.add( "   Range for Values: " + TomlHelper.fieldRange( valueDefault.getMinValue(), valueDefault.getMaxValue() ) );
     }
     

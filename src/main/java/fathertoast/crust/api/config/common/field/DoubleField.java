@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.client.gui.widget.field.IConfigFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.field.NumberFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.util.math.BlockPos;
@@ -11,20 +13,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * Represents a config field with a double value.
  */
 @SuppressWarnings( "unused" )
-public class DoubleField extends AbstractConfigField {
+public class DoubleField extends NumberField {
     
     /** The default field value. */
     private final double valueDefault;
     /** The minimum field value. */
-    private final Supplier<Double> valueMin;
+    private final double valueMin;
     /** The maximum field value. */
-    private final Supplier<Double> valueMax;
+    private final double valueMax;
     
     /** The underlying field value. */
     private double value;
@@ -36,30 +37,37 @@ public class DoubleField extends AbstractConfigField {
     
     /** Creates a new field that accepts a specialized range of values. */
     public DoubleField( String key, double defaultValue, double min, double max, @Nullable String... description ) {
-        this( key, defaultValue, () -> min, () -> max, description );
-    }
-    
-    /** Creates a new field that accepts a specialized range of values. */
-    public DoubleField( String key, double defaultValue, Supplier<Double> min, Supplier<Double> max, @Nullable String... description ) {
         super( key, description );
         valueDefault = defaultValue;
         valueMin = min;
         valueMax = max;
+        
+        // Sanity checks
+        if( valueMin >= valueMax ) {
+            throw new IllegalArgumentException( "Maximum value must be greater than the minimum! Invalid field: " + getKey() );
+        }
+        if( valueDefault < valueMin || valueDefault > valueMax ) {
+            throw new IllegalArgumentException( "Default value is outside of allowed range! Invalid field: " + getKey() );
+        }
     }
     
     /** @return Returns the config field's value. */
     public double get() { return value; }
     
     /** @return Returns the config field's value cast to a float. */
-    public float getFloat() { return (float) value; }
+    public float getFloat() { return (float) get(); }
     
     /** @return Treats the config field's value as a percent chance (from 0 to 1) and returns the result of a single roll. */
-    public boolean rollChance( Random random ) { return random.nextDouble() < value; }
+    public boolean rollChance( Random random ) { return random.nextDouble() < get(); }
+    
+    /** @return True if the number is within the range limits of this field. */
+    @Override
+    public boolean isInRange( Number number ) { return valueMin <= number.doubleValue() && number.doubleValue() <= valueMax; }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoRange( valueDefault, valueMin.get(), valueMax.get() ) );
+        comment.add( TomlHelper.fieldInfoRange( valueDefault, valueMin, valueMax ) );
     }
     
     /**
@@ -70,49 +78,59 @@ public class DoubleField extends AbstractConfigField {
      */
     @Override
     public void load( @Nullable Object raw ) {
-        // Use a final local variable to make sure the value gets set exactly one time
-        final double newValue;
-        if( raw instanceof Number ) {
-            double min = valueMin.get();
-            double max = valueMax.get();
-            // Parse the value
-            final double rawValue = ((Number) raw).doubleValue();
-            if( rawValue < min ) {
-                ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
-                        getClass(), getKey(), min, raw );
-                newValue = min;
-            }
-            else if( rawValue > max ) {
-                ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
-                        getClass(), getKey(), max, raw );
-                newValue = max;
-            }
-            else {
-                newValue = rawValue;
-            }
-        }
-        else if( raw instanceof String ) {
-            // Try unboxing the string to another primitive type
+        Number newValue;
+        if( raw instanceof String ) {
             ConfigUtil.LOG.info( "Unboxing string value for {} \"{}\" to a different primitive.",
                     getClass(), getKey() );
-            load( TomlHelper.parseRaw( (String) raw ) );
-            return;
+            newValue = TomlHelper.parseNumber( (String) raw );
         }
         else {
-            // Value cannot be parsed to this field
+            newValue = TomlHelper.asNumber( raw );
+        }
+        
+        if( newValue == null ) {
             if( raw != null ) {
                 ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
                         getClass(), getKey(), raw );
             }
-            newValue = valueDefault;
+            value = valueDefault;
         }
-        value = newValue;
+        else {
+            double castValue = newValue.doubleValue();
+            if( castValue < valueMin ) {
+                ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
+                        getClass(), getKey(), valueMin, raw );
+                value = valueMin;
+            }
+            else if( castValue > valueMax ) {
+                ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
+                        getClass(), getKey(), valueMax, raw );
+                value = valueMax;
+            }
+            else {
+                value = castValue;
+            }
+        }
     }
     
     /** @return The raw toml value that should be assigned to this field in the config file. */
     @Override
     @Nullable
     public Object getRaw() { return value; }
+    
+    /** @return The default raw toml value of this field. */
+    @Override
+    public Object getRawDefault() { return valueDefault; }
+    
+    /** @return This field's gui component provider. */
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() {
+        return new NumberFieldWidgetProvider( this ) {
+            @Override
+            protected Object cast( Number raw ) { return raw.doubleValue(); }
+        };
+    }
+    
     
     /** A set of commonly used ranges for this field type. */
     public enum Range {
@@ -136,6 +154,7 @@ public class DoubleField extends AbstractConfigField {
             MAX = max;
         }
     }
+    
     
     /**
      * Represents two number fields, a minimum and a maximum, combined into one.
@@ -221,7 +240,7 @@ public class DoubleField extends AbstractConfigField {
                 list.add( new Entry<>( values[i], new EnvironmentSensitive( baseWeights[i], weightExceptions[i] ) ) );
                 
                 // Do a bit of error checking; allows us to ignore the possibility of negative weights
-                if( baseWeights[i].valueMin.get() < 0.0 || weightExceptions[i].valueDefault.getMinValue() < 0.0 ) {
+                if( baseWeights[i].valueMin < 0.0 || weightExceptions[i].valueDefault.getMinValue() < 0.0 ) {
                     throw new IllegalArgumentException( "Weight is not allowed to be negative! See " +
                             baseWeights[i].getKey() + " and/or " + weightExceptions[i].getKey() );
                 }

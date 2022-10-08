@@ -32,11 +32,11 @@ public class GameRulesCrustConfigFile extends AbstractConfigFile {
      */
     GameRulesCrustConfigFile( ConfigManager cfgManager, String cfgName ) {
         super( cfgManager, cfgName,
-                "This config allows the default game rules for world creation to be altered.",
-                "Many game rules make testing easier, so this is handy when you need to repeatedly generate new worlds.",
+                "This config allows the default game rules for world creation to be altered. Many game rules " +
+                        "make testing easier, so this is handy when you need to repeatedly generate new worlds.",
                 "",
-                "For more information on game rules, see the in-game descriptions in the 'Create New World' menu",
-                "or the Minecraft Wiki article (https://minecraft.fandom.com/wiki/Game_rule)." );
+                "For more information on game rules, see the in-game descriptions in the 'Create New World' menu or the " +
+                        "Minecraft Wiki article (https://minecraft.fandom.com/wiki/Game_rule)." );
         
         SPEC.newLine( 2 );
         SPEC.decreaseIndent();

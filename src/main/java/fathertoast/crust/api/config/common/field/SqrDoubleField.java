@@ -1,7 +1,6 @@
 package fathertoast.crust.api.config.common.field;
 
 import javax.annotation.Nullable;
-import java.util.function.Supplier;
 
 /**
  * Represents a config field with a double value. The entered config value is squared when loaded.
@@ -19,11 +18,6 @@ public class SqrDoubleField extends DoubleField {
     
     /** Creates a new field that accepts a specialized range of values. */
     public SqrDoubleField( String key, double defaultValue, double min, double max, @Nullable String... description ) {
-        super( key, defaultValue, min, max, description );
-    }
-    
-    /** Creates a new field that accepts a specialized range of values. */
-    public SqrDoubleField( String key, double defaultValue, Supplier<Double> min, Supplier<Double> max, @Nullable String... description ) {
         super( key, defaultValue, min, max, description );
     }
     

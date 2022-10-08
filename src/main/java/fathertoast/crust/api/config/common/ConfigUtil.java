@@ -10,6 +10,8 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -70,4 +72,92 @@ public final class ConfigUtil {
     
     /** @return Returns the resource location as a string, or "null" if it is null. */
     public static String toString( @Nullable ResourceLocation res ) { return res == null ? "null" : res.toString(); }
+    
+    /**
+     * @param str    The string we wish to wrap.
+     * @param length Maximum characters to fit in each line.
+     * @return A new list containing the lines of the wrapped string.
+     */
+    public static List<String> wrap( String str, int length ) {
+        ArrayList<String> wrappedLines = new ArrayList<>();
+        wrap( wrappedLines, str, length );
+        return wrappedLines;
+    }
+    
+    /**
+     * @param wrappedLines The list to append parsed lines to.
+     * @param str          The string to wrap.
+     * @param length       Number of characters to fit in.
+     */
+    public static void wrap( List<String> wrappedLines, String str, int length ) {
+        wrap( wrappedLines, str, length, "  ", false );
+    }
+    
+    /**
+     * @param wrappedLines  The list to append parsed lines to.
+     * @param str           The string to wrap.
+     * @param length        Number of characters to fit in.
+     * @param hangingIndent The hanging indent to apply. Null disables all indentation.
+     * @param hardWrap      If true, this will forcibly wrap "words" that are longer than the wrap length.
+     */
+    public static void wrap( List<String> wrappedLines, String str, int length, @Nullable String hangingIndent, boolean hardWrap ) {
+        int originalLength = str.length();
+        
+        if( originalLength <= length ) {
+            wrappedLines.add( str );
+            return;
+        }
+        
+        int index = 0;
+        
+        // Determine hanging indent
+        if( hangingIndent == null ) hangingIndent = "";
+        else {
+            int indentLength = 0;
+            do {
+                if( Character.isWhitespace( str.charAt( index ) ) ) indentLength++;
+                else break;
+                index++;
+            }
+            while( index < originalLength );
+            if( indentLength > 0 ) hangingIndent = str.substring( 0, indentLength ) + hangingIndent;
+            length -= hangingIndent.length();
+        }
+        if( length < 2 ) length = 2;
+        
+        // Perform the actual wrapping
+        boolean hasWrapped = false;
+        int lastValidWrapIndex = -1;
+        int indexOfLastWrap = index - 1;
+        while( index < originalLength ) {
+            char c = str.charAt( index );
+            boolean whitespace = Character.isWhitespace( c );
+            
+            // Time to wrap
+            if( !whitespace && index - indexOfLastWrap > length ) {
+                if( lastValidWrapIndex >= 0 ) {
+                    wrappedLines.add( extractLine( hasWrapped, str, hangingIndent, indexOfLastWrap, lastValidWrapIndex + 1 ) );
+                    indexOfLastWrap = lastValidWrapIndex;
+                    hasWrapped = true;
+                }
+                else if( hardWrap ) {
+                    wrappedLines.add( extractLine( hasWrapped, str, hangingIndent, indexOfLastWrap, index - 1 ) + "-" );
+                    indexOfLastWrap = index - 2;
+                    hasWrapped = true;
+                }
+            }
+            
+            // Identify preferred wrap point
+            if( whitespace || c == '-' ) lastValidWrapIndex = index;
+            
+            index++;
+        }
+        wrappedLines.add( extractLine( hasWrapped, str, hangingIndent, indexOfLastWrap, originalLength ) );
+    }
+    
+    /** @return A complete line, given the current state of the wrap method. */
+    private static String extractLine( boolean hasWrapped, String str, String hangingIndent, int indexOfLastWrap, int wrapToIndex ) {
+        return hasWrapped ? hangingIndent + str.substring( indexOfLastWrap + 1, wrapToIndex ).trim() :
+                str.substring( 0, wrapToIndex ).replaceFirst( "\\s++$", "" );
+    }
 }

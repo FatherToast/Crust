@@ -1,5 +1,6 @@
 package fathertoast.crust.api.config.client;
 
+import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import net.minecraft.client.gui.screen.Screen;
@@ -16,11 +17,32 @@ import net.minecraftforge.fml.ModLoadingContext;
 public final class ClientConfigUtil {
     
     /**
+     * Call this during client setup event to allow users to open your mod's edit config screen from the mods
+     * screen by pressing the "Config" button.
+     *
+     * @see net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
+     */
+    public static void registerConfigButtonAsEditScreen() {
+        ModLoadingContext ctx = ModLoadingContext.get();
+        String modId = ctx.getActiveNamespace();
+        ConfigManager cfgManager = ConfigManager.get( modId );
+        
+        if( cfgManager == null ) {
+            ConfigUtil.LOG.warn( "Mod '{}' attempted to assign a config button action, but has no config!", modId );
+        }
+        else {
+            ctx.registerExtensionPoint( ExtensionPoint.CONFIGGUIFACTORY,
+                    () -> ( game, parent ) -> new CrustConfigSelectScreen( parent, cfgManager ) );
+        }
+    }
+    
+    /**
      * Call this during client setup event to allow users to open your mod's config directory from the mods
      * screen by pressing the "Config" button.
      *
      * @see net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
      */
+    @SuppressWarnings( "unused" )
     public static void registerConfigButtonAsOpenFolder() {
         ModLoadingContext ctx = ModLoadingContext.get();
         String modId = ctx.getActiveNamespace();

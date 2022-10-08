@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.client.gui.widget.field.BooleanFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.field.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 
@@ -41,39 +43,44 @@ public class BooleanField extends AbstractConfigField {
      */
     @Override
     public void load( @Nullable Object raw ) {
-        // Use a final local variable to make sure the value gets set exactly one time
-        final boolean newValue;
-        if( raw instanceof Boolean ) {
-            // Parse the value
-            newValue = (Boolean) raw;
-        }
-        else if( raw instanceof Number ) {
-            // Convert the value
-            final double rawValue = ((Number) raw).doubleValue();
-            ConfigUtil.LOG.warn( "Value for {} \"{}\" is numerical! Converting value. Invalid value: {}",
-                    getClass(), getKey(), raw );
-            newValue = rawValue != 0.0; // 0 is false, anything else is true
-        }
-        else if( raw instanceof String ) {
-            // Try unboxing the string to another primitive type
+        Object newValue;
+        if( raw instanceof String ) {
             ConfigUtil.LOG.info( "Unboxing string value for {} \"{}\" to a different primitive.",
                     getClass(), getKey() );
-            load( TomlHelper.parseRaw( (String) raw ) );
-            return;
+            newValue = TomlHelper.parseStringPrimitive( (String) raw );
         }
         else {
-            // Value cannot be parsed to this field
-            if( raw != null ) {
+            newValue = raw;
+        }
+        
+        if( newValue instanceof Boolean ) {
+            value = (Boolean) newValue;
+        }
+        else if( newValue instanceof Number ) {
+            final double newNumberValue = ((Number) newValue).doubleValue();
+            ConfigUtil.LOG.warn( "Value for {} \"{}\" is numerical! Converting value. Invalid value: {}",
+                    getClass(), getKey(), raw );
+            value = newNumberValue != 0.0; // 0 is false, anything else is true
+        }
+        else {
+            if( newValue != null ) {
                 ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
                         getClass(), getKey(), raw );
             }
-            newValue = valueDefault;
+            value = valueDefault;
         }
-        value = newValue;
     }
     
     /** @return The raw toml value that should be assigned to this field in the config file. */
     @Override
     @Nullable
     public Object getRaw() { return value; }
+    
+    /** @return The default raw toml value of this field. */
+    @Override
+    public Object getRawDefault() { return valueDefault; }
+    
+    /** @return This field's gui component provider. */
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() { return new BooleanFieldWidgetProvider( this ); }
 }

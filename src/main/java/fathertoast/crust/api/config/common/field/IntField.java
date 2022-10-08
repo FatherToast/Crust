@@ -1,6 +1,9 @@
 package fathertoast.crust.api.config.common.field;
 
 import com.electronwill.nightconfig.core.io.CharacterOutput;
+import fathertoast.crust.api.config.client.gui.widget.field.HexIntFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.field.IConfigFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.field.NumberFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
@@ -8,20 +11,19 @@ import fathertoast.crust.api.config.common.file.TomlHelper;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Supplier;
 
 /**
  * Represents a config field with an integer value.
  */
 @SuppressWarnings( "unused" )
-public class IntField extends AbstractConfigField {
+public class IntField extends NumberField {
     
     /** The default field value. */
     private final int valueDefault;
     /** The minimum field value. */
-    private final Supplier<Integer> valueMin;
+    private final int valueMin;
     /** The maximum field value. */
-    private final Supplier<Integer> valueMax;
+    private final int valueMax;
     
     /** The underlying field value. */
     private int value;
@@ -33,30 +35,40 @@ public class IntField extends AbstractConfigField {
     
     /** Creates a new field that accepts a specialized range of values. */
     public IntField( String key, int defaultValue, int min, int max, @Nullable String... description ) {
-        this( key, defaultValue, () -> min, () -> max, description );
-    }
-    
-    /** Creates a new field that accepts a specialized range of values. */
-    public IntField( String key, int defaultValue, Supplier<Integer> min, Supplier<Integer> max, @Nullable String... description ) {
         super( key, description );
         valueDefault = defaultValue;
         valueMin = min;
         valueMax = max;
+        
+        // Sanity checks
+        if( valueMin >= valueMax ) {
+            throw new IllegalArgumentException( "Maximum value must be greater than the minimum! Invalid field: " + getKey() );
+        }
+        if( valueDefault < valueMin || valueDefault > valueMax ) {
+            throw new IllegalArgumentException( "Default value is outside of allowed range! Invalid field: " + getKey() );
+        }
     }
     
     /** @return Returns the config field's value. */
     public int get() { return value; }
     
     /** @return Returns the config field's value cast down to a short. */
-    public short getShort() { return (short) value; }
+    public short getShort() { return (short) get(); }
     
     /** @return Returns the config field's value cast down to a byte. */
-    public byte getByte() { return (byte) value; }
+    public byte getByte() { return (byte) get(); }
+    
+    /** @return Treats the config field's value as a one-in-X chance and returns the result of a single roll. */
+    public boolean rollChance( Random random ) { return get() > 0 && random.nextInt( get() ) == 0; }
+    
+    /** @return True if the number is within the range limits of this field. */
+    @Override
+    public boolean isInRange( Number number ) { return valueMin <= number.intValue() && number.intValue() <= valueMax; }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoRange( valueDefault, valueMin.get(), valueMax.get() ) );
+        comment.add( TomlHelper.fieldInfoRange( valueDefault, valueMin, valueMax ) );
     }
     
     /**
@@ -67,52 +79,62 @@ public class IntField extends AbstractConfigField {
      */
     @Override
     public void load( @Nullable Object raw ) {
-        // Use a final local variable to make sure the value gets set exactly one time
-        final int newValue;
-        if( raw instanceof Number ) {
-            int min = valueMin.get();
-            int max = valueMax.get();
-            // Parse the value
-            final int rawValue = ((Number) raw).intValue();
-            if( rawValue < min ) {
-                ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
-                        getClass(), getKey(), min, raw );
-                newValue = min;
-            }
-            else if( rawValue > max ) {
-                ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
-                        getClass(), getKey(), max, raw );
-                newValue = max;
-            }
-            else {
-                if( (double) rawValue != ((Number) raw).doubleValue() ) {
-                    ConfigUtil.LOG.warn( "Value for {} \"{}\" is not an integer! Truncating value. Invalid value: {}",
-                            getClass(), getKey(), raw );
-                }
-                newValue = rawValue;
-            }
-        }
-        else if( raw instanceof String ) {
-            // Try unboxing the string to another primitive type
+        Number newValue;
+        if( raw instanceof String ) {
             ConfigUtil.LOG.info( "Unboxing string value for {} \"{}\" to a different primitive.",
                     getClass(), getKey() );
-            load( TomlHelper.parseRaw( (String) raw ) );
-            return;
+            newValue = TomlHelper.parseNumber( (String) raw );
         }
         else {
-            // Value cannot be parsed to this field
+            newValue = TomlHelper.asNumber( raw );
+        }
+        
+        if( newValue == null ) {
             if( raw != null ) {
                 ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
                         getClass(), getKey(), raw );
             }
-            newValue = valueDefault;
+            value = valueDefault;
         }
-        value = newValue;
+        else {
+            int castValue = newValue.intValue();
+            if( castValue < valueMin ) {
+                ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
+                        getClass(), getKey(), valueMin, raw );
+                value = valueMin;
+            }
+            else if( castValue > valueMax ) {
+                ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
+                        getClass(), getKey(), valueMax, raw );
+                value = valueMax;
+            }
+            else {
+                if( (double) castValue != newValue.doubleValue() ) {
+                    ConfigUtil.LOG.warn( "Value for {} \"{}\" is not an integer! Truncating value. Invalid value: {}",
+                            getClass(), getKey(), raw );
+                }
+                value = castValue;
+            }
+        }
     }
     
     /** @return The raw toml value that should be assigned to this field in the config file. */
     @Override
     public Object getRaw() { return value; }
+    
+    /** @return The default raw toml value of this field. */
+    @Override
+    public Object getRawDefault() { return valueDefault; }
+    
+    /** @return This field's gui component provider. */
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() {
+        return new NumberFieldWidgetProvider( this ) {
+            @Override
+            protected Object cast( Number raw ) { return raw.intValue(); }
+        };
+    }
+    
     
     /** A set of commonly used ranges for this field type. */
     public enum Range {
@@ -133,6 +155,7 @@ public class IntField extends AbstractConfigField {
             MAX = max;
         }
     }
+    
     
     /**
      * Represents a config field with an integer value that displays values in hexadecimal.
@@ -162,6 +185,9 @@ public class IntField extends AbstractConfigField {
             this( key, defaultValue, 1, min, max, description );
         }
         
+        /** @return The minimum number of digits this field prints. */
+        public int getMinDigits() { return minDigits; }
+        
         /** Adds info about the field type, format, and bounds to the end of a field's description. */
         @Override
         public void appendFieldInfo( List<String> comment ) {
@@ -177,7 +203,12 @@ public class IntField extends AbstractConfigField {
             super.writeValue( writer, output );
             TomlHelper.HEX_MODE = 0;
         }
+        
+        /** @return This field's gui component provider. */
+        @Override
+        public IConfigFieldWidgetProvider getWidgetProvider() { return new HexIntFieldWidgetProvider( this ); }
     }
+    
     
     /**
      * Represents two number fields, a minimum and a maximum, combined into one.

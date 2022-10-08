@@ -24,13 +24,15 @@ public class AttributeListField extends GenericField<AttributeList> {
     public static List<String> verboseDescription() {
         List<String> comment = new ArrayList<>();
         comment.add( "Attribute List fields: General format = [ \"namespace:attribute_name operation value\", ... ]" );
-        comment.add( "  Attribute lists are arrays of base attribute changes. Attributes are defined by their key in the attribute registry," );
-        comment.add( "    usually following the pattern 'namespace:attribute_name'." );
-        comment.add( "  The operations that can be performed are +, -, and *. The + and - operators change the attribute by adding the value to it" );
-        comment.add( "    (or subtracting the value from it). The * operator changes the attribute by multiplying it by the value." );
+        comment.add( "  Attribute lists are arrays of base attribute changes. Attributes are defined by their key in " +
+                "the attribute registry, usually following the pattern 'namespace:attribute_name'." );
+        comment.add( "  The operations that can be performed are +, -, and *. The + and - operators change the " +
+                "attribute by adding the value to it (or subtracting the value from it). The * operator changes the " +
+                "attribute by multiplying it by the value." );
         comment.add( "  Each entry in the attribute list is applied in the exact order listed." );
-        comment.add( "  As an example, the entry \"minecraft:generic.max_health + 10.0\" will increase a mob's max health by 10. By convention, never" );
-        comment.add( "    use the + or - operators for movement speed (minecraft:generic.movement_speed)." );
+        comment.add( "  As an example, the entry \"minecraft:generic.max_health + 10.0\" will increase a mob's max " +
+                "health by 10. By convention, never use the + or - operators for movement speed " +
+                "(minecraft:generic.movement_speed)." );
         return comment;
     }
     

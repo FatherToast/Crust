@@ -21,8 +21,8 @@ public class ClientRegister {
         // Perform first-time loading of the client-only configs
         EXTRA_INV_BUTTONS.SPEC.initialize();
         
-        // Tell Forge to open our config folder when our mod's "Config" button is clicked in the Mods screen
-        ClientConfigUtil.registerConfigButtonAsOpenFolder();
+        // Tell Forge to open our the config edit screen when our mod's "Config" button is clicked in the Mods screen
+        ClientConfigUtil.registerConfigButtonAsEditScreen();
         
         KeyBindingEvents.register();
     }

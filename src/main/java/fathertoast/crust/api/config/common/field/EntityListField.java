@@ -25,12 +25,18 @@ public class EntityListField extends GenericField<EntityList> {
     public static List<String> verboseDescription() {
         List<String> comment = new ArrayList<>();
         comment.add( "Entity List fields: General format = [ \"namespace:entity_type value1 value2 ...\", ... ]" );
-        comment.add( "  Entity lists are arrays of entity types. Some entity lists specify a number of values linked to each entity type." );
-        comment.add( "  Entity types are defined by their key in the entity registry, usually following the pattern 'namespace:entity_name'." );
-        comment.add( "  '" + REG_KEY_DEFAULT + "' can be used instead of an entity type registry key to provide default values for all entities." );
-        comment.add( "  An asterisk '*' can be used to match multiple entity types. For example, 'minecraft:*' will match all vanilla entities." );
-        comment.add( "  List entries by default match any entity type derived from (i.e. based on) their entity type. For example, '~minecraft:zombie'." );
-        comment.add( "    There is no steadfast rule about extending, even in vanilla, but the hope is that mod-added mobs will extend their base mob." );
+        comment.add( "  Entity lists are arrays of entity types. Some entity lists specify a number of values linked " +
+                "to each entity type." );
+        comment.add( "  Entity types are defined by their key in the entity registry, usually following the pattern " +
+                "'namespace:entity_name'." );
+        comment.add( "  '" + REG_KEY_DEFAULT + "' can be used instead of an entity type registry key to provide " +
+                "default values for all entities." );
+        comment.add( "  An asterisk '*' can be used to match multiple entity types. For example, 'minecraft:*' will " +
+                "match all vanilla entities." );
+        comment.add( "  List entries by default match any entity type derived from (i.e. based on) their entity type. " +
+                "For example, '~minecraft:zombie'." );
+        comment.add( "    There is no steadfast rule about extending, even in vanilla, but the hope is that mod-added " +
+                "mobs will extend their base mob." );
         return comment;
     }
     

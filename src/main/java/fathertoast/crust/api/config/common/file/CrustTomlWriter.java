@@ -4,6 +4,7 @@ import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.io.*;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.RestartNote;
 
 import javax.annotation.Nullable;
 import java.io.Writer;
@@ -15,8 +16,11 @@ import java.util.List;
  */
 public class CrustTomlWriter implements ConfigWriter {
     
+    /** The total character width for comment wrapping. */
+    private static final int WRAP_LENGTH = 120;
+    
     /** The chars to write to create a single indent level. */
-    private static final char[] CHARS_INDENT = IndentStyle.TABS.chars;
+    private static final char[] CHARS_INDENT = IndentStyle.SPACES_2.chars;
     /** The chars to write to start a new line. */
     private static final char[] CHARS_NEW_LINE = NewlineStyle.system().chars;
     
@@ -59,7 +63,7 @@ public class CrustTomlWriter implements ConfigWriter {
     public void decreaseIndentLevel() { changeIndentLevel( -1 ); }
     
     /** Changes the indent level by a specified amount. */
-    public void changeIndentLevel( int amount ) { currentIndentLevel += amount; }
+    public void changeIndentLevel( int amount ) { currentIndentLevel = Math.max( 0, currentIndentLevel + amount ); }
     
     /** Writes the indent based on the current indent level. */
     private void writeIndent( CharacterOutput output ) {
@@ -110,15 +114,25 @@ public class CrustTomlWriter implements ConfigWriter {
         writeLine( "]", output );
     }
     
-    /** Writes a list of single-line comments. */
+    /** Writes a list of single-line comments. Auto-wraps each line. */
     public void writeComment( List<String> comment, CharacterOutput output ) {
         for( String line : comment ) {
             writeComment( line, output );
         }
     }
     
-    /** Writes a single-line comment. */
+    /** Writes a single-line comment. Auto-wrapped. */
     public void writeComment( String comment, CharacterOutput output ) {
+        for( String line : ConfigUtil.wrap( comment, getEffectiveWrapLength() ) ) {
+            writeCommentLine( line, output );
+        }
+    }
+    
+    /** @return The wrap length to provide so we meet the overall width requirement. */
+    private int getEffectiveWrapLength() { return WRAP_LENGTH - CHARS_COMMENT.length - currentIndentLevel * CHARS_INDENT.length; }
+    
+    /** Writes a comment line. */
+    private void writeCommentLine( String comment, CharacterOutput output ) {
         writeIndent( output );
         output.write( CHARS_COMMENT );
         output.write( comment );
@@ -126,10 +140,12 @@ public class CrustTomlWriter implements ConfigWriter {
     }
     
     /** Writes a literal list of single-line strings. Assumes the indent has already been written on the first line. */
-    public void writeField( AbstractConfigField field, CharacterOutput output ) {
+    public void writeField( AbstractConfigField field, @Nullable RestartNote restartNote, List<String> addedComment, CharacterOutput output ) {
         // Write the comment, if any
         if( field.getComment() != null ) {
             writeComment( field.getComment(), output );
+            if( restartNote != null ) writeComment( restartNote.COMMENT, output );
+            writeComment( addedComment, output );
         }
         
         // Write the key

@@ -19,11 +19,14 @@ public class BlockListField extends GenericField<BlockList> {
         List<String> comment = new ArrayList<>();
         comment.add( "Block List fields: General format = [ \"namespace:block_name[property1=value1,...]\", ... ]" );
         comment.add( "  Block lists are arrays of blocks and partial block states." );
-        comment.add( "  Blocks are defined by their key in the block registry, usually following the pattern 'namespace:block_name'." );
-        comment.add( "  An asterisk '*' can be used to match multiple blocks. For example, 'minecraft:*' will match all vanilla blocks." );
-        comment.add( "  List entries by default match any block state. The block states to match can be narrowed down by specifying properties." );
-        comment.add( "    The syntax for block state properties is the same as for commands. Any properties not specified will match any value." );
-        comment.add( "    For example, 'minecraft:beehive[honey_level=5]' will match any full beehives, regardless of the direction they face." );
+        comment.add( "  Blocks are defined by their key in the block registry, usually following the pattern " +
+                "'namespace:block_name'." );
+        comment.add( "  An asterisk '*' can be used to match multiple blocks. For example, 'minecraft:*' will match " +
+                "all vanilla blocks." );
+        comment.add( "  List entries by default match any block state. The block states to match can be narrowed down " +
+                "by specifying properties. The syntax for block state properties is the same as for commands. Any " +
+                "properties not specified will match any value. For example, 'minecraft:beehive[honey_level=5]' will " +
+                "match any full beehives, regardless of the direction they face." );
         return comment;
     }
     

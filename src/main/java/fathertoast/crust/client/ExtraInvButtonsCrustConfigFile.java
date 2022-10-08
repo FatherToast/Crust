@@ -32,9 +32,8 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
      */
     ExtraInvButtonsCrustConfigFile( ConfigManager cfgManager, String cfgName ) {
         super( cfgManager, cfgName,
-                "Options to modify the extra inventory buttons displayed.",
-                "Extra inventory buttons are essentially macros that send commands for you.",
-                "(You still need adequate permission to run the commands.)",
+                "Options to modify the extra inventory buttons displayed. Extra inventory buttons are essentially " +
+                        "macros that send commands for you. You still need adequate permission to run the commands.",
                 "In general, you must close and reopen your inventory to see changes made to this config." );
         
         GENERAL = new General( this );
@@ -66,8 +65,8 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
         
         General( ExtraInvButtonsCrustConfigFile parent ) {
             super( parent, "general",
-                    "Options to modify the extra inventory buttons displayed.",
-                    "Extra inventory buttons are essentially macros that send commands for you.",
+                    "Options to modify the extra inventory buttons displayed. Extra inventory buttons " +
+                            "are essentially macros that send commands for you.",
                     "You still need permission to run the commands." );
             
             enabled = SPEC.define( new BooleanField( "enabled", true,
@@ -89,28 +88,30 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                     ButtonInfo.SUPER_VISION_MODE.ID, ButtonInfo.SUPER_SPEED_MODE.ID, ButtonInfo.DAY.ID, ButtonInfo.NIGHT.ID,
                     ButtonInfo.NO_PICKUP_MODE.ID, ButtonInfo.GOD_MODE.ID, ButtonInfo.GAME_MODE.ID, ButtonInfo.KILL_ALL.ID,
                     ButtonInfo.CLEAR_EFFECTS.ID, ButtonInfo.FULL_HEAL.ID ),
-                    "The buttons displayed in the inventory, in the order you want them displayed.",
-                    "These are ordered left-to-right, then wrapped into rows.",
-                    "You may assign a hotkey to any button in your options, whether or not you choose to display it.",
-                    "Built-in buttons are " + TomlHelper.literalList( ButtonInfo.builtInIds().subList( 0, 7 ) ) + ",",
-                    TomlHelper.literalList( ButtonInfo.builtInIds().subList( 7, 14 ) ) + ",", // TODO figure out a better way to wrap
-                    TomlHelper.literalList( ButtonInfo.builtInIds().subList( 14, ButtonInfo.builtInIds().size() ) ) + ".",
-                    "Custom buttons are \"" + ButtonInfo.customId( 0 ) + "\", \"" + ButtonInfo.customId( 1 ) +
-                            "\", ..., \"" + ButtonInfo.customId( parent.CUSTOM_BUTTONS.length - 1 ) + "\".  (same as the category name)." ) );
+                    "The buttons displayed in the inventory, in the order you want them displayed. These are " +
+                            "ordered left-to-right, then wrapped into rows. See below for all valid button names.",
+                    "You may assign a hotkey to any button in your options, whether or not you choose to display it." ) );
+            
+            SPEC.newLine();
+            
+            SPEC.titledComment( "Built-in buttons", TomlHelper.literalList( ButtonInfo.builtInIds() ) );
+            SPEC.titledComment( "Custom buttons", "\"" + ButtonInfo.customId( 0 ) + "\", \"" +
+                    ButtonInfo.customId( 1 ) + "\", ..., \"" + ButtonInfo.customId( parent.CUSTOM_BUTTONS.length - 1 ) +
+                    "\".  (same as the category name)." );
             
             SPEC.newLine();
             
             anchorY = SPEC.define( new EnumField<>( "anchor.vertical", Anchor.SCREEN_TOP, Anchor.VERTICAL,
-                    "The anchor position for the extra inventory buttons. That is, where they should be positioned",
-                    "relative to the screen or inventory GUI." ) );
+                    "The anchor position for the extra inventory buttons. That is, where they should be positioned " +
+                            "relative to the screen or inventory GUI." ) );
             anchorX = SPEC.define( new EnumField<>( "anchor.horizontal", Anchor.SCREEN_LEFT, Anchor.HORIZONTAL,
                     (String[]) null ) );
             
             SPEC.newLine();
             
             offsetY = SPEC.define( new IntField( "offset.vertical", 16, IntField.Range.ANY,
-                    "The position offset for the extra inventory buttons from the anchor position, in GUI pixels.",
-                    "Negative values move the buttons toward the top/left, positive move them toward the bottom/right." ) );
+                    "The position offset for the extra inventory buttons from the anchor position, in GUI pixels. " +
+                            "Negative values move the buttons toward the top/left, positive move them toward the bottom/right." ) );
             offsetX = SPEC.define( new IntField( "offset.horizontal", 16, IntField.Range.ANY,
                     (String[]) null ) );
         }
@@ -136,32 +137,34 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                     "Options for built-in buttons." );
             
             weatherDuration = SPEC.define( new IntField( "weather.duration", 6_000, 0, 1_000_000,
-                    "The duration (seconds) to set the weather for when using the various built-in weather buttons.",
-                    "If 0, the duration is decided 'naturally' by the world." ) );
+                    "The duration (seconds) to set the weather for when using the various built-in weather buttons. " +
+                            "If 0, the duration is decided 'naturally' by the world." ) );
             
             SPEC.newLine();
             
-            magnetMaxRange = SPEC.define( new DoubleField( "magnet_mode.max_range", 3.4e38, 0.0, 3.4e38,
-                    "The max range (blocks) to request for magnet mode when using the \"" + ButtonInfo.MAGNET_MODE.ID + "\" button.",
-                    "Leaving this at a very high value effectively just sets your range to the max allowed by the server." ) );
+            magnetMaxRange = SPEC.define( new DoubleField( "magnet_mode.max_range", 3.4e38, DoubleField.Range.NON_NEGATIVE,
+                    "The max range (blocks) to request for magnet mode when using the \"" + ButtonInfo.MAGNET_MODE.ID + "\" " +
+                            "button. Leaving this at a very high value effectively just sets your range to the max allowed by the server." ) );
             
             SPEC.newLine();
             
             godModeUndying = SPEC.define( new BooleanField( "god_mode.undying", true,
-                    "Whether undying mode (prevents death) should be toggled when using the \"" + ButtonInfo.GOD_MODE.ID + "\" button." ) );
+                    "Whether undying mode (prevents death) should be toggled when using the \"" + ButtonInfo.GOD_MODE.ID +
+                            "\" button." ) );
             godModeUnbreaking = SPEC.define( new BooleanField( "god_mode.unbreaking", true,
-                    "Whether unbreaking mode (prevents item break) should be toggled when using the \"" + ButtonInfo.GOD_MODE.ID + "\" button." ) );
+                    "Whether unbreaking mode (prevents item break) should be toggled when using the \"" + ButtonInfo.GOD_MODE.ID +
+                            "\" button." ) );
             godModeUneating = SPEC.define( new IntField( "god_mode.uneating", 7, 0, 20,
-                    "The level for uneating mode (minimum food level in half-drumsticks) to request when using the",
-                    "\"" + ButtonInfo.GOD_MODE.ID + "\" button. Set this to 0 if you don't want to toggle uneating mode." ) );
+                    "The level for uneating mode (minimum food level in half-drumsticks) to request when using the \"" +
+                            ButtonInfo.GOD_MODE.ID + "\" button. Set this to 0 if you don't want to toggle uneating mode." ) );
             SPEC.callback( () -> ButtonInfo.updateGodModePerms( this ) );
             
             SPEC.newLine();
             
-            superSpeedMulti = SPEC.define( new DoubleField( "super_speed.multiplier", 8.0, 1.0, 3.4e38,
-                    "The speed multiplier to request for super-speed mode when using the \"" + ButtonInfo.SUPER_SPEED_MODE.ID + "\" button.",
-                    "Setting this at a very high value effectively just sets your speed to the max allowed by the server.",
-                    "Note: Very large speed multipliers might break the game's physics." ) );
+            superSpeedMulti = SPEC.define( new DoubleField( "super_speed.multiplier", 8.0, 1.0, Double.POSITIVE_INFINITY,
+                    "The speed multiplier to request for super-speed mode when using the \"" + ButtonInfo.SUPER_SPEED_MODE.ID +
+                            "\" button. Setting this at a very high value effectively just sets your speed to the max allowed by the server.",
+                    "Warning: Very large speed multipliers may break the game's physics." ) );
         }
     }
     
@@ -185,14 +188,14 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
             tooltip = SPEC.define( new StringField( "tooltip", defaults[0],
                     "A short description of the custom button's function." ) );
             icon = SPEC.define( new StringField( "icon", defaults[1],
-                    "The button icon. This is a relative path from \"" + Crust.MOD_ID + ":" + ButtonInfo.ICON_PATH + "\".",
-                    "If this does not end in \".png\", this string will be rendered instead of a texture." ) );
+                    "The button icon. This is a relative path from \"" + Crust.MOD_ID + ":" + ButtonInfo.ICON_PATH + "\". " +
+                            "If this does not end in \".png\", this string will be rendered instead of a texture." ) );
             iconColor = SPEC.define( new ColorIntField( "icon_color", Color.WHITE, false,
                     "The button icon (or text) color. Pure white (the default) is effectively no tint." ) );
             commands = SPEC.define( new StringListField( "commands", "Command",
                     defaultList.subList( 2, defaultList.size() ),
-                    "A list of commands to execute when the custom button is pressed.",
-                    "These are sent to the server in the order listed, as if you typed them into chat." ) );
+                    "A list of commands to execute when the custom button is pressed. These are sent to the " +
+                            "server in the order listed, as if you typed them into chat." ) );
             
             // Have the spec automatically register this on load
             String id = ButtonInfo.customId( index );

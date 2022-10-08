@@ -23,10 +23,11 @@ public class RegistryEntryListField<T extends IForgeRegistryEntry<T>> extends Ge
     public static List<String> verboseDescription() {
         List<String> comment = new ArrayList<>();
         comment.add( "Registry Entry List fields: General format = [ \"namespace:entry_name\", ... ]" );
-        comment.add( "  Registry entry lists are arrays of registry keys. Many things in the game, such as blocks or potions, are defined" );
-        comment.add( "    by their registry key within a registry. For example, all items are registered in the \"minecraft:item\" registry." );
-        comment.add( "  An asterisk '*' can be used to match multiple registry keys. For example, 'minecraft:*' will match all vanilla entries" );
-        comment.add( "    within the registry entry list's target registry." );
+        comment.add( "  Registry entry lists are arrays of registry keys. Many things in the game, such as blocks or " +
+                "potions, are defined by their registry key within a registry. For example, all items are registered " +
+                "in the \"minecraft:item\" registry." );
+        comment.add( "  An asterisk '*' can be used to match multiple registry keys. For example, 'minecraft:*' will " +
+                "match all vanilla entries within the registry entry list's target registry." );
         return comment;
     }
     

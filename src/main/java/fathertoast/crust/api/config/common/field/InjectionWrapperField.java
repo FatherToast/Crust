@@ -1,5 +1,6 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.client.gui.widget.field.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 
 import javax.annotation.Nullable;
@@ -56,4 +57,12 @@ public class InjectionWrapperField<T extends AbstractConfigField> extends Abstra
     /** @return The raw toml value that should be assigned to this field in the config file. */
     @Override
     public Object getRaw() { return wrappedField.getRaw(); }
+    
+    /** @return The default raw toml value of this field. */
+    @Override
+    public Object getRawDefault() { return wrappedField.getRawDefault(); }
+    
+    /** @return This field's gui component provider. */
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() { return wrappedField.getWidgetProvider(); }
 }

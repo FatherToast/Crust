@@ -7,10 +7,7 @@ import net.minecraftforge.fml.loading.FMLPaths;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Used as the hub for config access.
@@ -52,6 +49,13 @@ public final class ConfigManager {
      */
     @Nullable
     public static ConfigManager get( String modId ) { return MOD_ID_TO_CM_MAP.get( modId ); }
+    
+    /**
+     * Gets all registered config managers.
+     *
+     * @return A read-only view of all registered config managers.
+     */
+    public static Collection<ConfigManager> getAll() { return Collections.unmodifiableCollection( MOD_ID_TO_CM_MAP.values() ); }
     
     /**
      * Gets the config manager for a particular mod.

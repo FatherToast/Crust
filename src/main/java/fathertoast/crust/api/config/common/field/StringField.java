@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.client.gui.widget.field.IConfigFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.field.StringFieldWidgetProvider;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 
 import javax.annotation.Nullable;
@@ -36,4 +38,8 @@ public class StringField extends GenericField<String> {
         }
         value = raw.toString();
     }
+    
+    /** @return This field's gui component provider. */
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() { return new StringFieldWidgetProvider( this ); }
 }

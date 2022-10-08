@@ -5,6 +5,7 @@ import com.electronwill.nightconfig.core.file.FileWatcher;
 import com.electronwill.nightconfig.core.io.CharacterOutput;
 import com.electronwill.nightconfig.core.io.ParsingException;
 import com.electronwill.nightconfig.core.io.WritingException;
+import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.ConfigUtil;
@@ -14,6 +15,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * A config spec maps read and write functions to the runtime variables used to hold them.
@@ -75,6 +77,10 @@ public class CrustConfigSpec {
     
     // ---- Spec Building Methods ---- //
     
+    /** Adds an action to this spec. Actions determine how a file is saved, loaded, and displayed in the in-game editor. */
+    public void add( Action action ) { ACTIONS.add( action ); }
+    
+    
     /**
      * Adds a field. The added field will automatically update its value when the config file is loaded.
      * It is good practice to avoid storing the field's value whenever possible.
@@ -101,7 +107,7 @@ public class CrustConfigSpec {
      * @throws IllegalStateException If the spec already has a field defined for the same key.
      */
     public <T extends AbstractConfigField> T define( T field, @Nullable RestartNote restartNote ) {
-        ACTIONS.add( new Field( this, field, restartNote ) );
+        add( new Field( this, field, restartNote ) );
         return field;
     }
     
@@ -115,14 +121,14 @@ public class CrustConfigSpec {
      *
      * @param callback The callback to run on read.
      */
-    public void callback( Runnable callback ) { ACTIONS.add( new ReadCallback( callback ) ); }
+    public void callback( Runnable callback ) { add( new ReadCallback( callback ) ); }
     
     
     /** Inserts a single new line. */
     public void newLine() { newLine( 1 ); }
     
     /** @param count The number of new lines to insert. */
-    public void newLine( int count ) { ACTIONS.add( new NewLines( count ) ); }
+    public void newLine( int count ) { add( new NewLines( count ) ); }
     
     
     /** Increases the indent by one level. */
@@ -132,7 +138,7 @@ public class CrustConfigSpec {
     public void decreaseIndent() { indent( -1 ); }
     
     /** @param count The amount to change the indent by. */
-    public void indent( int count ) { ACTIONS.add( new Indent( count ) ); }
+    public void indent( int count ) { add( new Indent( count ) ); }
     
     
     /**
@@ -147,7 +153,25 @@ public class CrustConfigSpec {
      *
      * @param comment The comment to insert.
      */
-    public void comment( List<String> comment ) { ACTIONS.add( new Comment( comment ) ); }
+    public void comment( List<String> comment ) { add( new Comment( comment ) ); }
+    
+    /**
+     * Adds a comment. After the title, each string in the list is printed on a separate line, in the order returned by
+     * iteration. In the GUI, the comment is only shown as a tooltip when the mouse is over the title.
+     *
+     * @param title   The comment's title.
+     * @param comment The comment to insert.
+     */
+    public void titledComment( String title, String... comment ) { titledComment( title, TomlHelper.newComment( comment ) ); }
+    
+    /**
+     * Adds a comment. After the title, each string in the list is printed on a separate line, in the order returned by
+     * iteration. In the GUI, the comment is only shown as a tooltip when the mouse is over the title.
+     *
+     * @param title   The comment's title.
+     * @param comment The comment to insert.
+     */
+    public void titledComment( String title, List<String> comment ) { add( new TitledComment( title, comment ) ); }
     
     
     /**
@@ -159,51 +183,51 @@ public class CrustConfigSpec {
      * @param name    The subcategory name.
      * @param comment The subcategory comment to insert.
      */
-    public void subcategory( String name, String... comment ) { ACTIONS.add( new Subcategory( name, TomlHelper.newComment( comment ) ) ); }
+    public void subcategory( String name, String... comment ) { add( new Subcategory( this, name, TomlHelper.newComment( comment ) ) ); }
     
     /**
      * Adds a header to signal the start of the appendix section, optionally including a comment to describe/summarize the section.
      *
      * @param comment The appendix comment to insert.
      */
-    public void appendixHeader( String... comment ) { ACTIONS.add( new AppendixHeader( TomlHelper.newComment( comment ) ) ); }
+    public void appendixHeader( String... comment ) { add( new AppendixHeader( TomlHelper.newComment( comment ) ) ); }
     
     
     /**
      * Inserts a detailed description of how to use the registry entry list field.
      * Recommended to include either in a README or at the start of each config that contains any registry entry list fields.
      */
-    public void describeRegistryEntryList() { ACTIONS.add( new Comment( RegistryEntryListField.verboseDescription() ) ); }
+    public void describeRegistryEntryList() { add( new Comment( RegistryEntryListField.verboseDescription() ) ); }
     
     /**
      * Inserts a detailed description of how to use the entity list field.
      * Recommended to include either in a README or at the start of each config that contains any entity list fields.
      */
-    public void describeEntityList() { ACTIONS.add( new Comment( EntityListField.verboseDescription() ) ); }
+    public void describeEntityList() { add( new Comment( EntityListField.verboseDescription() ) ); }
     
     /**
      * Inserts a detailed description of how to use the attribute list field.
      * Recommended to include either in a README or at the start of each config that contains any attribute list fields.
      */
-    public void describeAttributeList() { ACTIONS.add( new Comment( AttributeListField.verboseDescription() ) ); }
+    public void describeAttributeList() { add( new Comment( AttributeListField.verboseDescription() ) ); }
     
     /**
      * Inserts a detailed description of how to use the block list field.
      * Recommended to include either in a README or at the start of each config that contains any block list fields.
      */
-    public void describeBlockList() { ACTIONS.add( new Comment( BlockListField.verboseDescription() ) ); }
+    public void describeBlockList() { add( new Comment( BlockListField.verboseDescription() ) ); }
     
     /**
      * Inserts the first part of a detailed description of how to use the environment list field.
      * Should go with the other field descriptions.
      */
-    public void describeEnvironmentListPart1of2() { ACTIONS.add( new Comment( EnvironmentListField.verboseDescription() ) ); }
+    public void describeEnvironmentListPart1of2() { add( new Comment( EnvironmentListField.verboseDescription() ) ); }
     
     /**
      * Inserts the second and last part of a detailed description of how to use the environment list field.
      * Should go at the bottom of the file, preferably after the appendix header (if used).
      */
-    public void describeEnvironmentListPart2of2() { ACTIONS.add( new Comment( EnvironmentListField.environmentDescriptions() ) ); }
+    public void describeEnvironmentListPart2of2() { add( new Comment( EnvironmentListField.environmentDescriptions() ) ); }
     
     
     // ---- Internal Methods ---- //
@@ -215,7 +239,7 @@ public class CrustConfigSpec {
      *
      * @param comment The file comment to insert.
      */
-    public void header( List<String> comment ) { ACTIONS.add( new Header( this, comment ) ); }
+    public void header( List<String> comment ) { add( new FileHeader( this, comment ) ); }
     
     /**
      * NOTE: You should never need to call this method. It is called automatically in the config category constructor.
@@ -225,7 +249,7 @@ public class CrustConfigSpec {
      * @param name    The category name.
      * @param comment The category comment to insert.
      */
-    public void category( String name, List<String> comment ) { ACTIONS.add( new Category( name, comment ) ); }
+    public void category( String name, List<String> comment ) { add( new Category( this, name, comment ) ); }
     
     
     /** The underlying NightConfig config. */
@@ -312,6 +336,9 @@ public class CrustConfigSpec {
         }
     }
     
+    /** INTERNAL METHOD. The underlying Night Config. */
+    public FileConfig getNightConfig() { return NIGHT_CONFIG_FILE; }
+    
     /** INTERNAL METHOD. Called after the config is loaded to update cached values. */
     public void onLoad() {
         // Perform load actions
@@ -328,29 +355,33 @@ public class CrustConfigSpec {
         for( Action action : ACTIONS ) { action.write( writer, output ); }
     }
     
+    /** INTERNAL METHOD. Builds the config editor widget for the config. */
+    public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) {
+        for( Action action : ACTIONS ) action.initGui( widget, addEntry );
+    }
+    
     
     // ---- Action Implementations ---- //
     
     /** Represents a single action performed by the spec when reading or writing the config file. */
-    private interface Action {
+    public interface Action {
         
         /** Called when the config is loaded. */
         boolean onLoad();
         
         /** Called when the config is saved. */
         void write( CrustTomlWriter writer, CharacterOutput output );
+        
+        /** Called when the config edit screen is opened. */
+        void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry );
     }
     
     /** Represents a write-only spec action. */
-    private static abstract class Format implements Action {
+    public static abstract class Format implements Action {
         
         /** Called when the config is loaded. */
         @Override
         public final boolean onLoad() { return false; } // Formatting actions do not affect file reading
-        
-        /** Called when the config is saved. */
-        @Override
-        public abstract void write( CrustTomlWriter writer, CharacterOutput output );
     }
     
     /** Represents a variable number of new lines. */
@@ -365,10 +396,12 @@ public class CrustConfigSpec {
         /** Called when the config is saved. */
         @Override
         public void write( CrustTomlWriter writer, CharacterOutput output ) {
-            for( int i = 0; i < COUNT; i++ ) {
-                writer.writeNewLine( output );
-            }
+            for( int i = 0; i < COUNT; i++ ) writer.writeNewLine( output );
         }
+        
+        /** Called when the config edit screen is opened. */
+        @Override
+        public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) { widget.newLine( COUNT ); }
     }
     
     /** Represents a variable number of indent increases or decreases. */
@@ -377,19 +410,23 @@ public class CrustConfigSpec {
         /** The amount to change the indent by. */
         private final int AMOUNT;
         
-        /** Create a new comment action that will insert a number of new lines. */
+        /** Create a new indent action that will modify the current indent level. */
         private Indent( int amount ) { AMOUNT = amount; }
         
         /** Called when the config is saved. */
         @Override
         public void write( CrustTomlWriter writer, CharacterOutput output ) { writer.changeIndentLevel( AMOUNT ); }
+        
+        /** Called when the config edit screen is opened. */
+        @Override // We don't indent the GUI; maybe eventually it would be nice for this to create "foldable" sections
+        public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) { }
     }
     
     /** Represents a comment. */
     private static class Comment extends Format {
         
-        /** The spec this action belongs to. */
-        private final List<String> COMMENT;
+        /** The comment. */
+        protected final List<String> COMMENT;
         
         /** Create a new comment action that will insert a comment. */
         private Comment( List<String> comment ) { COMMENT = comment; }
@@ -397,10 +434,40 @@ public class CrustConfigSpec {
         /** Called when the config is saved. */
         @Override
         public void write( CrustTomlWriter writer, CharacterOutput output ) { writer.writeComment( COMMENT, output ); }
+        
+        /** Called when the config edit screen is opened. */
+        @Override
+        public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) { widget.comment( COMMENT ); }
+    }
+    
+    /** Represents a comment. */
+    private static class TitledComment extends Comment {
+        
+        /** The comment title. */
+        private final String TITLE;
+        
+        /** Create a new comment action that will insert a comment. */
+        private TitledComment( String title, List<String> comment ) {
+            super( comment );
+            TITLE = title;
+        }
+        
+        /** Called when the config is saved. */
+        @Override
+        public void write( CrustTomlWriter writer, CharacterOutput output ) {
+            writer.writeComment( TITLE + ":", output );
+            super.write( writer, output );
+        }
+        
+        /** Called when the config edit screen is opened. */
+        @Override
+        public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) {
+            widget.titledComment( TITLE, COMMENT );
+        }
     }
     
     /** Represents a file header comment. */
-    private static class Header extends Format {
+    private static class FileHeader extends Format {
         
         /** The spec this action belongs to. */
         private final CrustConfigSpec PARENT;
@@ -408,7 +475,7 @@ public class CrustConfigSpec {
         private final List<String> COMMENT;
         
         /** Create a new header action that will insert the opening file comment. */
-        private Header( CrustConfigSpec parent, List<String> comment ) {
+        private FileHeader( CrustConfigSpec parent, List<String> comment ) {
             PARENT = parent;
             COMMENT = comment;
         }
@@ -420,6 +487,13 @@ public class CrustConfigSpec {
             writer.writeComment( COMMENT, output );
             
             writer.increaseIndentLevel();
+        }
+        
+        /** Called when the config edit screen is opened. */
+        @Override
+        public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) {
+            // File name, etc. is displayed in the screen header
+            widget.comment( COMMENT, 0xFFFFFF );
         }
     }
     
@@ -441,46 +515,77 @@ public class CrustConfigSpec {
             writer.writeNewLine( output );
             writer.writeComment( "Appendix:", output );
             writer.writeComment( COMMENT, output );
+            writer.writeNewLine( output );
             
             writer.increaseIndentLevel();
+        }
+        
+        /** Called when the config edit screen is opened. */
+        @Override
+        public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) {
+            widget.newLine( 2 );
+            widget.header( "Appendix", null );
+            widget.comment( COMMENT );
+            widget.newLine();
         }
     }
     
     /** Represents a category comment. */
     private static class Category extends Format {
         
+        /** The spec this action belongs to. */
+        private final CrustConfigSpec PARENT;
+        /** The category name. */
+        private final String CATEGORY;
         /** The category comment. */
         private final List<String> COMMENT;
         
         /** Create a new category action that will insert the category comment. */
-        private Category( String categoryName, List<String> comment ) {
-            comment.add( 0, "Category: " + categoryName );
+        private Category( CrustConfigSpec parent, String categoryName, List<String> comment ) {
+            PARENT = parent;
+            CATEGORY = categoryName;
             COMMENT = comment;
         }
         
         /** Called when the config is saved. */
         @Override
         public void write( CrustTomlWriter writer, CharacterOutput output ) {
+            PARENT.loadingCategory = CATEGORY + ".";
             writer.decreaseIndentLevel();
             
             writer.writeNewLine( output );
             writer.writeNewLine( output );
+            writer.writeComment( "Category: " + CATEGORY, output );
             writer.writeComment( COMMENT, output );
             
             writer.increaseIndentLevel();
             writer.writeNewLine( output );
+        }
+        
+        /** Called when the config edit screen is opened. */
+        @Override
+        public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) {
+            PARENT.loadingCategory = CATEGORY + ".";
+            widget.newLine( 2 );
+            widget.header( CATEGORY, COMMENT );
+            widget.newLine();
         }
     }
     
     /** Represents a subcategory comment. */
     private static class Subcategory extends Format {
         
+        /** The spec this action belongs to. */
+        private final CrustConfigSpec PARENT;
+        /** The subcategory name. */
+        private final String SUBCATEGORY;
         /** The subcategory comment. */
         private final List<String> COMMENT;
         
         /** Create a new subcategory action that will insert the subcategory comment. */
-        private Subcategory( String subcategoryName, List<String> comment ) {
-            comment.add( 0, "Subcategory: " + subcategoryName );
+        private Subcategory( CrustConfigSpec parent, String subcategoryName, List<String> comment ) {
+            PARENT = parent;
+            SUBCATEGORY = subcategoryName;
             COMMENT = comment;
         }
         
@@ -490,15 +595,24 @@ public class CrustConfigSpec {
             writer.decreaseIndentLevel();
             
             writer.writeNewLine( output );
+            writer.writeComment( "Subcategory: " + SUBCATEGORY, output );
             writer.writeComment( COMMENT, output );
             
             writer.increaseIndentLevel();
             writer.writeNewLine( output );
         }
+        
+        /** Called when the config edit screen is opened. */
+        @Override
+        public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) {
+            widget.newLine();
+            widget.header( PARENT.loadingCategory + SUBCATEGORY, COMMENT, 0xFFFFFF );
+            widget.newLine();
+        }
     }
     
     /** Represents a read-only spec action. */
-    private static class ReadCallback implements Action {
+    public static class ReadCallback implements Action {
         
         /** The method to call on read. */
         private final Runnable CALLBACK;
@@ -516,22 +630,35 @@ public class CrustConfigSpec {
         /** Called when the config is saved. */
         @Override
         public final void write( CrustTomlWriter writer, CharacterOutput output ) { } // Read callback actions do not affect file writing
+        
+        /** Called when the config edit screen is opened. */
+        @Override
+        public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) { } // Does not display
     }
     
     /** Represents a spec action that reads and writes to a field. */
-    private static class Field implements Action {
+    public static class Field implements Action {
         
         /** The spec this action belongs to. */
         private final CrustConfigSpec PARENT;
         /** The underlying config field to perform actions for. */
         private final AbstractConfigField FIELD;
+        /** The added field info comment. */
+        private final List<String> ADDED_COMMENT;
+        /** The provided restart note. */
+        private final RestartNote RESTART_NOTE;
         
         /** Create a new field action that will load/create and save the field value. */
         private Field( CrustConfigSpec parent, AbstractConfigField field, @Nullable RestartNote restartNote ) {
             PARENT = parent;
             FIELD = field;
-            field.finalizeComment( parent, restartNote );
             
+            ADDED_COMMENT = new ArrayList<>();
+            field.appendFieldInfo( ADDED_COMMENT );
+            ((ArrayList<String>) ADDED_COMMENT).trimToSize();
+            RESTART_NOTE = restartNote;
+            
+            field.setSpec( parent );
             if( parent.FIELD_MAP.containsKey( field.getKey() ) ) {
                 throw new IllegalStateException( "Attempted to register duplicate field key '" + field.getKey() + "' in config " + parent.NAME );
             }
@@ -560,8 +687,13 @@ public class CrustConfigSpec {
         /** Called when the config is saved. */
         @Override
         public void write( CrustTomlWriter writer, CharacterOutput output ) {
-            // Write the key and value
-            writer.writeField( FIELD, output );
+            writer.writeField( FIELD, RESTART_NOTE, ADDED_COMMENT, output );
+        }
+        
+        /** Called when the config edit screen is opened. */
+        @Override
+        public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) {
+            widget.field( FIELD, RESTART_NOTE, ADDED_COMMENT );
         }
     }
 }

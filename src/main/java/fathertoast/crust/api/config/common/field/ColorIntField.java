@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.client.gui.widget.field.ColorFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.field.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.lib.CrustMath;
 
 import javax.annotation.Nullable;
@@ -21,6 +23,9 @@ public class ColorIntField extends IntField.Hex {
     public ColorIntField( String key, Color defaultValue, boolean useAlpha, @Nullable String... description ) {
         this( key, defaultValue.getRGB(), useAlpha, description );
     }
+    
+    /** @return True if the alpha bits on this color are usable. */
+    public boolean usesAlpha() { return getMinDigits() > 6; }
     
     
     /** @return Returns the config field's value as a 'color' object. If this field does not 'use alpha', alpha will always be 0. */
@@ -53,4 +58,8 @@ public class ColorIntField extends IntField.Hex {
     
     /** @return The alpha (opacity) portion of the config field's value. Returned value will be in the range 0.0 - 1.0. */
     public float getAlpha() { return CrustMath.getAlpha( get() ); }
+    
+    /** @return This field's gui component provider. */
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() { return new ColorFieldWidgetProvider( this ); }
 }

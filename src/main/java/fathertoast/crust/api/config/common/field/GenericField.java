@@ -31,4 +31,8 @@ public abstract class GenericField<T> extends AbstractConfigField {
     @Override
     @Nullable
     public Object getRaw() { return value; }
+    
+    /** @return The default raw toml value of this field. */
+    @Override
+    public Object getRawDefault() { return valueDefault; }
 }

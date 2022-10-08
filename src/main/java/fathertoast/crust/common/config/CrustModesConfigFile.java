@@ -22,11 +22,11 @@ public class CrustModesConfigFile extends AbstractConfigFile {
      */
     CrustModesConfigFile( ConfigManager cfgManager, String cfgName ) {
         super( cfgManager, cfgName,
-                "This config contains options to control the 'modes' added by Crust.",
-                "Some examples of Crust modes are magnet mode, multi-mine mode, and undying mode.",
+                "This config contains options to control the 'modes' added by Crust. Some examples of Crust " +
+                        "modes are magnet mode, super speed mode, and undying mode.",
                 "",
-                "This config is for server-side settings. Client preferences are requested by using",
-                "/crustmode or Crust's extra inventory buttons (client_extra_inv_buttons.toml)." );
+                "This config is for server-side settings. Client preferences are requested by using /crustmode or Crust's " +
+                        "extra inventory buttons (client_extra_inv_buttons.toml)." );
         
         GENERAL = new General( this );
         
@@ -64,8 +64,8 @@ public class CrustModesConfigFile extends AbstractConfigFile {
             SPEC.increaseIndent();
             
             SPEC.subcategory( "op_level",
-                    "The op levels (aka permission levels) required to enable/disable Crust's various modes.",
-                    "You can disable any mode by setting this level very high (e.g., " + (CommandUtil.PERMISSION_SERVER_OP + 1) + ").",
+                    "The op levels (aka permission levels) required to enable/disable Crust's various modes. You can " +
+                            "disable any mode by setting this level very high (e.g., " + (CommandUtil.PERMISSION_SERVER_OP + 1) + ").",
                     "Vanilla op levels used are:",
                     "  " + CommandUtil.PERMISSION_NONE + " - Chat/whispers, Access to limited info",
                     "  " + CommandUtil.PERMISSION_TRUSTED + " - Can bypass spawn protection",
@@ -91,19 +91,19 @@ public class CrustModesConfigFile extends AbstractConfigFile {
                     CommandUtil.PERMISSION_CHEAT, IntField.Range.ANY ) );
             
             SPEC.subcategory( "default",
-                    "The default settings for Crust's various modes initially applied to players.",
-                    "Note that these mode settings will be applied regardless of op level; if the player does not have",
-                    "permission to enable/disable the mode, they will be 'stuck' with whatever is assigned here." );
-            magnetDefault = SPEC.define( new DoubleField( "default.magnet", 10.0, 0.0, 3.4e38,
+                    "The default settings for Crust's various modes initially applied to players. Note that these " +
+                            "mode settings will be applied regardless of op level; if the player does not have permission to " +
+                            "enable/disable the mode, they will be 'stuck' with whatever is assigned here." );
+            magnetDefault = SPEC.define( new DoubleField( "default.magnet", 10.0, DoubleField.Range.NON_NEGATIVE,
                     "The maximum range (blocks) for magnet mode. If 0, magnet mode will be off by default." ) );
             //multiMineDefault = SPEC.define( new ???( "default.multi_mine", 0, 0, 0 ) );
             undyingDefault = SPEC.define( new BooleanField( "default.undying", false ) );
             unbreakingDefault = SPEC.define( new BooleanField( "default.unbreaking", false ) );
             uneatingDefault = SPEC.define( new IntField( "default.uneating", 0, 0, 20,
-                    "When dropping below this food level (half-drumsticks), uneating mode restores hunger.",
-                    "If 0, uneating mode will be off by default." ) );
+                    "When dropping below this food level (half-drumsticks), uneating mode restores hunger. If 0, " +
+                            "uneating mode will be off by default." ) );
             visionDefault = SPEC.define( new BooleanField( "default.super_vision", false ) );
-            speedDefault = SPEC.define( new DoubleField( "default.super_speed", 1.0, 1.0, 3.4e38,
+            speedDefault = SPEC.define( new DoubleField( "default.super_speed", 1.0, 1.0, Double.POSITIVE_INFINITY,
                     "The speed multiplier applied while sprinting. If 1, super speed mode will be off by default." ) );
             noPickupDefault = SPEC.define( new BooleanField( "default.destroy_on_pickup", false ) );
             
@@ -124,15 +124,15 @@ public class CrustModesConfigFile extends AbstractConfigFile {
             super( parent, "magnet_mode",
                     "Options that apply to Crust's magnet mode." );
             
-            maxRangeLimit = SPEC.define( new DoubleField( "max_range_limit", 10.0, 0.0, 3.4e38,
+            maxRangeLimit = SPEC.define( new DoubleField( "max_range_limit", 10.0, DoubleField.Range.NON_NEGATIVE,
                     "The highest maximum range (blocks) allowed for magnet mode. Max range is a client preference." ) );
             maxSpeed = SPEC.define( new ScaledDoubleField.Rate( "max_speed", 10.0, DoubleField.Range.NON_NEGATIVE,
-                    "The maximum speed (blocks/sec) for items pulled by magnet mode.",
-                    "Speed is higher the closer the item is to the player, scaling down to 0 m/s at the player's max range." ) );
+                    "The maximum speed (blocks/sec) for items pulled by magnet mode. Speed is higher the closer " +
+                            "the item is to the player, scaling down to 0 m/s at the player's max range." ) );
             delay = SPEC.define( new IntField( "delay", 40, IntField.Range.NON_NEGATIVE,
                     "The time delay (ticks) before freshly dropped items are pulled by magnet mode.",
-                    "Setting this to a low value will cause items to fly around your face until their pickup delay expires.",
-                    "The default prevents face-flying for vanilla drops, but many drops only have a pickup delay of 10." ) );
+                    "Setting this to a low value will cause items to fly around your face until their pickup delay expires. " +
+                            "The default prevents face-flying for vanilla drops, but many drops only have a pickup delay of 10." ) );
         }
     }
     
@@ -147,9 +147,9 @@ public class CrustModesConfigFile extends AbstractConfigFile {
             super( parent, "super_speed_mode",
                     "Options that apply to Crust's super-speed mode." );
             
-            speedLimit = SPEC.define( new DoubleField( "speed_limit", 12.0, 1.0, 3.4e38,
+            speedLimit = SPEC.define( new DoubleField( "speed_limit", 12.0, 1.0, Double.POSITIVE_INFINITY,
                     "The highest maximum speed multiplier allowed for super-speed mode. Actual speed is a client preference.",
-                    "Note: Very large speed multipliers might break the game's physics." ) );
+                    "Warning: Very large speed multipliers might break the game's physics." ) );
         }
     }
 }

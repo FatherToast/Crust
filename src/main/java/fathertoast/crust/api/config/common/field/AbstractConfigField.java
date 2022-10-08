@@ -1,13 +1,14 @@
 package fathertoast.crust.api.config.common.field;
 
 import com.electronwill.nightconfig.core.io.CharacterOutput;
+import fathertoast.crust.api.config.client.gui.widget.field.IConfigFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.field.UnsupportedWidgetProvider;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.IStringArray;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public abstract class AbstractConfigField {
     /** @see #getKey() */
     private String KEY;
     /** @see #getComment() */
-    private List<String> COMMENT;
+    private final List<String> COMMENT;
     
     /**
      * Creates a new field with the supplied key and description.
@@ -38,7 +39,7 @@ public abstract class AbstractConfigField {
      */
     AbstractConfigField( String key, @Nullable List<String> comment ) {
         KEY = key;
-        COMMENT = comment;
+        COMMENT = comment == null ? null : Collections.unmodifiableList( comment );
     }
     
     /** @return The config spec this field exists in. */
@@ -51,17 +52,10 @@ public abstract class AbstractConfigField {
     @Nullable
     public final List<String> getComment() { return COMMENT; }
     
-    /** Adds procedural information to the comment and then makes it unmodifiable. */
-    public final void finalizeComment( CrustConfigSpec spec, @Nullable RestartNote restartNote ) {
-        setSpec( spec );
-        if( COMMENT == null ) return;
-        RestartNote.appendComment( COMMENT, restartNote );
-        appendFieldInfo( COMMENT );
-        ((ArrayList<String>) COMMENT).trimToSize();
-        COMMENT = Collections.unmodifiableList( COMMENT );
-    }
-    
-    /** Called to set the config spec of this field. Once called, this field can no longer be registered to specs (#define). */
+    /**
+     * Called to set the config spec of this field. Once called, this field can no longer be registered to specs (#define).
+     * Note that {@link CrustConfigSpec#define(AbstractConfigField)} calls this method itself, so you rarely need to.
+     */
     public final void setSpec( CrustConfigSpec spec ) {
         if( SPEC != null ) {
             throw new IllegalStateException( "Attempted to register field '" + KEY + "' in two locations; first in " +
@@ -93,6 +87,9 @@ public abstract class AbstractConfigField {
     @Nullable
     public abstract Object getRaw();
     
+    /** @return The default raw toml value of this field. */
+    public abstract Object getRawDefault();
+    
     /** Writes this field's value to file. */
     public void writeValue( CrustTomlWriter writer, CharacterOutput output ) {
         Object raw = getRaw();
@@ -103,4 +100,7 @@ public abstract class AbstractConfigField {
             writer.writeLine( TomlHelper.toLiteral( raw ), output );
         }
     }
+    
+    /** @return This field's gui component provider. */
+    public IConfigFieldWidgetProvider getWidgetProvider() { return new UnsupportedWidgetProvider(); }
 }

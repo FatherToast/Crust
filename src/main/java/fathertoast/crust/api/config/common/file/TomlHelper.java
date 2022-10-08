@@ -37,17 +37,50 @@ public final class TomlHelper {
         return list;
     }
     
-    /** Attempts to convert a string value to a raw non-string toml literal. May or may not be accurate. */
-    public static Object parseRaw( @Nullable String value ) {
-        // Note: It is very important here that the returned value is NOT a string
-        
+    /** @return The hex int string parsed to an integer, or null the parse fails. */
+    @Nullable
+    public static Integer parseHexInt( @Nullable String value ) {
+        if( value != null ) {
+            try {
+                return Integer.parseUnsignedInt( value, 16 );
+            }
+            catch( NumberFormatException ex ) {
+                // This is okay; string was not a hex int
+            }
+        }
+        return null;
+    }
+    
+    /** @return The object cast to number, or null if it cannot be. */
+    @Nullable
+    public static Number asNumber( @Nullable Object raw ) { return raw instanceof Number ? (Number) raw : null; }
+    
+    /** @return The string parsed to a number, or null the parse fails. */
+    @Nullable
+    public static Number parseNumber( @Nullable String value ) { return asNumber( parseStringPrimitive( value ) ); }
+    
+    /** @return The object cast to boolean, or null if it cannot be. */
+    @Nullable
+    public static Boolean asBoolean( @Nullable Object raw ) { return raw instanceof Boolean ? (Boolean) raw : null; }
+    
+    /** @return The string parsed to a boolean, or null the parse fails. */
+    @Nullable
+    public static Boolean parseBoolean( @Nullable String value ) { return asBoolean( parseStringPrimitive( value ) ); }
+    
+    /** Attempts to convert a string value to a raw toml primitive type. May or may not be accurate. */
+    public static Object parseStringPrimitive( @Nullable String value ) {
         if( value != null && !"".equals( value ) ) {
             // Try to parse as a numerical value
             try {
-                return Double.parseDouble( value );
+                return Long.parseLong( value );
             }
             catch( NumberFormatException ex ) {
-                // This is okay; string was not a number
+                try {
+                    return Double.parseDouble( value );
+                }
+                catch( NumberFormatException ex2 ) {
+                    // This is okay; string was not a number
+                }
             }
             // Try to parse as a boolean
             if( Boolean.TRUE.toString().equalsIgnoreCase( value ) ) {

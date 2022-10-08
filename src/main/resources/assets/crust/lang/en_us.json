@@ -1,22 +1,34 @@
 {
+  "menu.crust.config.open_folder": "Open Folder",
+  "menu.crust.config.save_changes": "SAVE Changes",
+  "menu.crust.config.discard_changes": "DISCARD Changes",
+  
+  "menu.crust.config.select.mod.title": "Mod Configs...",
+  "menu.crust.config.select.file.title": "%s Configs...",
+  "menu.crust.config.select.file.subtitle": "Folder: %s",
+  
+  "menu.crust.config.file.title": "%s Config: %s",
+  "menu.crust.config.file.subtitle": "File: %s",
+
+
   "commands.crustclean.pointer.success": "Destroyed item on pointer for %s",
   "commands.crustclean.pointer.failure": "%s has no item on pointer",
-  
+
   "commands.crustclean.single.success": "Reset %s to starting inventory",
   "commands.crustclean.multiple.success": "Reset %s players to starting inventory",
-  
+
   "commands.crustmode.query.success": "Active modes for %s: %s",
-  
+
   "commands.crustmode.disable.single.success": "Disabled \"%s\" mode for %s",
   "commands.crustmode.disable.multiple.success": "Disabled \"%s\" mode for %s players",
   "commands.crustmode.enable.single.success": "Enabled \"%s\" mode for %s",
   "commands.crustmode.enable.multiple.success": "Enabled \"%s\" mode for %s players",
-  
+
   "commands.crustportal.nether.success": "Placed Nether portal at [%s, %s, %s]",
   "commands.crustportal.end.success": "Placed End portal at [%s, %s, %s]",
   "commands.crustportal.dimension.failure": "Invalid dimension for portal",
   "commands.crustportal.failure": "Could not find valid portal position",
-  
+
   "commands.crustrecover.single.all.success": "Fully recovered %s",
   "commands.crustrecover.multiple.all.success": "Fully recovered %s entities",
   "commands.crustrecover.single.health.success": "Recovered health of %s",
@@ -25,29 +37,27 @@
   "commands.crustrecover.multiple.hunger.success": "Recovered hunger of %s entities",
   "commands.crustrecover.single.effects.success": "Cleared negative effects from %s",
   "commands.crustrecover.multiple.effects.success": "Cleared negative effects from %s entities",
-  
-  
+
   "key.categories.crust": "Crust",
-  
+
   "key.crust.equip": "Equip item",
-  
-  
+
   "key.categories.crust.buttons": "Crust's Added Inventory Buttons",
-  
+
   "key.crust.buttons.fullheal": "Fully Recover",
   "key.crust.buttons.killall": "Kill All Non-Players",
   "key.crust.buttons.netherportal": "Place Nether Portal",
   "key.crust.buttons.endportal": "Place End Portal",
-  
+
   "key.crust.buttons.day": "Day Time",
   "key.crust.buttons.night": "Night Time",
   "key.crust.buttons.toggleday": "Toggle Day/Night",
-  
+
   "key.crust.buttons.weatherclear": "Clear Weather",
   "key.crust.buttons.weatherrain": "Start Rainstorm",
   "key.crust.buttons.weatherstorm": "Start Thunderstorm",
   "key.crust.buttons.togglerain": "Toggle Rain",
-  
+
   "key.crust.buttons.gamemode": "Toggle Game Mode (Also try F3+F4)",
   "key.crust.buttons.magnetmode": "Toggle Magnet Mode",
   "key.crust.buttons.multiminemode": "Toggle Multi-Mine",
@@ -55,7 +65,7 @@
   "key.crust.buttons.supervisionmode": "Toggle Super Vision",
   "key.crust.buttons.superspeedmode": "Toggle Super Speed",
   "key.crust.buttons.nopickupmode": "Toggle Destroy-On-Pickup",
-  
+
   "key.crust.buttons.custom1": "Custom Button 1",
   "key.crust.buttons.custom2": "Custom Button 2",
   "key.crust.buttons.custom3": "Custom Button 3",
