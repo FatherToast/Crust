@@ -16,7 +16,7 @@ import java.util.Random;
  * Represents a config field with an integer value.
  */
 @SuppressWarnings( "unused" )
-public class IntField extends NumberField {
+public class IntField extends AbstractConfigField {
     
     /** The default field value. */
     private final int valueDefault;
@@ -61,9 +61,11 @@ public class IntField extends NumberField {
     /** @return Treats the config field's value as a one-in-X chance and returns the result of a single roll. */
     public boolean rollChance( Random random ) { return get() > 0 && random.nextInt( get() ) == 0; }
     
-    /** @return True if the number is within the range limits of this field. */
-    @Override
-    public boolean isInRange( Number number ) { return valueMin <= number.intValue() && number.intValue() <= valueMax; }
+    /** @return Returns the minimum value allowed by this field. */
+    public int minValue() { return valueMin; }
+    
+    /** @return Returns the maximum value allowed by this field. */
+    public int maxValue() { return valueMax; }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
@@ -129,15 +131,14 @@ public class IntField extends NumberField {
     /** @return This field's gui component provider. */
     @Override
     public IConfigFieldWidgetProvider getWidgetProvider() {
-        return new NumberFieldWidgetProvider( this ) {
-            @Override
-            protected Object cast( Number raw ) { return raw.intValue(); }
-        };
+        return new NumberFieldWidgetProvider( this, Number::intValue,
+                ( number ) -> valueMin <= number.intValue() && number.intValue() <= valueMax );
     }
     
     
     /** A set of commonly used ranges for this field type. */
     public enum Range {
+        
         /** Accepts any value. */
         ANY( Integer.MIN_VALUE, Integer.MAX_VALUE ),
         /** Accepts any positive value (> 0). */
@@ -206,7 +207,9 @@ public class IntField extends NumberField {
         
         /** @return This field's gui component provider. */
         @Override
-        public IConfigFieldWidgetProvider getWidgetProvider() { return new HexIntFieldWidgetProvider( this ); }
+        public IConfigFieldWidgetProvider getWidgetProvider() {
+            return new HexIntFieldWidgetProvider( this, ( number ) -> minValue() <= number && number <= maxValue() );
+        }
     }
     
     

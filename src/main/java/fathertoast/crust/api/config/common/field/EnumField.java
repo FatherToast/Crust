@@ -27,6 +27,9 @@ public class EnumField<T extends Enum<T>> extends GenericField<T> {
         valuesValid = validValues;
     }
     
+    /** @return An array of all values allowed by this field. */
+    public T[] validValues() { return valuesValid; }
+    
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
@@ -65,4 +68,8 @@ public class EnumField<T extends Enum<T>> extends GenericField<T> {
         }
         return null;
     }
+    
+    //    /** @return This field's gui component provider. */
+    //    @Override
+    //    public IConfigFieldWidgetProvider getWidgetProvider() { return new EnumFieldWidgetProvider<>( this ); }
 }

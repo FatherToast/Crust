@@ -18,7 +18,7 @@ import java.util.function.Predicate;
  * Represents a config field with a double value.
  */
 @SuppressWarnings( "unused" )
-public class DoubleField extends NumberField {
+public class DoubleField extends AbstractConfigField {
     
     /** The default field value. */
     private final double valueDefault;
@@ -60,9 +60,11 @@ public class DoubleField extends NumberField {
     /** @return Treats the config field's value as a percent chance (from 0 to 1) and returns the result of a single roll. */
     public boolean rollChance( Random random ) { return random.nextDouble() < get(); }
     
-    /** @return True if the number is within the range limits of this field. */
-    @Override
-    public boolean isInRange( Number number ) { return valueMin <= number.doubleValue() && number.doubleValue() <= valueMax; }
+    /** @return Returns the minimum value allowed by this field. */
+    public double minValue() { return valueMin; }
+    
+    /** @return Returns the maximum value allowed by this field. */
+    public double maxValue() { return valueMax; }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
@@ -125,10 +127,8 @@ public class DoubleField extends NumberField {
     /** @return This field's gui component provider. */
     @Override
     public IConfigFieldWidgetProvider getWidgetProvider() {
-        return new NumberFieldWidgetProvider( this ) {
-            @Override
-            protected Object cast( Number raw ) { return raw.doubleValue(); }
-        };
+        return new NumberFieldWidgetProvider( this, Number::doubleValue,
+                ( number ) -> valueMin <= number.doubleValue() && number.doubleValue() <= valueMax );
     }
     
     

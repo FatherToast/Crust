@@ -1,23 +1,32 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
-import fathertoast.crust.api.config.common.field.NumberField;
+import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.text.StringTextComponent;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Displays a text box for a number value.
  */
-public abstract class NumberFieldWidgetProvider implements IConfigFieldWidgetProvider {
+public class NumberFieldWidgetProvider implements IConfigFieldWidgetProvider {
     
     /** The providing field. */
-    protected final NumberField FIELD;
+    protected final AbstractConfigField FIELD;
+    /** Converts the input number into a raw toml value. */
+    protected final Function<Number, Object> TO_RAW;
+    /** Returns true when the input number is valid. */
+    protected final Function<Number, Boolean> VALIDATOR;
     
-    public NumberFieldWidgetProvider( NumberField field ) { FIELD = field; }
+    public NumberFieldWidgetProvider( AbstractConfigField field, Function<Number, Object> toRaw, Function<Number, Boolean> validator ) {
+        FIELD = field;
+        TO_RAW = toRaw;
+        VALIDATOR = validator;
+    }
     
     /**
      * Called to initialize the field's gui components.
@@ -40,19 +49,16 @@ public abstract class NumberFieldWidgetProvider implements IConfigFieldWidgetPro
         textWidget.setValue( TomlHelper.toLiteral( displayValue ) );
         textWidget.setResponder( ( value ) -> {
             Number newValue = TomlHelper.parseNumber( value );
-            if( newValue == null ) {
+            if( newValue == null || !VALIDATOR.apply( newValue ) ) {
                 textWidget.setTextColor( INVALID_COLOR );
                 listEntry.clearValue();
             }
             else {
-                textWidget.setTextColor( FIELD.isInRange( newValue ) ? DEFAULT_COLOR : INVALID_COLOR );
-                listEntry.updateValue( cast( newValue ) );
+                textWidget.setTextColor( DEFAULT_COLOR );
+                listEntry.updateValue( TO_RAW.apply( newValue ) );
             }
         } );
         
         components.add( textWidget );
     }
-    
-    /** @return The number cast to an appropriate raw toml value. */
-    protected abstract Object cast( Number raw );
 }

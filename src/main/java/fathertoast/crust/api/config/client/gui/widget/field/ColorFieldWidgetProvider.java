@@ -10,7 +10,7 @@ import net.minecraft.util.text.StringTextComponent;
 import java.util.List;
 
 /**
- * Displays a text box for a number value.
+ * Displays a text box for a hexadecimal color value, plus a color preview swatch.
  */
 public class ColorFieldWidgetProvider implements IConfigFieldWidgetProvider {
     
@@ -48,14 +48,14 @@ public class ColorFieldWidgetProvider implements IConfigFieldWidgetProvider {
         
         textWidget.setResponder( ( value ) -> {
             Integer newValue = TomlHelper.parseHexInt( value );
-            if( newValue == null ) {
+            if( newValue == null || !isValid( newValue ) ) {
                 previewWidget.setColor( 0, true );
                 textWidget.setTextColor( INVALID_COLOR );
                 listEntry.clearValue();
             }
             else {
                 previewWidget.setColor( newValue, FIELD.usesAlpha() );
-                textWidget.setTextColor( FIELD.isInRange( newValue ) ? DEFAULT_COLOR : INVALID_COLOR );
+                textWidget.setTextColor( DEFAULT_COLOR );
                 listEntry.updateValue( newValue );
             }
         } );
@@ -63,4 +63,7 @@ public class ColorFieldWidgetProvider implements IConfigFieldWidgetProvider {
         components.add( previewWidget );
         components.add( textWidget );
     }
+    
+    /** Returns true when the input number is valid. */
+    protected boolean isValid( Integer value ) { return FIELD.usesAlpha() || 0 <= value && value <= 0xFFFFFF; }
 }

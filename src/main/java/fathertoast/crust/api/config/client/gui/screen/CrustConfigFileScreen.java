@@ -2,12 +2,14 @@ package fathertoast.crust.api.config.client.gui.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
+import fathertoast.crust.api.config.client.gui.widget.field.IPopupWidget;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustConfigFormat;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import net.minecraft.client.gui.DialogTexts;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.IReorderingProcessor;
@@ -61,6 +63,9 @@ public class CrustConfigFileScreen extends Screen {
     /** The currently focused text box, if any. */
     private TextFieldWidget focusedTextBox;
     
+    /** The currently open popup widget, if any. */
+    private Widget popupWidget;
+    
     /** Creates a new config file screen. */
     public CrustConfigFileScreen( Screen parent, CrustConfigSpec spec ) {
         super( new TranslationTextComponent( "menu.crust.config.file.title",
@@ -71,19 +76,18 @@ public class CrustConfigFileScreen extends Screen {
                 ConfigUtil.toRelativePath( spec.getFile() ) );
     }
     
+    /** Called to set the currently focused text box. */
+    public void setFocusedTextBox( TextFieldWidget textBox ) { focusedTextBox = textBox; }
+    
+    /** Called to open a 'popup widget'. Setting to null closes any open popup. */
+    public void setPopupWidget( @Nullable Widget popup ) { popupWidget = popup; }
+    
     /** Sets the tooltip to render this tick. */
     public void setTooltip( @Nullable List<IReorderingProcessor> text ) { tooltip = text; }
     
     /** Closes this screen and reopens it to hard-refresh everything. */
     public void resetScreen() {
         if( minecraft != null ) minecraft.setScreen( new CrustConfigFileScreen( LAST_SCREEN, SPEC ) );
-    }
-    
-    /** Called when the screen is destroyed. */
-    @Override
-    public void removed() {
-        //TODO
-        //minecraft.options.save();
     }
     
     /** Called to close the screen. */
@@ -120,6 +124,7 @@ public class CrustConfigFileScreen extends Screen {
                 } ) );
     }
     
+    /** Called when the footer text might need to be changed. */
     public void updateFooterButtonText() {
         if( fieldList.isChanged() ) {
             bottomLeftButton.setMessage( new TranslationTextComponent( "menu.crust.config.discard_changes" )
@@ -131,6 +136,13 @@ public class CrustConfigFileScreen extends Screen {
             bottomLeftButton.setMessage( new TranslationTextComponent( "menu.crust.config.open_folder" ) );
             bottomRightButton.setMessage( DialogTexts.GUI_DONE );
         }
+    }
+    
+    /** Called when the mouse is moved. */
+    @Override
+    public void mouseMoved( double x, double y ) {
+        if( popupWidget != null ) popupWidget.mouseMoved( x, y );
+        else super.mouseMoved( x, y );
     }
     
     /**
@@ -145,18 +157,55 @@ public class CrustConfigFileScreen extends Screen {
             focusedTextBox.setFocus( false );
             focusedTextBox = null;
         }
-        //TODO handle field edit popups
-        //if( selectedKey != null ) {
-        //    options.setKey( selectedKey, InputMappings.Type.MOUSE.getOrCreate( mouseKey ) );
-        //    selectedKey = null;
-        //    KeyBinding.resetMapping();
-        //    return true;
-        //}
+        
+        if( popupWidget != null ) {
+            if( popupWidget.isMouseOver( x, y ) ) {
+                popupWidget.mouseClicked( x, y, mouseKey );
+            }
+            else if( popupWidget instanceof IPopupWidget ) {
+                if( ((IPopupWidget) popupWidget).mouseClickedOutOfBounds( x, y, mouseKey ) )
+                    popupWidget = null;
+            }
+            else popupWidget = null;
+            return true;
+        }
         return super.mouseClicked( x, y, mouseKey );
     }
     
-    /** Called to set the currently focused text box. */
-    public void setFocusedTextBox( TextFieldWidget textBox ) { focusedTextBox = textBox; }
+    /**
+     * Called when a mouse button is released.
+     *
+     * @param mouseKey The mouse key that was released (see {@link InputMappings.Type#MOUSE}).
+     * @return True if the event has been handled.
+     */
+    @Override
+    public boolean mouseReleased( double x, double y, int mouseKey ) {
+        if( popupWidget != null ) {
+            popupWidget.mouseReleased( x, y, mouseKey );
+            return true;
+        }
+        return super.mouseReleased( x, y, mouseKey );
+    }
+    
+    /** Called when the mouse is moved while a mouse button is held. */
+    @Override
+    public boolean mouseDragged( double x, double y, int mouseKey, double deltaX, double deltaY ) {
+        if( popupWidget != null ) {
+            popupWidget.mouseDragged( x, y, mouseKey, deltaX, deltaY );
+            return true;
+        }
+        return super.mouseDragged( x, y, mouseKey, deltaX, deltaY );
+    }
+    
+    /** Called when the mouse wheel is scrolled. */
+    @Override
+    public boolean mouseScrolled( double x, double y, double deltaScroll ) {
+        if( popupWidget != null ) {
+            popupWidget.mouseScrolled( x, y, deltaScroll );
+            return true;
+        }
+        return super.mouseScrolled( x, y, deltaScroll );
+    }
     
     /**
      * Called when a keyboard key is pressed.
@@ -169,35 +218,86 @@ public class CrustConfigFileScreen extends Screen {
      */
     @Override
     public boolean keyPressed( int key, int scancode, int mods ) {
-        //TODO handle field edit popups
-        //if( selectedKey != null ) {
-        //    if( key == 256 ) {
-        //        selectedKey.setKeyModifierAndCode( net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), InputMappings.UNKNOWN );
-        //        options.setKey( selectedKey, InputMappings.UNKNOWN );
-        //    }
-        //    else {
-        //        selectedKey.setKeyModifierAndCode( net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), InputMappings.getKey( key, scancode ) );
-        //        options.setKey( selectedKey, InputMappings.getKey( key, scancode ) );
-        //    }
-        //
-        //    if( !net.minecraftforge.client.settings.KeyModifier.isKeyCodeModifier( selectedKey.getKey() ) )
-        //        selectedKey = null;
-        //    lastKeySelection = Util.getMillis();
-        //    KeyBinding.resetMapping();
-        //    return true;
-        //}
+        if( popupWidget != null ) {
+            if( key == InputMappings.getKey( "key.keyboard.escape" ).getValue() &&
+                    (!(popupWidget instanceof IPopupWidget) || ((IPopupWidget) popupWidget).shouldCloseOnEsc()) ) {
+                popupWidget = null;
+                return true;
+            }
+            popupWidget.keyPressed( key, scancode, mods );
+            return true;
+        }
         return super.keyPressed( key, scancode, mods );
+    }
+    
+    /**
+     * Called when a keyboard key is released.
+     *
+     * @param key      The keyboard key that was released (see {@link InputMappings.Type#KEYSYM}).
+     * @param scancode The system-specific scancode of the key (see {@link InputMappings.Type#SCANCODE}).
+     * @param mods     Bitfield describing which modifier keys were held down.
+     * @return True if the event has been handled.
+     * @see org.lwjgl.glfw.GLFWKeyCallbackI#invoke(long, int, int, int, int)
+     */
+    @Override
+    public boolean keyReleased( int key, int scancode, int mods ) {
+        if( popupWidget != null ) {
+            popupWidget.keyReleased( key, scancode, mods );
+            return true;
+        }
+        return super.keyReleased( key, scancode, mods );
+    }
+    
+    /** Called when a character is typed. */
+    @Override
+    public boolean charTyped( char codePoint, int mods ) {
+        if( popupWidget != null ) {
+            popupWidget.charTyped( codePoint, mods );
+            return true;
+        }
+        return super.charTyped( codePoint, mods );
+    }
+    
+    /**
+     * Called when focus change is requested (for example, tab or shift+tab).
+     *
+     * @param forward Whether focus should move forward. Typically, forward means left-to-right then top-to-bottom.
+     * @return This gui's new focus state.
+     */
+    @Override
+    public boolean changeFocus( boolean forward ) {
+        if( popupWidget != null ) {
+            if( !changeFocus( forward ) ) popupWidget = null;
+            return true;
+        }
+        return super.changeFocus( forward );
     }
     
     /** Called each tick to update animations. */
     @Override
     public void tick() {
         if( focusedTextBox != null ) focusedTextBox.tick();
+        if( popupWidget instanceof IPopupWidget ) ((IPopupWidget) popupWidget).tick();
     }
     
     /** Called to render the screen. */
     @Override
     public void render( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks ) {
+        if( popupWidget == null ) {
+            renderMain( matrixStack, mouseX, mouseY, partialTicks );
+        }
+        else {
+            renderMain( matrixStack, Integer.MIN_VALUE, Integer.MIN_VALUE, partialTicks );
+            renderPopup( matrixStack, popupWidget, mouseX, mouseY, partialTicks );
+        }
+        
+        if( tooltip != null ) {
+            renderTooltip( matrixStack, tooltip, mouseX, mouseY );
+        }
+    }
+    
+    /** Called to render the primary screen content. */
+    protected void renderMain( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks ) {
         renderBackground( matrixStack );
         
         setTooltip( null );
@@ -209,9 +309,19 @@ public class CrustConfigFileScreen extends Screen {
                 8, 0xFFFFFF );
         
         super.render( matrixStack, mouseX, mouseY, partialTicks );
+    }
+    
+    /** Called to render a popup widget overlay. */
+    protected void renderPopup( MatrixStack matrixStack, Widget popup, int mouseX, int mouseY, float partialTicks ) {
+        matrixStack.pushPose();
+        matrixStack.translate( 0.0, 0.0, 40.0 );
         
-        if( tooltip != null ) {
-            renderTooltip( matrixStack, tooltip, mouseX, mouseY );
-        }
+        fillGradient( matrixStack, 0, 0, width, height,
+                0xC0_101010, 0xD0_101010 );
+        
+        setTooltip( null );
+        popup.render( matrixStack, mouseX, mouseY, partialTicks );
+        
+        matrixStack.popPose();
     }
 }

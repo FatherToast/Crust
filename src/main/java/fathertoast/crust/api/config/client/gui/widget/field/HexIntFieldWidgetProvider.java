@@ -8,16 +8,22 @@ import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.text.StringTextComponent;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
- * Displays a text box for a number value.
+ * Displays a text box for a hexadecimal number value.
  */
 public class HexIntFieldWidgetProvider implements IConfigFieldWidgetProvider {
     
     /** The providing field. */
     protected final IntField.Hex FIELD;
+    /** Returns true when the input number is valid. */
+    protected final Function<Integer, Boolean> VALIDATOR;
     
-    public HexIntFieldWidgetProvider( IntField.Hex field ) { FIELD = field; }
+    public HexIntFieldWidgetProvider( IntField.Hex field, Function<Integer, Boolean> validator ) {
+        FIELD = field;
+        VALIDATOR = validator;
+    }
     
     /**
      * Called to initialize the field's gui components.
@@ -43,12 +49,12 @@ public class HexIntFieldWidgetProvider implements IConfigFieldWidgetProvider {
         
         textWidget.setResponder( ( value ) -> {
             Integer newValue = TomlHelper.parseHexInt( value );
-            if( newValue == null ) {
+            if( newValue == null || !VALIDATOR.apply( newValue ) ) {
                 textWidget.setTextColor( INVALID_COLOR );
                 listEntry.clearValue();
             }
             else {
-                textWidget.setTextColor( FIELD.isInRange( newValue ) ? DEFAULT_COLOR : INVALID_COLOR );
+                textWidget.setTextColor( DEFAULT_COLOR );
                 listEntry.updateValue( newValue );
             }
         } );

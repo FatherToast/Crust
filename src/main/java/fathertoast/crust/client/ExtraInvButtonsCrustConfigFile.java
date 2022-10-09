@@ -91,9 +91,6 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                     "The buttons displayed in the inventory, in the order you want them displayed. These are " +
                             "ordered left-to-right, then wrapped into rows. See below for all valid button names.",
                     "You may assign a hotkey to any button in your options, whether or not you choose to display it." ) );
-            
-            SPEC.newLine();
-            
             SPEC.titledComment( "Built-in buttons", TomlHelper.literalList( ButtonInfo.builtInIds() ) );
             SPEC.titledComment( "Custom buttons", "\"" + ButtonInfo.customId( 0 ) + "\", \"" +
                     ButtonInfo.customId( 1 ) + "\", ..., \"" + ButtonInfo.customId( parent.CUSTOM_BUTTONS.length - 1 ) +

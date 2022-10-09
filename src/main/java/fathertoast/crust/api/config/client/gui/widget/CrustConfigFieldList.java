@@ -373,6 +373,7 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
             RESET_BUTTON.active = !Objects.equals( FIELD.getRawDefault(), raw );
             changed = !Objects.equals( CURRENT_RAW, raw );
             PARENT.updateChangedState();
+            ensureVisible();
         }
         
         /** Call this to delete the field's pending "new" value. */
@@ -381,7 +382,11 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
             RESET_BUTTON.active = !Objects.equals( FIELD.getRawDefault(), CURRENT_RAW );
             changed = false;
             PARENT.updateChangedState();
+            ensureVisible();
         }
+        
+        /** Ensures this list entry is on-screen by scrolling the list up or down. */
+        public void ensureVisible() { PARENT.ensureVisible( this ); }
         
         /** Builds this field entry's tooltip. */
         private void buildTooltip( int width, @Nullable RestartNote restartNote, List<String> addedComment ) {
@@ -404,6 +409,9 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
                 }
             }
         }
+        
+        /** Opens a popup widget over the screen. Setting to null closes any open popup. */
+        public void setPopupWidget( @Nullable Widget popup ) { PARENT.PARENT.setPopupWidget( popup ); }
         
         @Override
         public void render( MatrixStack matrixStack, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
