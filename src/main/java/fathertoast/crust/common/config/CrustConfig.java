@@ -10,6 +10,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
  * We also add functionality to the Forge "Config" button and load client configs in the client setup event
  * ({@link fathertoast.crust.client.ClientRegister#onClientSetup(FMLClientSetupEvent)}).
  */
+@SuppressWarnings("JavadocReference")
 public final class CrustConfig {
     
     /** Crust's config manager. Defines the mod config folder. */
