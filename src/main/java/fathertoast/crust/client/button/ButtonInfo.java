@@ -424,9 +424,9 @@ public class ButtonInfo {
         }
         
         private static String toCmd( Object value ) {
-            // Command parser can't handle scientific notation
-            if( value instanceof Float ) return String.format( "%f", (Float) value );
-            if( value instanceof Double ) return String.format( "%f", (Double) value );
+            // Command parser can't handle scientific notation or comma decimal separators
+            if( value instanceof Float ) return String.format( Locale.ROOT, "%f", (Float) value );
+            if( value instanceof Double ) return String.format( Locale.ROOT, "%f", (Double) value );
             return value.toString();
         }
     }
