@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.client.gui.widget.field.EnumFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.field.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 
@@ -24,6 +26,8 @@ public class EnumField<T extends Enum<T>> extends GenericField<T> {
     /** Creates a new field that accepts the specified set of enum values. */
     public EnumField( String key, T defaultValue, T[] validValues, @Nullable String... description ) {
         super( key, defaultValue, description );
+        if( validValues.length == 0 )
+            throw new IllegalArgumentException( "Cannot create field with no valid values! Invalid field: " + key );
         valuesValid = validValues;
     }
     
@@ -45,6 +49,16 @@ public class EnumField<T extends Enum<T>> extends GenericField<T> {
     @Override
     public void load( @Nullable Object raw ) {
         T newValue = null;
+        //        if( raw instanceof Enum<?> ) {
+        //            // Parse the value
+        //            try {
+        //                //noinspection unchecked
+        //                newValue = (T) raw;
+        //            }
+        //            catch( ClassCastException ex ) {
+        //                // Failed to parse
+        //            }
+        //        }
         if( raw instanceof String ) {
             // Parse the value
             newValue = parseValue( (String) raw );
@@ -69,7 +83,7 @@ public class EnumField<T extends Enum<T>> extends GenericField<T> {
         return null;
     }
     
-    //    /** @return This field's gui component provider. */
-    //    @Override
-    //    public IConfigFieldWidgetProvider getWidgetProvider() { return new EnumFieldWidgetProvider<>( this ); }
+    /** @return This field's gui component provider. */
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() { return new EnumFieldWidgetProvider<>( this ); }
 }

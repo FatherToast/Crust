@@ -3,6 +3,7 @@ package fathertoast.crust.api.config.client.gui.widget.field;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.EnumField;
+import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
@@ -35,18 +36,58 @@ public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldW
     @Override
     public void apply( List<Widget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
         Button dropdownButton = new Button( 0, 0, VALUE_WIDTH, VALUE_HEIGHT,
-                rawToText( displayValue ), ( button ) -> openDropdownMenu( button, listEntry ) );
+                rawToText( displayValue ), ( button ) -> openDropdownMenu( button, listEntry, this ) );
         
         components.add( dropdownButton );
     }
     
     /** Called when the button is pressed to open a dropdown menu popup. */
-    protected void openDropdownMenu( Button openingButton, CrustConfigFieldList.FieldEntry listEntry ) {
-        Button testbutton = new Button( openingButton.x, openingButton.y + openingButton.getHeight(),
-                openingButton.getWidth(), openingButton.getHeight(),
-                rawToText( listEntry.getValue() ), ( button ) -> { listEntry.setPopupWidget( null ); } );
+    protected void openDropdownMenu( Button openingButton, CrustConfigFieldList.FieldEntry listEntry, EnumFieldWidgetProvider<T> provider ) {
+        T[] validValues = provider.FIELD.validValues();
+        int screenHeight = listEntry.PARENT.getHeight();
+        int rowHeight = 20 + PopupListWidget.ENTRY_PADDING;
+        int y;
+        int height = validValues.length * rowHeight + PopupListWidget.ENTRY_PADDING;
+        boolean hasScrollbar = false;
         
-        listEntry.setPopupWidget( testbutton );
+        if( height > screenHeight ) {
+            // List cannot be displayed without scrolling
+            y = 0;
+            height = screenHeight;
+            hasScrollbar = true;
+        }
+        else if( openingButton.y + height <= screenHeight ) {
+            // Can fit as a traditional dropdown
+            y = openingButton.y;
+        }
+        else if( openingButton.y + openingButton.getHeight() - height >= 0 ) {
+            // Can fit when flipped upward
+            y = openingButton.y + openingButton.getHeight() - height;
+        }
+        else if( openingButton.y + openingButton.getHeight() / 2 < screenHeight / 2 ) {
+            // Push from the top
+            y = 0;
+        }
+        else {
+            // Push from the bottom
+            y = screenHeight - height;
+        }
+        
+        PopupListWidget<PopupListWidget.WidgetListEntry> dropdownMenu = new PopupListWidget<>( openingButton.x - 2, y,
+                openingButton.getWidth() + 4 + (hasScrollbar ? PopupListWidget.SCROLLBAR_WIDTH + 2 : 0),
+                height, rowHeight, new StringTextComponent( provider.FIELD.getKey() ) );
+        for( T value : validValues ) {//TODO fix first button being white
+            Button selectButton = new Button( 0, 0,
+                    openingButton.getWidth(), rowHeight - PopupListWidget.ENTRY_PADDING,
+                    toText( value ), ( button ) -> {
+                openingButton.setMessage( toText( value ) );
+                listEntry.updateValue( TomlHelper.enumToString( value ) );//TODO fix this always flagging as 'changed'
+                listEntry.setPopupWidget( null );
+            } );
+            dropdownMenu.addEntry( new PopupListWidget.WidgetListEntry( selectButton ) );
+        }
+        
+        listEntry.setPopupWidget( dropdownMenu );
     }
     
     /** Converts the enum into its display string. Assumes the enum's declared name is in UPPER_UNDERSCORE format. */

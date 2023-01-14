@@ -51,6 +51,9 @@ public final class TomlHelper {
         return null;
     }
     
+    /** @return The enum value's string representation, as used by configs. */
+    public static String enumToString( Enum<?> value ) { return value.name().toLowerCase(); }
+    
     /** @return The object cast to number, or null if it cannot be. */
     @Nullable
     public static Number asNumber( @Nullable Object raw ) { return raw instanceof Number ? (Number) raw : null; }
@@ -115,7 +118,7 @@ public final class TomlHelper {
             return toLiteral( ((List<?>) value).toArray() );
         }
         else if( value instanceof Enum<?> ) {
-            return "\"" + ((Enum<?>) value).name().toLowerCase() + "\"";
+            return "\"" + enumToString( (Enum<?>) value ) + "\"";
         }
         else if( value instanceof String ) {
             return "\"" + ((String) value).replace( "\"", "\\\"" ) + "\"";
