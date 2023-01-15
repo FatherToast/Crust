@@ -3,7 +3,6 @@ package fathertoast.crust.api.config.client.gui.widget.field;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.list.AbstractList;
@@ -20,7 +19,10 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * TODO WIP; basically copy/paste from {@link AbstractList} and {@link net.minecraft.client.gui.widget.list.AbstractOptionList}.
+ * A popup that displays a scrollable list of row entries.
+ *
+ * @see AbstractList
+ * @see net.minecraft.client.gui.widget.list.AbstractOptionList
  */
 public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> extends Widget implements IPopupWidget {
     
@@ -43,6 +45,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     /** When true, the selection box will be rendered. */
     private boolean renderSelectionBox = true;
     
+    @SuppressWarnings( "unused" )
     public PopupListWidget( int x, int y, int width, int height, ITextComponent message ) {
         this( x, y, width, height, DEFAULT_ROW_HEIGHT, message );
     }
@@ -58,6 +61,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     }
     
     /** Set visibility of the selection box. */
+    @SuppressWarnings( "unused" )
     public void setRenderSelectionBox( boolean visible ) { renderSelectionBox = visible; }
     
     /** When true, the header will be rendered. */
@@ -66,30 +70,27 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     protected int headerHeight;
     
     /** Set visibility and height of the list header. */
+    @SuppressWarnings( "unused" )
     protected void setRenderHeader( boolean visible, int height ) {
         renderHeader = visible;
         headerHeight = visible ? height : 0;
     }
     
-    /**
-     * @param entry A new entry to append to the end of this list.
-     * @return The last index in this list (the entry's index, if append was successful).
-     */
-    protected int addEntry( E entry ) {
-        children.add( entry );
-        return children.size() - 1;
-    }
+    /** @param entry A new entry to append to the end of this list. */
+    protected void addEntry( E entry ) { children.add( entry ); }
     
     /** Removes all entries in this list. */
     protected final void clearEntries() { children.clear(); }
     
     /** Replaces all entries in this list with the entries of a collection, in the order returned by its iterator. */
+    @SuppressWarnings( "unused" )
     protected void replaceEntries( Collection<E> newEntries ) {
         clearEntries();
         children.addAll( newEntries );
     }
     
     /** Sets the x position for the left edge of this widget. */
+    @SuppressWarnings( "unused" )
     public void setLeftPos( int x ) {
         x0 = x;
         x1 = x + width;
@@ -105,6 +106,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     //    }
     
     /** Removes the entry at a specified index and returns the removed value if successful. */
+    @SuppressWarnings( "unused" )
     @Nullable
     protected E remove( int index ) {
         E entry = children.get( index );
@@ -155,6 +157,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     public int getTop() { return y0; }
     
     /** @return The y position for the bottom edge of this widget. */
+    @SuppressWarnings( "unused" )
     public int getBottom() { return y1; }
     
     /** @return The x position for the left edge of entry rows. */
@@ -167,6 +170,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     protected int getRowTop( int index ) { return y0 + ENTRY_PADDING - (int) getScrollDistance() + index * itemHeight + headerHeight; }
     
     /** @return The y position for the bottom edge of a specific entry row. May be outside the widget/render bounds. */
+    @SuppressWarnings( "unused" )
     protected int getRowBottom( int index ) { return getRowTop( index ) + itemHeight; }
     
     /** @return The width of each list entry. Note that entries are centered in the widget, ignoring the scrollbar. */
@@ -237,6 +241,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     public int getMaxScrollDistance() { return Math.max( 0, getListContentHeight() - (height - ENTRY_PADDING) ); }
     
     /** Centers the scroll position on a specific entry. */
+    @SuppressWarnings( "unused" )
     protected void centerScrollOn( E entry ) {
         setScrollDistance( entries().indexOf( entry ) * itemHeight + (itemHeight - height) / 2.0 );
     }
@@ -289,11 +294,13 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     }
     
     /** Called when a mouse button is clicked to update scrolling state. */
+    @SuppressWarnings( "unused" )
     protected void updateScrollingState( double mouseX, double mouseY, int mouseKey ) {
         scrolling = mouseKey == 0 && mouseX >= getScrollbarLeft() && mouseX < getScrollbarLeft() + SCROLLBAR_WIDTH;
     }
     
     /** Called when the header is clicked. */
+    @SuppressWarnings( "unused" )
     protected void clickedHeader( int headerX, int headerY ) { }
     
     /**
@@ -389,6 +396,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     }
     
     /** Re-selects and focuses the currently selected item, if any. */
+    @SuppressWarnings( "unused" )
     protected void refreshSelection() {
         E entry = getSelected();
         if( entry != null ) {
@@ -415,15 +423,19 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         renderScrollbar( matrixStack, mouseX, mouseY, partialTicks, tessellator, buf );
         renderDecorations( matrixStack, mouseX, mouseY, partialTicks, tessellator, buf );
         
+        //noinspection deprecation
         RenderSystem.shadeModel( 0x1D00 );
+        //noinspection deprecation
         RenderSystem.enableAlphaTest();
         RenderSystem.disableBlend();
     }
     
     /** Renders the list's background. */
+    @SuppressWarnings( "unused" )
     protected void renderBackground( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, Tessellator tessellator, BufferBuilder buf ) {
         // Default background is solid dark gray
         RenderSystem.disableTexture();
+        //noinspection deprecation
         buf.begin( 7, DefaultVertexFormats.POSITION_TEX_COLOR );
         drawBox( buf, x0, x1, y0, y1, 0x20 );
         tessellator.end();
@@ -460,8 +472,10 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         }
     }
     
+    @SuppressWarnings( "unused" )
     protected void renderHeader( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, Tessellator tessellator, BufferBuilder buf ) { }
     
+    @SuppressWarnings( "unused" )
     protected void renderScrollbar( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, Tessellator tessellator, BufferBuilder buf ) {
         RenderSystem.disableTexture();
         int maxScroll = getMaxScrollDistance();
@@ -474,6 +488,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
                 handleY = y0;
             }
             
+            //noinspection deprecation
             buf.begin( 7, DefaultVertexFormats.POSITION_TEX_COLOR );
             drawBox( buf, scrollX0, scrollX1, y0, y1, 0x00 ); // Bar background
             drawBox( buf, scrollX0, scrollX1, handleY, handleH, 0x80 ); // Handle shadow
@@ -483,6 +498,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         RenderSystem.enableTexture();
     }
     
+    @SuppressWarnings( "unused" )
     protected void renderDecorations( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, Tessellator tessellator, BufferBuilder buf ) { }
     
     /** Draws a gray box with brightness 0x00-0xFF. */
@@ -491,6 +507,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     }
     
     /** Draws a box with RGB channels 0x00-0xFF. */
+    @SuppressWarnings( "unused" )
     protected static void drawBox( BufferBuilder buf, double x0, double x1, double y0, double y1, int r, int g, int b ) {
         drawBox( buf, x0, x1, y0, y1, 0.0, 0.0F, 1.0F, 0.0F, 1.0F, r, g, b, 0xFF );
     }
@@ -540,6 +557,11 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     public abstract static class AbstractListEntry<E extends AbstractListEntry<E>> implements IGuiEventListener {
         protected PopupListWidget<E> parent;
         
+        /** Called each tick to update animations. */
+        @SuppressWarnings( "unused" )
+        public void tick() { }
+        
+        /** Called to render the list entry. */
         public abstract void render( MatrixStack matrixStack, int index, int x, int y, int width, int height,
                                      int mouseX, int mouseY, boolean mouseOver, float partialTicks );
         
@@ -565,6 +587,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
             for( int i = 0; i <= offset; i++ ) RENDER_WIDGETS[offset - i] = new OffsetWidget( WIDGETS[i] );
         }
         
+        @SuppressWarnings( "unused" )
         public WidgetListEntry( Collection<Widget> widgets ) { this( widgets.toArray( new Widget[0] ) ); }
         
         /** Called when the mouse is moved. */
