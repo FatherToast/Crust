@@ -8,10 +8,7 @@ import fathertoast.crust.api.config.common.field.IntField;
 import fathertoast.crust.api.config.common.value.IStringArray;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @SuppressWarnings( "unused" )
 public final class TomlHelper {
@@ -95,6 +92,11 @@ public final class TomlHelper {
         }
         // Null or failed to parse string
         return NullObject.NULL_OBJECT;
+    }
+    
+    /** @return True if the two objects result in equivalent toml literals. */
+    public static boolean equals( @Nullable Object valueA, @Nullable Object valueB ) {
+        return Objects.equals( toLiteral( valueA ), toLiteral( valueB ) );
     }
     
     /** Attempts to convert an object to a toml literal for the use of a comment. Prevents printing of excessively long lists. */

@@ -49,16 +49,6 @@ public class EnumField<T extends Enum<T>> extends GenericField<T> {
     @Override
     public void load( @Nullable Object raw ) {
         T newValue = null;
-        //        if( raw instanceof Enum<?> ) {
-        //            // Parse the value
-        //            try {
-        //                //noinspection unchecked
-        //                newValue = (T) raw;
-        //            }
-        //            catch( ClassCastException ex ) {
-        //                // Failed to parse
-        //            }
-        //        }
         if( raw instanceof String ) {
             // Parse the value
             newValue = parseValue( (String) raw );
@@ -82,6 +72,15 @@ public class EnumField<T extends Enum<T>> extends GenericField<T> {
         }
         return null;
     }
+    
+    /** @return The raw toml value that should be assigned to this field in the config file. */
+    @Override
+    @Nullable
+    public Object getRaw() { return value == null ? null : TomlHelper.enumToString( value ); }
+    
+    /** @return The default raw toml value of this field. */
+    @Override
+    public Object getRawDefault() { return TomlHelper.enumToString( valueDefault ); }
     
     /** @return This field's gui component provider. */
     @Override

@@ -415,7 +415,6 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         renderScrollbar( matrixStack, mouseX, mouseY, partialTicks, tessellator, buf );
         renderDecorations( matrixStack, mouseX, mouseY, partialTicks, tessellator, buf );
         
-        RenderSystem.enableTexture();
         RenderSystem.shadeModel( 0x1D00 );
         RenderSystem.enableAlphaTest();
         RenderSystem.disableBlend();
@@ -428,6 +427,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         buf.begin( 7, DefaultVertexFormats.POSITION_TEX_COLOR );
         drawBox( buf, x0, x1, y0, y1, 0x20 );
         tessellator.end();
+        RenderSystem.enableTexture();
     }
     
     /** Renders the list content (entries). */
@@ -463,6 +463,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     protected void renderHeader( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, Tessellator tessellator, BufferBuilder buf ) { }
     
     protected void renderScrollbar( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, Tessellator tessellator, BufferBuilder buf ) {
+        RenderSystem.disableTexture();
         int maxScroll = getMaxScrollDistance();
         if( maxScroll > 0 ) {
             int scrollX0 = getScrollbarLeft();
@@ -473,13 +474,13 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
                 handleY = y0;
             }
             
-            RenderSystem.disableTexture();
             buf.begin( 7, DefaultVertexFormats.POSITION_TEX_COLOR );
             drawBox( buf, scrollX0, scrollX1, y0, y1, 0x00 ); // Bar background
             drawBox( buf, scrollX0, scrollX1, handleY, handleH, 0x80 ); // Handle shadow
             drawBox( buf, scrollX0, scrollX1 - 1, handleY, handleH - 1, 0xC0 ); // Handle
             tessellator.end();
         }
+        RenderSystem.enableTexture();
     }
     
     protected void renderDecorations( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, Tessellator tessellator, BufferBuilder buf ) { }
