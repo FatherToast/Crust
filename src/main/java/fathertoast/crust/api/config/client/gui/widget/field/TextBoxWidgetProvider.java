@@ -11,6 +11,8 @@ import java.util.List;
 
 /**
  * Displays a button that opens a popup text editor for a generic value.
+ *
+ * @see TextFieldWidget
  */
 public class TextBoxWidgetProvider implements IConfigFieldWidgetProvider {
     
