@@ -8,10 +8,7 @@ import fathertoast.crust.api.config.common.field.IntField;
 import fathertoast.crust.api.config.common.value.IStringArray;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @SuppressWarnings( "unused" )
 public final class TomlHelper {
@@ -50,6 +47,9 @@ public final class TomlHelper {
         }
         return null;
     }
+    
+    /** @return The enum value's string representation, as used by configs. */
+    public static String enumToString( Enum<?> value ) { return value.name().toLowerCase(); }
     
     /** @return The object cast to number, or null if it cannot be. */
     @Nullable
@@ -94,6 +94,11 @@ public final class TomlHelper {
         return NullObject.NULL_OBJECT;
     }
     
+    /** @return True if the two objects result in equivalent toml literals. */
+    public static boolean equals( @Nullable Object valueA, @Nullable Object valueB ) {
+        return Objects.equals( toLiteral( valueA ), toLiteral( valueB ) );
+    }
+    
     /** Attempts to convert an object to a toml literal for the use of a comment. Prevents printing of excessively long lists. */
     public static String toLiteralForComment( @Nullable Object value ) {
         if( value instanceof IStringArray ) {
@@ -115,7 +120,7 @@ public final class TomlHelper {
             return toLiteral( ((List<?>) value).toArray() );
         }
         else if( value instanceof Enum<?> ) {
-            return "\"" + ((Enum<?>) value).name().toLowerCase() + "\"";
+            return "\"" + enumToString( (Enum<?>) value ) + "\"";
         }
         else if( value instanceof String ) {
             return "\"" + ((String) value).replace( "\"", "\\\"" ) + "\"";

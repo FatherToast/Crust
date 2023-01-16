@@ -8,6 +8,7 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.RestartNote;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
+import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -23,7 +24,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Widget that displays a list of all fields defined in one config spec.
@@ -348,7 +348,7 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
                 updateValue( FIELD.getRawDefault() );
                 populateComponents();
             } );
-            RESET_BUTTON.active = !Objects.equals( FIELD.getRawDefault(), pendingRaw );
+            RESET_BUTTON.active = !TomlHelper.equals( FIELD.getRawDefault(), pendingRaw );
             
             populateComponents();
         }
@@ -370,8 +370,8 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
         /** Call this to change the field's pending "new" value. */
         public void updateValue( Object raw ) {
             pendingRaw = raw;
-            RESET_BUTTON.active = !Objects.equals( FIELD.getRawDefault(), raw );
-            changed = !Objects.equals( CURRENT_RAW, raw );
+            RESET_BUTTON.active = !TomlHelper.equals( FIELD.getRawDefault(), raw );
+            changed = !TomlHelper.equals( CURRENT_RAW, raw );
             PARENT.updateChangedState();
             ensureVisible();
         }
@@ -379,7 +379,7 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
         /** Call this to delete the field's pending "new" value. */
         public void clearValue() {
             pendingRaw = CURRENT_RAW;
-            RESET_BUTTON.active = !Objects.equals( FIELD.getRawDefault(), CURRENT_RAW );
+            RESET_BUTTON.active = !TomlHelper.equals( FIELD.getRawDefault(), CURRENT_RAW );
             changed = false;
             PARENT.updateChangedState();
             ensureVisible();
