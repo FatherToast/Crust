@@ -1,22 +1,26 @@
-package fathertoast.crust.api.config.client.gui.widget.field;
+package fathertoast.crust.api.config.client.gui.widget.provider;
 
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
-import fathertoast.crust.api.config.common.field.StringField;
-import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 import java.util.List;
 
 /**
- * Displays a text box for a string value.
+ * Represents a field that is not allowed to be modified by the in-game editor.
+ * <p>
+ * Displays a grayed-out button with customizable text.
  */
-public class StringFieldWidgetProvider implements IConfigFieldWidgetProvider {
+public class UnsupportedWidgetProvider implements IConfigFieldWidgetProvider {
     
-    /** The providing field. */
-    protected final StringField FIELD;
+    /** The message to display on the disabled button. */
+    private final ITextComponent TEXT;
     
-    public StringFieldWidgetProvider( StringField field ) { FIELD = field; }
+    public UnsupportedWidgetProvider() { this( new StringTextComponent( "In-Game Edit NYI" ) ); }
+    
+    public UnsupportedWidgetProvider( ITextComponent text ) { TEXT = text; }
     
     /**
      * Called to initialize the field's gui components.
@@ -31,14 +35,9 @@ public class StringFieldWidgetProvider implements IConfigFieldWidgetProvider {
      */
     @Override
     public void apply( List<Widget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
-        TextFieldWidget textWidget = new TextFieldWidget( listEntry.minecraft().font,
-                1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for ~1px frame
-                new StringTextComponent( FIELD.getKey() ) );
-        textWidget.setMaxLength( Integer.MAX_VALUE );
-        
-        textWidget.setValue( displayValue.toString() );
-        textWidget.setResponder( listEntry::updateValue );
-        
-        components.add( textWidget );
+        Button dummyButton = new Button( 0, 0, VALUE_WIDTH, VALUE_HEIGHT,
+                TEXT, ( button ) -> { } );
+        dummyButton.active = false;
+        components.add( dummyButton );
     }
 }

@@ -1,4 +1,4 @@
-package fathertoast.crust.api.config.client.gui.widget.field;
+package fathertoast.crust.api.config.client.gui.widget.provider;
 
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import fathertoast.crust.api.config.common.field.IntField;

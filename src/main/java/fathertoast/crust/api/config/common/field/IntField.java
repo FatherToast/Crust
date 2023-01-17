@@ -1,9 +1,9 @@
 package fathertoast.crust.api.config.common.field;
 
 import com.electronwill.nightconfig.core.io.CharacterOutput;
-import fathertoast.crust.api.config.client.gui.widget.field.HexIntFieldWidgetProvider;
-import fathertoast.crust.api.config.client.gui.widget.field.IConfigFieldWidgetProvider;
-import fathertoast.crust.api.config.client.gui.widget.field.NumberFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.provider.HexIntFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.provider.NumberFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;

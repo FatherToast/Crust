@@ -71,20 +71,20 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     
     /** Set visibility and height of the list header. */
     @SuppressWarnings( "unused" )
-    protected void setRenderHeader( boolean visible, int height ) {
+    public void setRenderHeader( boolean visible, int height ) {
         renderHeader = visible;
         headerHeight = visible ? height : 0;
     }
     
     /** @param entry A new entry to append to the end of this list. */
-    protected void addEntry( E entry ) { children.add( entry ); }
+    public void addEntry( E entry ) { children.add( entry ); }
     
     /** Removes all entries in this list. */
-    protected final void clearEntries() { children.clear(); }
+    public final void clearEntries() { children.clear(); }
     
     /** Replaces all entries in this list with the entries of a collection, in the order returned by its iterator. */
     @SuppressWarnings( "unused" )
-    protected void replaceEntries( Collection<E> newEntries ) {
+    public void replaceEntries( Collection<E> newEntries ) {
         clearEntries();
         children.addAll( newEntries );
     }
@@ -108,13 +108,13 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     /** Removes the entry at a specified index and returns the removed value if successful. */
     @SuppressWarnings( "unused" )
     @Nullable
-    protected E remove( int index ) {
+    public E remove( int index ) {
         E entry = children.get( index );
         return removeEntry( children.get( index ) ) ? entry : null;
     }
     
     /** Removes the entry and returns true if successful. */
-    protected boolean removeEntry( E entry ) {
+    public boolean removeEntry( E entry ) {
         boolean success = children.remove( entry );
         if( success && entry == getSelected() ) setSelected( null );
         return success;

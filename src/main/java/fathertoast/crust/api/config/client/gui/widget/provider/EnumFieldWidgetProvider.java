@@ -1,6 +1,7 @@
-package fathertoast.crust.api.config.client.gui.widget.field;
+package fathertoast.crust.api.config.client.gui.widget.provider;
 
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
+import fathertoast.crust.api.config.client.gui.widget.field.PopupListWidget;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.EnumField;
 import fathertoast.crust.api.config.common.file.TomlHelper;

@@ -1,6 +1,6 @@
 package fathertoast.crust.api.config.common.field;
 
-import fathertoast.crust.api.config.client.gui.widget.field.IConfigFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 
 import javax.annotation.Nullable;

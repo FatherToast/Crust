@@ -1,32 +1,25 @@
-package fathertoast.crust.api.config.client.gui.widget.field;
+package fathertoast.crust.api.config.client.gui.widget.provider;
 
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.StringTextComponent;
 
 import java.util.List;
-import java.util.function.Function;
 
 /**
- * Displays a text box for a number value.
+ * Displays a button that opens a popup text editor for a generic value.
+ *
+ * @see TextFieldWidget
  */
-public class NumberFieldWidgetProvider implements IConfigFieldWidgetProvider {
+public class RawTextWidgetProvider implements IConfigFieldWidgetProvider {
     
     /** The providing field. */
     protected final AbstractConfigField FIELD;
-    /** Converts the input number into a raw toml value. */
-    protected final Function<Number, Object> TO_RAW;
-    /** Returns true when the input number is valid. */
-    protected final Function<Number, Boolean> VALIDATOR;
     
-    public NumberFieldWidgetProvider( AbstractConfigField field, Function<Number, Object> toRaw, Function<Number, Boolean> validator ) {
-        FIELD = field;
-        TO_RAW = toRaw;
-        VALIDATOR = validator;
-    }
+    public RawTextWidgetProvider( AbstractConfigField field ) { FIELD = field; }
     
     /**
      * Called to initialize the field's gui components.
@@ -41,24 +34,26 @@ public class NumberFieldWidgetProvider implements IConfigFieldWidgetProvider {
      */
     @Override
     public void apply( List<Widget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+        Button editButton = new Button( 0, 0, VALUE_WIDTH, VALUE_HEIGHT,
+                new StringTextComponent( "Edit..." ),
+                ( button ) -> openTextBoxMenu( button, listEntry, this ) );
+        
+        components.add( editButton );
+        
         TextFieldWidget textWidget = new TextFieldWidget( listEntry.minecraft().font,
                 1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for ~1px frame
                 new StringTextComponent( FIELD.getKey() ) );
-        textWidget.setMaxLength( 127 );
+        textWidget.setMaxLength( Integer.MAX_VALUE );
         
-        textWidget.setValue( TomlHelper.toLiteral( displayValue ) );
-        textWidget.setResponder( ( value ) -> {
-            Number newValue = TomlHelper.parseNumber( value );
-            if( newValue == null || !VALIDATOR.apply( newValue ) ) {
-                textWidget.setTextColor( INVALID_COLOR );
-                listEntry.clearValue();
-            }
-            else {
-                textWidget.setTextColor( DEFAULT_COLOR );
-                listEntry.updateValue( TO_RAW.apply( newValue ) );
-            }
-        } );
+        textWidget.setValue( displayValue.toString() );
+        textWidget.setResponder( listEntry::updateValue );
         
         components.add( textWidget );
+    }
+    
+    /** Called when the button is pressed to open a text box popup. */
+    protected void openTextBoxMenu( Button openingButton, CrustConfigFieldList.FieldEntry listEntry, RawTextWidgetProvider provider ) {
+        //TODO create text box widget (needs to be created)
+        //TODO create accept and cancel buttons
     }
 }

@@ -1,6 +1,7 @@
-package fathertoast.crust.api.config.client.gui.widget.field;
+package fathertoast.crust.api.config.client.gui.widget.provider;
 
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
+import fathertoast.crust.api.config.client.gui.widget.field.ColorPreviewWidget;
 import fathertoast.crust.api.config.common.field.ColorIntField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.client.gui.widget.TextFieldWidget;

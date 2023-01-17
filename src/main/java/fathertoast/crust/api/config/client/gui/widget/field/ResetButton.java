@@ -7,6 +7,10 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 
+/**
+ * The 'reset button' displayed to the right of each config field in the in-game config editor.
+ * Actual reset logic is handled in the config field list that creates these buttons.
+ */
 public class ResetButton extends Button {
     
     private static final ResourceLocation RESET_BUTTON_TEXTURE =
