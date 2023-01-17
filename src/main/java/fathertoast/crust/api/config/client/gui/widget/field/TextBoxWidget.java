@@ -23,6 +23,7 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -52,12 +53,10 @@ public class TextBoxWidget extends Widget implements IRenderable, IGuiEventListe
     }
     
     /** The client's font renderer. */
-    private final FontRenderer font;
+    public final FontRenderer font;
     
     /** The text currently held in this text box. */
     private String value = "";
-    /** Maximum value length for this text box, if greater than 0. */
-    private int maxLength;
     
     /** Color to render the text box value in while flagged as editable. */
     private int textColor = 0xFF_E0E0E0;
@@ -103,17 +102,6 @@ public class TextBoxWidget extends Widget implements IRenderable, IGuiEventListe
         font = fontRenderer;
         formatter = ( p_195610_0_, p_195610_1_ ) -> IReorderingProcessor.forward( p_195610_0_, Style.EMPTY );
         if( !initialValue.isEmpty() ) setValue( initialValue );
-    }
-    
-    /** Sets the max length allowed for the text box value, including newline characters. Default is 0. If 0 or less, this is ignored. */
-    @SuppressWarnings( "unused" )
-    public TextBoxWidget setMaxLength( int newMaxLength ) {
-        maxLength = newMaxLength;
-        if( newMaxLength > 0 && value.length() > newMaxLength ) {
-            value = value.substring( 0, newMaxLength );
-            onValueChange();
-        }
-        return this;
     }
     
     /** Sets the text color to render while the text box is flagged as editable. Note that alpha channel of 0x03 or less is set to 0xFF. */
@@ -205,8 +193,7 @@ public class TextBoxWidget extends Widget implements IRenderable, IGuiEventListe
     /** Sets the text to hold in this text box. */
     public void setValue( String text ) {
         if( filter.test( text ) ) {
-            value = maxLength > 0 && text.length() > maxLength ? text.substring( 0, maxLength ) : text;
-            
+            value = text;
             moveCursorToEnd();
             setHighlightPos( cursorPos );
             onValueChange();
@@ -231,20 +218,10 @@ public class TextBoxWidget extends Widget implements IRenderable, IGuiEventListe
         
         int p0 = Math.min( cursorPos, highlightPos );
         int p1 = Math.max( cursorPos, highlightPos );
-        int insertedLength = filteredText.length();
-        
-        if( maxLength > 0 ) {
-            int remainingLength = maxLength - (value.length() - (p1 - p0));
-            if( remainingLength < insertedLength ) {
-                filteredText = filteredText.substring( 0, remainingLength );
-                insertedLength = remainingLength;
-            }
-        }
-        
         String newValue = new StringBuilder( value ).replace( p0, p1, filteredText ).toString();
         if( filter.test( newValue ) ) {
             value = newValue;
-            setCursorPosition( p0 + insertedLength );
+            setCursorPosition( p0 + filteredText.length() );
             setHighlightPos( cursorPos );
             onValueChange();
         }
@@ -516,7 +493,7 @@ public class TextBoxWidget extends Widget implements IRenderable, IGuiEventListe
                     (float) fontX, (float) fontY, color );
         }
         
-        boolean cursorIsAtEnd = cursorPos >= value.length() && (maxLength <= 0 || value.length() < maxLength);
+        boolean cursorIsAtEnd = cursorPos >= value.length();
         int cursorX;
         if( cursorInBox ) {
             if( !cursorIsAtEnd ) renderedToX--;
