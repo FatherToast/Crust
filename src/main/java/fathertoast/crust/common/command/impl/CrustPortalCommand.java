@@ -2,7 +2,7 @@ package fathertoast.crust.common.command.impl;
 
 import com.mojang.brigadier.CommandDispatcher;
 import fathertoast.crust.api.lib.SetBlockFlags;
-import fathertoast.crust.api.portal.IPortalBuilder;
+import fathertoast.crust.api.portal.PortalBuilder;
 import fathertoast.crust.common.command.CommandUtil;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.block.BlockState;
@@ -32,7 +32,7 @@ public class CrustPortalCommand {
 
     
     /** Command implementation. */
-    private static int run(CommandSource source, IPortalBuilder portalBuilder, Entity target ) {
+    private static int run(CommandSource source, PortalBuilder portalBuilder, Entity target ) {
         if( !isDimensionValid( portalBuilder, target.level ) ) {
             CommandUtil.sendFailure( source, "portal.dimension" );
             return -1;
@@ -54,12 +54,12 @@ public class CrustPortalCommand {
         }
         
         place( portalBuilder, target.level, currentPos, forward );
-        CommandUtil.sendSuccess( source, "portal." + portalBuilder.getId().getPath(),
+        CommandUtil.sendSuccess( source, "portal." + portalBuilder.getRegistryName().getPath(),
                 pos.getX(), pos.getY(), pos.getZ() );
         return 1;
     }
     
-    public static boolean isDimensionValid( IPortalBuilder portalBuilder, World world ) {
+    public static boolean isDimensionValid(PortalBuilder portalBuilder, World world ) {
         ResourceLocation currentWorldId = world.dimension().location();
         List<ResourceLocation> validDimensions = portalBuilder.getValidDimensions();
 
@@ -112,8 +112,8 @@ public class CrustPortalCommand {
     }
     
     /** Places the portal. */
-    private static void place( IPortalBuilder portalBuilder, World level, BlockPos.Mutable currentPos, Direction forward ) {
-        portalBuilder.getGenerator().generate(level, currentPos, forward);
+    private static void place(PortalBuilder portalBuilder, World level, BlockPos.Mutable currentPos, Direction forward ) {
+        portalBuilder.generate(level, currentPos, forward);
     }
     
     /** Places a Nether portal. */

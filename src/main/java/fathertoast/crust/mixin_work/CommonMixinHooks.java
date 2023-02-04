@@ -17,6 +17,9 @@ public class CommonMixinHooks {
         map.forEach((id, builder) -> {
             AdvancementLoadEvent event = new AdvancementLoadEvent(id, builder);
             MinecraftForge.EVENT_BUS.post(event);
+
+            // Clear requirements so they can be rebuilt
+            event.getBuilder().requirements = null;
             newMap.put(event.getId(), event.getBuilder());
         });
         list.add(newMap);

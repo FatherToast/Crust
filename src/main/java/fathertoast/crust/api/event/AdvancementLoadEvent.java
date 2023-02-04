@@ -3,6 +3,7 @@ package fathertoast.crust.api.event;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.common.MinecraftForge;
 
 /**
  * Fired when advancements are loaded from json.
@@ -10,8 +11,8 @@ import net.minecraftforge.eventbus.api.Event;
  * an advancements criteria before it is built.<br>
  * <br>
  *
- * This event is fired on the MinecraftForge bus, does not
- * have a Result, and is not cancelable.
+ * This event is fired on the {@link MinecraftForge#EVENT_BUS} bus, does not
+ * have a Result and is not cancelable.
  */
 public final class AdvancementLoadEvent extends Event {
 
