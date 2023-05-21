@@ -1,5 +1,8 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
+import net.minecraft.util.math.MathHelper;
+
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,9 +16,11 @@ public class TextBoxContent {
     private final TextBoxWidget textBox;
     
     /** The complete string value of the text box. Lines are separated by newline characters. */
-    private String plainText;
+    private String plainText = "";
     /** A logical representation of the text box value for convenience in display and manipulation. */
     private final ArrayList<WrappedLine> wrappedLines = new ArrayList<>();
+    
+    //private Predicate<String> filter = Objects::nonNull; // Is this really needed for anything?
     
     /** The number of lines rendered, accounting for word wrap. If -1, it must be recalculated. */
     private int renderLines = -1;
@@ -25,14 +30,39 @@ public class TextBoxContent {
         setText( text );
     }
     
-    /** Sets the full text and completely recalculates accordingly. */
-    public void setText( String text ) {
-        plainText = text;
-        recalculateLines();
+    /** @return True if the string is acceptable as the full text. */
+    public boolean isValid( @Nullable String text ) { return text != null /*filter.test( text )*/; }
+    
+    /** @return Sets the full text and completely recalculates accordingly. Returns true if the text is valid. */
+    public boolean setText( String text ) {
+        if( isValid( text ) ) {
+            plainText = text;
+            recalculateLines();
+            return true;
+        }
+        return false;
     }
     
     /** @return The full text. */
     public String getText() { return plainText; }
+    
+    /** @return True if there is no content. */
+    public boolean isEmpty() { return plainText.isEmpty(); }
+    
+    /** @return The number of characters in the full text. */
+    public int length() { return plainText.length(); }
+    
+    /** @return True if the character at a given index is whitespace. Note: position can be equal to the string length, but index cannot. */
+    public boolean isWhitespace( int index ) { return Character.isWhitespace( plainText.charAt( index ) ); }
+    
+    /** @return The text starting from a position. */
+    public String substring( int pos ) { return plainText.substring( pos ); }
+    
+    /** @return The text between two positions. The lesser position is inclusive and the greater is exclusive. */
+    public String substring( int pos0, int pos1 ) {
+        if( pos0 == pos1 ) return "";
+        return pos0 < pos1 ? plainText.substring( pos0, pos1 ) : plainText.substring( pos1, pos0 );
+    }
     
     /** @return A read-only list of the text's lines. */
     public List<WrappedLine> getLines() { return Collections.unmodifiableList( wrappedLines ); }
@@ -50,8 +80,11 @@ public class TextBoxContent {
         return renderLines;
     }
     
+    /** @return The position, clamped within the bounds for the current text content. */
+    public int clampPosition( int pos ) { return MathHelper.clamp( pos, 0, plainText.length() ); }
+    
     /** @return The index of the line containing a particular position. Returns -1 if the position is out of bounds. */
-    public int getLineAtPosition( int pos ) {
+    public int getLineIndexAtPosition( int pos ) {
         int i = wrappedLines.size() - 1;
         WrappedLine lastLine = wrappedLines.get( i ); // Special case for the last line
         if( pos >= lastLine.position ) return pos > lastLine.length() ? -1 : i;
@@ -59,6 +92,13 @@ public class TextBoxContent {
             if( pos >= wrappedLines.get( i ).position ) return i;
         }
         return -1;
+    }
+    
+    /** @return The line object containing a particular position. Returns null if the position is out of bounds. */
+    @Nullable
+    public WrappedLine getLineAtPosition( int pos ) {
+        int i = getLineIndexAtPosition( pos );
+        return i < 0 ? null : wrappedLines.get( i );
     }
     
     /** Removes the line at the specified index. */
@@ -136,7 +176,8 @@ public class TextBoxContent {
             if( newline ) text.append( '\n' );
             else newline = true;
         }
-        plainText = text.toString();
+        String newText = text.toString();
+        if( isValid( newText ) ) plainText = newText;
     }
     
     
@@ -176,12 +217,13 @@ public class TextBoxContent {
         
         /** Recalculates this line's word wrap using the current text box width. */
         private void recalculateWrap() {
-            int width = textBox.getInnerWidth();
+            // TODO uncomment after text box is finished
+            int width = 0;//textBox.getInnerWidth();
             int index = 0;
             renderLines -= getLineCountAfterWrap();
             wrappedValue.clear();
             while( index < value.length() ) {
-                String wrapped = textBox.font.plainSubstrByWidth( value.substring( index ), width );
+                String wrapped = value;//textBox.font.plainSubstrByWidth( value.substring( index ), width );
                 index += wrapped.length();
             }
             renderLines += getLineCountAfterWrap();

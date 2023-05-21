@@ -132,7 +132,7 @@ public class CrustModesConfigFile extends AbstractConfigFile {
             delay = SPEC.define( new IntField( "delay", 40, IntField.Range.NON_NEGATIVE,
                     "The time delay (ticks) before freshly dropped items are pulled by magnet mode.",
                     "Setting this to a low value will cause items to fly around your face until their pickup delay expires. " +
-                            "The default prevents face-flying for vanilla drops, but many drops only have a pickup delay of 10." ) );
+                            "The default prevents face-flying for all vanilla drops, but many drops only have a pickup delay of 10." ) );
         }
     }
     

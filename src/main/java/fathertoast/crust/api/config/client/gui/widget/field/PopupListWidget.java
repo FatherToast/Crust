@@ -272,7 +272,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
      */
     @Override
     public boolean mouseClicked( double x, double y, int mouseKey ) {
-        updateScrollingState( x, y, mouseKey );
+        updateScrollingState( x, mouseKey );
         if( !isMouseOver( x, y ) ) return false;
         
         // Find the entry being clicked on
@@ -294,8 +294,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     }
     
     /** Called when a mouse button is clicked to update scrolling state. */
-    @SuppressWarnings( "unused" )
-    protected void updateScrollingState( double mouseX, double mouseY, int mouseKey ) {
+    protected void updateScrollingState( double mouseX, int mouseKey ) {
         scrolling = mouseKey == 0 && mouseX >= getScrollbarLeft() && mouseX < getScrollbarLeft() + SCROLLBAR_WIDTH;
     }
     
