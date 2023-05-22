@@ -7,10 +7,8 @@ import fathertoast.crust.api.impl.portalgens.EndPortalBuilder;
 import fathertoast.crust.api.impl.portalgens.NetherPortalBuilder;
 import fathertoast.crust.api.portal.PortalBuilder;
 import fathertoast.crust.common.config.CrustConfig;
-import fathertoast.crust.common.event.EventListener;
 import fathertoast.crust.common.network.CrustPacketHandler;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.RegistryObject;
@@ -84,17 +82,17 @@ public class Crust {
     
     /** API instance */
     private final CrustApi apiInstance;
-
+    
     /** Registry for PortalBuilders */
-    public static final DeferredRegister<PortalBuilder> PORTAL_BUILDERS = DeferredRegister.create(PortalBuilder.class, MOD_ID);
-    public static final Supplier<IForgeRegistry<PortalBuilder>> PORTAL_BUILDER_REG = PORTAL_BUILDERS.makeRegistry("portal_builders",
-            () -> (new RegistryBuilder<PortalBuilder>()).setType(PortalBuilder.class).setDefaultKey(resLoc("empty")));
-
-
-    public static final RegistryObject<PortalBuilder> NETHER_PORTAL = PORTAL_BUILDERS.register("nether_portal", NetherPortalBuilder::new);
-    public static final RegistryObject<PortalBuilder> END_PORTAL = PORTAL_BUILDERS.register("end_portal", EndPortalBuilder::new);
-
-
+    public static final DeferredRegister<PortalBuilder> PORTAL_BUILDERS = DeferredRegister.create( PortalBuilder.class, MOD_ID );
+    public static final Supplier<IForgeRegistry<PortalBuilder>> PORTAL_BUILDER_REG = PORTAL_BUILDERS.makeRegistry( "portal_builders",
+            () -> (new RegistryBuilder<PortalBuilder>()).setType( PortalBuilder.class ).setDefaultKey( resLoc( "empty" ) ) );
+    
+    
+    public static final RegistryObject<PortalBuilder> NETHER_PORTAL = PORTAL_BUILDERS.register( "nether_portal", NetherPortalBuilder::new );
+    public static final RegistryObject<PortalBuilder> END_PORTAL = PORTAL_BUILDERS.register( "end_portal", EndPortalBuilder::new );
+    
+    
     public Crust() {
         apiInstance = new CrustApi();
         CrustPacketHandler.registerMessages();
@@ -104,9 +102,9 @@ public class Crust {
         CrustConfig.MODES.SPEC.initialize();
         
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-
-        PORTAL_BUILDERS.register(modBus);
-
+        
+        PORTAL_BUILDERS.register( modBus );
+        
         modBus.addListener( this::onCommonSetup );
     }
     
