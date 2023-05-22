@@ -267,7 +267,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                 case SCREEN_TOP: case SCREEN_LEFT:
                     return 0;
                 case SCREEN_BOTTOM: case SCREEN_RIGHT:
-                    return screenSize - guiSize;
+                    return screenSize - size;
                 case TOP: case LEFT:
                     return (screenSize - guiSize) / 2 - size;
                 case BOTTOM: case RIGHT:

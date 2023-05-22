@@ -17,7 +17,8 @@ import fathertoast.crust.api.config.common.file.TomlHelper;
  * access. Similarly, your config file implementations should have public final references to all their
  * categories and fields, and each category to its fields.
  * <p>
- * Crust implements its own configs. See TODO for an example CrustConfig implementation.
+ * Crust implements its own configs. See {@link fathertoast.crust.common.config.CrustConfig} for example
+ * config implementations.
  *
  * @see AbstractConfigCategory
  */

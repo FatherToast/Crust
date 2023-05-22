@@ -7,8 +7,10 @@ import fathertoast.crust.api.impl.portalgens.EndPortalBuilder;
 import fathertoast.crust.api.impl.portalgens.NetherPortalBuilder;
 import fathertoast.crust.api.portal.PortalBuilder;
 import fathertoast.crust.common.config.CrustConfig;
+import fathertoast.crust.common.event.EventListener;
 import fathertoast.crust.common.network.CrustPacketHandler;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.RegistryObject;
@@ -32,10 +34,11 @@ public class Crust {
      *       + = incomplete new feature, ? = feature to consider adding)
      *  - configs
      *      - config button opens config folder
-     *      ? in-game config editor gui
+     *      + in-game config editor gui
      *  - helpers
      *      - advancement load event
      *      - tile entity bounding box renderer
+     *      - portal registry
      *      - data gen
      *          - loot table
      *      - set block flags
