@@ -6,6 +6,7 @@ import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.config.common.value.CrustAnchor;
 import fathertoast.crust.client.button.ButtonInfo;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -57,8 +58,8 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
         public final IntField buttonsPerRow;
         public final StringListField buttons;
         
-        public final EnumField<Anchor> anchorY;
-        public final EnumField<Anchor> anchorX;
+        public final EnumField<CrustAnchor> anchorY;
+        public final EnumField<CrustAnchor> anchorX;
         
         public final IntField offsetY;
         public final IntField offsetX;
@@ -98,10 +99,10 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
             
             SPEC.newLine();
             
-            anchorY = SPEC.define( new EnumField<>( "anchor.vertical", Anchor.SCREEN_TOP, Anchor.VERTICAL,
+            anchorY = SPEC.define( new EnumField<>( "anchor.vertical", CrustAnchor.SCREEN_TOP, CrustAnchor.VERTICAL_GUI,
                     "The anchor position for the extra inventory buttons. That is, where they should be positioned " +
                             "relative to the screen or inventory GUI." ) );
-            anchorX = SPEC.define( new EnumField<>( "anchor.horizontal", Anchor.SCREEN_LEFT, Anchor.HORIZONTAL,
+            anchorX = SPEC.define( new EnumField<>( "anchor.horizontal", CrustAnchor.SCREEN_LEFT, CrustAnchor.HORIZONTAL_GUI,
                     (String[]) null ) );
             
             SPEC.newLine();
@@ -247,34 +248,6 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
             
             // Defaults to a button that gives you the name and button number; also it kills you if you press it
             return new String[] { ButtonInfo.customId( index ), "" + (index + 1), "kill" };
-        }
-    }
-    
-    public enum Anchor {
-        CENTER, SCREEN_LEFT, LEFT, SCREEN_RIGHT, RIGHT, SCREEN_TOP, TOP, SCREEN_BOTTOM, BOTTOM;
-        
-        public static final Anchor[] VERTICAL = { SCREEN_TOP, TOP, CENTER, BOTTOM, SCREEN_BOTTOM };
-        public static final Anchor[] HORIZONTAL = { SCREEN_LEFT, LEFT, CENTER, RIGHT, SCREEN_RIGHT };
-        
-        /**
-         * @param screenSize X- or Y-size of the entire game screen.
-         * @param guiSize    X- or Y-size of the active GUI window.
-         * @param size       X- or Y-size of the anchored GUI element.
-         * @return The anchored position to render at; that is, the position of the top-left corner.
-         */
-        public int pos( int screenSize, int guiSize, int size ) {
-            switch( this ) {
-                case SCREEN_TOP: case SCREEN_LEFT:
-                    return 0;
-                case SCREEN_BOTTOM: case SCREEN_RIGHT:
-                    return screenSize - size;
-                case TOP: case LEFT:
-                    return (screenSize - guiSize) / 2 - size;
-                case BOTTOM: case RIGHT:
-                    return (screenSize + guiSize) / 2;
-                default:
-                    return (screenSize - size) / 2;
-            }
         }
     }
 }

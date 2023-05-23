@@ -33,6 +33,14 @@ public class Crust {
      *  - configs
      *      - config button opens config folder
      *      + in-game config editor gui
+     *          + raw toml text box for default field widget
+     *          + list builder widgets for list fields
+     *              + attribute list
+     *              + block list
+     *              + entity list
+     *              + environment list
+     *              + reg entry list
+     *              + string list
      *  - helpers
      *      - advancement load event
      *      - tile entity bounding box renderer
