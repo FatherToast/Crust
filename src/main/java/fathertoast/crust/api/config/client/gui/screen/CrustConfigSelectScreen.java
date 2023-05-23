@@ -50,12 +50,12 @@ public class CrustConfigSelectScreen extends Screen {
     private AbstractOptionList<?> selectionList;
     
     /** Creates a new config selection screen, opened to the mod select page. */
-    public CrustConfigSelectScreen( Screen parent ) {
+    public CrustConfigSelectScreen( @Nullable Screen parent ) {
         this( parent, null, new TranslationTextComponent( "menu.crust.config.select.mod.title" ), null );
     }
     
     /** Creates a new config selection screen, opened directly to mod's file select page. */
-    public CrustConfigSelectScreen( Screen parent, ConfigManager cfgManager ) {
+    public CrustConfigSelectScreen( @Nullable Screen parent, ConfigManager cfgManager ) {
         this( parent, cfgManager,
                 new TranslationTextComponent( "menu.crust.config.select.file.title",
                         getModName( cfgManager.MOD_ID ) ),
@@ -64,7 +64,7 @@ public class CrustConfigSelectScreen extends Screen {
     }
     
     /** Creates a new config selection screen, optionally opened directly to a specific mod's page. */
-    private CrustConfigSelectScreen( Screen parent, @Nullable ConfigManager cfgManager, ITextComponent title, @Nullable ITextComponent subtitle ) {
+    private CrustConfigSelectScreen( @Nullable Screen parent, @Nullable ConfigManager cfgManager, ITextComponent title, @Nullable ITextComponent subtitle ) {
         super( title );
         LAST_SCREEN = parent;
         CFG_MANAGER = cfgManager;

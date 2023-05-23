@@ -2,14 +2,13 @@
   "menu.crust.config.open_folder": "Open Folder",
   "menu.crust.config.save_changes": "SAVE Changes",
   "menu.crust.config.discard_changes": "DISCARD Changes",
-  
+
   "menu.crust.config.select.mod.title": "Mod Configs...",
   "menu.crust.config.select.file.title": "%s Configs...",
   "menu.crust.config.select.file.subtitle": "Folder: %s",
-  
+
   "menu.crust.config.file.title": "%s Config: %s",
   "menu.crust.config.file.subtitle": "File: %s",
-
 
   "commands.crustclean.pointer.success": "Destroyed item on pointer for %s",
   "commands.crustclean.pointer.failure": "%s has no item on pointer",
@@ -40,11 +39,14 @@
 
   "key.categories.crust": "Crust",
 
+  "key.crust.configs": "Open Config Editor",
   "key.crust.equip": "Equip item",
 
   "key.categories.crust.buttons": "Crust's Added Inventory Buttons",
 
   "key.crust.buttons.fullheal": "Fully Recover",
+  "key.crust.buttons.cleareffects": "Clear All Effects",
+  "key.crust.buttons.destroyonpointer": "Destroy Item On Pointer",
   "key.crust.buttons.killall": "Kill All Non-Players",
   "key.crust.buttons.netherportal": "Place Nether Portal",
   "key.crust.buttons.endportal": "Place End Portal",

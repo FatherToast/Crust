@@ -13,6 +13,7 @@ public interface IPopupWidget {
      * @param mouseKey The mouse key that was clicked (see {@link InputMappings.Type#MOUSE}).
      * @return True if the popup should be closed.
      */
+    @SuppressWarnings( "unused" )
     default boolean mouseClickedOutOfBounds( double x, double y, int mouseKey ) { return true; }
     
     /** @return True if this popup should close when the Esc key is pressed. */

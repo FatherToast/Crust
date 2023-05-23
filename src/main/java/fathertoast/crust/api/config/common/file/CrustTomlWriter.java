@@ -5,6 +5,7 @@ import com.electronwill.nightconfig.core.io.*;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.RestartNote;
+import net.minecraft.util.StringUtils;
 
 import javax.annotation.Nullable;
 import java.io.Writer;
@@ -123,7 +124,7 @@ public class CrustTomlWriter implements ConfigWriter {
     
     /** Writes a single-line comment. Auto-wrapped. */
     public void writeComment( String comment, CharacterOutput output ) {
-        for( String line : ConfigUtil.wrap( comment, getEffectiveWrapLength() ) ) {
+        for( String line : ConfigUtil.wrap( StringUtils.stripColor( comment ), getEffectiveWrapLength() ) ) {
             writeCommentLine( line, output );
         }
     }

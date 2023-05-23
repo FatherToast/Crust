@@ -1,5 +1,6 @@
 package fathertoast.crust.client;
 
+import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
 import fathertoast.crust.client.button.ButtonInfo;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.client.Minecraft;
@@ -26,6 +27,8 @@ public class KeyBindingEvents {
     
     private static final String KEY = "key." + Crust.MOD_ID + ".";
     
+    private static final KeyBinding CONFIG_EDITOR = new SortedKeyBinding( 0, KEY + "configs", KeyConflictContext.UNIVERSAL,
+            KeyModifier.CONTROL, Key.code( "o" ), KEY_CAT );
     //    private static final KeyBinding EQUIP = new SortedKeyBinding( 0, KEY + "equip", KeyConflictContext.GUI,
     //            KeyModifier.NONE, InputMappings.getKey( "key.mouse.middle" ), KEY_CAT );
     
@@ -33,6 +36,7 @@ public class KeyBindingEvents {
     
     /** Registers this mod's additional key bindings. */
     static void register() {
+        ClientRegistry.registerKeyBinding( CONFIG_EDITOR );
         //ClientRegistry.registerKeyBinding( EQUIP );
         for( KeyBinding binding : BUTTONS ) {
             ClientRegistry.registerKeyBinding( binding );
@@ -42,21 +46,27 @@ public class KeyBindingEvents {
     /** Called when a key is pressed. */
     @SubscribeEvent
     static void onKeyInput( InputEvent.KeyInputEvent event ) {
-        Screen screen = Minecraft.getInstance().screen;
+        Minecraft minecraft = Minecraft.getInstance();
+        Screen screen = minecraft.screen;
         if( event.getKey() == InputMappings.UNKNOWN.getValue() || screen != null && screen.isPauseScreen() ) return;
         
         if( event.getAction() == GLFW.GLFW_PRESS ) {
-            //            if( event.getKey() == EQUIP.getKey().getValue() && EQUIP.isConflictContextAndModifierActive() ) {
-            //                return;
+            if( event.getKey() == CONFIG_EDITOR.getKey().getValue() && CONFIG_EDITOR.isConflictContextAndModifierActive() ) {
+                // Open the config editor
+                minecraft.setScreen( new CrustConfigSelectScreen( screen ) );
+            }
+            //            else if( event.getKey() == EQUIP.getKey().getValue() && EQUIP.isConflictContextAndModifierActive() ) {
+            //                // NYI
             //            }
-            
-            // Check for extra inventory button keybinding presses
-            for( int i = 0; i < BUTTONS.length; i++ ) {
-                KeyBinding binding = BUTTONS[i];
-                if( event.getKey() == binding.getKey().getValue() && binding.isConflictContextAndModifierActive() ) {
-                    pressButton( i < ButtonInfo.builtInIds().size() ? ButtonInfo.builtInIds().get( i ) :
-                            "custom" + (i + 1 - ButtonInfo.builtInIds().size()) );
-                    break;
+            else {
+                // Check for extra inventory button keybinding presses
+                for( int i = 0; i < BUTTONS.length; i++ ) {
+                    KeyBinding binding = BUTTONS[i];
+                    if( event.getKey() == binding.getKey().getValue() && binding.isConflictContextAndModifierActive() ) {
+                        pressButton( i < ButtonInfo.builtInIds().size() ? ButtonInfo.builtInIds().get( i ) :
+                                "custom" + (i + 1 - ButtonInfo.builtInIds().size()) );
+                        break;
+                    }
                 }
             }
         }
@@ -105,9 +115,10 @@ public class KeyBindingEvents {
         public static Key of( String key ) { return of( KeyModifier.NONE, key ); }
         
         /** @return A new object that holds info about a specific keystroke, including required modifier. */
-        public static Key of( KeyModifier modifier, String key ) {
-            return new Key( modifier, InputMappings.getKey( "key.keyboard." + key ) );
-        }
+        public static Key of( KeyModifier modifier, String key ) { return new Key( modifier, code( key ) ); }
+        
+        /** @return The key code for a keyboard key. */
+        public static InputMappings.Input code( String key ) { return InputMappings.getKey( "key.keyboard." + key ); }
         
         final KeyModifier MODIFIER;
         final InputMappings.Input KEY_CODE;

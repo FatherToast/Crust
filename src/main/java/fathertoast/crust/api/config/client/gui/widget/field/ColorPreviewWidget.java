@@ -7,6 +7,9 @@ import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 
+/**
+ * A simple gui component that displays a color.
+ */
 public class ColorPreviewWidget extends Widget {
     
     private static final ResourceLocation BACKGROUND_TEXTURE =

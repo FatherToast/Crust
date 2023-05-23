@@ -32,10 +32,19 @@ public class Crust {
      *       + = incomplete new feature, ? = feature to consider adding)
      *  - configs
      *      - config button opens config folder
-     *      ? in-game config editor gui
+     *      + in-game config editor gui
+     *          + raw toml text box for default field widget
+     *          + list builder widgets for list fields
+     *              + attribute list
+     *              + block list
+     *              + entity list
+     *              + environment list
+     *              + reg entry list
+     *              + string list
      *  - helpers
      *      - advancement load event
      *      - tile entity bounding box renderer
+     *      - portal registry
      *      - data gen
      *          - loot table
      *      - set block flags
@@ -81,17 +90,17 @@ public class Crust {
     
     /** API instance */
     private final CrustApi apiInstance;
-
+    
     /** Registry for PortalBuilders */
-    public static final DeferredRegister<PortalBuilder> PORTAL_BUILDERS = DeferredRegister.create(PortalBuilder.class, MOD_ID);
-    public static final Supplier<IForgeRegistry<PortalBuilder>> PORTAL_BUILDER_REG = PORTAL_BUILDERS.makeRegistry("portal_builders",
-            () -> (new RegistryBuilder<PortalBuilder>()).setType(PortalBuilder.class).setDefaultKey(resLoc("empty")));
-
-
-    public static final RegistryObject<PortalBuilder> NETHER_PORTAL = PORTAL_BUILDERS.register("nether_portal", NetherPortalBuilder::new);
-    public static final RegistryObject<PortalBuilder> END_PORTAL = PORTAL_BUILDERS.register("end_portal", EndPortalBuilder::new);
-
-
+    public static final DeferredRegister<PortalBuilder> PORTAL_BUILDERS = DeferredRegister.create( PortalBuilder.class, MOD_ID );
+    public static final Supplier<IForgeRegistry<PortalBuilder>> PORTAL_BUILDER_REG = PORTAL_BUILDERS.makeRegistry( "portal_builders",
+            () -> (new RegistryBuilder<PortalBuilder>()).setType( PortalBuilder.class ).setDefaultKey( resLoc( "empty" ) ) );
+    
+    
+    public static final RegistryObject<PortalBuilder> NETHER_PORTAL = PORTAL_BUILDERS.register( "nether_portal", NetherPortalBuilder::new );
+    public static final RegistryObject<PortalBuilder> END_PORTAL = PORTAL_BUILDERS.register( "end_portal", EndPortalBuilder::new );
+    
+    
     public Crust() {
         apiInstance = new CrustApi();
         CrustPacketHandler.registerMessages();
@@ -101,9 +110,9 @@ public class Crust {
         CrustConfig.MODES.SPEC.initialize();
         
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-
-        PORTAL_BUILDERS.register(modBus);
-
+        
+        PORTAL_BUILDERS.register( modBus );
+        
         modBus.addListener( this::onCommonSetup );
     }
     
