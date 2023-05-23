@@ -1,4 +1,4 @@
-package fathertoast.crust.mixin_work;
+package fathertoast.crust.common.mixin_work;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import fathertoast.crust.api.config.client.ITileBoundingBoxProvider;

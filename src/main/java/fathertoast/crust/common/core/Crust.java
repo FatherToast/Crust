@@ -8,9 +8,11 @@ import fathertoast.crust.api.impl.portalgens.NetherPortalBuilder;
 import fathertoast.crust.api.portal.PortalBuilder;
 import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.network.CrustPacketHandler;
+import fathertoast.crust.common.util.accessor.apocalypse.DifficultyAccessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -21,6 +23,7 @@ import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 
@@ -87,23 +90,35 @@ public class Crust {
     
     /** Logger instance for the mod. */
     public static final Logger LOG = LogManager.getLogger( MOD_ID );
-    
+
+    /** Mod instance */
+    public static Crust INSTANCE;
+
     /** API instance */
     private final CrustApi apiInstance;
+
+    /** Mod data accessors */
+    private DifficultyAccessor difficultyAccessor = null;
     
     /** Registry for PortalBuilders */
     public static final DeferredRegister<PortalBuilder> PORTAL_BUILDERS = DeferredRegister.create( PortalBuilder.class, MOD_ID );
     public static final Supplier<IForgeRegistry<PortalBuilder>> PORTAL_BUILDER_REG = PORTAL_BUILDERS.makeRegistry( "portal_builders",
             () -> (new RegistryBuilder<PortalBuilder>()).setType( PortalBuilder.class ).setDefaultKey( resLoc( "empty" ) ) );
-    
-    
+
     public static final RegistryObject<PortalBuilder> NETHER_PORTAL = PORTAL_BUILDERS.register( "nether_portal", NetherPortalBuilder::new );
     public static final RegistryObject<PortalBuilder> END_PORTAL = PORTAL_BUILDERS.register( "end_portal", EndPortalBuilder::new );
     
     
     public Crust() {
+        INSTANCE = this;
         apiInstance = new CrustApi();
         CrustPacketHandler.registerMessages();
+
+        if (ModList.get().isLoaded("apocalypse")) {
+            // Do not instantiate unless Apocalypse is present
+            difficultyAccessor = new DifficultyAccessor();
+            LOG.info("Instantiated DifficultyAccessor");
+        }
         
         // Perform first-time loading of the configs for this mod
         CrustConfig.DEFAULT_GAME_RULES.SPEC.initialize();
@@ -144,7 +159,12 @@ public class Crust {
             } );
         } );
     }
-    
+
+    @Nullable
+    public DifficultyAccessor getDifficultyAccessor() {
+        return difficultyAccessor;
+    }
+
     public static ResourceLocation resLoc( String path ) {
         return new ResourceLocation( MOD_ID, path );
     }

@@ -1,7 +1,7 @@
-package fathertoast.crust.mixin;
+package fathertoast.crust.common.mixin;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import fathertoast.crust.mixin_work.ClientMixinHooks;
+import fathertoast.crust.common.mixin_work.ClientMixinHooks;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;

@@ -84,8 +84,20 @@ minecraft {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+repositories {
+    maven {
+        name 'CurseMaven'
+        url 'https://www.cursemaven.com'
+        content {
+            includeGroup 'curse.maven'
+        }
+    }
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+
+    implementation fg.deobf("curse.maven:apocalypse-500443:${apocalypse_version}")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
 }

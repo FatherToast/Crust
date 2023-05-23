@@ -1,4 +1,4 @@
-package fathertoast.crust.mixin_work;
+package fathertoast.crust.common.mixin_work;
 
 import fathertoast.crust.api.event.AdvancementLoadEvent;
 import net.minecraft.advancements.Advancement;

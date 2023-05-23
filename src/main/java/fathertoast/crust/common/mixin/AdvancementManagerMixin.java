@@ -1,13 +1,12 @@
-package fathertoast.crust.mixin;
+package fathertoast.crust.common.mixin;
 
-import fathertoast.crust.mixin_work.CommonMixinHooks;
+import fathertoast.crust.common.mixin_work.CommonMixinHooks;
 import com.google.gson.Gson;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementList;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.client.resources.JsonReloadListener;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.AdvancementLoadFix;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
