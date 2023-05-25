@@ -2,7 +2,6 @@ package fathertoast.crust.api.config.common.value.environment.time;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.environment.EnumEnvironment;
-import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -16,10 +15,6 @@ public class WeatherEnvironment extends EnumEnvironment<WeatherEnvironment.Value
     public WeatherEnvironment( Value value, boolean invert ) { super( value, invert ); }
     
     public WeatherEnvironment( AbstractConfigField field, String line ) { super( field, line, Value.values() ); }
-    
-    /** @return The string name of this environment, as it would appear in a config file. */
-    @Override
-    public String name() { return EnvironmentListField.ENV_WEATHER; }
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override

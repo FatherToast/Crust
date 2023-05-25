@@ -1,7 +1,6 @@
 package fathertoast.crust.api.config.common.value.environment.dimension;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.api.config.common.value.environment.EnumEnvironment;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DimensionType;
@@ -39,10 +38,6 @@ public class DimensionPropertyEnvironment extends EnumEnvironment<DimensionPrope
     public DimensionPropertyEnvironment( Value value, boolean invert ) { super( value, invert ); }
     
     public DimensionPropertyEnvironment( AbstractConfigField field, String line ) { super( field, line, Value.values() ); }
-    
-    /** @return The string name of this environment, as it would appear in a config file. */
-    @Override
-    public String name() { return EnvironmentListField.ENV_DIMENSION_PROPERTY; }
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override

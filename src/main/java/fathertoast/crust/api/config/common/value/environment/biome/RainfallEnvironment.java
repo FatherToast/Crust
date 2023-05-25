@@ -1,9 +1,8 @@
 package fathertoast.crust.api.config.common.value.environment.biome;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.field.EnvironmentListField;
-import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
 import fathertoast.crust.api.config.common.value.environment.CompareFloatEnvironment;
+import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -15,10 +14,6 @@ public class RainfallEnvironment extends CompareFloatEnvironment {
     public RainfallEnvironment( ComparisonOperator op, float value ) { super( op, value ); }
     
     public RainfallEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
-    
-    /** @return The string name of this environment, as it would appear in a config file. */
-    @Override
-    public String name() { return EnvironmentListField.ENV_RAINFALL; }
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override

@@ -2,7 +2,6 @@ package fathertoast.crust.api.config.common.value.environment.dimension;
 
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.api.config.common.value.environment.DynamicRegistryGroupEnvironment;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
@@ -16,6 +15,7 @@ import java.util.List;
 
 public class DimensionTypeGroupEnvironment extends DynamicRegistryGroupEnvironment<DimensionType> {
     
+    @SuppressWarnings( "unused" )
     public DimensionTypeGroupEnvironment( ConfigManager cfgManager, RegistryKey<DimensionType> dimType, boolean invert ) {
         this( cfgManager, dimType.location(), invert );
     }
@@ -25,10 +25,6 @@ public class DimensionTypeGroupEnvironment extends DynamicRegistryGroupEnvironme
     }
     
     public DimensionTypeGroupEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
-    
-    /** @return The string name of this environment, as it would appear in a config file. */
-    @Override
-    public String name() { return EnvironmentListField.ENV_DIMENSION_TYPE; }
     
     /** @return The registry used. */
     @Override

@@ -7,12 +7,17 @@ import javax.annotation.Nullable;
 
 public abstract class AbstractEnvironment {
     
+    private String regName;
+    
+    AbstractEnvironment setName( String name ) {
+        if( regName == null ) regName = name;
+        else throw new IllegalStateException( "Do not attempt to set manually! " + name + "=" + getClass().getName() );
+        return this;
+    }
+    
     /** @return The string representation of this environment, as it would appear in a config file. */
     @Override
-    public final String toString() { return name() + " " + value(); }
-    
-    /** @return The string name of this environment, as it would appear in a config file. */
-    public abstract String name();
+    public final String toString() { return regName + " " + value(); }
     
     /** @return The string value of this environment, as it would appear in a config file. */
     public abstract String value();

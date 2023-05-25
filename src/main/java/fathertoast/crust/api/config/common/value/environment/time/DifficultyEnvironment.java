@@ -1,9 +1,8 @@
 package fathertoast.crust.api.config.common.value.environment.time;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
-import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.api.config.common.value.environment.CompareFloatEnvironment;
+import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -21,6 +20,7 @@ import javax.annotation.Nullable;
  */
 public class DifficultyEnvironment extends CompareFloatEnvironment {
     
+    @SuppressWarnings( "unused" )
     public DifficultyEnvironment( ComparisonOperator op, float value ) { super( op, value ); }
     
     public DifficultyEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
@@ -30,10 +30,6 @@ public class DifficultyEnvironment extends CompareFloatEnvironment {
     protected float getMinValue() { return 0.0F; }
     
     // Don't specify the max value, just in case a mod changes it.
-    
-    /** @return The string name of this environment, as it would appear in a config file. */
-    @Override
-    public String name() { return EnvironmentListField.ENV_DIFFICULTY; }
     
     /** @return Returns the actual value to compare, or Float.NaN if there isn't enough information. */
     @Override

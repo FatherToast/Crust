@@ -2,7 +2,6 @@ package fathertoast.crust.api.config.common.value.environment.time;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.environment.EnumEnvironment;
-import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -31,10 +30,6 @@ public class DayTimeEnvironment extends EnumEnvironment<DayTimeEnvironment.Value
     public DayTimeEnvironment( Value value, boolean invert ) { super( value, invert ); }
     
     public DayTimeEnvironment( AbstractConfigField field, String line ) { super( field, line, Value.values() ); }
-    
-    /** @return The string name of this environment, as it would appear in a config file. */
-    @Override
-    public String name() { return EnvironmentListField.ENV_DAY_TIME; }
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override

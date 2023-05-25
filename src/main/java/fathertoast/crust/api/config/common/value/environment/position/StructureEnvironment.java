@@ -2,7 +2,6 @@ package fathertoast.crust.api.config.common.value.environment.position;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.environment.RegistryEnvironment;
-import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.structure.Structure;
@@ -17,10 +16,6 @@ public class StructureEnvironment extends RegistryEnvironment<Structure<?>> {
     public StructureEnvironment( Structure<?> structure, boolean invert ) { super( structure, invert ); }
     
     public StructureEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
-    
-    /** @return The string name of this environment, as it would appear in a config file. */
-    @Override
-    public String name() { return EnvironmentListField.ENV_STRUCTURE; }
     
     /** @return The registry used. */
     @Override

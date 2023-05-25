@@ -1,9 +1,8 @@
 package fathertoast.crust.api.config.common.value.environment.biome;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
-import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.api.config.common.value.environment.CompareFloatEnvironment;
+import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -29,10 +28,6 @@ public class TemperatureEnvironment extends CompareFloatEnvironment {
     public TemperatureEnvironment( ComparisonOperator op, float value ) { super( op, value ); }
     
     public TemperatureEnvironment( AbstractConfigField field, String line ) { super( field, handleTempInput( line ) ); }
-    
-    /** @return The string name of this environment, as it would appear in a config file. */
-    @Override
-    public String name() { return EnvironmentListField.ENV_TEMPERATURE; }
     
     /** @return The string value of this environment, as it would appear in a config file. */
     @Override

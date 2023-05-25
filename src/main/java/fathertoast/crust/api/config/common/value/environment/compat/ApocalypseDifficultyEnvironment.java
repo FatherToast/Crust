@@ -2,7 +2,6 @@ package fathertoast.crust.api.config.common.value.environment.compat;
 
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.api.config.common.value.environment.CompareLongEnvironment;
 import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,10 +32,6 @@ public class ApocalypseDifficultyEnvironment extends CompareLongEnvironment {
     protected long getMinValue() { return 0L; }
     
     // Max value cannot be specified.
-    
-    /** @return The string name of this environment, as it would appear in a config file. */
-    @Override
-    public String name() { return EnvironmentListField.ENV_APOCALYPSE_DIFFICULTY; }
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override

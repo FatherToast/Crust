@@ -1,7 +1,6 @@
 package fathertoast.crust.api.config.common.value.environment.time;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.api.config.common.value.environment.CompareFloatEnvironment;
 import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
 import net.minecraft.util.math.BlockPos;
@@ -29,10 +28,6 @@ public class SpecialDifficultyEnvironment extends CompareFloatEnvironment {
     /** @return The maximum value that can be given to the value. */
     @Override
     protected float getMaxValue() { return 1.0F; }
-    
-    /** @return The string name of this environment, as it would appear in a config file. */
-    @Override
-    public String name() { return EnvironmentListField.ENV_SPECIAL_DIFFICULTY; }
     
     /** @return Returns the actual value to compare, or Float.NaN if there isn't enough information. */
     @Override

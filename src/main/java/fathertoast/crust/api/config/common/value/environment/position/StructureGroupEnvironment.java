@@ -1,7 +1,6 @@
 package fathertoast.crust.api.config.common.value.environment.position;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.api.config.common.value.environment.RegistryGroupEnvironment;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -17,15 +16,13 @@ import java.util.List;
 
 public class StructureGroupEnvironment extends RegistryGroupEnvironment<Structure<?>> {
     
+    @SuppressWarnings( "unused" )
     public StructureGroupEnvironment( Structure<?> structure, boolean invert ) { super( structure, invert ); }
     
+    @SuppressWarnings( "unused" )
     public StructureGroupEnvironment( ResourceLocation regKey, boolean invert ) { super( regKey, invert ); }
     
     public StructureGroupEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
-    
-    /** @return The string name of this environment, as it would appear in a config file. */
-    @Override
-    public String name() { return EnvironmentListField.ENV_STRUCTURE; }
     
     /** @return The registry used. */
     @Override
