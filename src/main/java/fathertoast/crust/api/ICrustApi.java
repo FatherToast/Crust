@@ -2,6 +2,8 @@ package fathertoast.crust.api;
 
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
+import javax.annotation.Nullable;
+
 /**
  * The main interface of Crust's API.<br
  * <br>
@@ -10,9 +12,9 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
  * {@link FMLCommonSetupEvent}
  */
 public interface ICrustApi {
-
-
-
     
     IRegistryHelper getRegistryHelper();
+    
+    @Nullable
+    IDifficultyAccessor getDifficultyAccessor();
 }

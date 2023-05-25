@@ -7,6 +7,7 @@ import fathertoast.crust.api.config.common.value.EnvironmentList;
 import fathertoast.crust.api.config.common.value.environment.AbstractEnvironment;
 import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
 import fathertoast.crust.api.config.common.value.environment.biome.*;
+import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDifficultyEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionPropertyEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionTypeEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionTypeGroupEnvironment;
@@ -59,6 +60,8 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
     public static final String ENV_TIME_FROM_MIDNIGHT = "time_from_midnight";
     public static final String ENV_WORLD_TIME = "world_time";
     public static final String ENV_CHUNK_TIME = "chunk_time";
+    // Mod-based
+    public static final String ENV_APOCALYPSE_DIFFICULTY = "apocalypse_difficulty";//TODO NYI
     
     /**
      * Provides a description of how to use environment lists. Recommended to put at the top of any file using environment lists.
@@ -161,6 +164,10 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
         comment.add( "  \"" + ENV_CHUNK_TIME + " op value\":" );
         comment.add( "    The total time the chunk has been loaded, in ticks. For reference, each day cycle is 24000 " +
                 "ticks and each lunar cycle is 192000 ticks." );
+        // Mod-based
+        comment.add( "  \"" + ENV_APOCALYPSE_DIFFICULTY + " op value\":" );
+        comment.add( "    The Apocalypse Rebooted mod's difficulty (scale depends on your config). This is based on the " +
+                "nearest player's current difficulty level. If no player exists, it assumes 0 difficulty." );
         return comment;
     }
     
@@ -303,6 +310,9 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
                 return new WorldTimeEnvironment( this, value );
             case ENV_CHUNK_TIME:
                 return new ChunkTimeEnvironment( this, value );
+            // Mod-based
+            case ENV_APOCALYPSE_DIFFICULTY:
+                return new ApocalypseDifficultyEnvironment( this, value );
         }
         
         // The environment name was not recognized; try to provide some good feedback because this field is complicated
@@ -315,7 +325,9 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
                 ENV_STRUCTURE, ENV_Y, ENV_Y_FROM_SEA, ENV_POSITION,
                 // Time-based
                 ENV_DIFFICULTY, ENV_SPECIAL_DIFFICULTY, ENV_WEATHER, ENV_MOON_BRIGHTNESS, ENV_MOON_PHASE, ENV_DAY_TIME,
-                ENV_TIME_FROM_MIDNIGHT, ENV_WORLD_TIME, ENV_CHUNK_TIME
+                ENV_TIME_FROM_MIDNIGHT, ENV_WORLD_TIME, ENV_CHUNK_TIME,
+                // Mod-based
+                ENV_APOCALYPSE_DIFFICULTY
         };
         final AbstractEnvironment fallback = new WorldTimeEnvironment( ComparisonOperator.LESS_THAN, 0 );
         ConfigUtil.LOG.warn( "Invalid environment '{}' for {} \"{}\"! Falling back to \"{}\". Environment name must be in the set [ {} ]. Invalid environment: {}",

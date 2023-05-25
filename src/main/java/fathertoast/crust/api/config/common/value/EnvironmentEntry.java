@@ -4,6 +4,7 @@ import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.value.environment.AbstractEnvironment;
 import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
 import fathertoast.crust.api.config.common.value.environment.biome.*;
+import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDifficultyEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionPropertyEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionTypeEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionTypeGroupEnvironment;
@@ -347,5 +348,14 @@ public class EnvironmentEntry {
         
         /** Check if the chunk inhabited time is after a certain number of days. */
         public Builder beforeDaysInChunk( int days ) { return in( new ChunkTimeEnvironment( ComparisonOperator.GREATER_OR_EQUAL.invert(), 24_000L * days ) ); }
+        
+        
+        // ---- Mod-based ---- //
+        
+        /** Check if the Apocalypse Rebooted difficulty is above a threshold. */
+        public Builder aboveApocalypseDifficulty( int days ) { return in( new ApocalypseDifficultyEnvironment( ComparisonOperator.GREATER_OR_EQUAL, 24_000L * days ) ); }
+        
+        /** Check if the Apocalypse Rebooted difficulty is above a threshold. */
+        public Builder belowApocalypseDifficulty( int days ) { return in( new ApocalypseDifficultyEnvironment( ComparisonOperator.GREATER_OR_EQUAL.invert(), 24_000L * days ) ); }
     }
 }
