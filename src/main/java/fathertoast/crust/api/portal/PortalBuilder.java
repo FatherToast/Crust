@@ -50,10 +50,10 @@ public abstract class PortalBuilder implements IForgeRegistryEntry<PortalBuilder
     }
 
     /**
-     *  @return A List of ResourceLocations representing the dimensions/worlds
+     *  @return A collection of ResourceLocations pointing to the dimensions/worlds
      *  that this portal builder can be used in.
      */
-    public abstract List<ResourceLocation> getValidDimensions();
+    public abstract Iterable<ResourceLocation> getValidDimensions();
 
     /** Generates the portal in the world. */
     public abstract void generate(World world, BlockPos.Mutable currentPos, Direction forward);

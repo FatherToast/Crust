@@ -24,7 +24,7 @@ public class EndPortalBuilder extends PortalBuilder {
     }
 
     @Override
-    public List<ResourceLocation> getValidDimensions() {
+    public Iterable<ResourceLocation> getValidDimensions() {
         return validDimensions;
     }
 

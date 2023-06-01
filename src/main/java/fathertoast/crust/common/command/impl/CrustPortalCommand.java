@@ -61,12 +61,9 @@ public class CrustPortalCommand {
     
     public static boolean isDimensionValid(PortalBuilder portalBuilder, World world ) {
         ResourceLocation currentWorldId = world.dimension().location();
-        List<ResourceLocation> validDimensions = portalBuilder.getValidDimensions();
+        Iterable<ResourceLocation> validDimensions = portalBuilder.getValidDimensions();
 
-        if (validDimensions.isEmpty())
-            return false;
-
-        for (ResourceLocation rl : portalBuilder.getValidDimensions()) {
+        for (ResourceLocation rl : validDimensions) {
             if (rl.equals(currentWorldId))
                 return true;
         }
