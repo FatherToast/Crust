@@ -1,7 +1,9 @@
 package fathertoast.crust.api.config.common.field;
 
+import com.electronwill.nightconfig.core.io.CharacterOutput;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
+import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -61,6 +63,10 @@ public class InjectionWrapperField<T extends AbstractConfigField> extends Abstra
     /** @return The default raw toml value of this field. */
     @Override
     public Object getRawDefault() { return wrappedField.getRawDefault(); }
+    
+    /** Writes this field's value to file. */
+    @Override
+    public void writeValue( CrustTomlWriter writer, CharacterOutput output ) { wrappedField.writeValue( writer, output ); }
     
     /** @return This field's gui component provider. */
     @Override

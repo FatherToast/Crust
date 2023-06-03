@@ -1,8 +1,8 @@
 package fathertoast.crust.api.config.common.value.environment;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.file.TomlHelper;
 
 import java.util.Locale;
 
@@ -30,7 +30,8 @@ public abstract class EnumEnvironment<T extends Enum<T>> extends AbstractEnviron
         }
         // Value cannot be parsed
         ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Value not defined (must be in the set [ {} ]). Defaulting to {}. Invalid entry: {}",
-                field.getClass(), field.getKey(), TomlHelper.toLiteralList( (Object[]) validValues ), TomlHelper.toLiteral(), line );
+                field.getClass(), field.getKey(), TomlHelper.toLiteralList( (Object[]) validValues ),
+                TomlHelper.toLiteral( validValues[0] ), line );
         return validValues[0];
     }
     

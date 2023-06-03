@@ -10,6 +10,7 @@ import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.*;
+import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -227,7 +228,7 @@ public class CrustConfigSpec {
      * Inserts the second and last part of a detailed description of how to use the environment list field.
      * Should go at the bottom of the file, preferably after the appendix header (if used).
      */
-    public void describeEnvironmentListPart2of2() { add( new Comment( EnvironmentListField.environmentDescriptions() ) ); }
+    public void describeEnvironmentListPart2of2() { add( new Comment( CrustEnvironmentRegistry.getDescriptions() ) ); }
     
     
     // ---- Internal Methods ---- //

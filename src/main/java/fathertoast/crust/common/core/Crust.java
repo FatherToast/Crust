@@ -83,6 +83,8 @@ public class Crust {
      *          ? make all entities glow
      *      - super speed - move very fast
      *          ? grant instant (or very fast) mining
+     *  - TODO:
+     *      - fix popuplistwidget scrollbar
      */
     
     /** The mod's id. */

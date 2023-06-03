@@ -142,7 +142,7 @@ public class EntityList implements IStringArray {
     public EntityList setRangePos() { return setRange( 0.0, Double.POSITIVE_INFINITY ); }
     
     /** Bounds entry values in this list to the specified limits, inclusive. Note that 0 must be within the range. */
-    private EntityList setRange( double min, double max ) {
+    public EntityList setRange( double min, double max ) {
         minValue = min;
         maxValue = max;
         return this;
