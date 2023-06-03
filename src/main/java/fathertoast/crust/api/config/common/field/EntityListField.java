@@ -78,10 +78,10 @@ public class EntityListField extends GenericField<EntityList> {
     }
     
     /**
-     * Loads this field's value from the given raw toml value. If anything goes wrong, correct it at the lowest level possible.
+     * Loads this field's value from the given value or raw toml. If anything goes wrong, correct it at the lowest level possible.
      * <p>
      * For example, a missing value should be set to the default, while an out-of-range value should be adjusted to the
-     * nearest in-range value
+     * nearest in-range value and print a warning explaining the change.
      */
     @Override
     public void load( @Nullable Object raw ) {
@@ -89,12 +89,18 @@ public class EntityListField extends GenericField<EntityList> {
             value = valueDefault;
             return;
         }
-        List<String> list = TomlHelper.parseStringList( raw );
-        List<EntityEntry> entryList = new ArrayList<>();
-        for( String line : list ) {
-            entryList.add( parseEntry( line ) );
+        
+        if( raw instanceof EntityList ) {
+            value = (EntityList) raw;
         }
-        value = new EntityList( entryList );
+        else {
+            List<String> list = TomlHelper.parseStringList( raw );
+            List<EntityEntry> entryList = new ArrayList<>();
+            for( String line : list ) {
+                entryList.add( parseEntry( line ) );
+            }
+            value = new EntityList( entryList );
+        }
     }
     
     /** Parses a single entry line and returns the result. */

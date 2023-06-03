@@ -41,46 +41,51 @@ public class EnumField<T extends Enum<T>> extends GenericField<T> {
     }
     
     /**
-     * Loads this field's value from the given raw toml value. If anything goes wrong, correct it at the lowest level possible.
+     * Loads this field's value from the given value or raw toml. If anything goes wrong, correct it at the lowest level possible.
      * <p>
      * For example, a missing value should be set to the default, while an out-of-range value should be adjusted to the
      * nearest in-range value
      */
     @Override
     public void load( @Nullable Object raw ) {
-        T newValue = null;
+        if( raw == null ) {
+            value = valueDefault;
+            return;
+        }
+        
+        // Try to directly assign the value
+        try {
+            //noinspection unchecked
+            value = (T) raw;
+            return;
+        }
+        catch( ClassCastException ex ) {
+            // Not directly assignable, try to parse
+        }
+        
+        T newValue;
         if( raw instanceof String ) {
             // Parse the value
             newValue = parseValue( (String) raw );
         }
+        else newValue = null;
         if( newValue == null ) {
             // Value cannot be parsed to this field
-            if( raw != null ) {
-                ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
-                        getClass(), getKey(), raw );
-            }
-            newValue = valueDefault;
+            ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
+                    getClass(), getKey(), raw );
+            value = valueDefault;
         }
-        value = newValue;
+        else value = newValue;
     }
     
     /** @return Attempts to parse the string literal as one of the valid values for this field and returns it, or null if invalid. */
     @Nullable
-    private T parseValue( String name ) {
+    public T parseValue( String name ) {
         for( T val : valuesValid ) {
             if( val.name().equalsIgnoreCase( name ) ) return val;
         }
         return null;
     }
-    
-    /** @return The raw toml value that should be assigned to this field in the config file. */
-    @Override
-    @Nullable
-    public Object getRaw() { return value == null ? null : TomlHelper.enumToString( value ); }
-    
-    /** @return The default raw toml value of this field. */
-    @Override
-    public Object getRawDefault() { return TomlHelper.enumToString( valueDefault ); }
     
     /** @return This field's gui component provider. */
     @Override

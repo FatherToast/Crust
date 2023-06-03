@@ -161,7 +161,7 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
                 if( child instanceof FieldEntry ) {
                     FieldEntry fieldEntry = (FieldEntry) child;
                     if( fieldEntry.changed ) {
-                        SPEC.getNightConfig().set( fieldEntry.FIELD.getKey(), fieldEntry.pendingRaw );
+                        SPEC.getNightConfig().set( fieldEntry.FIELD.getKey(), fieldEntry.pendingValue );
                     }
                 }
             }
@@ -319,9 +319,9 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
         private final List<OffsetWidget> RENDER_COMPONENTS = new ArrayList<>();
         
         private final Button RESET_BUTTON;
-        private final Object CURRENT_RAW;
+        private final Object CURRENT_VALUE;
         
-        private Object pendingRaw;
+        private Object pendingValue;
         private boolean changed;
         
         public FieldEntry( CrustConfigFieldList parent, AbstractConfigField field, String name,
@@ -342,13 +342,13 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
                 }
             }
             
-            CURRENT_RAW = pendingRaw = field.getRaw();
+            CURRENT_VALUE = pendingValue = field.getValue();
             
             RESET_BUTTON = new ResetButton( ( button ) -> {
-                updateValue( FIELD.getRawDefault() );
+                updateValue( FIELD.getDefaultValue() );
                 populateComponents();
             } );
-            RESET_BUTTON.active = !TomlHelper.equals( FIELD.getRawDefault(), pendingRaw );
+            RESET_BUTTON.active = !TomlHelper.equals( FIELD.getDefaultValue(), pendingValue );
             
             populateComponents();
         }
@@ -360,26 +360,26 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
             RESET_BUTTON.x = IConfigFieldWidgetProvider.VALUE_WIDTH + 1;
             RESET_BUTTON.y = 0;
             COMPONENTS.add( RESET_BUTTON );
-            FIELD.getWidgetProvider().apply( COMPONENTS, this, pendingRaw );
+            FIELD.getWidgetProvider().apply( COMPONENTS, this, pendingValue );
             for( Widget component : COMPONENTS ) RENDER_COMPONENTS.add( new OffsetWidget( component ) );
         }
         
         /** @return The field's pending "new" value. */
-        public Object getValue() { return pendingRaw; }
+        public Object getValue() { return pendingValue; }
         
         /** Call this to change the field's pending "new" value. */
-        public void updateValue( Object raw ) {
-            pendingRaw = raw;
-            RESET_BUTTON.active = !TomlHelper.equals( FIELD.getRawDefault(), raw );
-            changed = !TomlHelper.equals( CURRENT_RAW, raw );
+        public void updateValue( Object value ) {
+            pendingValue = value;
+            RESET_BUTTON.active = !TomlHelper.equals( FIELD.getDefaultValue(), value );
+            changed = !TomlHelper.equals( CURRENT_VALUE, value );
             PARENT.updateChangedState();
             ensureVisible();
         }
         
         /** Call this to delete the field's pending "new" value. */
         public void clearValue() {
-            pendingRaw = CURRENT_RAW;
-            RESET_BUTTON.active = !TomlHelper.equals( FIELD.getRawDefault(), CURRENT_RAW );
+            pendingValue = CURRENT_VALUE;
+            RESET_BUTTON.active = !TomlHelper.equals( FIELD.getDefaultValue(), CURRENT_VALUE );
             changed = false;
             PARENT.updateChangedState();
             ensureVisible();

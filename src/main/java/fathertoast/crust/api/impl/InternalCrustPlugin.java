@@ -15,14 +15,11 @@ public class InternalCrustPlugin implements ICrustPlugin {
     public static PortalBuilder NETHER_PORTAL;
     public static PortalBuilder END_PORTAL;
     
-    
+    /** Called by Crust after {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}. */
     @Override
-    public void onLoad( ICrustApi apiInstance ) {
-        apiInstance.getRegistryHelper();
-    }
+    public void onLoad( ICrustApi apiInstance ) { apiInstance.getRegistryHelper(); }
     
+    /** @return A ResourceLocation representing the ID of this plugin. */
     @Override
-    public ResourceLocation getId() {
-        return ID;
-    }
+    public ResourceLocation getId() { return ID; }
 }

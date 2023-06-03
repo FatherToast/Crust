@@ -3,7 +3,6 @@ package fathertoast.crust.test.common;
 import fathertoast.crust.api.config.common.AbstractConfigCategory;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
-import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.config.common.value.*;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
@@ -128,7 +127,7 @@ public class TestConfigFile extends AbstractConfigFile {
         }
         
         private static void testCallback( AbstractConfigField field ) {
-            ConfigUtil.LOG.info( field.getKey() + " = " + field.getRaw() );
+            TestCrust.LOG.info( "{} = {}", field.getKey(), field.getValue() );
         }
         
         private static String generateFormatTest() {
@@ -159,14 +158,14 @@ public class TestConfigFile extends AbstractConfigFile {
             Set<String> environments = CrustEnvironmentRegistry.getNames();
             fields = new EnvironmentListField[environments.size()];
             int i = 0;
-            ConfigUtil.LOG.warn( "TEST TEST TEST - Please ignore the following warnings - TEST TEST TEST" );
+            TestCrust.LOG.warn( "TEST TEST TEST - Please ignore the following warnings - TEST TEST TEST" );
             for( String env : environments ) {
                 fields[i++] = SPEC.define( new EnvironmentListField( env,
                         new EnvironmentList( new EnvironmentEntry( 1.0,
                                 CrustEnvironmentRegistry.parse( dummy, env, "" ) ) ),
                         (String[]) null ) );
             }
-            ConfigUtil.LOG.warn( "TEST TEST TEST - End of scheduled warnings, carry on - TEST TEST TEST" );
+            TestCrust.LOG.warn( "TEST TEST TEST - End of scheduled warnings, carry on - TEST TEST TEST" );
         }
     }
 }

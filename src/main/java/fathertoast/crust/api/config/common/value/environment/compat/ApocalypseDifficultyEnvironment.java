@@ -13,8 +13,8 @@ import javax.annotation.Nullable;
 /**
  * Notes on apocalypse difficulty:
  * If Apocalypse Rebooted is not installed, this condition is ignored (always evaluates to true).
- * When no players are in the world, difficulty is assumed to be 0.
- * When position is not available, this evaluates against the minimum player difficulty value.
+ * When no players are in the world, this will evaluate as false.
+ * When position is not available, this evaluates against the lowest player difficulty in the world.
  * Otherwise, this evaluates against the nearest player's difficulty.
  */
 public class ApocalypseDifficultyEnvironment extends CompareLongEnvironment {
@@ -28,10 +28,7 @@ public class ApocalypseDifficultyEnvironment extends CompareLongEnvironment {
     
     public ApocalypseDifficultyEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
     
-    /** @return The minimum value that can be given to the value. */
-    protected long getMinValue() { return 0L; }
-    
-    // Max value cannot be specified.
+    // Min and max values should not be specified, since they are dependent on AR configs.
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override
@@ -43,18 +40,17 @@ public class ApocalypseDifficultyEnvironment extends CompareLongEnvironment {
         if( apiInstance.getDifficultyAccessor() == null ) return null;
         
         // Check if any players exist
-        if( world.players().size() == 0 ) return 0L;
+        if( world.players().size() == 0 ) return null;
         
         // Get nearest player, if a position is available
         if( pos != null ) {
-            return Math.max( 0L, apiInstance.getDifficultyAccessor().getNearestPlayerDifficulty( world, pos ) );
+            return apiInstance.getDifficultyAccessor().getNearestPlayerDifficulty( world, pos );
         }
         
-        // Find player with lowest difficulty
+        // Find player with lowest difficulty, if we don't have a position
         long minDiff = Long.MAX_VALUE;
         for( PlayerEntity player : world.players() ) {
             long diff = apiInstance.getDifficultyAccessor().getPlayerDifficulty( player );
-            if( diff <= 0 ) return 0L;
             if( diff < minDiff ) minDiff = diff;
         }
         return minDiff;

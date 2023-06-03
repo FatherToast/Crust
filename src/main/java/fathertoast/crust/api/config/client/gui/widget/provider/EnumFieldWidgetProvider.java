@@ -85,7 +85,7 @@ public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldW
                     toText( value, TomlHelper.equals( value, listEntry.getValue() ) ? TextFormatting.GREEN : null ),
                     ( button ) -> {
                         openingButton.setMessage( toText( value ) );
-                        listEntry.updateValue( TomlHelper.enumToString( value ) );
+                        listEntry.updateValue( value );
                         listEntry.setPopupWidget( null );
                     } );
             
@@ -111,12 +111,15 @@ public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldW
         return new StringTextComponent( toReadable( value ) ).withStyle( format );
     }
     
-    /**
-     * Converts the raw enum string into its display text component. Assumes the enum string is in lower_underscore format.
-     *
-     * @see TomlHelper#enumToString(Enum)
-     */
+    /** Converts the unprocessed value into its display text component. */
     protected ITextComponent rawToText( Object value ) {
+        try {
+            //noinspection unchecked
+            return toText( (T) value );
+        }
+        catch( ClassCastException ex ) {
+            // Not directly assignable, try parsing
+        }
         if( value instanceof String ) {
             return new StringTextComponent( ConfigUtil.properCase( ((String) value)
                     .toLowerCase( Locale.ROOT ).replace( '_', ' ' ) ) );

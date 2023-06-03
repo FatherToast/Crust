@@ -44,10 +44,10 @@ public class InjectionWrapperField<T extends AbstractConfigField> extends Abstra
     public void appendFieldInfo( List<String> comment ) { wrappedField.appendFieldInfo( comment ); }
     
     /**
-     * Loads this field's value from the given raw toml value. If anything goes wrong, correct it at the lowest level possible.
+     * Loads this field's value from the given value or raw toml. If anything goes wrong, correct it at the lowest level possible.
      * <p>
      * For example, a missing value should be set to the default, while an out-of-range value should be adjusted to the
-     * nearest in-range value
+     * nearest in-range value and print a warning explaining the change.
      */
     @Override
     public void load( @Nullable Object raw ) {
@@ -56,13 +56,13 @@ public class InjectionWrapperField<T extends AbstractConfigField> extends Abstra
         injectionCallback.accept( wrappedField );
     }
     
-    /** @return The raw toml value that should be assigned to this field in the config file. */
+    /** @return The value that should be assigned to this field in the config file. */
     @Override
-    public Object getRaw() { return wrappedField.getRaw(); }
+    public Object getValue() { return wrappedField.getValue(); }
     
-    /** @return The default raw toml value of this field. */
+    /** @return The default value of this field. */
     @Override
-    public Object getRawDefault() { return wrappedField.getRawDefault(); }
+    public Object getDefaultValue() { return wrappedField.getDefaultValue(); }
     
     /** Writes this field's value to file. */
     @Override

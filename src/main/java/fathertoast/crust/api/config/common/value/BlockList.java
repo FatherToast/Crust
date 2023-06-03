@@ -62,7 +62,7 @@ public class BlockList implements IStringArray {
     
     /** @return A string representation of this object. */
     @Override
-    public String toString() { return TomlHelper.toLiteral( PRINT_LIST.toArray() ); }
+    public String toString() { return TomlHelper.toLiteral( toStringList().toArray() ); }
     
     /** @return Returns true if this object has the same value as another object. */
     @Override

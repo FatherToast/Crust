@@ -53,10 +53,10 @@ public class AttributeListField extends GenericField<AttributeList> {
     }
     
     /**
-     * Loads this field's value from the given raw toml value. If anything goes wrong, correct it at the lowest level possible.
+     * Loads this field's value from the given value or raw toml. If anything goes wrong, correct it at the lowest level possible.
      * <p>
      * For example, a missing value should be set to the default, while an out-of-range value should be adjusted to the
-     * nearest in-range value
+     * nearest in-range value and print a warning explaining the change.
      */
     @Override
     public void load( @Nullable Object raw ) {
@@ -64,12 +64,18 @@ public class AttributeListField extends GenericField<AttributeList> {
             value = valueDefault;
             return;
         }
-        List<String> list = TomlHelper.parseStringList( raw );
-        List<AttributeEntry> entryList = new ArrayList<>();
-        for( String line : list ) {
-            entryList.add( parseEntry( line ) );
+        
+        if( raw instanceof AttributeList ) {
+            value = (AttributeList) raw;
         }
-        value = new AttributeList( entryList );
+        else {
+            List<String> list = TomlHelper.parseStringList( raw );
+            List<AttributeEntry> entryList = new ArrayList<>();
+            for( String line : list ) {
+                entryList.add( parseEntry( line ) );
+            }
+            value = new AttributeList( entryList );
+        }
         
         if( linkedAttributeMap != null ) linkedAttributeMap.invalidate();
     }

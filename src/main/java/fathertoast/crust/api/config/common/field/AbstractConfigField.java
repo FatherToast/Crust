@@ -76,28 +76,28 @@ public abstract class AbstractConfigField {
     public abstract void appendFieldInfo( List<String> comment );
     
     /**
-     * Loads this field's value from the given raw toml value. If anything goes wrong, correct it at the lowest level possible.
+     * Loads this field's value from the given value or raw toml. If anything goes wrong, correct it at the lowest level possible.
      * <p>
      * For example, a missing value should be set to the default, while an out-of-range value should be adjusted to the
-     * nearest in-range value
+     * nearest in-range value and print a warning explaining the change.
      */
     public abstract void load( @Nullable Object raw );
     
-    /** @return The raw toml value that should be assigned to this field in the config file. */
+    /** @return The value that should be assigned to this field in the config file. */
     @Nullable
-    public abstract Object getRaw();
+    public abstract Object getValue();
     
-    /** @return The default raw toml value of this field. */
-    public abstract Object getRawDefault();
+    /** @return The default value of this field. */
+    public abstract Object getDefaultValue();
     
     /** Writes this field's value to file. */
     public void writeValue( CrustTomlWriter writer, CharacterOutput output ) {
-        Object raw = getRaw();
-        if( raw instanceof IStringArray ) {
-            writer.writeStringArray( ((IStringArray) raw).toStringList(), output );
+        Object value = getValue();
+        if( value instanceof IStringArray ) {
+            writer.writeStringArray( ((IStringArray) value).toStringList(), output );
         }
         else {
-            writer.writeLine( TomlHelper.toLiteral( raw ), output );
+            writer.writeLine( TomlHelper.toLiteral( value ), output );
         }
     }
     

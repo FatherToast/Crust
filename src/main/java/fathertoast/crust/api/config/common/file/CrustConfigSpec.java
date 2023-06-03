@@ -670,16 +670,16 @@ public class CrustConfigSpec {
         @Override
         public boolean onLoad() {
             // Get cached value to detect changes
-            final Object oldRaw = FIELD.getRaw();
+            final Object oldValue = FIELD.getValue();
             
             // Fetch the newly loaded value
-            final Object rawToml = PARENT.NIGHT_CONFIG_FILE.getOptional( FIELD.getKey() ).orElse( null );
-            FIELD.load( rawToml );
+            final Object raw = PARENT.NIGHT_CONFIG_FILE.getOptional( FIELD.getKey() ).orElse( null );
+            FIELD.load( raw );
             
             // Push the field's value back to the config if its value was changed
-            final Object newRaw = FIELD.getRaw();
-            if( rawToml == null || !Objects.equals( oldRaw, newRaw ) ) {
-                PARENT.NIGHT_CONFIG_FILE.set( FIELD.getKey(), newRaw );
+            final Object newValue = FIELD.getValue();
+            if( raw == null || !Objects.equals( oldValue, newValue ) ) {
+                PARENT.NIGHT_CONFIG_FILE.set( FIELD.getKey(), newValue );
                 return true;
             }
             return false;

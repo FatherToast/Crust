@@ -44,10 +44,10 @@ public class RegistryEntryListField<T extends IForgeRegistryEntry<T>> extends Ge
     }
     
     /**
-     * Loads this field's value from the given raw toml value. If anything goes wrong, correct it at the lowest level possible.
+     * Loads this field's value from the given value or raw toml. If anything goes wrong, correct it at the lowest level possible.
      * <p>
      * For example, a missing value should be set to the default, while an out-of-range value should be adjusted to the
-     * nearest in-range value
+     * nearest in-range value and print a warning explaining the change.
      */
     @Override
     public void load( @Nullable Object raw ) {
@@ -55,8 +55,22 @@ public class RegistryEntryListField<T extends IForgeRegistryEntry<T>> extends Ge
             value = valueDefault;
             return;
         }
-        // All the actual loading is done through the objects
-        value = new RegistryEntryList<>( this, valueDefault.getRegistry(), TomlHelper.parseStringList( raw ) );
+        
+        if( raw instanceof RegistryEntryList ) {
+            try {
+                //noinspection unchecked
+                value = (RegistryEntryList<T>) raw;
+            }
+            catch( ClassCastException ex ) {
+                ConfigUtil.LOG.warn( "Invalid value for {} \"{}\" (wrong registry)! Falling back to default. Invalid value: {}",
+                        getClass(), getKey(), raw );
+                value = valueDefault;
+            }
+        }
+        else {
+            // All the actual loading is done through the objects
+            value = new RegistryEntryList<>( this, valueDefault.getRegistry(), TomlHelper.parseStringList( raw ) );
+        }
     }
     
     

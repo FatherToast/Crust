@@ -27,12 +27,12 @@ public abstract class GenericField<T> extends AbstractConfigField {
     /** @return Returns the config field's value. */
     public T get() { return value; }
     
-    /** @return The raw toml value that should be assigned to this field in the config file. */
+    /** @return The value that should be assigned to this field in the config file. */
     @Override
     @Nullable
-    public Object getRaw() { return value; }
+    public T getValue() { return value; }
     
-    /** @return The default raw toml value of this field. */
+    /** @return The default value of this field. */
     @Override
-    public Object getRawDefault() { return valueDefault; }
+    public T getDefaultValue() { return valueDefault; }
 }

@@ -5,13 +5,13 @@ issueTrackerURL = "https://github.com/FatherToast/Crust/issues/"
 
 [[mods]]
 logoFile = "banner.png"
-authors = "Father Toast"
+authors = "Father Toast, Sarinsa"
 credits = "The toasty people"
 version = "${file.jarVersion}"
 displayName = "Crust"
 modId = "crust"
 description = '''
-A library mod for FatherToast's mods.
+A modding and testing toolkit with a few other minor utilities.
 
 
 Download: https://www.curseforge.com/members/fathertoast/projects/

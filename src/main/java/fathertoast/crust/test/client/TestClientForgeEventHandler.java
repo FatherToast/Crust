@@ -1,13 +1,17 @@
 package fathertoast.crust.test.client;
 
-import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
+import fathertoast.crust.api.IDifficultyAccessor;
+import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.client.KeyBindingEvents.Key;
 import fathertoast.crust.client.SortedKeyBinding;
 import fathertoast.crust.common.core.Crust;
+import fathertoast.crust.test.common.TestCrust;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -40,8 +44,28 @@ public class TestClientForgeEventHandler {
         
         if( event.getAction() == GLFW.GLFW_PRESS ) {
             if( event.getKey() == KEY_CFG.getKey().getValue() && KEY_CFG.isConflictContextAndModifierActive() ) {
-                //TODO print out whatever data to test the config file (test each environment?)
-                minecraft.setScreen( new CrustConfigSelectScreen( screen ) );
+                if( minecraft.player != null ) {
+                    World world = minecraft.player.level;
+                    BlockPos pos = minecraft.player.blockPosition();
+                    
+                    // Test the Apocalypse Rebooted difficulty hooks
+                    IDifficultyAccessor diffAccess = TestCrust.API.getDifficultyAccessor();
+                    if( diffAccess == null ) {
+                        TestCrust.LOG.info( "Player Difficulty: N/A" );
+                    }
+                    else {
+                        TestCrust.LOG.info( "Player Difficulty: current = {}, max = {}",
+                                diffAccess.getPlayerDifficulty( minecraft.player ),
+                                diffAccess.getMaxPlayerDifficulty( minecraft.player ) );
+                    }
+                    
+                    // Poll state of each environment condition at player's position and print result
+                    EnvironmentListField[] envs = TestCrust.CONFIG.ENVIRONMENT.fields;
+                    TestCrust.LOG.info( "Environment Test Results:" );
+                    for( EnvironmentListField env : envs ) {
+                        TestCrust.LOG.info( "  {} = {}", env.getKey(), env.getOrElse( world, pos, 0.0 ) );
+                    }
+                }
             }
         }
     }
