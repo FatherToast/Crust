@@ -96,15 +96,6 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         x1 = x + width;
     }
     
-    //    public void updateSize( int w, int h, int top, int bottom ) { TODO This seems useless
-    //        width = w;
-    //        height = h;
-    //        y0 = top;
-    //        y1 = bottom;
-    //        x0 = 0;
-    //        x1 = w;
-    //    }
-    
     /** Removes the entry at a specified index and returns the removed value if successful. */
     @SuppressWarnings( "unused" )
     @Nullable
@@ -180,7 +171,10 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     protected int getListContentHeight() { return getItemCount() * itemHeight + headerHeight; }
     
     /** @return The height of the scrollbar handle. */
-    protected int getScrollHandleHeight() { return MathHelper.clamp( height * height / getListContentHeight(), 32, height - 8 ); }
+    protected int getScrollHandleHeight() {
+        return MathHelper.clamp( (int) ((float) height * height / (float) getListContentHeight()),
+                32, height - 8 );
+    }
     
     /** @return The x position for the left edge of the scrollbar. */
     protected int getScrollbarLeft() { return x1 - 2 - SCROLLBAR_WIDTH; }
@@ -241,13 +235,12 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     public int getMaxScrollDistance() { return Math.max( 0, getListContentHeight() - (height - ENTRY_PADDING) ); }
     
     /** Centers the scroll position on a specific entry. */
-    @SuppressWarnings( "unused" )
-    protected void centerScrollOn( E entry ) {
+    public void centerScrollOn( E entry ) {
         setScrollDistance( entries().indexOf( entry ) * itemHeight + (itemHeight - height) / 2.0 );
     }
     
     /** Scrolls, if needed, to make sure a specific entry can be seen. */
-    protected void ensureVisible( E entry ) {
+    public void ensureVisible( E entry ) {
         int rowTop = getRowTop( entries().indexOf( entry ) );
         
         int scrollAmount = rowTop - (y0 + ENTRY_PADDING + itemHeight);
@@ -274,6 +267,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     public boolean mouseClicked( double x, double y, int mouseKey ) {
         updateScrollingState( x, mouseKey );
         if( !isMouseOver( x, y ) ) return false;
+        if( scrolling ) return true;
         
         // Find the entry being clicked on
         E entry = getEntryAtPosition( x, y );
@@ -290,7 +284,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
             return true;
         }
         
-        return scrolling;
+        return false;
     }
     
     /** Called when a mouse button is clicked to update scrolling state. */
@@ -320,9 +314,10 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     /** Called when the mouse is moved while a mouse button is held. */
     @Override
     public boolean mouseDragged( double x, double y, int mouseKey, double deltaX, double deltaY ) {
-        if( getDragging() != null && mouseKey == 0 && getDragging().mouseDragged( x, y, mouseKey, deltaX, deltaY ) ||
-                super.mouseDragged( x, y, mouseKey, deltaX, deltaY ) )
+        if( getDragging() != null && mouseKey == 0 &&
+                getDragging().mouseDragged( x, y, mouseKey, deltaX, deltaY ) ) {
             return true;
+        }
         
         if( mouseKey == 0 && scrolling ) {
             int maxScroll = getMaxScrollDistance();
@@ -338,7 +333,8 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
             }
             return true;
         }
-        return false;
+        
+        return super.mouseDragged( x, y, mouseKey, deltaX, deltaY );
     }
     
     /** Called when the mouse wheel is scrolled. */
@@ -403,9 +399,6 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
             ensureVisible( entry );
         }
     }
-    
-    //    @Override
-    //    public boolean isFocused() { return false; } TODO why was this forced false on AbstractList?
     
     
     // ---- Rendering ---- //
@@ -490,8 +483,8 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
             //noinspection deprecation
             buf.begin( 7, DefaultVertexFormats.POSITION_TEX_COLOR );
             drawBox( buf, scrollX0, scrollX1, y0, y1, 0x00 ); // Bar background
-            drawBox( buf, scrollX0, scrollX1, handleY, handleH, 0x80 ); // Handle shadow
-            drawBox( buf, scrollX0, scrollX1 - 1, handleY, handleH - 1, 0xC0 ); // Handle
+            drawBox( buf, scrollX0, scrollX1, handleY, handleY + handleH, 0x80 ); // Handle shadow
+            drawBox( buf, scrollX0, scrollX1 - 1, handleY, handleY + handleH - 1, 0xC0 ); // Handle
             tessellator.end();
         }
         RenderSystem.enableTexture();

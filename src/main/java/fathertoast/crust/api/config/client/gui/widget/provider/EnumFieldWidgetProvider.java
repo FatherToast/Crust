@@ -79,18 +79,23 @@ public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldW
         PopupListWidget<PopupListWidget.WidgetListEntry> dropdownMenu = new PopupListWidget<>( openingButton.x - 2, y,
                 openingButton.getWidth() + 4 + (hasScrollbar ? PopupListWidget.SCROLLBAR_WIDTH + 2 : 0),
                 height, rowHeight, new StringTextComponent( provider.FIELD.getKey() ) );
+        PopupListWidget.WidgetListEntry selectedEntry = null;
         for( T value : validValues ) {
+            boolean isSelected = TomlHelper.equals( value, listEntry.getValue() );
             Button selectButton = new Button( 0, 0,
                     openingButton.getWidth(), rowHeight - PopupListWidget.ENTRY_PADDING,
-                    toText( value, TomlHelper.equals( value, listEntry.getValue() ) ? TextFormatting.GREEN : null ),
+                    toText( value, isSelected ? TextFormatting.GREEN : null ),
                     ( button ) -> {
                         openingButton.setMessage( toText( value ) );
                         listEntry.updateValue( value );
                         listEntry.setPopupWidget( null );
                     } );
             
-            dropdownMenu.addEntry( new PopupListWidget.WidgetListEntry( selectButton ) );
+            PopupListWidget.WidgetListEntry entry = new PopupListWidget.WidgetListEntry( selectButton );
+            dropdownMenu.addEntry( entry );
+            if( isSelected ) selectedEntry = entry;
         }
+        if( selectedEntry != null ) dropdownMenu.centerScrollOn( selectedEntry );
         
         listEntry.setPopupWidget( dropdownMenu );
     }
