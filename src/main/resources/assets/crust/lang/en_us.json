@@ -10,6 +10,30 @@
   "menu.crust.config.file.title": "%s Config: %s",
   "menu.crust.config.file.subtitle": "File: %s",
 
+  "inventory.buttons.fullheal.tooltip": "Full recover",
+  "inventory.buttons.cleareffects.tooltip": "Clear all potion effects",
+  "inventory.buttons.destroyonpointer.tooltip": "Destroy item on cursor",
+  "inventory.buttons.killall.tooltip": "Kill all entities",
+  "inventory.buttons.netherportal.tooltip": "Create a Nether portal",
+  "inventory.buttons.endportal.tooltip": "Create an End portal",
+
+  "inventory.buttons.day.tooltip": "Set time to day",
+  "inventory.buttons.night.tooltip": "Set time to night",
+  "inventory.buttons.toggleday.tooltip": "Toggle time to day or night",
+
+  "inventory.buttons.weatherclear.tooltip": "Clear weather",
+  "inventory.buttons.weatherrain.tooltip": "Set weather to rain",
+  "inventory.buttons.weatherstorm.tooltip": "Set weather to thunder",
+  "inventory.buttons.togglerain.tooltip": "Toggle weather to clear or rain",
+
+  "inventory.buttons.gamemode.tooltip": "Toggle game mode",
+  "inventory.buttons.magnetmode.tooltip": "Toggle magnet mode",
+  "inventory.buttons.multiminemode.tooltip": "Toggle multi-mine mode",
+  "inventory.buttons.godmode.tooltip": "Toggle god mode",
+  "inventory.buttons.supervisionmode.tooltip": "Toggle super vision mode",
+  "inventory.buttons.superspeedmode.tooltip": "Toggle super speed mode",
+  "inventory.buttons.nopickupmode.tooltip": "Toggle destroy-on-pickup mode",
+
   "commands.crustclean.pointer.success": "Destroyed item on pointer for %s",
   "commands.crustclean.pointer.failure": "%s has no item on pointer",
 
@@ -23,8 +47,7 @@
   "commands.crustmode.enable.single.success": "Enabled \"%s\" mode for %s",
   "commands.crustmode.enable.multiple.success": "Enabled \"%s\" mode for %s players",
 
-  "commands.crustportal.nether.success": "Placed Nether portal at [%s, %s, %s]",
-  "commands.crustportal.end.success": "Placed End portal at [%s, %s, %s]",
+  "commands.crustportal.success": "Placed \"%s\" portal at [%s, %s, %s]",
   "commands.crustportal.dimension.failure": "Invalid dimension for portal",
   "commands.crustportal.failure": "Could not find valid portal position",
 

@@ -216,7 +216,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                 return new String[] { "Locate stronghold", "ender_eye.png", "locate stronghold" };
             if( ++i == index )
                 return new String[] { "Locate jungle biome", "world.png", "locatebiome " + ConfigUtil.toString( Biomes.JUNGLE ) };
-            //if( ++i == index ) // Add this in 1.19
+            //if( ++i == index ) // TODO Add this in 1.19
             //    return new String[] { "Generate village structure", "villager.png", "place structure " + ConfigUtil.toString( Structure.VILLAGE ) };
             if( ++i == index )
                 return new String[] { "Reload data packs", "crafting_table_side.png", "reload" };

@@ -1,39 +1,35 @@
 package fathertoast.crust.common.command.impl;
 
 import com.mojang.brigadier.CommandDispatcher;
-import fathertoast.crust.api.lib.SetBlockFlags;
 import fathertoast.crust.api.portal.PortalBuilder;
 import fathertoast.crust.common.command.CommandUtil;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.Entity;
-import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import java.util.List;
 
 public class CrustPortalCommand {
     
     /** Command builder. */
     public static void register( CommandDispatcher<CommandSource> dispatcher ) {
-        dispatcher.register(CommandUtil.literal( Crust.MOD_ID + "portal" )
+        dispatcher.register( CommandUtil.literal( Crust.MOD_ID + "portal" )
                 .requires( CommandUtil::canCheat )
-                .then(Commands.argument("portalType", PortalTypeArgument.portalType())
-                        .executes((context) -> run( context.getSource(), PortalTypeArgument.getPortalType(context, "portalType"), context.getSource().getPlayerOrException()))));
+                .then( Commands.argument( "portalType", PortalTypeArgument.portalType() )
+                        .executes( ( context ) -> run( context.getSource(),
+                                PortalTypeArgument.getPortalType( context, "portalType" ),
+                                context.getSource().getPlayerOrException() ) ) ) );
     }
-
+    
     
     /** Command implementation. */
-    private static int run(CommandSource source, PortalBuilder portalBuilder, Entity target ) {
-        if( !isDimensionValid( portalBuilder, target.level ) ) {
+    private static int run( CommandSource source, PortalBuilder portalBuilder, Entity target ) {
+        if( !portalBuilder.isValidDimension( target.level ) ) {
             CommandUtil.sendFailure( source, "portal.dimension" );
             return -1;
         }
@@ -48,26 +44,15 @@ public class CrustPortalCommand {
         else if( findGroundAbove( target.level, currentPos ) ) failed = true;
         BlockPos pos = currentPos.immutable();
         
-        if( failed ) { // || !canPlace( mode, target.level, currentPos, facing ) ) {
+        if( failed ) {
             CommandUtil.sendFailure( source, "portal" );
             return 0;
         }
         
-        place( portalBuilder, target.level, currentPos, forward );
-        CommandUtil.sendSuccess( source, "portal." + portalBuilder.getRegistryName().getPath(),
+        portalBuilder.generate( target.level, currentPos, forward );
+        CommandUtil.sendSuccess( source, "portal", portalBuilder.getRegistryName(),
                 pos.getX(), pos.getY(), pos.getZ() );
         return 1;
-    }
-    
-    public static boolean isDimensionValid(PortalBuilder portalBuilder, World world ) {
-        ResourceLocation currentWorldId = world.dimension().location();
-        Iterable<ResourceLocation> validDimensions = portalBuilder.getValidDimensions();
-
-        for (ResourceLocation rl : validDimensions) {
-            if (rl.equals(currentWorldId))
-                return true;
-        }
-        return false;
     }
     
     /** Attempts to find the ground. Resets the position if none can be found. */
@@ -106,91 +91,5 @@ public class CrustPortalCommand {
         final BlockState stateAtPos = level.getBlockState( pos );
         return (stateAtPos.getMaterial().isReplaceable() || stateAtPos.is( BlockTags.LEAVES )) &&
                 !stateAtPos.getFluidState().is( FluidTags.WATER );
-    }
-    
-    /** Places the portal. */
-    private static void place(PortalBuilder portalBuilder, World level, BlockPos.Mutable currentPos, Direction forward ) {
-        portalBuilder.generate(level, currentPos, forward);
-    }
-    
-    /** Places a Nether portal. */
-    private static void placeNetherPortal( World level, BlockPos.Mutable currentPos, Direction forward ) {
-        Direction transverse = forward.getClockWise();
-        
-        currentPos.move( transverse, -1 );
-        BlockPos portalCorner = currentPos.immutable();
-        
-        currentPos.move( transverse, -1 );
-        currentPos.move( Direction.UP, -1 );
-        
-        BlockState frameBlock = Blocks.OBSIDIAN.defaultBlockState();
-        BlockPos frameCorner = currentPos.immutable();
-        for( int tv = 0; tv < 5; tv++ ) {
-            for( int up = 0; up < 5; up++ ) {
-                if( tv == 0 || tv == 4 || up == 0 || up == 4 ) {
-                    currentPos.set( frameCorner ).move( transverse, tv )
-                            .move( Direction.UP, up );
-                    
-                    level.setBlock( currentPos, frameBlock, SetBlockFlags.DEFAULTS );
-                }
-            }
-        }
-        
-        BlockState portalBlock = Blocks.NETHER_PORTAL.defaultBlockState()
-                .setValue( BlockStateProperties.HORIZONTAL_AXIS, transverse.getAxis() );
-        for( int tv = 0; tv < 3; tv++ ) {
-            for( int up = 0; up < 3; up++ ) {
-                currentPos.set( portalCorner ).move( transverse, tv )
-                        .move( Direction.UP, up );
-                
-                level.setBlock( currentPos, portalBlock,
-                        SetBlockFlags.UPDATE_CLIENT | SetBlockFlags.SKIP_NEIGHBOR_UPDATE );
-            }
-        }
-    }
-    
-    /** Places an End portal. */
-    private static void placeEndPortal( World level, BlockPos.Mutable currentPos, Direction forward ) {
-        Direction transverse = forward.getClockWise();
-        
-        currentPos.move( Direction.UP, -1 );
-        currentPos.move( transverse, -1 );
-        BlockPos portalCorner = currentPos.immutable();
-        
-        currentPos.move( transverse, -1 );
-        currentPos.move( forward, -1 );
-        
-        BlockPos frameCorner = currentPos.immutable();
-        for( int tv = 0; tv < 5; tv++ ) {
-            for( int fw = 0; fw < 5; fw++ ) {
-                if( (tv == 0 || tv == 4) ^ (fw == 0 || fw == 4) ) {
-                    currentPos.set( frameCorner ).move( transverse, tv )
-                            .move( forward, fw );
-                    
-                    BlockState frameBlock = Blocks.END_PORTAL_FRAME.defaultBlockState()
-                            .setValue( BlockStateProperties.EYE, true )
-                            .setValue( BlockStateProperties.HORIZONTAL_FACING, endFrameFacing( forward, tv, fw ) );
-                    level.setBlock( currentPos, frameBlock, SetBlockFlags.DEFAULTS );
-                }
-            }
-        }
-        
-        BlockState portalBlock = Blocks.END_PORTAL.defaultBlockState();
-        for( int tv = 0; tv < 3; tv++ ) {
-            for( int fw = 0; fw < 3; fw++ ) {
-                currentPos.set( portalCorner ).move( transverse, tv )
-                        .move( forward, fw );
-                
-                level.setBlock( currentPos, portalBlock, SetBlockFlags.DEFAULTS );
-            }
-        }
-    }
-    
-    /** @return The proper facing for an end frame block. */
-    private static Direction endFrameFacing( Direction forward, int tv, int fw ) {
-        if( tv == 0 ) return forward.getCounterClockWise();
-        if( tv == 4 ) return forward.getClockWise();
-        if( fw == 0 ) return forward.getOpposite();
-        return forward;
     }
 }

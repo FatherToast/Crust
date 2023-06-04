@@ -93,19 +93,21 @@ public class Crust {
     /** Logger instance for the mod. */
     public static final Logger LOG = LogManager.getLogger( MOD_ID );
     
-    /** Mod instance */
+    /** Mod instance. */
     public static Crust INSTANCE;
     
-    /** API instance */
+    /** API instance. */
     private final CrustApi apiInstance;
     
-    /** Registry for PortalBuilders */
-    public static final DeferredRegister<PortalBuilder> PORTAL_BUILDERS = DeferredRegister.create( PortalBuilder.class, MOD_ID );
-    public static final Supplier<IForgeRegistry<PortalBuilder>> PORTAL_BUILDER_REG = PORTAL_BUILDERS.makeRegistry( "portal_builders",
+    /** Deferred register used to initialize the portal registry and populate vanilla portals. */
+    private static final DeferredRegister<PortalBuilder> VANILLA_PORTAL_REGISTER = DeferredRegister.create( PortalBuilder.class, "minecraft" );
+    
+    /** Registry for portals. */
+    public static final Supplier<IForgeRegistry<PortalBuilder>> PORTAL_REGISTRY = VANILLA_PORTAL_REGISTER.makeRegistry( "portal_builders",
             () -> (new RegistryBuilder<PortalBuilder>()).setType( PortalBuilder.class ).setDefaultKey( resLoc( "empty" ) ) );
     
-    public static final RegistryObject<PortalBuilder> NETHER_PORTAL = PORTAL_BUILDERS.register( "nether_portal", NetherPortalBuilder::new );
-    public static final RegistryObject<PortalBuilder> END_PORTAL = PORTAL_BUILDERS.register( "end_portal", EndPortalBuilder::new );
+    public static final RegistryObject<PortalBuilder> NETHER_PORTAL = VANILLA_PORTAL_REGISTER.register( "nether_portal", NetherPortalBuilder::new );
+    public static final RegistryObject<PortalBuilder> END_PORTAL = VANILLA_PORTAL_REGISTER.register( "end_portal", EndPortalBuilder::new );
     
     
     public Crust() {
@@ -120,7 +122,7 @@ public class Crust {
         
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         
-        PORTAL_BUILDERS.register( modBus );
+        VANILLA_PORTAL_REGISTER.register( modBus );
         
         modBus.addListener( this::onCommonSetup );
     }

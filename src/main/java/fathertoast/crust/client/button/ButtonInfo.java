@@ -3,11 +3,9 @@ package fathertoast.crust.client.button;
 
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
-import fathertoast.crust.api.impl.InternalCrustPlugin;
 import fathertoast.crust.client.ClientRegister;
 import fathertoast.crust.client.ExtraInvButtonsCrustConfigFile;
 import fathertoast.crust.client.KeyBindingEvents;
-import fathertoast.crust.common.command.impl.CrustPortalCommand;
 import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
@@ -83,63 +81,66 @@ public class ButtonInfo {
         return info;
     }
     
+    /** @return The lang key to use for a button with the given id. */
+    private static String toLangKey( String id ) { return "inventory.buttons." + id.toLowerCase( Locale.ROOT ) + ".tooltip"; }
+    
     // Utilities
-    public static final ButtonInfo FULL_HEAL = builtIn( new ButtonInfo( "fullHeal", "Full recover",
-            "instant_health.png", "crustrecover" ) );
-    public static final ButtonInfo CLEAR_EFFECTS = builtIn( new ButtonInfo( "clearEffects", "Clear all potion effects",
-            "milk.png", "effect clear" )
+    public static final ButtonInfo FULL_HEAL = builtIn( new ButtonInfo( "fullHeal", "instant_health.png",
+            "crustrecover" ) );
+    public static final ButtonInfo CLEAR_EFFECTS = builtIn( new ButtonInfo( "clearEffects", "milk.png",
+            "effect clear" )
             .condition( () -> !player().getActiveEffectsMap().isEmpty() ) );
-    public static final ButtonInfo DESTROY_POINTER_ITEM = builtIn( new ButtonInfo( "destroyOnPointer", "Destroy item on cursor",
-            "fire.png", ButtonInfo::destroyOnPointer, Command.CLEAN_POINTER )
+    public static final ButtonInfo DESTROY_POINTER_ITEM = builtIn( new ButtonInfo( "destroyOnPointer", "fire.png",
+            ButtonInfo::destroyOnPointer, Command.CLEAN_POINTER )
             .condition( () -> !player().inventory.getCarried().isEmpty() ) );
-    public static final ButtonInfo KILL_ALL = builtIn( new ButtonInfo( "killAll", "Kill all entities",
-            "creeper_slash.png", "kill @e[type=!player]" ) );
+    public static final ButtonInfo KILL_ALL = builtIn( new ButtonInfo( "killAll", "creeper_slash.png",
+            "kill @e[type=!player]" ) );
     @SuppressWarnings( "unused" )
-    public static final ButtonInfo NETHER_PORTAL = builtIn( new ButtonInfo( "netherPortal", "Create a Nether portal",
-            "portal_nether.png", "crustportal nether" )
-            .condition( () -> CrustPortalCommand.isDimensionValid( InternalCrustPlugin.NETHER_PORTAL, world() ) )
+    public static final ButtonInfo NETHER_PORTAL = builtIn( new ButtonInfo( "netherPortal", "portal_nether.png",
+            "crustportal " + Crust.NETHER_PORTAL.getId() )
+            .condition( () -> Crust.NETHER_PORTAL.get().isValidDimension( world() ) )
             .key( KeyModifier.CONTROL, "0" ) );
     @SuppressWarnings( "unused" )
-    public static final ButtonInfo END_PORTAL = builtIn( new ButtonInfo( "endPortal", "Create an End portal",
-            "portal_end.png", "crustportal end" )
-            .condition( () -> CrustPortalCommand.isDimensionValid( InternalCrustPlugin.END_PORTAL, world() ) )
+    public static final ButtonInfo END_PORTAL = builtIn( new ButtonInfo( "endPortal", "portal_end.png",
+            "crustportal " + Crust.END_PORTAL.getId() )
+            .condition( () -> Crust.END_PORTAL.get().isValidDimension( world() ) )
             .key( KeyModifier.ALT, "0" ) );
     
     // Time control
-    public static final ButtonInfo DAY = builtIn( new ButtonInfo( "day", "Set time to day",
-            "day.png", Command.TIME_DAY ) );
-    public static final ButtonInfo NIGHT = builtIn( new ButtonInfo( "night", "Set time to night",
-            "night.png", Command.TIME_NIGHT ) );
+    public static final ButtonInfo DAY = builtIn( new ButtonInfo( "day", "day.png",
+            Command.TIME_DAY ) );
+    public static final ButtonInfo NIGHT = builtIn( new ButtonInfo( "night", "night.png",
+            Command.TIME_NIGHT ) );
     @SuppressWarnings( "unused" )
-    public static final ButtonInfo TOGGLE_DAY = builtIn( new ButtonInfo( "toggleDay", "Toggle time to day or night",
-            "day_night.png", ButtonInfo::toggleDay, Command.TIME_DAY, Command.TIME_NIGHT ) );
+    public static final ButtonInfo TOGGLE_DAY = builtIn( new ButtonInfo( "toggleDay", "day_night.png",
+            ButtonInfo::toggleDay, Command.TIME_DAY, Command.TIME_NIGHT ) );
     
     // Weather control
     @SuppressWarnings( "unused" )
-    public static final ButtonInfo WEATHER_CLEAR = builtIn( new ButtonInfo( "weatherClear", "Clear weather",
-            "rain_slash.png", ( button ) -> cmd( Command.clear() ), Command.WEATHER_CLEAR ) );
+    public static final ButtonInfo WEATHER_CLEAR = builtIn( new ButtonInfo( "weatherClear", "rain_slash.png",
+            ( button ) -> cmd( Command.clear() ), Command.WEATHER_CLEAR ) );
     @SuppressWarnings( "unused" )
-    public static final ButtonInfo WEATHER_RAIN = builtIn( new ButtonInfo( "weatherRain", "Set weather to rain",
-            "rain.png", ( button ) -> cmd( Command.rain() ), Command.WEATHER_RAIN ) );
-    public static final ButtonInfo WEATHER_STORM = builtIn( new ButtonInfo( "weatherStorm", "Set weather to thunder",
-            "thunder.png", ( button ) -> cmd( Command.thunder() ), Command.WEATHER_THUNDER ) );
-    public static final ButtonInfo TOGGLE_RAIN = builtIn( new ButtonInfo( "toggleRain", "Toggle weather to clear or rain",
-            "weather_toggle.png", ButtonInfo::toggleRain, Command.WEATHER_CLEAR, Command.WEATHER_RAIN ) );
+    public static final ButtonInfo WEATHER_RAIN = builtIn( new ButtonInfo( "weatherRain", "rain.png",
+            ( button ) -> cmd( Command.rain() ), Command.WEATHER_RAIN ) );
+    public static final ButtonInfo WEATHER_STORM = builtIn( new ButtonInfo( "weatherStorm", "thunder.png",
+            ( button ) -> cmd( Command.thunder() ), Command.WEATHER_THUNDER ) );
+    public static final ButtonInfo TOGGLE_RAIN = builtIn( new ButtonInfo( "toggleRain", "weather_toggle.png",
+            ButtonInfo::toggleRain, Command.WEATHER_CLEAR, Command.WEATHER_RAIN ) );
     
     // Mode toggles
-    public static final ButtonInfo GAME_MODE = builtIn( new ButtonInfo( "gameMode", "Toggle game mode",
-            "grass.png", ButtonInfo::gameMode, Command.MODE_SURVIVAL, Command.MODE_CREATIVE )
+    public static final ButtonInfo GAME_MODE = builtIn( new ButtonInfo( "gameMode", "grass.png",
+            ButtonInfo::gameMode, Command.MODE_SURVIVAL, Command.MODE_CREATIVE )
             .toggle( () -> player().isCreative() ) );
-    public static final ButtonInfo MAGNET_MODE = builtIn( new ButtonInfo( "magnetMode", "Toggle magnet mode",
-            "magnet.png", ButtonInfo::magnetMode, Command.forMode( CrustModes.MAGNET ) )
+    public static final ButtonInfo MAGNET_MODE = builtIn( new ButtonInfo( "magnetMode", "magnet.png",
+            ButtonInfo::magnetMode, Command.forMode( CrustModes.MAGNET ) )
             .toggle( () -> modeEnabled( CrustModes.MAGNET ) )
             .key( KeyModifier.CONTROL, "m" ) );
-    //public static final ButtonInfo MULTI_MINE_MODE = builtIn( new ButtonInfo( "multiMineMode", "Toggle multi-mine mode",
-    //        "haste.png", ButtonInfo::multiMineMode, Command.forMode( CrustModes.MULTI_MINE ) )
+    //public static final ButtonInfo MULTI_MINE_MODE = builtIn( new ButtonInfo( "multiMineMode", "haste.png",
+    //        ButtonInfo::multiMineMode, Command.forMode( CrustModes.MULTI_MINE ) )
     //        .toggle( () -> modeEnabled( CrustModes.MULTI_MINE ) )
     //        .key( KeyModifier.ALT, "m" ) );
-    public static final ButtonInfo GOD_MODE = builtIn( new ButtonInfo( "godMode", "Toggle god mode",
-            "undying.png", ButtonInfo::godMode )
+    public static final ButtonInfo GOD_MODE = builtIn( new ButtonInfo( "godMode", "undying.png",
+            ButtonInfo::godMode )
             .toggle( () -> {
                 ExtraInvButtonsCrustConfigFile.BuiltInButtons buttonCfg = ClientRegister.EXTRA_INV_BUTTONS.BUILT_IN_BUTTONS;
                 CrustModesData playerModes = CrustModesData.of( player() );
@@ -147,14 +148,14 @@ public class ButtonInfo {
                         buttonCfg.godModeUnbreaking.get() && !playerModes.enabled( CrustModes.UNBREAKING ) ||
                         buttonCfg.godModeUneating.get() > 0 && !playerModes.enabled( CrustModes.UNEATING ));
             } ) );
-    public static final ButtonInfo SUPER_VISION_MODE = builtIn( new ButtonInfo( "superVisionMode", "Toggle super vision mode",
-            "night_vision.png", ButtonInfo::superVisionMode, Command.forMode( CrustModes.SUPER_VISION ) )
+    public static final ButtonInfo SUPER_VISION_MODE = builtIn( new ButtonInfo( "superVisionMode", "night_vision.png",
+            ButtonInfo::superVisionMode, Command.forMode( CrustModes.SUPER_VISION ) )
             .toggle( () -> modeEnabled( CrustModes.SUPER_VISION ) ) );
-    public static final ButtonInfo SUPER_SPEED_MODE = builtIn( new ButtonInfo( "superSpeedMode", "Toggle super speed mode",
-            "swiftness.png", ButtonInfo::superSpeedMode, Command.forMode( CrustModes.SUPER_SPEED ) )
+    public static final ButtonInfo SUPER_SPEED_MODE = builtIn( new ButtonInfo( "superSpeedMode", "swiftness.png",
+            ButtonInfo::superSpeedMode, Command.forMode( CrustModes.SUPER_SPEED ) )
             .toggle( () -> modeEnabled( CrustModes.SUPER_SPEED ) ) );
-    public static final ButtonInfo NO_PICKUP_MODE = builtIn( new ButtonInfo( "noPickupMode", "Toggle destroy-on-pickup mode",
-            "weakness.png", ButtonInfo::noPickupMode, Command.forMode( CrustModes.DESTROY_ON_PICKUP ) )
+    public static final ButtonInfo NO_PICKUP_MODE = builtIn( new ButtonInfo( "noPickupMode", "weakness.png",
+            ButtonInfo::noPickupMode, Command.forMode( CrustModes.DESTROY_ON_PICKUP ) )
             .toggle( () -> modeEnabled( CrustModes.DESTROY_ON_PICKUP ) ) );
     
     static {
@@ -215,14 +216,14 @@ public class ButtonInfo {
     }
     
     /** Defines info for a button with no color tint. */
-    public ButtonInfo( String id, String tooltip, String display, Button.IPressable onPress, String... commands ) {
-        this( id, tooltip, display, 0xFFFFFF, onPress );
+    public ButtonInfo( String id, String display, Button.IPressable onPress, String... commands ) {
+        this( id, toLangKey( id ), display, 0xFFFFFF, onPress );
         COMMANDS.addAll( Arrays.asList( commands ) );
     }
     
     /** Defines info for a simple command button with no color tint. */
-    public ButtonInfo( String id, String tooltip, String display, String command ) {
-        this( id, tooltip, display, 0xFFFFFF, new ButtonPressCommandChain( Collections.singletonList( command ) ) );
+    public ButtonInfo( String id, String display, String command ) {
+        this( id, toLangKey( id ), display, 0xFFFFFF, new ButtonPressCommandChain( Collections.singletonList( command ) ) );
         COMMANDS.add( command );
     }
     

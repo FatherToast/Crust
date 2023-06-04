@@ -13,6 +13,7 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class ExtraInventoryButton extends Button {
     
@@ -117,7 +118,7 @@ public class ExtraInventoryButton extends Button {
         
         @Override
         public void onTooltip( Button button, MatrixStack matrixStack, int x, int y ) {
-            SCREEN.renderTooltip( matrixStack, new StringTextComponent( DISPLAY ),
+            SCREEN.renderTooltip( matrixStack, new TranslationTextComponent( DISPLAY ),
                     x, y );
         }
     }

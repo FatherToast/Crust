@@ -55,6 +55,29 @@ public final class ConfigUtil {
     /** @return The string converted from camel case to lower underscore case; e.g., "UpperCamelCase" returns "upper_camel_case". */
     public static String camelCaseToLowerUnderscore( String str ) { return noSpaces( camelCaseToLowerSpace( str ) ); }
     
+    /** @return The string converted from space case to lower camel case; e.g., "lower space case" returns "lowerSpaceCase". */
+    public static String spaceCaseToLowerCamel( String str ) { return underscoreCaseToLowerCamel( noSpaces( str ) ); }
+    
+    /** @return The string converted from underscore case to lower camel case; e.g., "lower_underscore_case" returns "lowerUnderscoreCase". */
+    public static String underscoreCaseToLowerCamel( String str ) {
+        final StringBuilder camelStr = new StringBuilder();
+        boolean upper = false;
+        for( int i = 0; i < str.length(); i++ ) {
+            final char c = str.charAt( i );
+            if( c == '_' ) {
+                upper = true;
+            }
+            else if( upper ) {
+                upper = false;
+                camelStr.append( Character.toUpperCase( c ) );
+            }
+            else {
+                camelStr.append( Character.toLowerCase( c ) );
+            }
+        }
+        return camelStr.toString();
+    }
+    
     /** @return The string, but with the first character changed to upper case. */
     public static String properCase( String str ) { return str.substring( 0, 1 ).toUpperCase() + str.substring( 1 ); }
     
