@@ -79,6 +79,12 @@ public class CrustConfigFileScreen extends Screen {
     /** Called to set the currently focused text box. */
     public void setFocusedTextBox( TextFieldWidget textBox ) { focusedTextBox = textBox; }
     
+    /** Sets the current scroll position. */
+    public void setScrollAmount( double scroll ) { fieldList.setScrollAmount( scroll ); }
+    
+    /** @return The current scroll position. */
+    public double getScrollAmount() { return fieldList.getScrollAmount(); }
+    
     /** Called to open a 'popup widget'. Setting to null closes any open popup. */
     public void setPopupWidget( @Nullable Widget popup ) { popupWidget = popup; }
     
@@ -87,7 +93,11 @@ public class CrustConfigFileScreen extends Screen {
     
     /** Closes this screen and reopens it to hard-refresh everything. */
     public void resetScreen() {
-        if( minecraft != null ) minecraft.setScreen( new CrustConfigFileScreen( LAST_SCREEN, SPEC ) );
+        if( minecraft != null ) {
+            CrustConfigFileScreen newScreen = new CrustConfigFileScreen( LAST_SCREEN, SPEC );
+            minecraft.setScreen( newScreen );
+            newScreen.setScrollAmount( getScrollAmount() );
+        }
     }
     
     /** Called to close the screen. */
