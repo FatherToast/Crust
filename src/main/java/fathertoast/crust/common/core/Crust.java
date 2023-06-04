@@ -58,7 +58,7 @@ public class Crust {
      *      + crustclean [<players>] - reset inventory to starting inventory
      *      - crustmode [<player>] - check active modes
      *      - crustmode <mode> (disable|<value>) [<players>] - enable/disable mode
-     *      - crustportal (nether|end|<other portal>) [<target>] - create dimension portal
+     *      - crustportal (<portal_type>) [<target>] - create dimension portal
      *      - crustrecover [all|health|hunger|effects] [<targets>]
      *  - tools
      *      + starting inventory
@@ -68,6 +68,7 @@ public class Crust {
      *          - can have hotkey assigned
      *          - built-in buttons
      *          - custom buttons (user-defined)
+     *          ? registry for mod-added buttons
      *      - configure default game rules
      *      - configure default 'modes' (see below)
      *      ? in-game nbt editor gui (does the mod still exist?)
@@ -76,15 +77,13 @@ public class Crust {
      *      ? multi-mine - break multiple blocks at once; perhaps compat to an existing mod instead (like "Ore Excavation")
      *      - undying - fully heal if you would have died
      *      - unbreaking - fully repair items periodically
-     *          ? grant 'instant build' player ability
+     *          ? grant 'instant build' player ability (infinite block placement)
      *      - uneating - restore food level when it drops below a threshold
      *      - destroy-on-pickup - items are not added to inventory when picked up
      *      - super vision - continuous night vision, removes fog/blindness
      *          ? make all entities glow
      *      - super speed - move very fast
      *          ? grant instant (or very fast) mining
-     *  - TODO:
-     *      - fix popuplistwidget scrollbar
      */
     
     /** The mod's id. */
@@ -131,27 +130,27 @@ public class Crust {
     
     private void processPlugins() {
         // Load mod plugins
-        ModList.get().getAllScanData().forEach( scanData -> {
-            scanData.getAnnotations().forEach( annotationData -> {
-                
-                // Look for classes annotated with @CrustPlugin
-                if( annotationData.getAnnotationType().getClassName().equals( CrustPlugin.class.getName() ) ) {
-                    try {
-                        Class<?> pluginClass = Class.forName( annotationData.getMemberName() );
-                        
-                        if( ICrustPlugin.class.isAssignableFrom( pluginClass ) ) {
-                            ICrustPlugin plugin = (ICrustPlugin) pluginClass.newInstance();
-                            plugin.onLoad( apiInstance );
-                            LOG.info( "Found Crust plugin at {} with plugin ID: {}", annotationData.getMemberName(), plugin.getId() );
+        ModList.get().getAllScanData().forEach( ( scanData ) ->
+                scanData.getAnnotations().forEach( ( annotationData ) -> {
+                    // Look for classes annotated with @CrustPlugin
+                    if( annotationData.getAnnotationType().getClassName().equals( CrustPlugin.class.getName() ) ) {
+                        try {
+                            Class<?> pluginClass = Class.forName( annotationData.getMemberName() );
+                            
+                            if( ICrustPlugin.class.isAssignableFrom( pluginClass ) ) {
+                                ICrustPlugin plugin = (ICrustPlugin) pluginClass.getDeclaredConstructor().newInstance();
+                                plugin.onLoad( apiInstance );
+                                LOG.info( "Found Crust plugin at {} with plugin ID: {}",
+                                        annotationData.getMemberName(), plugin.getId() );
+                            }
+                        }
+                        catch( Exception ex ) {
+                            LOG.error( "Failed to load a Crust plugin! Plugin class: {}",
+                                    annotationData.getMemberName() );
+                            ex.printStackTrace();
                         }
                     }
-                    catch( Exception e ) {
-                        LOG.error( "Failed to load a Crust plugin! Plugin class: {}", annotationData.getMemberName() );
-                        e.printStackTrace();
-                    }
-                }
-            } );
-        } );
+                } ) );
     }
     
     public static ResourceLocation resLoc( String path ) { return new ResourceLocation( MOD_ID, path ); }

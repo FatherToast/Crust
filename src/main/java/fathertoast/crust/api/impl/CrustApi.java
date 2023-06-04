@@ -3,8 +3,8 @@ package fathertoast.crust.api.impl;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.IDifficultyAccessor;
 import fathertoast.crust.api.IRegistryHelper;
-import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.impl.accessor.apocalypse.DifficultyAccessor;
+import fathertoast.crust.common.core.Crust;
 import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nullable;
@@ -20,7 +20,7 @@ public final class CrustApi implements ICrustApi {
         if( ModList.get().isLoaded( "apocalypse" ) ) {
             // Do not instantiate unless Apocalypse is present
             difficultyAccessor = new DifficultyAccessor();
-            ConfigUtil.LOG.info( "Instantiated Apocalypse Rebooted Difficulty Accessor" );
+            Crust.LOG.info( "Instantiated Apocalypse Rebooted Difficulty Accessor" );
         }
         else {
             difficultyAccessor = null;
