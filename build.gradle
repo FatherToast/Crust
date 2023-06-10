@@ -45,6 +45,7 @@ minecraft {
             mods {
                 crust {
                     source sourceSets.main
+                    source sourceSets.test
                 }
             }
         }
@@ -117,14 +118,6 @@ jar {
     }
 }
 
-task releaseJar(type: Jar) {
-    archiveClassifier.set('release')
-    // Include everything except the test package
-    exclude 'fathertoast/crust/test/**/*'
-
-    from sourceSets.main.output
-}
-
 task apiJar(type: Jar) {
     archiveClassifier.set('api')
     // Include everything in the api package except internal implementations
@@ -136,7 +129,6 @@ task apiJar(type: Jar) {
 }
 
 artifacts {
-    archives releaseJar
     archives apiJar
 }
 
@@ -145,7 +137,7 @@ jar.finalizedBy('reobfJar')
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact releaseJar
+            artifact apiJar
         }
     }
     repositories {
