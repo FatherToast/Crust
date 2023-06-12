@@ -39,7 +39,7 @@ public class CrustModesData {
             if( config.unbreakingDefault.get() ) enable( CrustModes.UNBREAKING, (byte) 1 );
             if( config.uneatingDefault.get() > 0 ) enable( CrustModes.UNEATING, config.uneatingDefault.getByte() );
             if( config.visionDefault.get() ) enable( CrustModes.SUPER_VISION, (byte) 1 );
-            if( config.speedDefault.get() > 0.0 ) enable( CrustModes.SUPER_SPEED, config.speedDefault.getFloat() );
+            if( config.speedDefault.get() > 1.0 ) enable( CrustModes.SUPER_SPEED, config.speedDefault.getFloat() );
             if( config.noPickupDefault.get() ) enable( CrustModes.DESTROY_ON_PICKUP, (byte) 1 );
         }
     }
