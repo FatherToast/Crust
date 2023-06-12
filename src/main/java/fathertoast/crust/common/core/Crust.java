@@ -32,7 +32,7 @@ public class Crust {
      * (KEY: - = complete in current version, o = incomplete feature from previous version,
      *       + = incomplete new feature, ? = feature to consider adding)
      *  - configs
-     *      - config button opens config folder
+     *      - config button opens config folder or in-game editor
      *      - in-game config editor
      *          - menu buttons and hotkey to access
      *          + raw toml text box for default field widget
