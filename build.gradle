@@ -122,8 +122,8 @@ jar {
 task apiJar(type: Jar) {
     archiveClassifier.set('api')
     // Include everything in the api package except internal implementations
-    include 'fathertoast/crust/api/**/*'
-    exclude 'fathertoast/crust/api/impl/**/*'
+    //include 'fathertoast/crust/api/**/*'
+    //exclude 'fathertoast/crust/api/impl/**/*'
 
     from sourceSets.main.output
     from sourceSets.main.allSource
