@@ -42,13 +42,67 @@ public class NBTHelper {
     /** The ID used to match Long Array tags. Equal to {@link net.minecraft.nbt.LongArrayNBT#getId()}. */
     public static final int ID_LONG_ARRAY = 12;
     
+    
+    /**
+     * @param tag  The compound tag to read from.
+     * @param name The name of the tag to check.
+     * @return True if the compound contains a tag with the given name that stores a list value.
+     */
+    public static boolean containsList( CompoundNBT tag, String name ) { return contains( tag, name, ID_LIST ); }
+    
+    /**
+     * @param tag  The compound tag to read from.
+     * @param name The name of the tag to check.
+     * @return True if the compound contains a tag with the given name that stores another compound value.
+     */
+    public static boolean containsCompound( CompoundNBT tag, String name ) { return contains( tag, name, ID_COMPOUND ); }
+    
+    /**
+     * @param tag  The compound tag to read from.
+     * @param name The name of the tag to check.
+     * @return True if the compound contains a tag with the given name that stores a string value.
+     */
+    public static boolean containsString( CompoundNBT tag, String name ) { return contains( tag, name, ID_STRING ); }
+    
+    /**
+     * @param tag  The compound tag to read from.
+     * @param name The name of the tag to check.
+     * @return True if the compound contains a tag with the given name that stores a numerical value.
+     */
+    public static boolean containsNumber( CompoundNBT tag, String name ) { return contains( tag, name, ID_NUMERICAL ); }
+    
+    /**
+     * @param tag  The compound tag to read from.
+     * @param name The name of the tag to check.
+     * @return True if the compound contains a tag with the given name that stores a byte array value.
+     */
+    public static boolean containsByteArray( CompoundNBT tag, String name ) { return contains( tag, name, ID_BYTE_ARRAY ); }
+    
+    /**
+     * @param tag  The compound tag to read from.
+     * @param name The name of the tag to check.
+     * @return True if the compound contains a tag with the given name that stores an int array value.
+     */
+    public static boolean containsIntArray( CompoundNBT tag, String name ) { return contains( tag, name, ID_INT_ARRAY ); }
+    
+    /**
+     * @param tag  The compound tag to read from.
+     * @param name The name of the tag to check.
+     * @return True if the compound contains a tag with the given name that stores a long array value.
+     */
+    public static boolean containsLongArray( CompoundNBT tag, String name ) { return contains( tag, name, ID_LONG_ARRAY ); }
+    
+    /** Performs the actual 'contains' check. */
+    private static boolean contains( CompoundNBT tag, String name, int id ) { return tag.contains( name, id ); }
+    
+    
     /**
      * @param tag  The compound tag to read from.
      * @param name The name of the desired compound tag.
      * @return The retrieved compound tag, or a newly created and saved tag if none existed.
      */
     public static CompoundNBT getOrCreateCompound( CompoundNBT tag, String name ) {
-        if( !tag.contains( name, ID_COMPOUND ) ) tag.put( name, new CompoundNBT() );
+        if( !containsCompound( tag, name ) ) tag.put( name, new CompoundNBT() );
         return tag.getCompound( name );
     }
     
