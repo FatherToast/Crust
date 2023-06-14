@@ -131,6 +131,12 @@ public class CrustConfigSpec {
     /** @param count The number of new lines to insert. */
     public void newLine( int count ) { add( new NewLines( count ) ); }
     
+    /** Inserts a single new line. In the GUI, no lines are inserted. */
+    public void fileOnlyNewLine() { fileOnlyNewLine( 1 ); }
+    
+    /** @param count The number of new lines to insert. In the GUI, no lines are inserted. */
+    public void fileOnlyNewLine( int count ) { add( new FileOnlyNewLines( count ) ); }
+    
     
     /** Increases the indent by one level. */
     public void increaseIndent() { indent( +1 ); }
@@ -174,6 +180,22 @@ public class CrustConfigSpec {
      */
     public void titledComment( String title, List<String> comment ) { add( new TitledComment( title, comment ) ); }
     
+    /**
+     * Adds a comment. Each argument is printed on a separate line, in the order given.
+     * In the GUI, this comment is NOT shown.
+     *
+     * @param comment The comment to insert.
+     */
+    public void fileOnlyComment( String... comment ) { fileOnlyComment( TomlHelper.newComment( comment ) ); }
+    
+    /**
+     * Adds a comment. Each string in the list is printed on a separate line, in the order returned by iteration.
+     * In the GUI, this comment is NOT shown.
+     *
+     * @param comment The comment to insert.
+     */
+    public void fileOnlyComment( List<String> comment ) { add( new FileOnlyComment( comment ) ); }
+    
     
     /**
      * Adds a subcategory header, optionally including a comment to describe/summarize the contents of the section.
@@ -197,38 +219,44 @@ public class CrustConfigSpec {
     /**
      * Inserts a detailed description of how to use the registry entry list field.
      * Recommended to include either in a README or at the start of each config that contains any registry entry list fields.
+     * This is NOT shown in the GUI; it is recommended to use {@link #fileOnlyNewLine()} to space around it.
      */
-    public void describeRegistryEntryList() { add( new Comment( RegistryEntryListField.verboseDescription() ) ); }
+    public void describeRegistryEntryList() { fileOnlyComment( RegistryEntryListField.verboseDescription() ); }
     
     /**
      * Inserts a detailed description of how to use the entity list field.
      * Recommended to include either in a README or at the start of each config that contains any entity list fields.
+     * This is NOT shown in the GUI; it is recommended to use {@link #fileOnlyNewLine()} to space around it.
      */
-    public void describeEntityList() { add( new Comment( EntityListField.verboseDescription() ) ); }
+    public void describeEntityList() { fileOnlyComment( EntityListField.verboseDescription() ); }
     
     /**
      * Inserts a detailed description of how to use the attribute list field.
      * Recommended to include either in a README or at the start of each config that contains any attribute list fields.
+     * This is NOT shown in the GUI; it is recommended to use {@link #fileOnlyNewLine()} to space around it.
      */
-    public void describeAttributeList() { add( new Comment( AttributeListField.verboseDescription() ) ); }
+    public void describeAttributeList() { fileOnlyComment( AttributeListField.verboseDescription() ); }
     
     /**
      * Inserts a detailed description of how to use the block list field.
      * Recommended to include either in a README or at the start of each config that contains any block list fields.
+     * This is NOT shown in the GUI; it is recommended to use {@link #fileOnlyNewLine()} to space around it.
      */
-    public void describeBlockList() { add( new Comment( BlockListField.verboseDescription() ) ); }
+    public void describeBlockList() { fileOnlyComment( BlockListField.verboseDescription() ); }
     
     /**
      * Inserts the first part of a detailed description of how to use the environment list field.
      * Should go with the other field descriptions.
+     * This is NOT shown in the GUI; it is recommended to use {@link #fileOnlyNewLine()} to space around it.
      */
-    public void describeEnvironmentListPart1of2() { add( new Comment( EnvironmentListField.verboseDescription() ) ); }
+    public void describeEnvironmentListPart1of2() { fileOnlyComment( EnvironmentListField.verboseDescription() ); }
     
     /**
      * Inserts the second and last part of a detailed description of how to use the environment list field.
      * Should go at the bottom of the file, preferably after the appendix header (if used).
+     * This is NOT shown in the GUI; it is recommended to use {@link #fileOnlyNewLine()} to space around it.
      */
-    public void describeEnvironmentListPart2of2() { add( new Comment( CrustEnvironmentRegistry.getDescriptions() ) ); }
+    public void describeEnvironmentListPart2of2() { fileOnlyComment( CrustEnvironmentRegistry.getDescriptions() ); }
     
     
     // ---- Internal Methods ---- //
@@ -405,6 +433,17 @@ public class CrustConfigSpec {
         public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) { widget.newLine( COUNT ); }
     }
     
+    /** Represents a variable number of new lines. Ignored in the editor. */
+    private static class FileOnlyNewLines extends NewLines {
+        
+        /** Create a new comment action that will insert a number of new lines. */
+        private FileOnlyNewLines( int count ) { super( count ); }
+        
+        /** Called when the config edit screen is opened. */
+        @Override
+        public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) { }
+    }
+    
     /** Represents a variable number of indent increases or decreases. */
     private static class Indent extends Format {
         
@@ -423,7 +462,7 @@ public class CrustConfigSpec {
         public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) { }
     }
     
-    /** Represents a comment. */
+    /** Represents a comment. Fully printed in both files and the editor. */
     private static class Comment extends Format {
         
         /** The comment. */
@@ -441,7 +480,7 @@ public class CrustConfigSpec {
         public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) { widget.comment( COMMENT ); }
     }
     
-    /** Represents a comment. */
+    /** Represents a comment. Fully printed in files. Only the title prints in the editor, with the rest as a tooltip. */
     private static class TitledComment extends Comment {
         
         /** The comment title. */
@@ -465,6 +504,17 @@ public class CrustConfigSpec {
         public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) {
             widget.titledComment( TITLE, COMMENT );
         }
+    }
+    
+    /** Represents a comment. Fully printed in files, but NOT printed in the editor. */
+    private static class FileOnlyComment extends Comment {
+        
+        /** Create a new comment action that will insert a comment. */
+        private FileOnlyComment( List<String> comment ) { super( comment ); }
+        
+        /** Called when the config edit screen is opened. */
+        @Override
+        public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) { }
     }
     
     /** Represents a file header comment. */
