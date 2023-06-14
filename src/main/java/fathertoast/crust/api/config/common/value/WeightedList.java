@@ -1,9 +1,9 @@
 package fathertoast.crust.api.config.common.value;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
+import fathertoast.crust.api.config.common.field.IntField;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.api.config.common.field.IntField;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -32,11 +32,17 @@ public class WeightedList<T extends WeightedList.Value> {
      * Creates a new weighted list config option and registers it and any needed definitions with the spec.
      */
     public WeightedList( CrustConfigSpec SPEC, String key, Iterable<T> values, @Nullable String... description ) {
+        String name = ConfigUtil.camelCaseToLowerSpace( (key.startsWith( SPEC.loadingCategory ) ?
+                key.substring( SPEC.loadingCategory.length() ) : key)
+                .replace( '_', ' ' ).replace( ".", " > " ) );
         final IntField.Range fieldRange = IntField.Range.NON_NEGATIVE;
         if( description != null ) {
             List<String> comment = TomlHelper.newComment( description );
             comment.add( TomlHelper.multiFieldInfo( fieldRange ) );
-            SPEC.comment( comment );
+            SPEC.titledComment( name, comment );
+        }
+        else {
+            SPEC.titledComment( name );
         }
         
         // Define each value's weight field and connect the value to its weight in an entry
