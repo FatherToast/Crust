@@ -1,6 +1,6 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package fathertoast.crust.api.impl;
+package fathertoast.crust.common.api.impl.accessor.apocalypse;
 
 import mcp.MethodsReturnNonnullByDefault;
 

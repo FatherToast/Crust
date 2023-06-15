@@ -119,17 +119,26 @@ jar {
     }
 }
 
+task srcJar(type: Jar) {
+    archiveClassifier.set('src')
+
+    // Include the entire mod (deobf) plus java files
+    from sourceSets.main.output
+    from sourceSets.main.allSource
+}
+
 task apiJar(type: Jar) {
     archiveClassifier.set('api')
-    // Include everything in the api package except internal implementations
-    //include 'fathertoast/crust/api/**/*'
-    //exclude 'fathertoast/crust/api/impl/**/*'
+
+    // Include only the api package
+    include 'fathertoast/crust/api/**/*'
 
     from sourceSets.main.output
     from sourceSets.main.allSource
 }
 
 artifacts {
+    archives srcJar
     archives apiJar
 }
 

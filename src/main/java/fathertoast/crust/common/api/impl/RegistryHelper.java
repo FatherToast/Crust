@@ -1,4 +1,4 @@
-package fathertoast.crust.api.impl;
+package fathertoast.crust.common.api.impl;
 
 import fathertoast.crust.api.IRegistryHelper;
 

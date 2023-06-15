@@ -1,9 +1,9 @@
-package fathertoast.crust.api.impl;
+package fathertoast.crust.common.api.impl;
 
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.IDifficultyAccessor;
 import fathertoast.crust.api.IRegistryHelper;
-import fathertoast.crust.api.impl.accessor.apocalypse.DifficultyAccessor;
+import fathertoast.crust.common.api.impl.accessor.apocalypse.DifficultyAccessor;
 import fathertoast.crust.common.core.Crust;
 import net.minecraftforge.fml.ModList;
 

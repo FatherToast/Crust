@@ -1,4 +1,4 @@
-package fathertoast.crust.api.impl.accessor.apocalypse;
+package fathertoast.crust.common.api.impl.accessor.apocalypse;
 
 import com.toast.apocalypse.common.util.CapabilityHelper;
 import fathertoast.crust.api.IDifficultyAccessor;

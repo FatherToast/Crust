@@ -1,6 +1,6 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package fathertoast.crust.api.impl.portalgens;
+package fathertoast.crust.common.api.impl.portalgens;
 
 import mcp.MethodsReturnNonnullByDefault;
 
