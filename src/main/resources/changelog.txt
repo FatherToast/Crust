@@ -1,2 +1,4 @@
+1.16.5-1.0.1
+    - Fixed environment entry builder not working. This changes the environment registration api method.
 1.16.5-1.0.0
     - Initial release.

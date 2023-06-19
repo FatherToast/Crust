@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.common.value;
 
 import fathertoast.crust.api.config.common.ConfigManager;
+import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.environment.AbstractEnvironment;
 import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
 import fathertoast.crust.api.config.common.value.environment.biome.*;
@@ -77,7 +78,13 @@ public class EnvironmentEntry {
     // ---- Builder Implementation ---- //
     
     /** Creates a new entry builder. The value is rounded to 2 decimal place precision. */
+    public static Builder builder( CrustConfigSpec spec, float value ) { return builder( spec.MANAGER, value ); }
+    
+    /** Creates a new entry builder. The value is rounded to 2 decimal place precision. */
     public static Builder builder( ConfigManager cfgManager, float value ) { return new Builder( cfgManager, Math.round( value * 100.0 ) / 100.0 ); }
+    
+    /** Creates a new entry builder. */
+    public static Builder builder( CrustConfigSpec spec, double value ) { return builder( spec.MANAGER, value ); }
     
     /** Creates a new entry builder. */
     public static Builder builder( ConfigManager cfgManager, double value ) { return new Builder( cfgManager, value ); }

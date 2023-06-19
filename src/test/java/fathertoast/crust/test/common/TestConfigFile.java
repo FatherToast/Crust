@@ -57,6 +57,7 @@ public class TestConfigFile extends AbstractConfigFile {
         public final DoubleField doubleField;
         public final EntityListField entityListField;
         public final EnumField<BiomeCategory> enumField;
+        public final EnvironmentListField environmentListField;
         public final IntField intField;
         public final LazyRegistryEntryListField<Effect> lazyRegistryEntryListField;
         public final ScaledDoubleField scaledDoubleField;
@@ -104,6 +105,13 @@ public class TestConfigFile extends AbstractConfigFile {
                             (String[]) null ), General::testCallback ) ).field();
             enumField = SPEC.define( new InjectionWrapperField<>(
                     new EnumField<>( "enum", BiomeCategory.NONE,
+                            (String[]) null ), General::testCallback ) ).field();
+            environmentListField = SPEC.define( new InjectionWrapperField<>(
+                    new EnvironmentListField( "environment_list_field", new EnvironmentList(
+                            EnvironmentEntry.builder( SPEC, 0.0 ).belowSeaLevel().isRaining().build(),
+                            EnvironmentEntry.builder( SPEC, 1.0 ).aboveGoldLevel().isRaining().build(),
+                            EnvironmentEntry.builder( SPEC, 666.0 ).inBiomeCategory( BiomeCategory.FOREST ).build(),
+                            EnvironmentEntry.builder( SPEC, 6.9 ).inOverworld().build() ),
                             (String[]) null ), General::testCallback ) ).field();
             intField = SPEC.define( new InjectionWrapperField<>(
                     new IntField( "int", 1, IntField.Range.ANY,
