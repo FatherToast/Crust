@@ -6,6 +6,7 @@ import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.environment.biome.*;
 import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDifficultyEnvironment;
+import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDifficultyOrTimeEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionPropertyEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionTypeEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionTypeGroupEnvironment;
@@ -70,6 +71,7 @@ public final class CrustEnvironmentRegistry {
         }
         
         // Add info to overall environment 'how-to' comment
+        DESCRIPTIONS.add( "" );
         if( description.length > 0 ) {
             DESCRIPTIONS.add( "  \"" + name + " " + format + "\":" );
             for( String line : description ) DESCRIPTIONS.add( "    " + line );
@@ -147,6 +149,7 @@ public final class CrustEnvironmentRegistry {
                 "appropriate location." );
         comment.add( "  Other environment conditions are numerical comparisons; these use the operators (shown as op) " +
                 "<, >, =, <=, >=, or != to compare value." );
+        comment.add( "" );
         comment.add( "Valid environment conditions are:" );
         DESCRIPTIONS = comment;
         
@@ -208,7 +211,7 @@ public final class CrustEnvironmentRegistry {
                 Arrays.asList( StructureGroupEnvironment.class, StructureEnvironment.class ),
                 "(!)namespace:structure_name",
                 "The structure. See the wiki for vanilla structure names " +
-                        "[https://minecraft.fandom.com/wiki/Generated_structures#Locating]." );
+                        "[https://minecraft.fandom.com/wiki/Structure#ID]." );
         register( "y", YEnvironment::new, YEnvironment.class,
                 "op value",//TODO change lava level to -54 for MC 1.18
                 "The y-value. For reference, sea level is normally 63 and lava level is normally 10." );
@@ -267,6 +270,12 @@ public final class CrustEnvironmentRegistry {
         register( "apocalypse_difficulty", ApocalypseDifficultyEnvironment::new, ApocalypseDifficultyEnvironment.class,
                 "op value",
                 "The Apocalypse Rebooted mod's difficulty (scale depends on your config). This is based on " +
-                        "the nearest player's current difficulty level. If no player exists, it assumes 0 difficulty." );
+                        "the nearest player's current difficulty level. If no player exists, or the mod is not installed, " +
+                        "it will never match any condition." );
+        register( "apocalypse_difficulty_or_time", ApocalypseDifficultyOrTimeEnvironment::new, ApocalypseDifficultyOrTimeEnvironment.class,
+                "op value",
+                "The Apocalypse Rebooted mod's difficulty (scale depends on your config). If the mod is not " +
+                        "installed, this is instead treated like a \"" + getName( WorldTimeEnvironment.class ) +
+                        "\" condition." );
     }
 }

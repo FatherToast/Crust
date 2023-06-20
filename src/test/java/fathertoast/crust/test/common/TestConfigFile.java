@@ -111,7 +111,10 @@ public class TestConfigFile extends AbstractConfigFile {
                             EnvironmentEntry.builder( SPEC, 0.0 ).belowSeaLevel().isRaining().build(),
                             EnvironmentEntry.builder( SPEC, 1.0 ).aboveGoldLevel().isRaining().build(),
                             EnvironmentEntry.builder( SPEC, 666.0 ).inBiomeCategory( BiomeCategory.FOREST ).build(),
-                            EnvironmentEntry.builder( SPEC, 6.9 ).inOverworld().build() ),
+                            EnvironmentEntry.builder( SPEC, 20.0 ).afterMonthsOrApocalypseDifficulty( 1 ).build(),
+                            EnvironmentEntry.builder( SPEC, 6.9 ).inOverworld().build(),
+                            EnvironmentEntry.builder( SPEC, -1.0 ).build() )
+                            .setRange( DoubleField.Range.ANY ),
                             (String[]) null ), General::testCallback ) ).field();
             intField = SPEC.define( new InjectionWrapperField<>(
                     new IntField( "int", 1, IntField.Range.ANY,

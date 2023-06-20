@@ -86,11 +86,6 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
                 conditions.add( parseCondition( condArg.trim(), line ) );
             }
         }
-        if( conditions.isEmpty() ) {
-            ConfigUtil.LOG.warn( "No environments defined in entry for {} \"{}\"! Invalid entry: {}",
-                    getClass(), getKey(), line );
-        }
-        
         return new EnvironmentEntry( value, conditions );
     }
     

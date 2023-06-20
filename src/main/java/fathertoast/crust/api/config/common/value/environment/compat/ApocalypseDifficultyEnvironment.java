@@ -12,8 +12,7 @@ import javax.annotation.Nullable;
 
 /**
  * Notes on apocalypse difficulty:
- * If Apocalypse Rebooted is not installed, this condition is ignored (always evaluates to true).
- * When no players are in the world, this will evaluate as false.
+ * If Apocalypse Rebooted is not installed or when no players are in the world, this will evaluate as false.
  * When position is not available, this evaluates against the lowest player difficulty in the world.
  * Otherwise, this evaluates against the nearest player's difficulty.
  */
@@ -30,17 +29,14 @@ public class ApocalypseDifficultyEnvironment extends CompareLongEnvironment {
     
     // Min and max values should not be specified, since they are dependent on AR configs.
     
-    /** @return Returns true if this environment matches the provided environment. */
-    @Override
-    public boolean matches( World world, @Nullable BlockPos pos ) { return apiInstance.getDifficultyAccessor() == null || super.matches( world, pos ); }
+    /** @return True if Apocalypse Rebooted is installed. */
+    protected boolean isApocalypseInstalled() { return apiInstance.getDifficultyAccessor() != null; }
     
     /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Nullable
     public Long getActual( World world, @Nullable BlockPos pos ) {
-        if( apiInstance.getDifficultyAccessor() == null ) return null;
-        
-        // Check if any players exist
-        if( world.players().size() == 0 ) return null;
+        // Check if Apocalypse Rebooted is installed and any players exist
+        if( apiInstance.getDifficultyAccessor() == null || world.players().size() == 0 ) return null;
         
         // Get nearest player, if a position is available
         if( pos != null ) {

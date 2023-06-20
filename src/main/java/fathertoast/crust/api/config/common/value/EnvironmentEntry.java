@@ -6,6 +6,7 @@ import fathertoast.crust.api.config.common.value.environment.AbstractEnvironment
 import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
 import fathertoast.crust.api.config.common.value.environment.biome.*;
 import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDifficultyEnvironment;
+import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDifficultyOrTimeEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionPropertyEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionTypeEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionTypeGroupEnvironment;
@@ -63,13 +64,16 @@ public class EnvironmentEntry {
     @Override
     public String toString() {
         // Start with the value
-        final StringBuilder str = new StringBuilder().append( VALUE ).append( ' ' );
-        // List all conditions
-        boolean first = true;
-        for( AbstractEnvironment condition : CONDITIONS ) {
-            if( first ) first = false;
-            else str.append( " & " );
-            str.append( condition );
+        final StringBuilder str = new StringBuilder().append( VALUE );
+        if( CONDITIONS.length > 0 ) {
+            // List all conditions
+            str.append( ' ' );
+            boolean first = true;
+            for( AbstractEnvironment condition : CONDITIONS ) {
+                if( first ) first = false;
+                else str.append( " & " );
+                str.append( condition );
+            }
         }
         return str.toString();
     }
@@ -344,11 +348,29 @@ public class EnvironmentEntry {
         /** Check if the time is during a quarter of the night centered on midnight. */
         public Builder isNotNearMidnight() { return in( new TimeFromMidnightEnvironment( ComparisonOperator.LESS_OR_EQUAL.invert(), 1_500 ) ); }
         
-        /** Check if the world time is after a certain number of days. */
+        /**
+         * Check if the world time is after a certain number of days. Should use
+         * {@link #afterDaysOrApocalypseDifficulty(int)} instead for options that make the game harder.
+         */
         public Builder afterDays( int days ) { return in( new WorldTimeEnvironment( ComparisonOperator.GREATER_OR_EQUAL, 24_000L * days ) ); }
         
-        /** Check if the world time is after a certain number of days. */
+        /**
+         * Check if the world time is after a certain number of days. Should use
+         * {@link #beforeDaysOrApocalypseDifficulty(int)} instead for options that make the game harder.
+         */
         public Builder beforeDays( int days ) { return in( new WorldTimeEnvironment( ComparisonOperator.GREATER_OR_EQUAL.invert(), 24_000L * days ) ); }
+        
+        /**
+         * Check if the world time is after a certain number of months. One month is eight days. Should use
+         * {@link #afterMonthsOrApocalypseDifficulty(int)} instead for options that make the game harder.
+         */
+        public Builder afterMonths( int months ) { return afterDays( months * 8 ); }
+        
+        /**
+         * Check if the world time is after a certain number of months. One month is eight days. Should use
+         * {@link #beforeMonthsOrApocalypseDifficulty(int)} instead for options that make the game harder.
+         */
+        public Builder beforeMonths( int months ) { return beforeDays( months * 8 ); }
         
         /** Check if the chunk inhabited time is after a certain number of days. */
         public Builder afterDaysInChunk( int days ) { return in( new ChunkTimeEnvironment( ComparisonOperator.GREATER_OR_EQUAL, 24_000L * days ) ); }
@@ -359,10 +381,34 @@ public class EnvironmentEntry {
         
         // ---- Mod-based ---- //
         
-        /** Check if the Apocalypse Rebooted difficulty is above a threshold. */
+        /**
+         * If Apocalypse Rebooted is installed, check if the difficulty is above a threshold;
+         * otherwise, check if the world time is after a certain number of days.
+         */
+        public Builder afterDaysOrApocalypseDifficulty( int days ) { return in( new ApocalypseDifficultyOrTimeEnvironment( ComparisonOperator.GREATER_OR_EQUAL, 24_000L * days ) ); }
+        
+        /**
+         * If Apocalypse Rebooted is installed, check if the difficulty is above a threshold;
+         * otherwise, check if the world time is after a certain number of days.
+         */
+        public Builder beforeDaysOrApocalypseDifficulty( int days ) { return in( new ApocalypseDifficultyOrTimeEnvironment( ComparisonOperator.GREATER_OR_EQUAL.invert(), 24_000L * days ) ); }
+        
+        /**
+         * If Apocalypse Rebooted is installed, check if the difficulty is above a threshold;
+         * otherwise, check if the world time is after a certain number of months. One month is eight days.
+         */
+        public Builder afterMonthsOrApocalypseDifficulty( int months ) { return afterDaysOrApocalypseDifficulty( months * 8 ); }
+        
+        /**
+         * If Apocalypse Rebooted is installed, check if the difficulty is above a threshold;
+         * otherwise, check if the world time is after a certain number of months. One month is eight days.
+         */
+        public Builder beforeMonthsOrApocalypseDifficulty( int months ) { return beforeDaysOrApocalypseDifficulty( months * 8 ); }
+        
+        /** Check if the Apocalypse Rebooted difficulty is above a threshold. Always false if the mod is not installed. */
         public Builder aboveApocalypseDifficulty( int days ) { return in( new ApocalypseDifficultyEnvironment( ComparisonOperator.GREATER_OR_EQUAL, 24_000L * days ) ); }
         
-        /** Check if the Apocalypse Rebooted difficulty is above a threshold. */
+        /** Check if the Apocalypse Rebooted difficulty is above a threshold. Always false if the mod is not installed. */
         public Builder belowApocalypseDifficulty( int days ) { return in( new ApocalypseDifficultyEnvironment( ComparisonOperator.GREATER_OR_EQUAL.invert(), 24_000L * days ) ); }
     }
 }
