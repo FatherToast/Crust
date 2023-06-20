@@ -257,18 +257,49 @@ public class DoubleField extends AbstractConfigField {
         @Nullable
         public T next( Random random, World world, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
             // Due to the 'nebulous' nature of environment-based weights, we must recalculate weights for EVERY call
-            final double[] weights = new double[UNDERLYING_LIST.size()];
-            double targetWeight = 0.0;
+            double[] weights = new double[UNDERLYING_LIST.size()];
+            double totalWeight = calculateWeights( weights, world, pos, selector );
+            
+            return next( random, weights, totalWeight );
+        }
+        
+        /** @return Returns a specified number of random items from this weighted list. */
+        @Nullable
+        public List<T> next( Random random, int count, World world, @Nullable BlockPos pos ) { return next( random, count, world, pos, null ); }
+        
+        /** @return Returns a specified number of random items from this weighted list. */
+        @Nullable
+        public List<T> next( Random random, int count, World world, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
+            // Due to the 'nebulous' nature of environment-based weights, we must recalculate weights for EVERY call
+            double[] weights = new double[UNDERLYING_LIST.size()];
+            double totalWeight = calculateWeights( weights, world, pos, selector );
+            
+            List<T> items = new ArrayList<>( count );
+            for( int i = 0; i < count; i++ ) {
+                items.add( next( random, weights, totalWeight ) );
+            }
+            return items;
+        }
+        
+        /** Calculates the current weights, fills the provided weights array, and returns the total weight. */
+        private double calculateWeights( double[] weights, World world, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
+            double totalWeight = 0.0;
             for( int i = 0; i < weights.length; i++ ) {
                 final Entry<T> entry = UNDERLYING_LIST.get( i );
                 if( selector == null || selector.test( entry.VALUE ) ) {
-                    targetWeight += weights[i] = entry.WEIGHT.get( world, pos );
+                    totalWeight += weights[i] = entry.WEIGHT.get( world, pos );
                 }
             }
-            if( targetWeight <= 0.0 ) return null;
+            return totalWeight;
+        }
+        
+        /** Returns a random item from this weighted list. Null if none of the items have a positive weight. */
+        @Nullable
+        private T next( Random random, double[] weights, double totalWeight ) {
+            if( totalWeight <= 0.0 ) return null;
             
-            // Now we unravel the target weight to a random point
-            targetWeight *= random.nextDouble();
+            // Now we pick a random value between zero and the total weight
+            double targetWeight = totalWeight * random.nextDouble();
             for( int i = 0; i < weights.length; i++ ) {
                 targetWeight -= weights[i];
                 if( targetWeight < 0.0 ) return UNDERLYING_LIST.get( i ).VALUE;
