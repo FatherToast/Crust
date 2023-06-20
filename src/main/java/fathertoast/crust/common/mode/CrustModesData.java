@@ -27,7 +27,7 @@ public class CrustModesData {
     private CrustModesData( PlayerEntity player ) {
         PLAYER = player;
         CompoundNBT modTag = NBTHelper.getPlayerData( player, Crust.MOD_ID );
-        boolean setDefaults = !player.level.isClientSide() && !modTag.contains( TAG_NAME, NBTHelper.ID_COMPOUND );
+        boolean setDefaults = !player.level.isClientSide() && !NBTHelper.containsCompound( modTag, TAG_NAME );
         SAVE_TAG = NBTHelper.getOrCreateCompound( modTag, TAG_NAME );
         
         if( setDefaults ) {

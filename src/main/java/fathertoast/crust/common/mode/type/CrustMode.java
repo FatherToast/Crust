@@ -45,7 +45,7 @@ public abstract class CrustMode<T> {
     public final boolean enabled( @Nullable PlayerEntity player ) { return player != null && CrustModesData.of( player ).enabled( this ); }
     
     /** @return True if any save data for this mode exists. */
-    public boolean enabled( CompoundNBT tag ) { return tag.contains( ID, NBTHelper.ID_NUMERICAL ); }
+    public boolean enabled( CompoundNBT tag ) { return NBTHelper.containsNumber( tag, ID ); }
     
     /** @return This mode's saved data, or its non-null default value if no save data exists. */
     public abstract T get( CompoundNBT tag );

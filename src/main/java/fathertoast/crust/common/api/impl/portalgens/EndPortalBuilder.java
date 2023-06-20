@@ -1,7 +1,6 @@
 package fathertoast.crust.common.api.impl.portalgens;
 
 import com.google.common.collect.ImmutableSet;
-import fathertoast.crust.api.lib.SetBlockFlags;
 import fathertoast.crust.api.portal.PortalBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -10,6 +9,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 import java.util.Set;
 
@@ -51,7 +51,7 @@ public class EndPortalBuilder extends PortalBuilder {
                     BlockState frameBlock = Blocks.END_PORTAL_FRAME.defaultBlockState()
                             .setValue( BlockStateProperties.EYE, true )
                             .setValue( BlockStateProperties.HORIZONTAL_FACING, endFrameFacing( forward, tv, fw ) );
-                    world.setBlock( currentPos, frameBlock, SetBlockFlags.DEFAULTS );
+                    world.setBlock( currentPos, frameBlock, Constants.BlockFlags.DEFAULT );
                 }
             }
         }
@@ -62,7 +62,7 @@ public class EndPortalBuilder extends PortalBuilder {
                 currentPos.set( portalCorner ).move( transverse, tv )
                         .move( forward, fw );
                 
-                world.setBlock( currentPos, portalBlock, SetBlockFlags.DEFAULTS );
+                world.setBlock( currentPos, portalBlock, Constants.BlockFlags.DEFAULT );
             }
         }
     }

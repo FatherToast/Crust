@@ -1,4 +1,7 @@
-1.16.5-1.0.1
+1.16.5-1.1.0
     - Fixed environment entry builder not working. This changes the environment registration api method.
+    - Added "apocalypse_difficulty_or_time" environment.
+    - Added pooled call options for environment-sensitive weighted lists.
+    - Removed set block flags and nbt constants (Forge provides these).
 1.16.5-1.0.0
     - Initial release.

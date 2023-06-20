@@ -1,7 +1,6 @@
 package fathertoast.crust.common.api.impl.portalgens;
 
 import com.google.common.collect.ImmutableSet;
-import fathertoast.crust.api.lib.SetBlockFlags;
 import fathertoast.crust.api.portal.PortalBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -10,6 +9,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 import java.util.Set;
 
@@ -48,7 +48,7 @@ public class NetherPortalBuilder extends PortalBuilder {
                     currentPos.set( frameCorner ).move( transverse, tv )
                             .move( Direction.UP, up );
                     
-                    world.setBlock( currentPos, frameBlock, SetBlockFlags.DEFAULTS );
+                    world.setBlock( currentPos, frameBlock, Constants.BlockFlags.DEFAULT );
                 }
             }
         }
@@ -61,7 +61,7 @@ public class NetherPortalBuilder extends PortalBuilder {
                         .move( Direction.UP, up );
                 
                 world.setBlock( currentPos, portalBlock,
-                        SetBlockFlags.UPDATE_CLIENT | SetBlockFlags.SKIP_NEIGHBOR_UPDATE );
+                        Constants.BlockFlags.BLOCK_UPDATE | Constants.BlockFlags.UPDATE_NEIGHBORS );
             }
         }
     }
