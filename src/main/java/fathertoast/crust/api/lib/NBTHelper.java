@@ -4,95 +4,64 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 
+import static net.minecraftforge.common.util.Constants.NBT.*;
+
 @SuppressWarnings( "unused" )
 public class NBTHelper {
-    
-    /** The ID used to match String tags. Equal to {@link net.minecraft.nbt.ListNBT#getId()}. */
-    public static final int ID_LIST = 9;
-    /** The ID used to match String tags. Equal to {@link net.minecraft.nbt.CompoundNBT#getId()}. */
-    public static final int ID_COMPOUND = 10;
-    
-    /** The ID used to match String tags. Equal to {@link net.minecraft.nbt.StringNBT#getId()}. */
-    public static final int ID_STRING = 8;
-    
-    /**
-     * The ID used to match any numerical-type tags (including Boolean, which is a Byte in NBT format).
-     * Primarily used when testing tag existence within a Compound.
-     *
-     * @see CompoundNBT#contains(String, int)
-     */
-    public static final int ID_NUMERICAL = 99;
-    /** The ID used to match Byte (and Boolean) tags. Equal to {@link net.minecraft.nbt.ByteNBT#getId()}. */
-    public static final int ID_BYTE = 1;
-    /** The ID used to match Short tags. Equal to {@link net.minecraft.nbt.ShortNBT#getId()}. */
-    public static final int ID_SHORT = 2;
-    /** The ID used to match Int tags. Equal to {@link net.minecraft.nbt.IntNBT#getId()}. */
-    public static final int ID_INT = 3;
-    /** The ID used to match Long tags. Equal to {@link net.minecraft.nbt.LongNBT#getId()}. */
-    public static final int ID_LONG = 4;
-    /** The ID used to match Float tags. Equal to {@link net.minecraft.nbt.FloatNBT#getId()}. */
-    public static final int ID_FLOAT = 5;
-    /** The ID used to match Double tags. Equal to {@link net.minecraft.nbt.DoubleNBT#getId()}. */
-    public static final int ID_DOUBLE = 6;
-    
-    /** The ID used to match Byte Array tags. Equal to {@link net.minecraft.nbt.ByteArrayNBT#getId()}. */
-    public static final int ID_BYTE_ARRAY = 7;
-    /** The ID used to match Int Array tags. Equal to {@link net.minecraft.nbt.IntArrayNBT#getId()}. */
-    public static final int ID_INT_ARRAY = 11;
-    /** The ID used to match Long Array tags. Equal to {@link net.minecraft.nbt.LongArrayNBT#getId()}. */
-    public static final int ID_LONG_ARRAY = 12;
-    
-    
     /**
      * @param tag  The compound tag to read from.
      * @param name The name of the tag to check.
      * @return True if the compound contains a tag with the given name that stores a list value.
      */
-    public static boolean containsList( CompoundNBT tag, String name ) { return contains( tag, name, ID_LIST ); }
+    public static boolean containsList( CompoundNBT tag, String name ) { return contains( tag, name, TAG_LIST ); }
     
     /**
      * @param tag  The compound tag to read from.
      * @param name The name of the tag to check.
      * @return True if the compound contains a tag with the given name that stores another compound value.
      */
-    public static boolean containsCompound( CompoundNBT tag, String name ) { return contains( tag, name, ID_COMPOUND ); }
+    public static boolean containsCompound( CompoundNBT tag, String name ) { return contains( tag, name, TAG_COMPOUND ); }
     
     /**
      * @param tag  The compound tag to read from.
      * @param name The name of the tag to check.
      * @return True if the compound contains a tag with the given name that stores a string value.
      */
-    public static boolean containsString( CompoundNBT tag, String name ) { return contains( tag, name, ID_STRING ); }
+    public static boolean containsString( CompoundNBT tag, String name ) { return contains( tag, name, TAG_STRING ); }
     
     /**
      * @param tag  The compound tag to read from.
      * @param name The name of the tag to check.
      * @return True if the compound contains a tag with the given name that stores a numerical value.
      */
-    public static boolean containsNumber( CompoundNBT tag, String name ) { return contains( tag, name, ID_NUMERICAL ); }
+    public static boolean containsNumber( CompoundNBT tag, String name ) { return contains( tag, name, TAG_ANY_NUMERIC ); }
     
     /**
      * @param tag  The compound tag to read from.
      * @param name The name of the tag to check.
      * @return True if the compound contains a tag with the given name that stores a byte array value.
      */
-    public static boolean containsByteArray( CompoundNBT tag, String name ) { return contains( tag, name, ID_BYTE_ARRAY ); }
+    public static boolean containsByteArray( CompoundNBT tag, String name ) { return contains( tag, name, TAG_BYTE_ARRAY ); }
     
     /**
      * @param tag  The compound tag to read from.
      * @param name The name of the tag to check.
      * @return True if the compound contains a tag with the given name that stores an int array value.
      */
-    public static boolean containsIntArray( CompoundNBT tag, String name ) { return contains( tag, name, ID_INT_ARRAY ); }
+    public static boolean containsIntArray( CompoundNBT tag, String name ) { return contains( tag, name, TAG_INT_ARRAY ); }
     
     /**
      * @param tag  The compound tag to read from.
      * @param name The name of the tag to check.
      * @return True if the compound contains a tag with the given name that stores a long array value.
      */
-    public static boolean containsLongArray( CompoundNBT tag, String name ) { return contains( tag, name, ID_LONG_ARRAY ); }
+    public static boolean containsLongArray( CompoundNBT tag, String name ) { return contains( tag, name, TAG_LONG_ARRAY ); }
     
-    /** Performs the actual 'contains' check. */
+    /**
+     * Performs the actual 'contains' check.
+     *
+     * @see net.minecraftforge.common.util.Constants.NBT
+     */
     private static boolean contains( CompoundNBT tag, String name, int id ) { return tag.contains( name, id ); }
     
     

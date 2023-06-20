@@ -178,7 +178,7 @@ public enum LevelEventHelper {
         
         private BoneMealEvent( int id ) { super( id ); }
         
-        /** Plays this event at a particular position, optionally excluding a particular player. Uses the default number of particles. */
+        /** Plays this event at a particular position, optionally excluding a particular player. Uses the default number of particles (15). */
         public void play( World world, @Nullable PlayerEntity player, BlockPos pos ) { play( world, player, pos, 0 ); }
         
         /** Plays this event at a particular position, optionally excluding a particular player. */
