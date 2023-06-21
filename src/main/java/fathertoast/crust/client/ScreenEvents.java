@@ -1,5 +1,6 @@
 package fathertoast.crust.client;
 
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
 import fathertoast.crust.client.button.ButtonInfo;
 import fathertoast.crust.client.button.ExtraMenuButton;
@@ -21,7 +22,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber( value = Dist.CLIENT, modid = Crust.MOD_ID )
+@Mod.EventBusSubscriber( value = Dist.CLIENT, modid = ICrustApi.MOD_ID )
 public class ScreenEvents {
     
     /** Called when a GUI is initialized. */

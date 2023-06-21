@@ -1,6 +1,6 @@
 package fathertoast.crust.common.network;
 
-import fathertoast.crust.common.core.Crust;
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.common.mode.CrustModesData;
 import fathertoast.crust.common.network.message.S2CDestroyItemOnPointer;
 import fathertoast.crust.common.network.message.S2CUpdateCrustModes;
@@ -62,7 +62,7 @@ public class CrustPacketHandler {
     
     private static SimpleChannel createChannel() {
         return NetworkRegistry.ChannelBuilder
-                .named( new ResourceLocation( Crust.MOD_ID, "channel" ) )
+                .named( new ResourceLocation( ICrustApi.MOD_ID, "channel" ) )
                 .serverAcceptedVersions( PROTOCOL_VERSION::equals )
                 .clientAcceptedVersions( PROTOCOL_VERSION::equals )
                 .networkProtocolVersion( () -> PROTOCOL_VERSION )

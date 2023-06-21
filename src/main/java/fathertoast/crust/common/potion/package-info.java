@@ -1,6 +1,6 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package fathertoast.crust.common.event;
+package fathertoast.crust.common.potion;
 
 import mcp.MethodsReturnNonnullByDefault;
 

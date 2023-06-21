@@ -1,4 +1,7 @@
 {
+  "effect.crust.vulnerability": "Vulnerability",
+  "effect.crust.weight": "Weight",
+
   "menu.crust.config.open_folder": "Open Folder",
   "menu.crust.config.save_changes": "SAVE Changes",
   "menu.crust.config.discard_changes": "DISCARD Changes",

@@ -1,17 +1,24 @@
 package fathertoast.crust.common.core;
 
+import fathertoast.crust.api.ICrustApi;
+import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.common.network.CrustPacketHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Mod.EventBusSubscriber( modid = Crust.MOD_ID )
+@Mod.EventBusSubscriber( modid = ICrustApi.MOD_ID )
 public class CrustForgeEvents {
     
     /** Set of all players that have had their Crust modes changed recently. */
@@ -46,6 +53,33 @@ public class CrustForgeEvents {
                     NEED_CRUST_MODE_UPDATE.clear();
                 }
             }
+        }
+    }
+    
+    /** Called when an entity is taking damage. */
+    @SubscribeEvent( priority = EventPriority.NORMAL )
+    static void onLivingHurt( LivingHurtEvent event ) {
+        if( event.getEntityLiving() != null && event.getSource() != DamageSource.OUT_OF_WORLD && !event.getSource().isBypassMagic() &&
+                event.getEntityLiving().hasEffect( CrustObjects.vulnerability() ) ) {
+            
+            final EffectInstance vulnerability = event.getEntityLiving().getEffect( CrustObjects.vulnerability() );
+            if( vulnerability == null ) return;
+            
+            // Take 25% more damage per effect level (vs. Damage Resistance's 20% less per level)
+            event.setAmount( Math.max( event.getAmount() * (1.0F + 0.25F * (vulnerability.getAmplifier() + 1)), 0.0F ) );
+        }
+    }
+    
+    /** Called when an entity lands on the ground. */
+    @SubscribeEvent( priority = EventPriority.NORMAL )
+    static void onLivingFall( LivingFallEvent event ) {
+        if( event.getEntityLiving() != null && event.getEntityLiving().hasEffect( CrustObjects.weight() ) ) {
+            
+            final EffectInstance weight = event.getEntityLiving().getEffect( CrustObjects.weight() );
+            if( weight == null ) return;
+            
+            // Increase effective fall distance by ~33% per effect level
+            event.setDamageMultiplier( event.getDamageMultiplier() * (1.0F + 0.3334F * (weight.getAmplifier() + 1)) );
         }
     }
 }

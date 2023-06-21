@@ -1,9 +1,9 @@
 package fathertoast.crust.common.command.impl;
 
 import com.mojang.brigadier.CommandDispatcher;
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.portal.PortalBuilder;
 import fathertoast.crust.common.command.CommandUtil;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
@@ -18,7 +18,7 @@ public class CrustPortalCommand {
     
     /** Command builder. */
     public static void register( CommandDispatcher<CommandSource> dispatcher ) {
-        dispatcher.register( CommandUtil.literal( Crust.MOD_ID + "portal" )
+        dispatcher.register( CommandUtil.literal( ICrustApi.MOD_ID + "portal" )
                 .requires( CommandUtil::canCheat )
                 .then( Commands.argument( "portalType", PortalTypeArgument.portalType() )
                         .executes( ( context ) -> run( context.getSource(),

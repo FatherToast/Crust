@@ -1,9 +1,9 @@
 package fathertoast.crust.common.mode;
 
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.lib.NBTHelper;
 import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.config.CrustModesConfigFile;
-import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.core.CrustForgeEvents;
 import fathertoast.crust.common.mode.type.CrustMode;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,7 +26,7 @@ public class CrustModesData {
     /** Creates a new data helper that provides simple access to mode save data. */
     private CrustModesData( PlayerEntity player ) {
         PLAYER = player;
-        CompoundNBT modTag = NBTHelper.getPlayerData( player, Crust.MOD_ID );
+        CompoundNBT modTag = NBTHelper.getPlayerData( player, ICrustApi.MOD_ID );
         boolean setDefaults = !player.level.isClientSide() && !NBTHelper.containsCompound( modTag, TAG_NAME );
         SAVE_TAG = NBTHelper.getOrCreateCompound( modTag, TAG_NAME );
         

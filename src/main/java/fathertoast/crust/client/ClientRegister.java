@@ -1,22 +1,22 @@
 package fathertoast.crust.client;
 
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.client.ClientConfigUtil;
 import fathertoast.crust.api.config.common.ConfigManager;
-import fathertoast.crust.common.core.Crust;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-@Mod.EventBusSubscriber( value = Dist.CLIENT, modid = Crust.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
+@Mod.EventBusSubscriber( value = Dist.CLIENT, modid = ICrustApi.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
 public class ClientRegister {
     
     /** File for configuring in-game config edit button client preferences. */
     public static final CfgEditorCrustConfigFile CONFIG_EDITOR = new CfgEditorCrustConfigFile(
-            ConfigManager.getRequired( Crust.MOD_ID ), "client_config_editor" );
+            ConfigManager.getRequired( ICrustApi.MOD_ID ), "client_config_editor" );
     /** File for configuring extra inventory button client preferences. */
     public static final ExtraInvButtonsCrustConfigFile EXTRA_INV_BUTTONS = new ExtraInvButtonsCrustConfigFile(
-            ConfigManager.getRequired( Crust.MOD_ID ), "client_extra_inv_buttons" );
+            ConfigManager.getRequired( ICrustApi.MOD_ID ), "client_extra_inv_buttons" );
     
     /** Called after common setup to perform client-side-only setup. */
     @SubscribeEvent

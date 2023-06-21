@@ -1,31 +1,25 @@
 package fathertoast.crust.common.core;
 
 import fathertoast.crust.api.CrustPlugin;
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.ICrustPlugin;
 import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDifficultyEnvironment;
 import fathertoast.crust.common.api.impl.CrustApi;
-import fathertoast.crust.common.api.impl.portalgens.EndPortalBuilder;
-import fathertoast.crust.common.api.impl.portalgens.NetherPortalBuilder;
-import fathertoast.crust.api.portal.PortalBuilder;
 import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.network.CrustPacketHandler;
+import fathertoast.crust.common.portal.CrustPortals;
+import fathertoast.crust.common.potion.CrustEffects;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.function.Supplier;
 
-
-@Mod( Crust.MOD_ID )
+@Mod( ICrustApi.MOD_ID )
 public class Crust {
     
     /* Feature List:
@@ -86,27 +80,14 @@ public class Crust {
      *          ? grant instant (or very fast) mining
      */
     
-    /** The mod's id. */
-    public static final String MOD_ID = "crust";
-    
     /** Logger instance for the mod. */
-    public static final Logger LOG = LogManager.getLogger( MOD_ID );
+    public static final Logger LOG = LogManager.getLogger( ICrustApi.MOD_ID );
     
     /** Mod instance. */
     public static Crust INSTANCE;
     
     /** API instance. */
     private final CrustApi apiInstance;
-    
-    /** Deferred register used to initialize the portal registry and populate vanilla portals. */
-    private static final DeferredRegister<PortalBuilder> VANILLA_PORTAL_REGISTER = DeferredRegister.create( PortalBuilder.class, "minecraft" );
-    
-    /** Registry for portals. */
-    public static final Supplier<IForgeRegistry<PortalBuilder>> PORTAL_REGISTRY = VANILLA_PORTAL_REGISTER.makeRegistry( "portal_builders",
-            () -> (new RegistryBuilder<PortalBuilder>()).setType( PortalBuilder.class ).setDefaultKey( resLoc( "empty" ) ) );
-    
-    public static final RegistryObject<PortalBuilder> NETHER_PORTAL = VANILLA_PORTAL_REGISTER.register( "nether_portal", NetherPortalBuilder::new );
-    public static final RegistryObject<PortalBuilder> END_PORTAL = VANILLA_PORTAL_REGISTER.register( "end_portal", EndPortalBuilder::new );
     
     
     public Crust() {
@@ -115,18 +96,18 @@ public class Crust {
         ApocalypseDifficultyEnvironment.register( apiInstance );
         CrustPacketHandler.registerMessages();
         
-        // Perform first-time loading of the configs for this mod
-        CrustConfig.DEFAULT_GAME_RULES.SPEC.initialize();
-        CrustConfig.MODES.SPEC.initialize();
+        // Perform first-time loading of the common configs for this mod
+        CrustConfig.initialize();
         
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         
-        VANILLA_PORTAL_REGISTER.register( modBus );
+        CrustEffects.register( modBus );
+        CrustPortals.register( modBus );
         
         modBus.addListener( this::onCommonSetup );
     }
     
-    void onCommonSetup( FMLCommonSetupEvent event ) { event.enqueueWork( this::processPlugins ); }
+    private void onCommonSetup( FMLCommonSetupEvent event ) { event.enqueueWork( this::processPlugins ); }
     
     private void processPlugins() {
         // Load mod plugins
@@ -153,5 +134,5 @@ public class Crust {
                 } ) );
     }
     
-    public static ResourceLocation resLoc( String path ) { return new ResourceLocation( MOD_ID, path ); }
+    public static ResourceLocation resLoc( String path ) { return new ResourceLocation( ICrustApi.MOD_ID, path ); }
 }

@@ -2,9 +2,9 @@ package fathertoast.crust.client.button;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.lib.CrustMath;
 import fathertoast.crust.client.ClientRegister;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.recipebook.IRecipeShownListener;
 import net.minecraft.client.gui.screen.Screen;
@@ -17,8 +17,8 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 public class ExtraInventoryButton extends Button {
     
-    public static final ResourceLocation BUTTON_TEXTURE = new ResourceLocation( Crust.MOD_ID, "textures/button.png" );
-    public static final ResourceLocation BUTTON_TEXTURE_ON = new ResourceLocation( Crust.MOD_ID, "textures/button_on.png" );
+    public static final ResourceLocation BUTTON_TEXTURE = new ResourceLocation( ICrustApi.MOD_ID, "textures/button.png" );
+    public static final ResourceLocation BUTTON_TEXTURE_ON = new ResourceLocation( ICrustApi.MOD_ID, "textures/button_on.png" );
     
     public static final int ICON_SIZE = 9;
     public static final int ICON_BORDER = 3;

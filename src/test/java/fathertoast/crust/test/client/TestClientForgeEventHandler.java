@@ -1,10 +1,10 @@
 package fathertoast.crust.test.client;
 
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.IDifficultyAccessor;
 import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.client.KeyBindingEvents.Key;
 import fathertoast.crust.client.SortedKeyBinding;
-import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.test.common.TestCrust;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -21,7 +21,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
 
-@Mod.EventBusSubscriber( value = Dist.CLIENT, modid = Crust.MOD_ID )
+@Mod.EventBusSubscriber( value = Dist.CLIENT, modid = ICrustApi.MOD_ID )
 public class TestClientForgeEventHandler {
     
     /** Register anything needed specific to client-side Forge events. */

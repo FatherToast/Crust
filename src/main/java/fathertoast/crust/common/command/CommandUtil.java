@@ -7,11 +7,11 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.common.command.impl.CrustCleanCommand;
 import fathertoast.crust.common.command.impl.CrustModeCommand;
 import fathertoast.crust.common.command.impl.CrustPortalCommand;
 import fathertoast.crust.common.command.impl.CrustRecoverCommand;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
@@ -26,7 +26,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.Collection;
 import java.util.Locale;
 
-@Mod.EventBusSubscriber( modid = Crust.MOD_ID )
+@Mod.EventBusSubscriber( modid = ICrustApi.MOD_ID )
 public class CommandUtil {
     
     /** Called each time commands are loaded. */
@@ -44,13 +44,13 @@ public class CommandUtil {
     
     /** Provides feedback on successful command results. */
     public static void sendSuccess( CommandSource source, String event, Object... args ) {
-        source.sendSuccess( new TranslationTextComponent( "commands." + Crust.MOD_ID + event +
+        source.sendSuccess( new TranslationTextComponent( "commands." + ICrustApi.MOD_ID + event +
                 ".success", args ), true );
     }
     
     /** Provides feedback on command failure. */
     public static void sendFailure( CommandSource source, String event, Object... args ) {
-        source.sendFailure( new TranslationTextComponent( "commands." + Crust.MOD_ID + event +
+        source.sendFailure( new TranslationTextComponent( "commands." + ICrustApi.MOD_ID + event +
                 ".failure", args ) );
     }
     

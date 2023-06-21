@@ -3,7 +3,7 @@ package fathertoast.crust.api.lib;
 import net.minecraft.util.math.MathHelper;
 
 @SuppressWarnings( "unused" )
-public class CrustMath {
+public final class CrustMath {
     
     // ---- COLOR METHODS ---- //
     

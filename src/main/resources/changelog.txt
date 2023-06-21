@@ -1,6 +1,9 @@
 1.16.5-1.1.0
-    - Fixed environment entry builder not working. This changes the environment registration api method.
+    Feature changes:
+    - Added the Weight and Vulnerability effects from Special Mobs.
     - Added "apocalypse_difficulty_or_time" environment.
+    API/tool changes:
+    - Fixed environment entry builder not working.
     - Added pooled call options for environment-sensitive weighted lists.
     - Removed set block flags and nbt constants (Forge provides these).
 1.16.5-1.0.0

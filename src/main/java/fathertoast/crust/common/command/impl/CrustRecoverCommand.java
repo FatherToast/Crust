@@ -2,8 +2,8 @@ package fathertoast.crust.common.command.impl;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.common.command.CommandUtil;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -23,7 +23,7 @@ public class CrustRecoverCommand {
     /** Command builder. */
     public static void register( CommandDispatcher<CommandSource> dispatcher ) {
         // crustrecover [all|health|hunger|effects] [<targets>]
-        LiteralArgumentBuilder<CommandSource> argBuilder = CommandUtil.literal( Crust.MOD_ID + "recover" )
+        LiteralArgumentBuilder<CommandSource> argBuilder = CommandUtil.literal( ICrustApi.MOD_ID + "recover" )
                 .requires( CommandUtil::canCheat )
                 .executes( ( context ) -> run( context.getSource(), Mode.ALL, CommandUtil.targets( context ) ) )
                 

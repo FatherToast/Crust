@@ -7,7 +7,7 @@ import net.minecraft.nbt.CompoundNBT;
 import static net.minecraftforge.common.util.Constants.NBT.*;
 
 @SuppressWarnings( "unused" )
-public class NBTHelper {
+public final class NBTHelper {
     /**
      * @param tag  The compound tag to read from.
      * @param name The name of the tag to check.

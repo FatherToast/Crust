@@ -3,9 +3,9 @@ package fathertoast.crust.common.command.impl;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.common.command.CommandUtil;
-import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
 import fathertoast.crust.common.mode.type.CrustMode;
@@ -20,7 +20,7 @@ public class CrustModeCommand {
     /** Command builder. */
     public static void register( CommandDispatcher<CommandSource> dispatcher ) {
         // crustmode [<player>]
-        LiteralArgumentBuilder<CommandSource> argBuilder = CommandUtil.literal( Crust.MOD_ID + "mode" )
+        LiteralArgumentBuilder<CommandSource> argBuilder = CommandUtil.literal( ICrustApi.MOD_ID + "mode" )
                 .executes( ( context ) -> runQuery( context.getSource(), CommandUtil.player( context ) ) )
                 
                 .then( CommandUtil.argumentPlayer( "player" )

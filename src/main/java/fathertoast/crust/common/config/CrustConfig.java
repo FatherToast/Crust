@@ -10,7 +10,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
  * We also add functionality to the Forge "Config" button and load client configs in the client setup event
  * ({@link fathertoast.crust.client.ClientRegister#onClientSetup(FMLClientSetupEvent)}).
  */
-@SuppressWarnings("JavadocReference")
 public final class CrustConfig {
     
     /** Crust's config manager. Defines the mod config folder. */
@@ -20,4 +19,13 @@ public final class CrustConfig {
     public static final GameRulesCrustConfigFile DEFAULT_GAME_RULES = new GameRulesCrustConfigFile( MANAGER, "default_game_rules" );
     /** File for configuring modes. */
     public static final CrustModesConfigFile MODES = new CrustModesConfigFile( MANAGER, "modes" );
+    
+    /**
+     * Called to load all the common config files. The files are pretty simple, so we don't really need
+     * them at any specific time. This is called from Crust's constructor.
+     */
+    public static void initialize() {
+        CrustConfig.DEFAULT_GAME_RULES.SPEC.initialize();
+        CrustConfig.MODES.SPEC.initialize();
+    }
 }

@@ -1,4 +1,4 @@
-package fathertoast.crust.common.api.impl.portalgens;
+package fathertoast.crust.common.portal;
 
 import com.google.common.collect.ImmutableSet;
 import fathertoast.crust.api.portal.PortalBuilder;
@@ -13,9 +13,9 @@ import net.minecraftforge.common.util.Constants;
 
 import java.util.Set;
 
-public class EndPortalBuilder extends PortalBuilder {
+public class NetherPortalBuilder extends PortalBuilder {
     
-    private static final Set<ResourceLocation> VALID_DIMENSIONS = ImmutableSet.of( World.OVERWORLD.location(), World.END.location() );
+    private static final Set<ResourceLocation> VALID_DIMENSIONS = ImmutableSet.of( World.OVERWORLD.location(), World.NETHER.location() );
     
     /** @return True if this portal builder can be used in the provided dimension. */
     public boolean isValidDimension( ResourceLocation dimension ) { return VALID_DIMENSIONS.contains( dimension ); }
@@ -34,44 +34,35 @@ public class EndPortalBuilder extends PortalBuilder {
     public void generate( World world, BlockPos.Mutable currentPos, Direction forward ) {
         Direction transverse = forward.getClockWise();
         
-        currentPos.move( Direction.UP, -1 );
         currentPos.move( transverse, -1 );
         BlockPos portalCorner = currentPos.immutable();
         
         currentPos.move( transverse, -1 );
-        currentPos.move( forward, -1 );
+        currentPos.move( Direction.UP, -1 );
         
+        BlockState frameBlock = Blocks.OBSIDIAN.defaultBlockState();
         BlockPos frameCorner = currentPos.immutable();
         for( int tv = 0; tv < 5; tv++ ) {
-            for( int fw = 0; fw < 5; fw++ ) {
-                if( (tv == 0 || tv == 4) ^ (fw == 0 || fw == 4) ) {
+            for( int up = 0; up < 5; up++ ) {
+                if( tv == 0 || tv == 4 || up == 0 || up == 4 ) {
                     currentPos.set( frameCorner ).move( transverse, tv )
-                            .move( forward, fw );
+                            .move( Direction.UP, up );
                     
-                    BlockState frameBlock = Blocks.END_PORTAL_FRAME.defaultBlockState()
-                            .setValue( BlockStateProperties.EYE, true )
-                            .setValue( BlockStateProperties.HORIZONTAL_FACING, endFrameFacing( forward, tv, fw ) );
                     world.setBlock( currentPos, frameBlock, Constants.BlockFlags.DEFAULT );
                 }
             }
         }
         
-        BlockState portalBlock = Blocks.END_PORTAL.defaultBlockState();
+        BlockState portalBlock = Blocks.NETHER_PORTAL.defaultBlockState()
+                .setValue( BlockStateProperties.HORIZONTAL_AXIS, transverse.getAxis() );
         for( int tv = 0; tv < 3; tv++ ) {
-            for( int fw = 0; fw < 3; fw++ ) {
+            for( int up = 0; up < 3; up++ ) {
                 currentPos.set( portalCorner ).move( transverse, tv )
-                        .move( forward, fw );
+                        .move( Direction.UP, up );
                 
-                world.setBlock( currentPos, portalBlock, Constants.BlockFlags.DEFAULT );
+                world.setBlock( currentPos, portalBlock,
+                        Constants.BlockFlags.BLOCK_UPDATE | Constants.BlockFlags.UPDATE_NEIGHBORS );
             }
         }
-    }
-    
-    /** @return The proper facing for an end frame block. */
-    private static Direction endFrameFacing( Direction forward, int tv, int fw ) {
-        if( tv == 0 ) return forward.getCounterClockWise();
-        if( tv == 4 ) return forward.getClockWise();
-        if( fw == 0 ) return forward.getOpposite();
-        return forward;
     }
 }

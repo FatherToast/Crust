@@ -3,13 +3,15 @@ package fathertoast.crust.client.button;
 
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
+import fathertoast.crust.api.ICrustApi;
+import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.client.ClientRegister;
 import fathertoast.crust.client.ExtraInvButtonsCrustConfigFile;
 import fathertoast.crust.client.KeyBindingEvents;
-import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
 import fathertoast.crust.common.mode.type.CrustMode;
+import fathertoast.crust.common.portal.CrustPortals;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
@@ -97,13 +99,13 @@ public class ButtonInfo {
             "kill @e[type=!player]" ) );
     @SuppressWarnings( "unused" )
     public static final ButtonInfo NETHER_PORTAL = builtIn( new ButtonInfo( "netherPortal", "portal_nether.png",
-            "crustportal " + Crust.NETHER_PORTAL.getId() )
-            .condition( () -> Crust.NETHER_PORTAL.get().isValidDimension( world() ) )
+            "crustportal " + CrustPortals.NETHER_PORTAL )
+            .condition( () -> CrustObjects.netherPortal().isValidDimension( world() ) )
             .key( KeyModifier.CONTROL, "0" ) );
     @SuppressWarnings( "unused" )
     public static final ButtonInfo END_PORTAL = builtIn( new ButtonInfo( "endPortal", "portal_end.png",
-            "crustportal " + Crust.END_PORTAL.getId() )
-            .condition( () -> Crust.END_PORTAL.get().isValidDimension( world() ) )
+            "crustportal " + CrustPortals.END_PORTAL )
+            .condition( () -> CrustObjects.endPortal().isValidDimension( world() ) )
             .key( KeyModifier.ALT, "0" ) );
     
     // Time control
@@ -204,7 +206,7 @@ public class ButtonInfo {
         
         if( display.endsWith( ".png" ) ) {
             TEXT = "";
-            ICON = new ResourceLocation( Crust.MOD_ID, ICON_PATH + display );
+            ICON = new ResourceLocation( ICrustApi.MOD_ID, ICON_PATH + display );
         }
         else {
             TEXT = display;

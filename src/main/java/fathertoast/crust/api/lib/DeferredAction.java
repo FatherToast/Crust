@@ -15,7 +15,7 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings( "unused" )
 @Mod.EventBusSubscriber( modid = ICrustApi.MOD_ID )
-public class DeferredAction {
+public final class DeferredAction {
     
     /**
      * Queues an action to perform at the end of the server tick. Will be called at the end

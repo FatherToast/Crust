@@ -1,22 +1,18 @@
 package fathertoast.crust.client.mode;
 
-import fathertoast.crust.common.core.Crust;
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.common.mode.CrustModeEvents;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber( value = Dist.CLIENT, modid = Crust.MOD_ID )
+@Mod.EventBusSubscriber( value = Dist.CLIENT, modid = ICrustApi.MOD_ID )
 public class CrustModeClientEvents {
     
     private static Float originalStepHeight;

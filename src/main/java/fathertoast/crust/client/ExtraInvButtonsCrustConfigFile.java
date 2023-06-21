@@ -1,5 +1,6 @@
 package fathertoast.crust.client;
 
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.common.AbstractConfigCategory;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
@@ -8,7 +9,6 @@ import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.CrustAnchor;
 import fathertoast.crust.client.button.ButtonInfo;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.loot.LootTables;
 import net.minecraft.world.biome.Biomes;
@@ -186,7 +186,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
             tooltip = SPEC.define( new StringField( "tooltip", defaults[0],
                     "A short description of the custom button's function." ) );
             icon = SPEC.define( new StringField( "icon", defaults[1],
-                    "The button icon. This is a relative path from \"" + Crust.MOD_ID + ":" + ButtonInfo.ICON_PATH + "\". " +
+                    "The button icon. This is a relative path from \"" + ICrustApi.MOD_ID + ":" + ButtonInfo.ICON_PATH + "\". " +
                             "If this does not end in \".png\", this string will be rendered instead of a texture." ) );
             iconColor = SPEC.define( new ColorIntField( "icon_color", Color.WHITE, false,
                     "The button icon (or text) color. Pure white (the default) is effectively no tint." ) );

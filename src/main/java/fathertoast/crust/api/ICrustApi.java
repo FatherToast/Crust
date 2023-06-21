@@ -13,7 +13,8 @@ import javax.annotation.Nullable;
  */
 public interface ICrustApi {
     
-    IRegistryHelper getRegistryHelper();
+    /** The mod's id. */
+    String MOD_ID = "crust";
     
     @Nullable
     IDifficultyAccessor getDifficultyAccessor();

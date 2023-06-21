@@ -1,7 +1,7 @@
 package fathertoast.crust.common.mode;
 
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.common.config.CrustConfig;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Mod.EventBusSubscriber( modid = Crust.MOD_ID )
+@Mod.EventBusSubscriber( modid = ICrustApi.MOD_ID )
 public class CrustModeEvents {
     
     public static final UUID SUPER_SPEED_UUID = UUID.fromString( "B9766B69-9569-4202-BC1F-2EE2A276D836" );

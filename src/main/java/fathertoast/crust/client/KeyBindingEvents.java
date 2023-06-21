@@ -1,8 +1,8 @@
 package fathertoast.crust.client;
 
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
 import fathertoast.crust.client.button.ButtonInfo;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.settings.KeyBinding;
@@ -19,13 +19,13 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 import java.util.Locale;
 
-@Mod.EventBusSubscriber( value = Dist.CLIENT, modid = Crust.MOD_ID )
+@Mod.EventBusSubscriber( value = Dist.CLIENT, modid = ICrustApi.MOD_ID )
 public class KeyBindingEvents {
     
-    private static final String KEY_CAT = "key.categories." + Crust.MOD_ID;
+    private static final String KEY_CAT = "key.categories." + ICrustApi.MOD_ID;
     private static final String KEY_CAT_BUTTONS = KEY_CAT + ".buttons";
     
-    private static final String KEY = "key." + Crust.MOD_ID + ".";
+    private static final String KEY = "key." + ICrustApi.MOD_ID + ".";
     
     private static final KeyBinding CONFIG_EDITOR = new SortedKeyBinding( 0, KEY + "configs", KeyConflictContext.UNIVERSAL,
             KeyModifier.CONTROL, Key.code( "o" ), KEY_CAT );

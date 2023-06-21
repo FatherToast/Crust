@@ -8,7 +8,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import fathertoast.crust.api.portal.PortalBuilder;
-import fathertoast.crust.common.core.Crust;
+import fathertoast.crust.common.portal.CrustPortals;
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -33,7 +33,8 @@ public class PortalTypeArgument implements ArgumentType<PortalBuilder> {
         StringReader reader = new StringReader( suggestions.getInput() );
         reader.setCursor( suggestions.getStart() );
         
-        for( PortalBuilder builder : Crust.PORTAL_REGISTRY.get().getValues() ) {
+        for( PortalBuilder builder : CrustPortals.PORTAL_REGISTRY.get().getValues() ) {
+            //noinspection ConstantConditions
             suggestions.suggest( builder.getRegistryName().toString() );
         }
         return suggestions.buildFuture();
@@ -42,7 +43,7 @@ public class PortalTypeArgument implements ArgumentType<PortalBuilder> {
     @Override
     public PortalBuilder parse( StringReader reader ) throws CommandSyntaxException {
         ResourceLocation resourceLocation = ResourceLocation.read( reader );
-        PortalBuilder portalBuilder = Crust.PORTAL_REGISTRY.get().getValue( resourceLocation );
+        PortalBuilder portalBuilder = CrustPortals.PORTAL_REGISTRY.get().getValue( resourceLocation );
         
         if( portalBuilder == null )
             throw INVALID_PORTAL_TYPE.create();

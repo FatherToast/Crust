@@ -1,8 +1,8 @@
 package fathertoast.crust.common.command.impl;
 
 import com.mojang.brigadier.CommandDispatcher;
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.common.command.CommandUtil;
-import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.network.CrustPacketHandler;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -13,7 +13,7 @@ public class CrustCleanCommand {
     /** Command builder. */
     public static void register( CommandDispatcher<CommandSource> dispatcher ) {
         // crustclean pointer [<player>]
-        dispatcher.register( CommandUtil.literal( Crust.MOD_ID + "clean" )
+        dispatcher.register( CommandUtil.literal( ICrustApi.MOD_ID + "clean" )
                 .then( CommandUtil.literal( "pointer" )
                         .executes( ( context ) -> runPointer( context.getSource(), CommandUtil.player( context ) ) )
                         .then( CommandUtil.argumentPlayer( "player" )
