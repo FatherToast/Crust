@@ -4,14 +4,14 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.common.command.CommandUtil;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.EffectType;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,9 +21,9 @@ public class CrustRecoverCommand {
     public enum Mode { ALL, HEALTH, HUNGER, EFFECTS }
     
     /** Command builder. */
-    public static void register( CommandDispatcher<CommandSource> dispatcher ) {
+    public static void register( CommandDispatcher<CommandSourceStack> dispatcher ) {
         // crustrecover [all|health|hunger|effects] [<targets>]
-        LiteralArgumentBuilder<CommandSource> argBuilder = CommandUtil.literal( ICrustApi.MOD_ID + "recover" )
+        LiteralArgumentBuilder<CommandSourceStack> argBuilder = CommandUtil.literal( ICrustApi.MOD_ID + "recover" )
                 .requires( CommandUtil::canCheat )
                 .executes( ( context ) -> run( context.getSource(), Mode.ALL, CommandUtil.targets( context ) ) )
                 
@@ -43,7 +43,7 @@ public class CrustRecoverCommand {
     }
     
     /** Command implementation. */
-    private static int run( CommandSource source, Mode mode, Collection<? extends Entity> targets ) {
+    private static int run( CommandSourceStack source, Mode mode, Collection<? extends Entity> targets ) {
         for( Entity target : targets ) {
             if( target instanceof LivingEntity ) recover( (LivingEntity) target, mode );
         }
@@ -67,7 +67,7 @@ public class CrustRecoverCommand {
                 target.heal( target.getMaxHealth() );
                 if( mode != Mode.ALL ) break;
             case HUNGER:
-                if( target instanceof PlayerEntity ) recoverHunger( (PlayerEntity) target );
+                if( target instanceof Player player ) recoverHunger( player );
                 if( mode != Mode.ALL ) break;
             case EFFECTS:
                 clearNegativeEffects( target );
@@ -76,8 +76,8 @@ public class CrustRecoverCommand {
     }
     
     /** Sets the player's hunger to the max. */
-    private static void recoverHunger( PlayerEntity player ) {
-        CompoundNBT tag = new CompoundNBT();
+    private static void recoverHunger( Player player ) {
+        CompoundTag tag = new CompoundTag();
         tag.putInt( "foodLevel", 20 );
         tag.putFloat( "foodSaturationLevel", 20.0F );
         player.getFoodData().readAdditionalSaveData( tag );
@@ -85,12 +85,12 @@ public class CrustRecoverCommand {
     
     /** Clears all negative effects, removes burning, and restores air supply. */
     private static void clearNegativeEffects( LivingEntity target ) {
-        ArrayList<Effect> negativeEffects = new ArrayList<>();
-        for( EffectInstance effect : target.getActiveEffects() ) {
-            if( effect.getEffect().getCategory() == EffectType.HARMFUL ) negativeEffects.add( effect.getEffect() );
+        ArrayList<MobEffect> negativeEffects = new ArrayList<>();
+        for( MobEffectInstance effect : target.getActiveEffects() ) {
+            if( effect.getEffect().getCategory() == MobEffectCategory.HARMFUL ) negativeEffects.add( effect.getEffect() );
         }
         
-        for( Effect effect : negativeEffects ) target.removeEffect( effect );
+        for( MobEffect effect : negativeEffects ) target.removeEffect( effect );
         target.setAirSupply( target.getMaxAirSupply() );
         target.clearFire();
     }

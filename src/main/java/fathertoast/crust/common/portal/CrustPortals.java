@@ -1,7 +1,5 @@
 package fathertoast.crust.common.portal;
 
-import com.toast.apocalypse.api.BaseTrapAction;
-import com.toast.apocalypse.api.register.ModRegistries;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.api.portal.PortalBuilder;
@@ -21,7 +19,7 @@ public class CrustPortals {
     /** Deferred register used to initialize the portal registry and populate vanilla portals. */
     private static final DeferredRegister<PortalBuilder> PORTAL_REGISTER = DeferredRegister.create( ResourceKey.createRegistryKey(Crust.resLoc("portal_builder")), ICrustApi.MOD_ID );
 
-    public static Supplier<IForgeRegistry<BaseTrapAction>> PORTAL_REGISTRY;
+    public static Supplier<IForgeRegistry<PortalBuilder>> PORTAL_REGISTRY;
     
     
     public static final ResourceLocation NETHER_PORTAL = register( CrustObjects.ID.NETHER_PORTAL, NetherPortalBuilder::new );
@@ -37,7 +35,7 @@ public class CrustPortals {
     }
 
     public static void onRegistryCreate( NewRegistryEvent event ) {
-        RegistryBuilder<BaseTrapAction> builder = new RegistryBuilder<>();
+        RegistryBuilder<PortalBuilder> builder = new RegistryBuilder<>();
         builder.setName( Crust.resLoc( "portal_builder" ));
         PORTAL_REGISTRY = event.create( builder );
     }

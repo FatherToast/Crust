@@ -2,22 +2,24 @@ package fathertoast.crust.common.command.impl;
 
 import com.mojang.brigadier.CommandDispatcher;
 import fathertoast.crust.api.ICrustApi;
+import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.api.portal.PortalBuilder;
 import fathertoast.crust.common.command.CommandUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.entity.Entity;
+import fathertoast.crust.common.portal.CrustPortals;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class CrustPortalCommand {
     
     /** Command builder. */
-    public static void register( CommandDispatcher<CommandSource> dispatcher ) {
+    public static void register( CommandDispatcher<CommandSourceStack> dispatcher ) {
         dispatcher.register( CommandUtil.literal( ICrustApi.MOD_ID + "portal" )
                 .requires( CommandUtil::canCheat )
                 .then( Commands.argument( "portalType", PortalTypeArgument.portalType() )
@@ -28,8 +30,8 @@ public class CrustPortalCommand {
     
     
     /** Command implementation. */
-    private static int run( CommandSource source, PortalBuilder portalBuilder, Entity target ) {
-        if( !portalBuilder.isValidDimension( target.level ) ) {
+    private static int run( CommandSourceStack source, PortalBuilder portalBuilder, Entity target ) {
+        if( !portalBuilder.isValidDimension( target.level() ) ) {
             CommandUtil.sendFailure( source, "portal.dimension" );
             return -1;
         }
@@ -37,11 +39,11 @@ public class CrustPortalCommand {
         boolean failed = false;
         
         Direction forward = target.getDirection();
-        BlockPos.Mutable currentPos = target.blockPosition().mutable().move( forward, 3 );
+        BlockPos.MutableBlockPos currentPos = target.blockPosition().mutable().move( forward, 3 );
         
-        if( currentPos.getY() <= 0 || currentPos.getY() >= target.level.getMaxBuildHeight() - 5 ) failed = true;
-        else if( isOpenSpace( target.level, currentPos ) ) findGroundBelow( target.level, currentPos );
-        else if( findGroundAbove( target.level, currentPos ) ) failed = true;
+        if( currentPos.getY() <= 0 || currentPos.getY() >= target.level().getMaxBuildHeight() - 5 ) failed = true;
+        else if( isOpenSpace( target.level(), currentPos ) ) findGroundBelow( target.level(), currentPos );
+        else if( findGroundAbove( target.level(), currentPos ) ) failed = true;
         BlockPos pos = currentPos.immutable();
         
         if( failed ) {
@@ -49,14 +51,14 @@ public class CrustPortalCommand {
             return 0;
         }
         
-        portalBuilder.generate( target.level, currentPos, forward );
-        CommandUtil.sendSuccess( source, "portal", portalBuilder.getRegistryName(),
+        portalBuilder.generate( target.level(), currentPos, forward );
+        CommandUtil.sendSuccess( source, "portal", CrustPortals.PORTAL_REGISTRY.get().getKey( portalBuilder ),
                 pos.getX(), pos.getY(), pos.getZ() );
         return 1;
     }
     
     /** Attempts to find the ground. Resets the position if none can be found. */
-    private static void findGroundBelow( World level, BlockPos.Mutable currentPos ) {
+    private static void findGroundBelow( Level level, BlockPos.MutableBlockPos currentPos ) {
         final int yI = currentPos.getY();
         final int minY = Math.max( yI - 8, 0 );
         
@@ -73,7 +75,7 @@ public class CrustPortalCommand {
     }
     
     /** @return Attempts to find the ground. Returns true if no position could be found. */
-    private static boolean findGroundAbove( World level, BlockPos.Mutable currentPos ) {
+    private static boolean findGroundAbove( Level level, BlockPos.MutableBlockPos currentPos ) {
         final int yI = currentPos.getY();
         final int maxY = Math.min( yI + 8, level.getMaxBuildHeight() - 5 );
         
@@ -87,9 +89,9 @@ public class CrustPortalCommand {
     }
     
     /** @return True if the position should be considered "open space"; i.e. not a part of the ground. */
-    private static boolean isOpenSpace( World level, BlockPos pos ) {
+    private static boolean isOpenSpace( Level level, BlockPos pos ) {
         final BlockState stateAtPos = level.getBlockState( pos );
-        return (stateAtPos.getMaterial().isReplaceable() || stateAtPos.is( BlockTags.LEAVES )) &&
+        return (stateAtPos.canBeReplaced() || stateAtPos.is( BlockTags.LEAVES )) &&
                 !stateAtPos.getFluidState().is( FluidTags.WATER );
     }
 }

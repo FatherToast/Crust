@@ -3,6 +3,7 @@ package fathertoast.crust.client.button;
 
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.client.ClientRegister;
@@ -13,15 +14,21 @@ import fathertoast.crust.common.mode.CrustModesData;
 import fathertoast.crust.common.mode.type.CrustMode;
 import fathertoast.crust.common.portal.CrustPortals;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.gui.screen.inventory.CreativeScreen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.network.play.ClientPlayNetHandler;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ServerboundChatPacket;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.settings.KeyModifier;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.items.wrapper.PlayerInvWrapper;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -94,7 +101,7 @@ public class ButtonInfo {
             .condition( () -> !player().getActiveEffectsMap().isEmpty() ) );
     public static final ButtonInfo DESTROY_POINTER_ITEM = builtIn( new ButtonInfo( "destroyOnPointer", "fire.png",
             ButtonInfo::destroyOnPointer, Command.CLEAN_POINTER )
-            .condition( () -> !player().inventory.getCarried().isEmpty() ) );
+            .condition( () -> !player().inventoryMenu.getCarried().isEmpty() ) );
     public static final ButtonInfo KILL_ALL = builtIn( new ButtonInfo( "killAll", "creeper_slash.png",
             "kill @e[type=!player]" ) );
     @SuppressWarnings( "unused" )
@@ -179,7 +186,7 @@ public class ButtonInfo {
     public final int COLOR;
     
     /** Function to run on button press. */
-    public final Button.IPressable ON_PRESS;
+    public final Button.OnPress ON_PRESS;
     
     /** The commands used by this button. This list is used ONLY for checking permissions to calculate {@link #active}. */
     protected final List<String> COMMANDS = new ArrayList<>();
@@ -199,7 +206,7 @@ public class ButtonInfo {
     // ---- Button Info Builders ---- //
     
     /** Defines info for a button. */
-    public ButtonInfo( String id, String tooltip, String display, int color, Button.IPressable onPress ) {
+    public ButtonInfo( String id, String tooltip, String display, int color, Button.OnPress onPress ) {
         ID = id;
         
         TOOLTIP = tooltip;
@@ -218,7 +225,7 @@ public class ButtonInfo {
     }
     
     /** Defines info for a button with no color tint. */
-    public ButtonInfo( String id, String display, Button.IPressable onPress, String... commands ) {
+    public ButtonInfo( String id, String display, Button.OnPress onPress, String... commands ) {
         this( id, toLangKey( id ), display, 0xFFFFFF, onPress );
         COMMANDS.addAll( Arrays.asList( commands ) );
     }
@@ -280,7 +287,7 @@ public class ButtonInfo {
     /** @return True if the button should appear 'toggled on'. */
     public boolean isToggledOn() { return toggledOn != null && toggledOn.get(); }
     
-    private static class ButtonPressCommandChain implements Button.IPressable {
+    private static class ButtonPressCommandChain implements Button.OnPress {
         
         private final List<String> COMMANDS;
         
@@ -300,8 +307,8 @@ public class ButtonInfo {
     // ---- Built-In Button Impl ---- //
     
     private static void destroyOnPointer( @Nullable Button button ) {
-        if( Minecraft.getInstance().screen instanceof CreativeScreen ) {
-            player().inventory.setCarried( ItemStack.EMPTY );
+        if( Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen ) {
+            player().inventoryMenu.setCarried( ItemStack.EMPTY );
         }
         else {
             cmd( Command.CLEAN_POINTER );
@@ -370,33 +377,33 @@ public class ButtonInfo {
     // ---- Helper Methods ---- //
     
     /** Runs the given command as this client's player, if possible. */
-    private static void cmd( String command ) { player().chat( "/" + command ); }
+    private static void cmd( String command ) { player().sendSystemMessage(Component.literal("/" + command )); }
     
     /** @return True if the client player has the mode enabled. */
     private static boolean modeEnabled( CrustMode<?> mode ) { return CrustModesData.of( player() ).enabled( mode ); }
     
     /** @return The client player. */
-    private static ClientPlayerEntity player() { return Objects.requireNonNull( Minecraft.getInstance().player ); }
+    private static LocalPlayer player() { return Objects.requireNonNull( Minecraft.getInstance().player ); }
     
     /** @return The client world. */
-    private static ClientWorld world() { return Objects.requireNonNull( Minecraft.getInstance().level ); }
+    private static ClientLevel world() { return Objects.requireNonNull( Minecraft.getInstance().level ); }
     
     /**
      * @return Parse results for a command based on the client player's command suggestion helper.
      * Will be null if there is no client player (no world loaded).
      */
     @Nullable
-    private static ParseResults<ISuggestionProvider> parseCommand( String command ) {
-        StringReader reader = new StringReader( org.apache.commons.lang3.StringUtils.normalizeSpace( command ) );
+    private static ParseResults<SharedSuggestionProvider> parseCommand(String command ) {
+        StringReader reader = new StringReader( StringUtils.normalizeSpace( command ) );
         if( reader.canRead() && reader.peek() == '/' ) reader.skip();
         
-        ClientPlayNetHandler connection = player().connection;
+        ClientPacketListener connection = player().connection;
         return connection.getCommands().parse( reader, connection.getSuggestionsProvider() );
     }
     
     /** @return True if the client player can use a command, according to its command suggestion helper. */
     private static boolean canUseCommand( String command ) {
-        ParseResults<ISuggestionProvider> parse = parseCommand( command );
+        ParseResults<SharedSuggestionProvider> parse = parseCommand( command );
         return parse != null && !parse.getReader().canRead();
     }
     

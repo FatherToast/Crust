@@ -7,15 +7,15 @@ import fathertoast.crust.client.button.ExtraMenuButton;
 import fathertoast.crust.client.button.ExtraInventoryButton;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.IngameMenuScreen;
-import net.minecraft.client.gui.screen.MainMenuScreen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.screen.inventory.CreativeScreen;
-import net.minecraft.client.gui.screen.inventory.InventoryScreen;
-import net.minecraft.client.multiplayer.PlayerController;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.gui.screens.PauseScreen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -27,24 +27,24 @@ public class ScreenEvents {
     
     /** Called when a GUI is initialized. */
     @SubscribeEvent
-    static void onGuiInit( GuiScreenEvent.InitGuiEvent.Post event ) {
-        if( ClientRegister.EXTRA_INV_BUTTONS.GENERAL.enabled.get() && event.getGui() instanceof ContainerScreen ) {
-            PlayerController gameMode = Minecraft.getInstance().gameMode;
+    static void onGuiInit( ScreenEvent.Init.Post event ) {
+        if( ClientRegister.EXTRA_INV_BUTTONS.GENERAL.enabled.get() && event.getScreen() instanceof AbstractContainerScreen ) {
+            MultiPlayerGameMode gameMode = Minecraft.getInstance().gameMode;
             boolean creative = gameMode != null && gameMode.hasInfiniteItems(); // Avoid double-initializing our buttons
-            if( !(creative && event.getGui() instanceof InventoryScreen) && !(!creative && event.getGui() instanceof CreativeScreen) ) {
-                addExtraInventoryButtons( event, (ContainerScreen<?>) event.getGui() );
+            if( !(creative && event.getScreen() instanceof InventoryScreen) && !(!creative && event.getScreen() instanceof CreativeModeInventoryScreen ) ) {
+                addExtraInventoryButtons( event, (AbstractContainerScreen<?>) event.getScreen() );
             }
         }
-        else if( ClientRegister.CONFIG_EDITOR.PAUSE_BUTTON.enabled.get() && event.getGui() instanceof IngameMenuScreen ) {
-            addExtraPauseMenuButtons( event, (IngameMenuScreen) event.getGui() );
+        else if( ClientRegister.CONFIG_EDITOR.PAUSE_BUTTON.enabled.get() && event.getScreen() instanceof PauseScreen pauseScreen ) {
+            addExtraPauseMenuButtons( event, pauseScreen );
         }
-        else if( ClientRegister.CONFIG_EDITOR.MAIN_BUTTON.enabled.get() && event.getGui() instanceof MainMenuScreen ) {
-            addExtraMainMenuButtons( event, (MainMenuScreen) event.getGui() );
+        else if( ClientRegister.CONFIG_EDITOR.MAIN_BUTTON.enabled.get() && event.getScreen() instanceof TitleScreen titleScreen ) {
+            addExtraMainMenuButtons( event, titleScreen );
         }
     }
     
     /** Adds the extra buttons to the player's (creative) inventory, if enabled. */
-    private static void addExtraInventoryButtons( GuiScreenEvent.InitGuiEvent event, ContainerScreen<?> screen ) {
+    private static void addExtraInventoryButtons( ScreenEvent.Init event, AbstractContainerScreen<?> screen ) {
         Minecraft mc = screen.getMinecraft();
         ExtraInvButtonsCrustConfigFile.General config = ClientRegister.EXTRA_INV_BUTTONS.GENERAL;
         
@@ -70,23 +70,23 @@ public class ScreenEvents {
         
         int buttonCount = buttons.size();
         int buttonsPerRow = config.buttonsPerRow.get();
-        int buttonRows = MathHelper.ceil( (float) buttonCount / buttonsPerRow );
+        int buttonRows = Mth.ceil( (float) buttonCount / buttonsPerRow );
         
         int width = buttonsPerRow * ExtraInventoryButton.BUTTON_SPACING - ExtraInventoryButton.BUTTON_PADDING;
         int height = buttonRows * ExtraInventoryButton.BUTTON_SPACING - ExtraInventoryButton.BUTTON_PADDING;
         
-        int posX = config.anchorX.get().pos( screenWidth, screen.imageWidth, width ) + config.offsetX.get();
-        int posY = config.anchorY.get().pos( screenHeight, screen.imageHeight, height ) + config.offsetY.get();
+        int posX = config.anchorX.get().pos( screenWidth, screen.getXSize(), width ) + config.offsetX.get();
+        int posY = config.anchorY.get().pos( screenHeight, screen.getYSize(), height ) + config.offsetY.get();
         
         for( int i = 0; i < buttonCount; i++ ) {
-            event.addWidget( new ExtraInventoryButton( screen,
+            event.addListener( new ExtraInventoryButton( screen,
                     posX + (i % buttonsPerRow) * ExtraInventoryButton.BUTTON_SPACING,
                     posY + (i / buttonsPerRow) * ExtraInventoryButton.BUTTON_SPACING, buttons.get( i ) ) );
         }
     }
     
     /** Adds the extra buttons to the pause menu, if enabled. */
-    private static void addExtraPauseMenuButtons( GuiScreenEvent.InitGuiEvent event, IngameMenuScreen screen ) {
+    private static void addExtraPauseMenuButtons( ScreenEvent.Init event, PauseScreen screen ) {
         Minecraft mc = screen.getMinecraft();
         CfgEditorCrustConfigFile.Button config = ClientRegister.CONFIG_EDITOR.PAUSE_BUTTON;
         
@@ -99,12 +99,12 @@ public class ScreenEvents {
         int posY = config.anchorY.get().pos( screenHeight, guiHeight, screenHeight / 4 + 8, ExtraMenuButton.BUTTON_SIZE )
                 + config.offsetY.get();
         
-        event.addWidget( new ExtraMenuButton( posX, posY,
+        event.addListener( new ExtraMenuButton( posX, posY,
                 button -> mc.setScreen( new CrustConfigSelectScreen( screen ) ) ) );
     }
     
     /** Adds the extra buttons to the main menu, if enabled. */
-    private static void addExtraMainMenuButtons( GuiScreenEvent.InitGuiEvent event, MainMenuScreen screen ) {
+    private static void addExtraMainMenuButtons( ScreenEvent.Init event, TitleScreen screen ) {
         Minecraft mc = screen.getMinecraft();
         CfgEditorCrustConfigFile.Button config = ClientRegister.CONFIG_EDITOR.MAIN_BUTTON;
         
@@ -117,7 +117,7 @@ public class ScreenEvents {
         int posY = config.anchorY.get().pos( screenHeight, guiHeight, screenHeight / 4 + 48, ExtraMenuButton.BUTTON_SIZE )
                 + config.offsetY.get();
         
-        event.addWidget( new ExtraMenuButton( posX, posY,
+        event.addListener( new ExtraMenuButton( posX, posY,
                 button -> mc.setScreen( new CrustConfigSelectScreen( screen ) ) ) );
     }
 }

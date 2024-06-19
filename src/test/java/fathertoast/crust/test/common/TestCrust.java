@@ -5,7 +5,7 @@ import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.ICrustPlugin;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.common.core.Crust;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

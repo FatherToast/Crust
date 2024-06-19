@@ -7,14 +7,14 @@ import fathertoast.crust.common.network.message.S2CDestroyItemOnPointer;
 import fathertoast.crust.common.network.message.S2CUpdateCrustModes;
 import fathertoast.crust.common.util.annotations.OnClient;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 @OnClient
 public class CrustClientWork {
     
     public static void handleDestroyItemOnPointer( @SuppressWarnings( "unused" ) S2CDestroyItemOnPointer message ) {
         Minecraft mc = Minecraft.getInstance();
-        if( mc.player != null ) mc.player.inventory.setCarried( ItemStack.EMPTY );
+        if( mc.player != null ) mc.player.inventoryMenu.setCarried( ItemStack.EMPTY );
     }
     
     public static void handleCrustModesUpdate( S2CUpdateCrustModes message ) {

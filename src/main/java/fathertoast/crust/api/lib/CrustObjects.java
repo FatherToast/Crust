@@ -1,6 +1,7 @@
 package fathertoast.crust.api.lib;
 
 import fathertoast.crust.api.portal.PortalBuilder;
+import fathertoast.crust.common.api.impl.CrustApi;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraftforge.registries.ObjectHolder;
 
@@ -38,13 +39,13 @@ public final class CrustObjects {
     }
     
     
-    @ObjectHolder( registryName = ID.EFFECT_REGISTRY, value = ID.VULNERABILITY )
+    @ObjectHolder( registryName = ID.EFFECT_REGISTRY, value = CrustApi.MOD_ID + ":" + ID.VULNERABILITY )
     private static MobEffect VULNERABILITY;
-    @ObjectHolder( registryName = ID.EFFECT_REGISTRY, value = ID.WEIGHT )
+    @ObjectHolder( registryName = ID.EFFECT_REGISTRY, value = CrustApi.MOD_ID + ":" + ID.WEIGHT )
     private static MobEffect WEIGHT;
     
-    @ObjectHolder( registryName = ID.PORTAL_REGISTRY, value = ID.NETHER_PORTAL )
+    @ObjectHolder( registryName = ID.PORTAL_REGISTRY, value = CrustApi.MOD_ID + ":" + ID.NETHER_PORTAL )
     private static PortalBuilder NETHER_PORTAL;
-    @ObjectHolder( registryName = ID.PORTAL_REGISTRY, value = ID.END_PORTAL )
+    @ObjectHolder( registryName = ID.PORTAL_REGISTRY, value = CrustApi.MOD_ID + ":" + ID.END_PORTAL )
     private static PortalBuilder END_PORTAL;
 }

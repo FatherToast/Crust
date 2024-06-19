@@ -9,8 +9,8 @@ import fathertoast.crust.common.command.CommandUtil;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
 import fathertoast.crust.common.mode.type.CrustMode;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -18,9 +18,9 @@ import java.util.Collection;
 public class CrustModeCommand {
     
     /** Command builder. */
-    public static void register( CommandDispatcher<CommandSource> dispatcher ) {
+    public static void register( CommandDispatcher<CommandSourceStack> dispatcher ) {
         // crustmode [<player>]
-        LiteralArgumentBuilder<CommandSource> argBuilder = CommandUtil.literal( ICrustApi.MOD_ID + "mode" )
+        LiteralArgumentBuilder<CommandSourceStack> argBuilder = CommandUtil.literal( ICrustApi.MOD_ID + "mode" )
                 .executes( ( context ) -> runQuery( context.getSource(), CommandUtil.player( context ) ) )
                 
                 .then( CommandUtil.argumentPlayer( "player" )
@@ -52,7 +52,7 @@ public class CrustModeCommand {
     }
     
     /** Command implementation. */
-    private static int runQuery( CommandSource source, ServerPlayerEntity player ) {
+    private static int runQuery( CommandSourceStack source, ServerPlayer player ) {
         CrustModesData playerModes = CrustModesData.of( player );
         StringBuilder output = new StringBuilder( "[ " );
         int modes = 0;
@@ -69,9 +69,9 @@ public class CrustModeCommand {
     }
     
     /** Command implementation. */
-    private static int runSet( CommandContext<CommandSource> context, CrustMode<?> mode, @Nullable String valueArg,
-                               Collection<ServerPlayerEntity> players ) {
-        for( ServerPlayerEntity player : players ) {
+    private static int runSet( CommandContext<CommandSourceStack> context, CrustMode<?> mode, @Nullable String valueArg,
+                               Collection<ServerPlayer> players ) {
+        for( ServerPlayer player : players ) {
             mode.onCommand( context, valueArg, player );
         }
         

@@ -1,19 +1,20 @@
 package fathertoast.crust.client.button;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.lib.CrustMath;
 import fathertoast.crust.client.ClientRegister;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.recipebook.IRecipeShownListener;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+
+import java.util.function.Supplier;
 
 public class ExtraInventoryButton extends Button {
     
@@ -28,20 +29,21 @@ public class ExtraInventoryButton extends Button {
     public static final int BUTTON_PADDING = 1;
     public static final int BUTTON_SPACING = BUTTON_SIZE + BUTTON_PADDING;
     
-    public static final int TEXT_X = MathHelper.ceil( BUTTON_SIZE / 2.0F );
-    public static final int TEXT_Y = MathHelper.ceil( (BUTTON_SIZE - 8) / 2.0F );
+    public static final int TEXT_X = Mth.ceil( BUTTON_SIZE / 2.0F );
+    public static final int TEXT_Y = Mth.ceil( (BUTTON_SIZE - 8) / 2.0F );
     
     
-    private final ContainerScreen<?> PARENT;
+    private final AbstractContainerScreen<?> PARENT;
     private final boolean HAS_RECIPE_BOOK;
     private final ButtonInfo INFO;
     
-    public ExtraInventoryButton( ContainerScreen<?> screen, int leftPos, int topPos, ButtonInfo info ) {
+    public ExtraInventoryButton( AbstractContainerScreen<?> screen, int leftPos, int topPos, ButtonInfo info ) {
         super( leftPos, topPos, BUTTON_SIZE, BUTTON_SIZE,
-                new StringTextComponent( info.TEXT ), info.ON_PRESS,
-                new ButtonTooltip( screen, info.TOOLTIP ) );
+                Component.literal( info.TEXT ), info.ON_PRESS,
+                Supplier::get );
+        setTooltip( createButtonTooltip( info.TOOLTIP ) );
         PARENT = screen;
-        HAS_RECIPE_BOOK = screen instanceof IRecipeShownListener;
+        HAS_RECIPE_BOOK = screen instanceof RecipeUpdateListener;
         INFO = info;
     }
     
@@ -52,74 +54,59 @@ public class ExtraInventoryButton extends Button {
     }
     
     @Override
-    public void render( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks ) {
+    public void render( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks ) {
         if( ClientRegister.EXTRA_INV_BUTTONS.GENERAL.hideForRecipeBook.get() && HAS_RECIPE_BOOK ) {
-            visible = !((IRecipeShownListener) PARENT).getRecipeBookComponent().isVisible();
+            visible = !((RecipeUpdateListener) PARENT).getRecipeBookComponent().isVisible();
         }
         active = INFO.canBeActive() && (!ClientRegister.EXTRA_INV_BUTTONS.GENERAL.disableInvalid.get() || INFO.canEnable());
-        super.render( matrixStack, mouseX, mouseY, partialTicks );
+        super.render( graphics, mouseX, mouseY, partialTicks );
     }
     
     @Override
-    public void renderButton( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks ) {
+    public void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks ) {
         Minecraft mc = Minecraft.getInstance();
-        
-        matrixStack.pushPose();
-        matrixStack.translate( 0.0, 0.0, 31.0 ); // Right behind item on pointer
+
+        graphics.pose().pushPose();
+        graphics.pose().translate( 0.0, 0.0, 31.0 ); // Right behind item on pointer
         
         // Draw button tile
-        mc.getTextureManager().bind( INFO.isToggledOn() ? BUTTON_TEXTURE_ON : BUTTON_TEXTURE );
-        //noinspection deprecation
-        RenderSystem.color4f( 1.0F, 1.0F, 1.0F, alpha );
+        RenderSystem.setShaderColor( 1.0F, 1.0F, 1.0F, alpha );
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
         
-        blit( matrixStack, x, y, 0.0F, BUTTON_SIZE * getYImage( isHovered() ),
+        graphics.blit( INFO.isToggledOn() ? BUTTON_TEXTURE_ON : BUTTON_TEXTURE, getX(), getY(), 0.0F, BUTTON_SIZE * getTextureY( ),
                 BUTTON_SIZE, BUTTON_SIZE, BUTTON_SIZE, BUTTON_SIZE * 3 );
         
         // Draw button detail (icon/text)
         float colorFac = active ? 1.0F : 0.666F; // darken detail if not clickable
         if( INFO.ICON == null ) {
-            //noinspection deprecation
-            RenderSystem.color4f( colorFac, colorFac, colorFac, alpha );
-            drawCenteredString( matrixStack, mc.font, getMessage(),
-                    x + TEXT_X, y + TEXT_Y,
-                    INFO.COLOR | MathHelper.ceil( alpha * 0xFF ) << 24 );
+            RenderSystem.setShaderColor( colorFac, colorFac, colorFac, alpha );
+            graphics.drawCenteredString( mc.font, getMessage(),
+                    getX() + TEXT_X, getY() + TEXT_Y,
+                    INFO.COLOR | Mth.ceil( alpha * 0xFF ) << 24 );
         }
         else {
-            mc.getTextureManager().bind( INFO.ICON );
-            //noinspection deprecation
-            RenderSystem.color4f( CrustMath.getRed( INFO.COLOR ) * colorFac, CrustMath.getGreen( INFO.COLOR ) * colorFac,
+            RenderSystem.setShaderColor( CrustMath.getRed( INFO.COLOR ) * colorFac, CrustMath.getGreen( INFO.COLOR ) * colorFac,
                     CrustMath.getBlue( INFO.COLOR ) * colorFac, alpha );
             
-            blit( matrixStack, x + ICON_BORDER, y + ICON_BORDER, 0.0F, 0.0F,
+            graphics.blit( INFO.ICON, getX() + ICON_BORDER, getY() + ICON_BORDER, 0.0F, 0.0F,
                     ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE );
         }
         
-        matrixStack.popPose();
+        graphics.pose().popPose();
         
         // Draw tooltip
+        // TODO - Check if this is still needed
+        /*
         if( isHovered() ) {
-            renderToolTip( matrixStack, mouseX, mouseY );
+            graphics.renderTooltip( mc.font, mouseX, mouseY );
         }
+
+         */
     }
     
-    
-    private static class ButtonTooltip implements Button.ITooltip {
-        
-        private final Screen SCREEN;
-        private final String DISPLAY;
-        
-        ButtonTooltip( Screen screen, String display ) {
-            SCREEN = screen;
-            DISPLAY = display;
-        }
-        
-        @Override
-        public void onTooltip( Button button, MatrixStack matrixStack, int x, int y ) {
-            SCREEN.renderTooltip( matrixStack, new TranslationTextComponent( DISPLAY ),
-                    x, y );
-        }
+    public static Tooltip createButtonTooltip( String tooltip ) {
+        return Tooltip.create( Component.translatable(tooltip) );
     }
 }

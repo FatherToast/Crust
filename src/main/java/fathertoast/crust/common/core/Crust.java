@@ -5,6 +5,7 @@ import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.ICrustPlugin;
 import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDifficultyEnvironment;
 import fathertoast.crust.common.api.impl.CrustApi;
+import fathertoast.crust.common.command.impl.CrustArgumentTypes;
 import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.network.CrustPacketHandler;
 import fathertoast.crust.common.portal.CrustPortals;
@@ -87,7 +88,7 @@ public class Crust {
     public static Crust INSTANCE;
     
     /** API instance. */
-    private final CrustApi apiInstance;
+    public final CrustApi apiInstance;
     
     
     public Crust() {
@@ -104,6 +105,7 @@ public class Crust {
         modBus.addListener( CrustPortals::onRegistryCreate );
         CrustEffects.register( modBus );
         CrustPortals.register( modBus );
+        CrustArgumentTypes.register( modBus );
         
         modBus.addListener( this::onCommonSetup );
     }

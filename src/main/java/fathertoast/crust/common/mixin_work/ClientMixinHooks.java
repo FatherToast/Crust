@@ -1,15 +1,15 @@
 package fathertoast.crust.common.mixin_work;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import fathertoast.crust.api.config.client.ITileBoundingBoxProvider;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
@@ -21,21 +21,21 @@ public class ClientMixinHooks {
      * Render various bounding boxes for tile entities
      * that provide them through {@link ITileBoundingBoxProvider}
      */
-    public static void handleTileEntityRendering(TileEntity tileEntity, MatrixStack matrixStack, IRenderTypeBuffer buffer) {
-        if (tileEntity instanceof ITileBoundingBoxProvider) {
-            List<AxisAlignedBB> boxes = ((ITileBoundingBoxProvider) tileEntity).getBoundingBoxes();
+    public static void handleTileEntityRendering(BlockEntity blockEntity, PoseStack poseStack, MultiBufferSource bufferSource) {
+        if (blockEntity instanceof ITileBoundingBoxProvider) {
+            List<AABB> boxes = ((ITileBoundingBoxProvider) blockEntity).getBoundingBoxes();
 
             if (boxes == null || boxes.isEmpty())
                 return;
 
-            EntityRendererManager rendererManager = Minecraft.getInstance().getEntityRenderDispatcher();
+            EntityRenderDispatcher renderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
 
-            if (rendererManager.shouldRenderHitBoxes() && !Minecraft.getInstance().showOnlyReducedInfo()) {
-                BlockPos pos = tileEntity.getBlockPos();
+            if (renderDispatcher.shouldRenderHitBoxes() && !Minecraft.getInstance().showOnlyReducedInfo()) {
+                BlockPos pos = blockEntity.getBlockPos();
 
-                for (AxisAlignedBB box : boxes) {
+                for (AABB box : boxes) {
                     box = box.move(-pos.getX(), -pos.getY(), -pos.getZ());
-                    WorldRenderer.renderLineBox(matrixStack, buffer.getBuffer(RenderType.lines()), box, 0.0F, 1.0F, 0.0F, 1.0F);
+                    LevelRenderer.renderLineBox(poseStack, bufferSource.getBuffer(RenderType.lines()), box, 0.0F, 1.0F, 0.0F, 1.0F);
                 }
             }
         }

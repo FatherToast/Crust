@@ -1,13 +1,14 @@
 package fathertoast.crust.client.mode;
 
+import com.mojang.blaze3d.shaders.FogShape;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.common.mode.CrustModeEvents;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -17,12 +18,15 @@ public class CrustModeClientEvents {
     
     private static Float originalStepHeight;
     private static Float originalFlySpeed;
-    
+
+    // TODO - Check if this works as intended
     /** Called before rendering fog. */
     @SubscribeEvent
-    static void onFogDensity( EntityViewRenderEvent.FogDensity event ) {
+    static void onFogDensity( ViewportEvent.RenderFog event ) {
         if( CrustModes.SUPER_VISION.enabled( Minecraft.getInstance().player ) ) {
-            event.setDensity( 0.0F );
+            event.setFogShape( FogShape.CYLINDER );
+            event.scaleNearPlaneDistance( 0.0F );
+            event.scaleFarPlaneDistance( 0.0F );
             event.setCanceled( true ); // Event must be canceled to apply changes
         }
     }
@@ -41,11 +45,12 @@ public class CrustModeClientEvents {
      * Called each player tick. Server event is handled in
      * {@link fathertoast.crust.common.mode.CrustModeEvents#onPlayerTick(TickEvent.PlayerTickEvent)}.
      */
+    @SuppressWarnings("JavadocReference")
     @SubscribeEvent
     static void onPlayerTick( TickEvent.PlayerTickEvent event ) {
         if( event.phase != TickEvent.Phase.END || event.player != Minecraft.getInstance().player ) return;
         
-        PlayerEntity player = event.player;
+        Player player = event.player;
         CrustModesData playerModes = CrustModesData.of( player );
         
         // Various timers
@@ -56,21 +61,21 @@ public class CrustModeClientEvents {
         // Super speed
         if( clock4 == 3 ) {
             if( player.isSprinting() && playerModes.enabled( CrustModes.SUPER_SPEED ) ) {
-                if( originalStepHeight == null ) originalStepHeight = player.maxUpStep;
-                player.maxUpStep = Math.max( originalStepHeight, 1.0F );
+                if( originalStepHeight == null ) originalStepHeight = player.maxUpStep();
+                player.setMaxUpStep( Math.max( originalStepHeight, 1.0F ));
                 
-                if( player.abilities.flying ) {
-                    if( originalFlySpeed == null ) originalFlySpeed = player.abilities.getFlyingSpeed();
-                    player.abilities.setFlyingSpeed( originalFlySpeed * playerModes.get( CrustModes.SUPER_SPEED ) );
+                if( player.getAbilities().flying ) {
+                    if( originalFlySpeed == null ) originalFlySpeed = player.getAbilities().getFlyingSpeed();
+                    player.getAbilities().setFlyingSpeed( originalFlySpeed * playerModes.get( CrustModes.SUPER_SPEED ) );
                 }
             }
             else {
                 if( originalStepHeight != null ) {
-                    player.maxUpStep = originalStepHeight;
+                    player.setMaxUpStep( originalStepHeight );
                     originalStepHeight = null;
                 }
                 if( originalFlySpeed != null ) {
-                    player.abilities.setFlyingSpeed( originalFlySpeed );
+                    player.getAbilities().setFlyingSpeed( originalFlySpeed );
                     originalFlySpeed = null;
                 }
             }

@@ -3,7 +3,7 @@ package fathertoast.crust.common.mixin_work;
 import fathertoast.crust.api.event.AdvancementLoadEvent;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.HashMap;

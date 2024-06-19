@@ -1,16 +1,16 @@
 package fathertoast.crust.client;
 
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.KeyMapping;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 
-public class SortedKeyBinding extends KeyBinding {
+public class SortedKeyBinding extends KeyMapping {
     
     private final int index;
     
-    public SortedKeyBinding( int i, String description, KeyConflictContext conflictContext,
-                             InputMappings.Type inputType, int keyCode, String category ) {
+    public SortedKeyBinding(int i, String description, KeyConflictContext conflictContext,
+                            InputConstants.Type inputType, int keyCode, String category ) {
         super( description, conflictContext, inputType, keyCode, category );
         index = i;
     }
@@ -21,13 +21,13 @@ public class SortedKeyBinding extends KeyBinding {
     }
     
     public SortedKeyBinding( int i, String description, KeyConflictContext conflictContext,
-                             KeyModifier modifier, InputMappings.Input keyCode, String category ) {
+                             KeyModifier modifier, InputConstants.Key keyCode, String category ) {
         super( description, conflictContext, modifier, keyCode, category );
         index = i;
     }
     
     @Override
-    public int compareTo( KeyBinding other ) {
+    public int compareTo( KeyMapping other ) {
         if( !getCategory().equals( other.getCategory() ) ) return super.compareTo( other );
         return Integer.compare( index, ((SortedKeyBinding) other).index );
     }

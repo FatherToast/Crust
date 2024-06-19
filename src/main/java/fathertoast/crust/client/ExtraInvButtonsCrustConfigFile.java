@@ -9,9 +9,12 @@ import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.CrustAnchor;
 import fathertoast.crust.client.button.ButtonInfo;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.loot.LootTables;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootTableReference;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -232,18 +235,18 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                 return new String[] { "Clear inventory", "fire.png", "clear" };
             if( ++i == index )
                 return new String[] { "Simulate chest loot", "chest_open.png", "clear",
-                        "loot give @s loot " + ConfigUtil.toString( LootTables.SIMPLE_DUNGEON ) };
+                        "loot give @s loot " + ConfigUtil.toString( BuiltInLootTables.SIMPLE_DUNGEON ) };
             if( ++i == index )
                 return new String[] { "Simulate loot of nearest mob", "kill.png", "loot give @s kill @e[limit=1,sort=nearest,type=!player]" };
             if( ++i == index ) {
                 String pattern = "attribute @e[limit=1,sort=nearest,type=!player] %s get";
                 return new String[] { "Check attributes of nearest mob", "magnifying_glass.png",
-                        String.format( pattern, ConfigUtil.toString( Attributes.MAX_HEALTH ) ),
-                        String.format( pattern, ConfigUtil.toString( Attributes.ARMOR ) ),
-                        String.format( pattern, ConfigUtil.toString( Attributes.ARMOR_TOUGHNESS ) ),
-                        String.format( pattern, ConfigUtil.toString( Attributes.FOLLOW_RANGE ) ),
-                        String.format( pattern, ConfigUtil.toString( Attributes.MOVEMENT_SPEED ) ),
-                        String.format( pattern, ConfigUtil.toString( Attributes.ATTACK_DAMAGE ) ) };
+                        String.format( pattern, ConfigUtil.toString( ForgeRegistries.ATTRIBUTES.getKey( Attributes.MAX_HEALTH ) ) ),
+                        String.format( pattern, ConfigUtil.toString( ForgeRegistries.ATTRIBUTES.getKey( Attributes.ARMOR ) ) ),
+                        String.format( pattern, ConfigUtil.toString( ForgeRegistries.ATTRIBUTES.getKey( Attributes.ARMOR_TOUGHNESS ) ) ),
+                        String.format( pattern, ConfigUtil.toString( ForgeRegistries.ATTRIBUTES.getKey( Attributes.FOLLOW_RANGE ) ) ),
+                        String.format( pattern, ConfigUtil.toString( ForgeRegistries.ATTRIBUTES.getKey( Attributes.MOVEMENT_SPEED ) ) ),
+                        String.format( pattern, ConfigUtil.toString( ForgeRegistries.ATTRIBUTES.getKey( Attributes.ATTACK_DAMAGE ) ) ) };
             }
             
             // Defaults to a button that gives you the name and button number; also it kills you if you press it

@@ -1,18 +1,18 @@
 package fathertoast.crust.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
 import fathertoast.crust.client.button.ButtonInfo;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
 
@@ -27,28 +27,29 @@ public class KeyBindingEvents {
     
     private static final String KEY = "key." + ICrustApi.MOD_ID + ".";
     
-    private static final KeyBinding CONFIG_EDITOR = new SortedKeyBinding( 0, KEY + "configs", KeyConflictContext.UNIVERSAL,
+    private static final KeyMapping CONFIG_EDITOR = new SortedKeyBinding( 0, KEY + "configs", KeyConflictContext.UNIVERSAL,
             KeyModifier.CONTROL, Key.code( "o" ), KEY_CAT );
     //    private static final KeyBinding EQUIP = new SortedKeyBinding( 0, KEY + "equip", KeyConflictContext.GUI,
     //            KeyModifier.NONE, InputMappings.getKey( "key.mouse.middle" ), KEY_CAT );
     
-    private static final KeyBinding[] BUTTONS;
+    private static final KeyMapping[] BUTTONS;
     
     /** Registers this mod's additional key bindings. */
-    static void register() {
-        ClientRegistry.registerKeyBinding( CONFIG_EDITOR );
+    static void register( RegisterKeyMappingsEvent event ) {
+        event.register( CONFIG_EDITOR );
+
         //ClientRegistry.registerKeyBinding( EQUIP );
-        for( KeyBinding binding : BUTTONS ) {
-            ClientRegistry.registerKeyBinding( binding );
+        for( KeyMapping binding : BUTTONS ) {
+            event.register( binding );
         }
     }
     
     /** Called when a key is pressed. */
     @SubscribeEvent
-    static void onKeyInput( InputEvent.KeyInputEvent event ) {
+    static void onKeyInput( InputEvent.Key event ) {
         Minecraft minecraft = Minecraft.getInstance();
         Screen screen = minecraft.screen;
-        if( event.getKey() == InputMappings.UNKNOWN.getValue() || screen != null && screen.isPauseScreen() ) return;
+        if( event.getKey() == InputConstants.UNKNOWN.getValue() || screen != null && screen.isPauseScreen() ) return;
         
         if( event.getAction() == GLFW.GLFW_PRESS ) {
             if( event.getKey() == CONFIG_EDITOR.getKey().getValue() && CONFIG_EDITOR.isConflictContextAndModifierActive() ) {
@@ -61,7 +62,7 @@ public class KeyBindingEvents {
             else {
                 // Check for extra inventory button keybinding presses
                 for( int i = 0; i < BUTTONS.length; i++ ) {
-                    KeyBinding binding = BUTTONS[i];
+                    KeyMapping binding = BUTTONS[i];
                     if( event.getKey() == binding.getKey().getValue() && binding.isConflictContextAndModifierActive() ) {
                         pressButton( i < ButtonInfo.builtInIds().size() ? ButtonInfo.builtInIds().get( i ) :
                                 "custom" + (i + 1 - ButtonInfo.builtInIds().size()) );
@@ -83,7 +84,7 @@ public class KeyBindingEvents {
     static {
         String key = KEY + "buttons.";
         List<String> builtInButtons = ButtonInfo.builtInIds();
-        BUTTONS = new KeyBinding[builtInButtons.size() + ClientRegister.EXTRA_INV_BUTTONS.CUSTOM_BUTTONS.length];
+        BUTTONS = new KeyMapping[builtInButtons.size() + ClientRegister.EXTRA_INV_BUTTONS.CUSTOM_BUTTONS.length];
         
         // Built-in buttons
         int index = 0;
@@ -97,7 +98,7 @@ public class KeyBindingEvents {
                 }
                 else {
                     BUTTONS[index] = new SortedKeyBinding( index, key + button.ID.toLowerCase( Locale.ROOT ),
-                            InputMappings.UNKNOWN.getValue(), KEY_CAT_BUTTONS );
+                            InputConstants.UNKNOWN.getValue(), KEY_CAT_BUTTONS );
                 }
             }
         }
@@ -105,7 +106,7 @@ public class KeyBindingEvents {
         // User-defined buttons
         for( int i = 0; i < ClientRegister.EXTRA_INV_BUTTONS.CUSTOM_BUTTONS.length; i++ ) {
             BUTTONS[index + i] = new SortedKeyBinding( index + i, key + "custom" + (i + 1),
-                    InputMappings.UNKNOWN.getValue(), KEY_CAT_BUTTONS );
+                    InputConstants.UNKNOWN.getValue(), KEY_CAT_BUTTONS );
         }
     }
     
@@ -118,12 +119,12 @@ public class KeyBindingEvents {
         public static Key of( KeyModifier modifier, String key ) { return new Key( modifier, code( key ) ); }
         
         /** @return The key code for a keyboard key. */
-        public static InputMappings.Input code( String key ) { return InputMappings.getKey( "key.keyboard." + key ); }
+        public static InputConstants.Key code( String key ) { return InputConstants.getKey( "key.keyboard." + key ); }
         
         final KeyModifier MODIFIER;
-        final InputMappings.Input KEY_CODE;
+        final InputConstants.Key KEY_CODE;
         
-        private Key( KeyModifier modifier, InputMappings.Input keyCode ) {
+        private Key( KeyModifier modifier, InputConstants.Key keyCode ) {
             MODIFIER = modifier;
             KEY_CODE = keyCode;
         }

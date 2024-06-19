@@ -1,19 +1,19 @@
 package fathertoast.crust.common.network.message;
 
 import fathertoast.crust.common.network.work.CrustClientWork;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 public class S2CUpdateCrustModes {
     
-    public final CompoundNBT CRUST_MODES_TAG;
+    public final CompoundTag CRUST_MODES_TAG;
     
-    public S2CUpdateCrustModes( @Nullable CompoundNBT crustModesTag ) {
-        CRUST_MODES_TAG = crustModesTag == null ? new CompoundNBT() : crustModesTag;
+    public S2CUpdateCrustModes( @Nullable CompoundTag crustModesTag ) {
+        CRUST_MODES_TAG = crustModesTag == null ? new CompoundTag() : crustModesTag;
     }
     
     /** Handles receipt of the message. */
@@ -27,12 +27,12 @@ public class S2CUpdateCrustModes {
     }
     
     /** Reads the message from a data buffer. */
-    public static S2CUpdateCrustModes decode( PacketBuffer buffer ) {
+    public static S2CUpdateCrustModes decode( FriendlyByteBuf buffer ) {
         return new S2CUpdateCrustModes( buffer.readNbt() );
     }
     
     /** Writes the message to a data buffer. */
-    public static void encode( S2CUpdateCrustModes message, PacketBuffer buffer ) {
+    public static void encode( S2CUpdateCrustModes message, FriendlyByteBuf buffer ) {
         buffer.writeNbt( message.CRUST_MODES_TAG );
     }
 }

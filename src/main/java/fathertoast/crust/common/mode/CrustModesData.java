@@ -6,8 +6,8 @@ import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.config.CrustModesConfigFile;
 import fathertoast.crust.common.core.CrustForgeEvents;
 import fathertoast.crust.common.mode.type.CrustMode;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
 
 public class CrustModesData {
     
@@ -16,18 +16,18 @@ public class CrustModesData {
     
     /** @return A data helper that provides simple access to the player's Crust mode save data. */
     // We can cache by player UUID here, if needed - might be a little messy
-    public static CrustModesData of( PlayerEntity player ) { return new CrustModesData( player ); }
+    public static CrustModesData of( Player player ) { return new CrustModesData( player ); }
     
     /** The player. */
-    private final PlayerEntity PLAYER;
+    private final Player PLAYER;
     /** The NBT compound that stores all mode save data. */
-    private final CompoundNBT SAVE_TAG;
+    private final CompoundTag SAVE_TAG;
     
     /** Creates a new data helper that provides simple access to mode save data. */
-    private CrustModesData( PlayerEntity player ) {
+    private CrustModesData( Player player ) {
         PLAYER = player;
-        CompoundNBT modTag = NBTHelper.getPlayerData( player, ICrustApi.MOD_ID );
-        boolean setDefaults = !player.level.isClientSide() && !NBTHelper.containsCompound( modTag, TAG_NAME );
+        CompoundTag modTag = NBTHelper.getPlayerData( player, ICrustApi.MOD_ID );
+        boolean setDefaults = !player.level().isClientSide() && !NBTHelper.containsCompound( modTag, TAG_NAME );
         SAVE_TAG = NBTHelper.getOrCreateCompound( modTag, TAG_NAME );
         
         if( setDefaults ) {
@@ -58,7 +58,7 @@ public class CrustModesData {
     public <T> void enable( CrustMode<T> mode, T data ) {
         if( !get( mode ).equals( data ) ) {
             mode.enable( SAVE_TAG, data );
-            if( !PLAYER.level.isClientSide() ) CrustForgeEvents.markModesDirty( PLAYER );
+            if( !PLAYER.level().isClientSide() ) CrustForgeEvents.markModesDirty( PLAYER );
         }
     }
     
@@ -66,11 +66,11 @@ public class CrustModesData {
     public void disable( CrustMode<?> mode ) {
         if( mode.enabled( SAVE_TAG ) ) {
             mode.disable( SAVE_TAG );
-            if( !PLAYER.level.isClientSide() ) CrustForgeEvents.markModesDirty( PLAYER );
+            if( !PLAYER.level().isClientSide() ) CrustForgeEvents.markModesDirty( PLAYER );
         }
     }
     
     
     /** The NBT compound that stores all mode save data. Do NOT modify this directly if you don't need to. */
-    public CompoundNBT getSaveTag() { return SAVE_TAG; }
+    public CompoundTag getSaveTag() { return SAVE_TAG; }
 }

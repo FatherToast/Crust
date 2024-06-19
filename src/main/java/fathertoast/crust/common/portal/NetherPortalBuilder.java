@@ -2,20 +2,21 @@ package fathertoast.crust.common.portal;
 
 import com.google.common.collect.ImmutableSet;
 import fathertoast.crust.api.portal.PortalBuilder;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+
 
 import java.util.Set;
 
 public class NetherPortalBuilder extends PortalBuilder {
     
-    private static final Set<ResourceLocation> VALID_DIMENSIONS = ImmutableSet.of( World.OVERWORLD.location(), World.NETHER.location() );
+    private static final Set<ResourceLocation> VALID_DIMENSIONS = ImmutableSet.of( Level.OVERWORLD.location(), Level.NETHER.location() );
     
     /** @return True if this portal builder can be used in the provided dimension. */
     public boolean isValidDimension( ResourceLocation dimension ) { return VALID_DIMENSIONS.contains( dimension ); }
@@ -23,7 +24,7 @@ public class NetherPortalBuilder extends PortalBuilder {
     /**
      * Generates the portal in the world with a particular position and direction.
      *
-     * @param world      The world to generate in.
+     * @param level      The world to generate in.
      * @param currentPos The front-center position of the portal. This is often a block position directly
      *                   above a solid 'floor block'. This is mutable so that you can #move() it rather than
      *                   create numerous BlockPos objects.
@@ -31,7 +32,7 @@ public class NetherPortalBuilder extends PortalBuilder {
      *                   see the portal. By convention, the transverse direction is forward.getClockWise().
      */
     @Override
-    public void generate( World world, BlockPos.Mutable currentPos, Direction forward ) {
+    public void generate( Level level, BlockPos.MutableBlockPos currentPos, Direction forward ) {
         Direction transverse = forward.getClockWise();
         
         currentPos.move( transverse, -1 );
@@ -47,8 +48,8 @@ public class NetherPortalBuilder extends PortalBuilder {
                 if( tv == 0 || tv == 4 || up == 0 || up == 4 ) {
                     currentPos.set( frameCorner ).move( transverse, tv )
                             .move( Direction.UP, up );
-                    
-                    world.setBlock( currentPos, frameBlock, Constants.BlockFlags.DEFAULT );
+
+                    level.setBlock( currentPos, frameBlock, Block.UPDATE_ALL );
                 }
             }
         }
@@ -59,9 +60,9 @@ public class NetherPortalBuilder extends PortalBuilder {
             for( int up = 0; up < 3; up++ ) {
                 currentPos.set( portalCorner ).move( transverse, tv )
                         .move( Direction.UP, up );
-                
-                world.setBlock( currentPos, portalBlock,
-                        Constants.BlockFlags.BLOCK_UPDATE | Constants.BlockFlags.UPDATE_NEIGHBORS );
+
+                level.setBlock( currentPos, portalBlock,
+                        Block.UPDATE_CLIENTS | Block.UPDATE_NEIGHBORS );
             }
         }
     }

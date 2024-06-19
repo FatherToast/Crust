@@ -9,7 +9,7 @@ import fathertoast.crust.api.config.common.field.InjectionWrapperField;
 import fathertoast.crust.api.config.common.field.IntField;
 import fathertoast.crust.api.config.common.field.RestartNote;
 import fathertoast.crust.common.core.Crust;
-import net.minecraft.world.GameRules;
+import net.minecraft.world.level.GameRules;
 
 import java.util.Locale;
 import java.util.Map;
@@ -62,17 +62,17 @@ public class GameRulesCrustConfigFile extends AbstractConfigFile {
             super( parent, category.name().toLowerCase( Locale.ROOT ),
                     "Default game rule settings for the '" + category.name().toLowerCase() + "' category." );
             
-            for( Map.Entry<GameRules.RuleKey<?>, GameRules.RuleType<?>> rule : GameRules.GAME_RULE_TYPES.entrySet() ) {
-                if( category.BASE.equals( rule.getKey().category ) ) {
-                    final GameRules.RuleValue<?> testValue = rule.getValue().createRule();
+            for( Map.Entry<GameRules.Key<?>, GameRules.Type<?>> rule : GameRules.GAME_RULE_TYPES.entrySet() ) {
+                if( category.BASE.equals( rule.getKey().getCategory() ) ) {
+                    final GameRules.Value<?> testValue = rule.getValue().createRule();
                     if( testValue instanceof GameRules.BooleanValue ) {
                         //noinspection unchecked
-                        defineFor( (GameRules.RuleKey<GameRules.BooleanValue>) rule.getKey(),
+                        defineFor( (GameRules.Key<GameRules.BooleanValue>) rule.getKey(),
                                 (((GameRules.BooleanValue) testValue).get()) );
                     }
                     else if( testValue instanceof GameRules.IntegerValue ) {
                         //noinspection unchecked
-                        defineFor( (GameRules.RuleKey<GameRules.IntegerValue>) rule.getKey(),
+                        defineFor( (GameRules.Key<GameRules.IntegerValue>) rule.getKey(),
                                 (((GameRules.IntegerValue) testValue).get()) );
                     }
                     else {
@@ -84,7 +84,7 @@ public class GameRulesCrustConfigFile extends AbstractConfigFile {
         }
         
         /** Defines a config option in the spec to control the default setting of a boolean game rule. */
-        private void defineFor( GameRules.RuleKey<GameRules.BooleanValue> gameRule, boolean defaultValue ) {
+        private void defineFor( GameRules.Key<GameRules.BooleanValue> gameRule, boolean defaultValue ) {
             String id = ConfigUtil.camelCaseToLowerUnderscore( gameRule.getId() );
             BooleanField wrappedField = new BooleanField( id, defaultValue, (String[]) null );
             SPEC.define( new InjectionWrapperField<>( wrappedField, ( wrapped ) -> {
@@ -95,7 +95,7 @@ public class GameRulesCrustConfigFile extends AbstractConfigFile {
         }
         
         /** Defines a config option in the spec to control the default setting of an integer game rule. */
-        private void defineFor( GameRules.RuleKey<GameRules.IntegerValue> gameRule, int defaultValue ) {
+        private void defineFor( GameRules.Key<GameRules.IntegerValue> gameRule, int defaultValue ) {
             String id = ConfigUtil.camelCaseToLowerUnderscore( gameRule.getId() );
             IntField wrappedField = new IntField( id, defaultValue, IntField.Range.ANY, (String[]) null );
             SPEC.define( new InjectionWrapperField<>( wrappedField, ( wrapped ) -> {

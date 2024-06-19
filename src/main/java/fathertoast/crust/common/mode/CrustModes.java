@@ -4,7 +4,7 @@ import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.mode.type.CrustByteMode;
 import fathertoast.crust.common.mode.type.CrustFloatMode;
 import fathertoast.crust.common.mode.type.CrustMode;
-import net.minecraft.potion.Effects;
+import net.minecraft.world.effect.MobEffects;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -62,7 +62,7 @@ public final class CrustModes {
     /** Grants night vision, removes fog, and clears blindness. */
     public static final CrustMode<Byte> SUPER_VISION = new CrustByteMode( "vision", CrustConfig.MODES.GENERAL.visionOpLevel::get,
             ( player, value ) -> {
-                if( value == null ) player.removeEffect( Effects.NIGHT_VISION );
+                if( value == null ) player.removeEffect( MobEffects.NIGHT_VISION );
                 return value;
             } );
     /** Dramatically increases sprint speed. */

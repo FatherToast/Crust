@@ -7,13 +7,13 @@ import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.config.common.value.*;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
 import fathertoast.crust.api.config.common.value.environment.biome.BiomeCategory;
-import net.minecraft.block.AbstractFurnaceBlock;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.level.block.AbstractFurnaceBlock;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class TestConfigFile extends AbstractConfigFile {
         public final EnumField<BiomeCategory> enumField;
         public final EnvironmentListField environmentListField;
         public final IntField intField;
-        public final LazyRegistryEntryListField<Effect> lazyRegistryEntryListField;
+        public final LazyRegistryEntryListField<MobEffect> lazyRegistryEntryListField;
         public final ScaledDoubleField scaledDoubleField;
         public final SqrDoubleField sqrDoubleField;
         public final StringField stringField;
@@ -121,7 +121,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             (String[]) null ), General::testCallback ) ).field();
             lazyRegistryEntryListField = SPEC.define( new InjectionWrapperField<>(
                     new LazyRegistryEntryListField<>( "lazy_registry_entry_list",
-                            new LazyRegistryEntryList<>( ForgeRegistries.POTIONS, Effects.CONFUSION ),
+                            new LazyRegistryEntryList<>( ForgeRegistries.MOB_EFFECTS, MobEffects.CONFUSION ),
                             (String[]) null ), General::testCallback ) ).field();
             scaledDoubleField = SPEC.define( new InjectionWrapperField<>(
                     new ScaledDoubleField( "scaled_double", 1.0, 6.0, DoubleField.Range.ANY,
@@ -143,8 +143,8 @@ public class TestConfigFile extends AbstractConfigFile {
         
         private static String generateFormatTest() {
             StringBuilder str = new StringBuilder( "TEST" );
-            for( TextFormatting format : TextFormatting.values() ) {
-                str.append( ' ' ).append( format ).append( format.name() ).append( TextFormatting.RESET );
+            for( ChatFormatting format : ChatFormatting.values() ) {
+                str.append( ' ' ).append( format ).append( format.name() ).append( ChatFormatting.RESET );
             }
             return str.toString();
         }

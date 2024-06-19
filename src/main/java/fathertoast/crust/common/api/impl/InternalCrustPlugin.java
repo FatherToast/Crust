@@ -4,7 +4,7 @@ import fathertoast.crust.api.CrustPlugin;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.ICrustPlugin;
 import fathertoast.crust.common.core.Crust;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 @CrustPlugin
 public class InternalCrustPlugin implements ICrustPlugin {

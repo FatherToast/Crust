@@ -4,9 +4,9 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import fathertoast.crust.common.command.CommandUtil;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
@@ -22,16 +22,16 @@ public class CrustDoubleMode extends CrustMode<Double> {
     
     /** @return This mode's saved data. */
     @Override
-    public Double get( CompoundNBT tag ) { return tag.getDouble( ID ); }
+    public Double get( CompoundTag tag ) { return tag.getDouble( ID ); }
     
     /** Saves this mode's data. */
     @Override
-    public void enable( CompoundNBT tag, Double value ) { tag.putDouble( ID, value ); }
+    public void enable( CompoundTag tag, Double value ) { tag.putDouble( ID, value ); }
     
     
     /** @return The argument for this mode's value when referenced by the crustmode command. */
     @Override
-    public RequiredArgumentBuilder<CommandSource, Double> commandArgument( String arg ) {
+    public RequiredArgumentBuilder<CommandSourceStack, Double> commandArgument( String arg ) {
         return CommandUtil.argument( arg, DoubleArgumentType.doubleArg() );
     }
     
@@ -42,7 +42,7 @@ public class CrustDoubleMode extends CrustMode<Double> {
      * @param arg The argument corresponding to the value. Null for a 'disable' command.
      */
     @Override
-    public void onCommand( CommandContext<CommandSource> context, @Nullable String arg, ServerPlayerEntity player ) {
+    public void onCommand( CommandContext<CommandSourceStack> context, @Nullable String arg, ServerPlayer player ) {
         validate( player, arg == null ? null : DoubleArgumentType.getDouble( context, arg ) );
     }
 }

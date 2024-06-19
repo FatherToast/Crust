@@ -4,6 +4,6 @@
 package fathertoast.crust.client.mode;
 
 import fathertoast.crust.common.util.annotations.OnClient;
-import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

@@ -4,14 +4,15 @@ import com.mojang.brigadier.CommandDispatcher;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.common.command.CommandUtil;
 import fathertoast.crust.common.network.CrustPacketHandler;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
 public class CrustCleanCommand {
     
     /** Command builder. */
-    public static void register( CommandDispatcher<CommandSource> dispatcher ) {
+    public static void register( CommandDispatcher<CommandSourceStack> dispatcher ) {
         // crustclean pointer [<player>]
         dispatcher.register( CommandUtil.literal( ICrustApi.MOD_ID + "clean" )
                 .then( CommandUtil.literal( "pointer" )
@@ -22,13 +23,13 @@ public class CrustCleanCommand {
     }
     
     /** Command implementation. */
-    private static int runPointer( CommandSource source, ServerPlayerEntity player ) {
-        if( player.inventory.getCarried().isEmpty() ) {
+    private static int runPointer( CommandSourceStack source, ServerPlayer player ) {
+        if( player.inventoryMenu.getCarried().isEmpty() ) {
             CommandUtil.sendFailure( source, "clean.pointer", player.getDisplayName() );
             return 0;
         }
         
-        player.inventory.setCarried( ItemStack.EMPTY );
+        player.inventoryMenu.setCarried( ItemStack.EMPTY );
         CrustPacketHandler.sendDestroyItemOnPointerUpdate( player );
         CommandUtil.sendSuccess( source, "clean.pointer", player.getDisplayName() );
         return 1;

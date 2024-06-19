@@ -1,12 +1,14 @@
 package fathertoast.crust.client.button;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import fathertoast.crust.api.ICrustApi;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+
+import java.util.function.Supplier;
 
 public class ExtraMenuButton extends Button {
     
@@ -15,26 +17,22 @@ public class ExtraMenuButton extends Button {
     public static final int BUTTON_SIZE = 20;
     
     
-    public ExtraMenuButton( int leftPos, int topPos, IPressable onPress ) {
+    public ExtraMenuButton( int leftPos, int topPos, OnPress onPress ) {
         super( leftPos, topPos, BUTTON_SIZE, BUTTON_SIZE,
-                new StringTextComponent( "" ), onPress, Button.NO_TOOLTIP );
+                Component.literal(""), onPress, Supplier::get );
     }
     
     @Override
-    public void renderButton( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks ) {
-        Minecraft mc = Minecraft.getInstance();
-        
-        mc.getTextureManager().bind( BUTTON_TEXTURE );
-        //noinspection deprecation
-        RenderSystem.color4f( 1.0F, 1.0F, 1.0F, alpha );
+    public void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks ) {
+        RenderSystem.setShaderColor( 1.0F, 1.0F, 1.0F, alpha );
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        
-        blit( matrixStack, x, y, 0.0F, BUTTON_SIZE * getYImage( isHovered() ),
+
+        graphics.blit( BUTTON_TEXTURE, getX(), getY(), 0.0F, BUTTON_SIZE * getTextureY( ),
                 BUTTON_SIZE, BUTTON_SIZE, BUTTON_SIZE, BUTTON_SIZE * 2 );
     }
     
     @Override
-    protected int getYImage( boolean isHovered ) { return isHovered ? 1 : 0; }
+    public int getTextureY( ) { return isHovered ? 1 : 0; }
 }

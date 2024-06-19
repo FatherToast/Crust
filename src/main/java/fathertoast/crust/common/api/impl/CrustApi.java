@@ -15,7 +15,7 @@ public final class CrustApi implements ICrustApi {
     public CrustApi() {
         if( ModList.get().isLoaded( "apocalypse" ) ) {
             // Do not instantiate unless Apocalypse is present
-            difficultyAccessor = new DifficultyAccessor();
+            difficultyAccessor = new DifficultyAccessor( );
             Crust.LOG.info( "Instantiated Apocalypse Rebooted Difficulty Accessor" );
         }
         else {

@@ -5,10 +5,11 @@ import com.mojang.brigadier.context.CommandContext;
 import fathertoast.crust.api.lib.NBTHelper;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
@@ -22,7 +23,7 @@ public abstract class CrustMode<T> {
     
     /**
      * Command handler used to validate requests. A simple default implementation for this validation
-     * is provided by {@link #validate(ServerPlayerEntity, T)}.
+     * is provided by {@link #validate(ServerPlayer, T)}.
      */
     protected final ICommandHandler<T> VALIDATOR;
     
@@ -42,23 +43,23 @@ public abstract class CrustMode<T> {
      * This is a shortcut method handy when we don't need to do anything else with the mode data.
      * @see CrustModesData#enabled(CrustMode)
      */
-    public final boolean enabled( @Nullable PlayerEntity player ) { return player != null && CrustModesData.of( player ).enabled( this ); }
+    public final boolean enabled( @Nullable Player player ) { return player != null && CrustModesData.of( player ).enabled( this ); }
     
     /** @return True if any save data for this mode exists. */
-    public boolean enabled( CompoundNBT tag ) { return NBTHelper.containsNumber( tag, ID ); }
+    public boolean enabled( CompoundTag tag ) { return NBTHelper.containsNumber( tag, ID ); }
     
     /** @return This mode's saved data, or its non-null default value if no save data exists. */
-    public abstract T get( CompoundNBT tag );
+    public abstract T get( CompoundTag tag );
     
     /** Saves this mode's data. */
-    public abstract void enable( CompoundNBT tag, T value );
+    public abstract void enable( CompoundTag tag, T value );
     
     /** Disables this mode by deleting any existing save data. */
-    public void disable( CompoundNBT tag ) { tag.remove( ID ); }
+    public void disable( CompoundTag tag ) { tag.remove( ID ); }
     
     
     /** @return The argument for this mode's value when referenced by the crustmode command. */
-    public abstract RequiredArgumentBuilder<CommandSource, ?> commandArgument( String arg );
+    public abstract RequiredArgumentBuilder<CommandSourceStack, ?> commandArgument(String arg );
     
     /**
      * Updates this mode's data based on command input.
@@ -66,10 +67,10 @@ public abstract class CrustMode<T> {
      *
      * @param arg The argument corresponding to the value for an 'enable' command. Null for a 'disable' command.
      */
-    public abstract void onCommand( CommandContext<CommandSource> context, @Nullable String arg, ServerPlayerEntity player );
+    public abstract void onCommand(CommandContext<CommandSourceStack> context, @Nullable String arg, ServerPlayer player );
     
     /** Validates and applies a command set request. */
-    protected void validate( ServerPlayerEntity player, @Nullable T value ) {
+    protected void validate( ServerPlayer player, @Nullable T value ) {
         if( VALIDATOR != null ) value = VALIDATOR.validate( player, value );
         if( value == null ) CrustModesData.of( player ).disable( this );
         else CrustModesData.of( player ).enable( this, value );
@@ -79,6 +80,6 @@ public abstract class CrustMode<T> {
     public interface ICommandHandler<T> {
         /** @return The value, corrected or bounded if necessary. */
         @Nullable
-        T validate( ServerPlayerEntity player, @Nullable T value );
+        T validate( ServerPlayer player, @Nullable T value );
     }
 }

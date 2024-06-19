@@ -9,22 +9,22 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import fathertoast.crust.api.portal.PortalBuilder;
 import fathertoast.crust.common.portal.CrustPortals;
-import net.minecraft.command.CommandSource;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.concurrent.CompletableFuture;
 
 public class PortalTypeArgument implements ArgumentType<PortalBuilder> {
     
-    public static final SimpleCommandExceptionType INVALID_PORTAL_TYPE = new SimpleCommandExceptionType( new TranslationTextComponent( "crust.argument.portal_type.notfound" ) );
+    public static final SimpleCommandExceptionType INVALID_PORTAL_TYPE = new SimpleCommandExceptionType( Component.translatable( "crust.argument.portal_type.notfound" ) );
     
     
     public static PortalTypeArgument portalType() {
         return new PortalTypeArgument();
     }
     
-    public static PortalBuilder getPortalType( CommandContext<CommandSource> context, String name ) {
+    public static PortalBuilder getPortalType( CommandContext<CommandSourceStack> context, String name ) {
         return context.getArgument( name, PortalBuilder.class );
     }
     
@@ -35,7 +35,7 @@ public class PortalTypeArgument implements ArgumentType<PortalBuilder> {
         
         for( PortalBuilder builder : CrustPortals.PORTAL_REGISTRY.get().getValues() ) {
             //noinspection ConstantConditions
-            suggestions.suggest( builder.getRegistryName().toString() );
+            suggestions.suggest( CrustPortals.PORTAL_REGISTRY.get().getKey( builder ).toString() );
         }
         return suggestions.buildFuture();
     }
