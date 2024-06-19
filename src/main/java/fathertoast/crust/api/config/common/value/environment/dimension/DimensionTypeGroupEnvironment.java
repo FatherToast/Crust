@@ -3,12 +3,13 @@ package fathertoast.crust.api.config.common.value.environment.dimension;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.environment.DynamicRegistryGroupEnvironment;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.DimensionType;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.dimension.DimensionType;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 public class DimensionTypeGroupEnvironment extends DynamicRegistryGroupEnvironment<DimensionType> {
     
     @SuppressWarnings( "unused" )
-    public DimensionTypeGroupEnvironment( ConfigManager cfgManager, RegistryKey<DimensionType> dimType, boolean invert ) {
+    public DimensionTypeGroupEnvironment( ConfigManager cfgManager, ResourceKey<DimensionType> dimType, boolean invert ) {
         this( cfgManager, dimType.location(), invert );
     }
     
@@ -28,13 +29,13 @@ public class DimensionTypeGroupEnvironment extends DynamicRegistryGroupEnvironme
     
     /** @return The registry used. */
     @Override
-    public RegistryKey<Registry<DimensionType>> getRegistry() { return Registry.DIMENSION_TYPE_REGISTRY; }
+    public ResourceKey<Registry<DimensionType>> getRegistry() { return Registries.DIMENSION_TYPE; }
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override
-    public final boolean matches( ServerWorld world, @Nullable BlockPos pos ) {
-        final DimensionType target = world.dimensionType();
-        final List<DimensionType> entries = getRegistryEntries( world );
+    public final boolean matches( ServerLevel level, @Nullable BlockPos pos ) {
+        final DimensionType target = level.dimensionType();
+        final List<DimensionType> entries = getRegistryEntries( level );
         for( DimensionType entry : entries ) {
             if( entry.equals( target ) ) return !INVERT;
         }

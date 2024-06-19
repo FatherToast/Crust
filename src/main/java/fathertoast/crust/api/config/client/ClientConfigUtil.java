@@ -3,12 +3,13 @@ package fathertoast.crust.api.config.client;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.ConfigUtil;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraft.Util;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraftforge.client.ConfigScreenHandler;
+import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.ExtensionPoint;
+import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 
 /**
@@ -31,8 +32,8 @@ public final class ClientConfigUtil {
             ConfigUtil.LOG.warn( "Mod '{}' attempted to assign a config button action, but has no config!", modId );
         }
         else {
-            ctx.registerExtensionPoint( ExtensionPoint.CONFIGGUIFACTORY,
-                    () -> ( game, parent ) -> new CrustConfigSelectScreen( parent, cfgManager ) );
+            ctx.registerExtensionPoint( ConfigScreenHandler.ConfigScreenFactory.class,
+                    (  ) -> new ConfigScreenHandler.ConfigScreenFactory( ( mc, parent ) -> new CrustConfigSelectScreen( null, cfgManager ) ) );
         }
     }
     
@@ -52,8 +53,8 @@ public final class ClientConfigUtil {
             ConfigUtil.LOG.warn( "Mod '{}' attempted to assign a config button action, but has no config!", modId );
         }
         else {
-            ctx.registerExtensionPoint( ExtensionPoint.CONFIGGUIFACTORY,
-                    () -> ( game, parent ) -> new OpenFolderScreen( cfgManager ) );
+            ctx.registerExtensionPoint( ConfigScreenHandler.ConfigScreenFactory.class,
+                    ( ) -> new ConfigScreenHandler.ConfigScreenFactory(( mc, parent ) -> new OpenFolderScreen( cfgManager ) ) );
             
             MinecraftForge.EVENT_BUS.addListener( new OpenFolderHandler( cfgManager )::onGuiOpen );
         }
@@ -70,9 +71,9 @@ public final class ClientConfigUtil {
         OpenFolderHandler( ConfigManager cfgManager ) { CFG_MANAGER = cfgManager; }
         
         /** Called before a GUI opens. */
-        void onGuiOpen( GuiOpenEvent event ) {
-            if( event.getGui() instanceof OpenFolderScreen &&
-                    CFG_MANAGER.equals( ((OpenFolderScreen) event.getGui()).CFG_MANAGER ) ) {
+        void onGuiOpen( ScreenEvent.Opening event ) {
+            if( event.getNewScreen() instanceof OpenFolderScreen &&
+                    CFG_MANAGER.equals( ((OpenFolderScreen) event.getNewScreen()).CFG_MANAGER ) ) {
                 event.setCanceled( true );
                 Util.getPlatform().openFile( CFG_MANAGER.DIR );
             }
@@ -86,7 +87,7 @@ public final class ClientConfigUtil {
         
         OpenFolderScreen( ConfigManager cfgManager ) {
             // We don't need to localize the name or do anything since the opening of this screen is always canceled
-            super( new StringTextComponent( "Opening folder" ) );
+            super( Component.literal("Opening folder") );
             CFG_MANAGER = cfgManager;
         }
     }

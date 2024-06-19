@@ -2,16 +2,15 @@ package fathertoast.crust.api.config.common.value.environment;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
 /**
  * Registries are contained in {@link net.minecraftforge.registries.ForgeRegistries}
  */
-public abstract class RegistryEnvironment<T extends IForgeRegistryEntry<T>> extends AbstractEnvironment {
+public abstract class RegistryEnvironment<T> extends AbstractEnvironment {
     
     /** The field containing this entry. We save a reference to help improve error/warning reports. */
     private final AbstractConfigField FIELD;
@@ -23,11 +22,10 @@ public abstract class RegistryEnvironment<T extends IForgeRegistryEntry<T>> exte
     
     private T registryEntry;
     
-    public RegistryEnvironment( T regEntry, boolean invert ) {
+    public RegistryEnvironment( ResourceLocation registryKey, boolean invert ) {
         FIELD = null;
         INVERT = invert;
-        REGISTRY_KEY = regEntry.getRegistryName();
-        registryEntry = regEntry;
+        REGISTRY_KEY = registryKey;
     }
     
     public RegistryEnvironment( AbstractConfigField field, String line ) {

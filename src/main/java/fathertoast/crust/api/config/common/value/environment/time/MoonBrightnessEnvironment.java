@@ -3,9 +3,9 @@ package fathertoast.crust.api.config.common.value.environment.time;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.environment.CompareFloatEnvironment;
 import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.DimensionType;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.dimension.DimensionType;
 
 import javax.annotation.Nullable;
 
@@ -25,7 +25,7 @@ public class MoonBrightnessEnvironment extends CompareFloatEnvironment {
     
     /** @return Returns the actual value to compare, or Float.NaN if there isn't enough information. */
     @Override
-    public float getActual( World world, @Nullable BlockPos pos ) {
-        return pos == null ? Float.NaN : DimensionType.MOON_BRIGHTNESS_PER_PHASE[world.dimensionType().moonPhase( world.dayTime() )];
+    public float getActual( Level level, @Nullable BlockPos pos ) {
+        return pos == null ? Float.NaN : DimensionType.MOON_BRIGHTNESS_PER_PHASE[level.dimensionType().moonPhase( level.dayTime() )];
     }
 }

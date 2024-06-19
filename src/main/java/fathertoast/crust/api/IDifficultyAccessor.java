@@ -1,9 +1,9 @@
 package fathertoast.crust.api;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 /**
  * Interface for accessing Apocalypse Rebooted difficulty data.
@@ -11,20 +11,20 @@ import net.minecraft.world.World;
 public interface IDifficultyAccessor {
     
     /** @return The rate at which difficulty is increasing for a player. */
-    double getDifficultyRate( PlayerEntity player );
+    double getDifficultyRate( Player player );
     
     /** @return The difficulty for a player. */
-    long getPlayerDifficulty( PlayerEntity player );
+    long getPlayerDifficulty( Player player );
     
     /** @return The difficulty for the player nearest to a location. */
-    long getNearestPlayerDifficulty( World world, BlockPos origin );
+    long getNearestPlayerDifficulty( Level level, BlockPos origin );
     
     /** @return The difficulty for the player nearest to a location, with a max search radius. */
-    long getNearestPlayerDifficulty( World world, BlockPos origin, double searchRadius );
+    long getNearestPlayerDifficulty( Level level, BlockPos origin, double searchRadius );
     
     /** @return The max difficulty for a player. */
-    long getMaxPlayerDifficulty( PlayerEntity player );
+    long getMaxPlayerDifficulty( Player player );
     
     /** @return The id for the currently running event. */
-    int currentEventId( ServerPlayerEntity player );
+    int currentEventId( ServerPlayer player );
 }

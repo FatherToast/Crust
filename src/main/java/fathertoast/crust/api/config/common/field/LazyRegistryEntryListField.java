@@ -4,7 +4,6 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.LazyRegistryEntryList;
 import fathertoast.crust.api.config.common.value.RegistryEntryList;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
@@ -15,7 +14,7 @@ import javax.annotation.Nullable;
  * See also: {@link net.minecraftforge.registries.ForgeRegistries}
  */
 @SuppressWarnings( "unused" )
-public class LazyRegistryEntryListField<T extends IForgeRegistryEntry<T>> extends RegistryEntryListField<T> {
+public class LazyRegistryEntryListField<T> extends RegistryEntryListField<T> {
     
     /** Creates a new field. */
     public LazyRegistryEntryListField( String key, RegistryEntryList<T> defaultValue, @Nullable String... description ) {

@@ -1,8 +1,7 @@
 package fathertoast.crust.api.config.client.gui.widget.provider;
 
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
-import net.minecraft.client.gui.widget.Widget;
-
+import net.minecraft.client.gui.components.AbstractWidget;
 import java.util.List;
 
 public interface IConfigFieldWidgetProvider {
@@ -28,5 +27,5 @@ public interface IConfigFieldWidgetProvider {
      * @param listEntry    The field component (widget "row" within a scrollable list).
      * @param displayValue The current raw value to display in the GUI.
      */
-    void apply( List<Widget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue );
+    void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue );
 }

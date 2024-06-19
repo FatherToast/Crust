@@ -5,13 +5,16 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '[6.0,6.2)', changing: true
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
     }
 }
+
+plugins {
+    id 'eclipse'
+    id 'maven-publish'
+}
 apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
 mixin {
@@ -24,62 +27,43 @@ version = "${mc_version}-${mod_version}"
 archivesBaseName = 'crust'
 group = "fathertoast.${archivesBaseName}"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
     mappings channel: 'official', version: "${mc_version}"
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
-        client {
+        configureEach {
             workingDirectory project.file('run')
+
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-
-            property "mixin.debug.export", "true"
-            property 'mixin.env.disableRefMap', 'true'
-
-            arg "-mixin.config=crust.mixins.json"
 
             mods {
                 crust {
                     source sourceSets.main
-                    source sourceSets.test
                 }
             }
+        }
+
+        client {
+            property "mixin.debug.export", "true"
+            property 'mixin.env.disableRefMap', 'true'
+
+            arg "-mixin.config=crust.mixins.json"
         }
 
         server {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
             property "mixin.debug.export", "true"
             property 'mixin.env.disableRefMap', 'true'
 
             arg "-mixin.config=crust.mixins.json"
-
-            mods {
-                crust {
-                    source sourceSets.main
-                    source sourceSets.test
-                }
-            }
         }
 
         data {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
             args '--mod', 'crust', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            mods {
-                crust {
-                    source sourceSets.main
-                }
-            }
         }
     }
 }
@@ -94,14 +78,20 @@ repositories {
             includeGroup 'curse.maven'
         }
     }
+    // Apocalypse isn't hosted on any maven servers anymore, oh well
+    flatDir {
+        dir 'flat_deps'
+    }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-    implementation fg.deobf("curse.maven:apocalypse-500443:${apocalypse_version}")
+    // Group ID must be present for flat dir repositories, but are effectively ignored
+    runtimeOnly fg.deobf("blank:Apocalypse-Rebooted:${mc_version}-${apocalypse_version}")
+    compileOnly fg.deobf("blank:Apocalypse-Rebooted:${mc_version}-${apocalypse_version}:api")
 
-    annotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
 jar {

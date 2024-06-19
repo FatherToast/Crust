@@ -1,19 +1,23 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.list.AbstractList;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.gui.ComponentPath;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 
 import javax.annotation.Nullable;
+import java.util.AbstractList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
@@ -21,10 +25,10 @@ import java.util.function.Predicate;
 /**
  * A popup that displays a scrollable list of row entries.
  *
- * @see AbstractList
- * @see net.minecraft.client.gui.widget.list.AbstractOptionList
+ * @see net.minecraft.client.gui.components.AbstractSelectionList
+ * @see net.minecraft.client.gui.components.ContainerObjectSelectionList
  */
-public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> extends Widget implements IPopupWidget {
+public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> extends AbstractWidget implements IPopupWidget {
     
     /** The default vertical size of each entry in the list, including padding. */
     public static final int DEFAULT_ROW_HEIGHT = 20;
@@ -46,11 +50,11 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     private boolean renderSelectionBox = true;
     
     @SuppressWarnings( "unused" )
-    public PopupListWidget( int x, int y, int width, int height, ITextComponent message ) {
+    public PopupListWidget( int x, int y, int width, int height, Component message ) {
         this( x, y, width, height, DEFAULT_ROW_HEIGHT, message );
     }
     
-    public PopupListWidget( int x, int y, int width, int height, int rowHeight, ITextComponent message ) {
+    public PopupListWidget( int x, int y, int width, int height, int rowHeight, Component message ) {
         super( x, y, width, height, message );
         itemHeight = rowHeight;
         
@@ -172,7 +176,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     
     /** @return The height of the scrollbar handle. */
     protected int getScrollHandleHeight() {
-        return MathHelper.clamp( (int) ((float) height * height / (float) getListContentHeight()),
+        return Mth.clamp( (int) ((float) height * height / (float) getListContentHeight()),
                 32, height - 8 );
     }
     
@@ -212,7 +216,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         if( y < y0 || y > y1 || x >= getScrollbarLeft() || x < getRowLeft() || x > getRowRight() ) return null;
         
         // Calculate entry index
-        int yFromListTop = MathHelper.floor( y - y0 ) - headerHeight + (int) getScrollDistance() - ENTRY_PADDING;
+        int yFromListTop = Mth.floor( y - y0 ) - headerHeight + (int) getScrollDistance() - ENTRY_PADDING;
         int index = yFromListTop / itemHeight;
         return index >= 0 && index < getItemCount() ? entries().get( index ) : null;
     }
@@ -225,7 +229,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     
     /** Sets the scroll distance (from 0 to maxScroll). */
     public void setScrollDistance( double value ) {
-        scrollDistance = MathHelper.clamp( value, 0.0, getMaxScrollDistance() );
+        scrollDistance = Mth.clamp( value, 0.0, getMaxScrollDistance() );
     }
     
     /** Adds to the scroll distance (from 0 to maxScroll). */
@@ -253,14 +257,19 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     /** @return True if the mouse is over this widget. */
     @Override
     public boolean isMouseOver( double x, double y ) { return y >= y0 && y <= y1 && x >= x0 && x <= x1; }
-    
+
+    @Override
+    protected void updateWidgetNarration( NarrationElementOutput output ) {
+
+    }
+
     /** True if currently scrolling (from clicking on the scrollbar). */
     private boolean scrolling;
     
     /**
      * Called when a mouse button is clicked.
      *
-     * @param mouseKey The mouse key that was clicked (see {@link InputMappings.Type#MOUSE}).
+     * @param mouseKey The mouse key that was clicked (see {@link InputConstants.Type#MOUSE}).
      * @return True if the event has been handled.
      */
     @Override
@@ -268,7 +277,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         updateScrollingState( x, mouseKey );
         if( !isMouseOver( x, y ) ) return false;
         if( scrolling ) return true;
-        
+
         // Find the entry being clicked on
         E entry = getEntryAtPosition( x, y );
         if( entry != null ) {
@@ -283,7 +292,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
                     (int) (y - y0) + (int) getScrollDistance() - ENTRY_PADDING );
             return true;
         }
-        
+
         return false;
     }
     
@@ -299,7 +308,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     /**
      * Called when a mouse button is released.
      *
-     * @param mouseKey The mouse key that was released (see {@link InputMappings.Type#MOUSE}).
+     * @param mouseKey The mouse key that was released (see {@link InputConstants.Type#MOUSE}).
      * @return True if the event has been handled.
      */
     @Override
@@ -347,8 +356,8 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     /**
      * Called when a keyboard key is pressed.
      *
-     * @param key      The keyboard key that was pressed (see {@link InputMappings.Type#KEYSYM}).
-     * @param scancode The system-specific scancode of the key (see {@link InputMappings.Type#SCANCODE}).
+     * @param key      The keyboard key that was pressed (see {@link InputConstants.Type#KEYSYM}).
+     * @param scancode The system-specific scancode of the key (see {@link InputConstants.Type#SCANCODE}).
      * @param mods     Bitfield describing which modifier keys were held down.
      * @return True if the event has been handled.
      * @see org.lwjgl.glfw.GLFWKeyCallbackI#invoke(long, int, int, int, int)
@@ -358,12 +367,12 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         if( super.keyPressed( key, scancode, mods ) )
             return true;
         
-        if( key == InputMappings.getKey( "key.keyboard.down" ).getValue() ) {
-            moveSelection( AbstractList.Ordering.DOWN );
+        if( key == InputConstants.getKey( "key.keyboard.down" ).getValue() ) {
+            moveSelection( 1 );
             return true;
         }
-        if( key == InputMappings.getKey( "key.keyboard.up" ).getValue() ) {
-            moveSelection( AbstractList.Ordering.UP );
+        if( key == InputConstants.getKey( "key.keyboard.up" ).getValue() ) {
+            moveSelection( -1 );
             return true;
         }
         
@@ -371,15 +380,14 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     }
     
     /** Moves the selection based on the ordering given. */
-    protected void moveSelection( AbstractList.Ordering ordering ) {
-        moveSelection( ordering, ( entry ) -> true );
+    protected void moveSelection( int dir ) {
+        moveSelection( dir, ( entry ) -> true );
     }
     
     /** Moves the selection based on the ordering given, optionally skipping entries based on a filter. */
-    protected void moveSelection( AbstractList.Ordering ordering, Predicate<E> filter ) {
+    protected void moveSelection( int dir, Predicate<E> filter ) {
         if( entries().isEmpty() ) return;
-        
-        int dir = ordering == AbstractList.Ordering.UP ? -1 : 1;
+
         for( int i = entries().indexOf( getSelected() ) + dir; i >= 0 && i < getItemCount(); i += dir ) {
             E entry = getEntry( i );
             if( filter.test( entry ) ) {
@@ -405,37 +413,35 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     
     /** Renders this widget. */
     @Override
-    public void render( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks ) {
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buf = tessellator.getBuilder();
+    public void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks ) {
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buf = tesselator.getBuilder();
         
-        renderBackground( matrixStack, mouseX, mouseY, partialTicks, tessellator, buf );
-        renderList( matrixStack, mouseX, mouseY, partialTicks, tessellator, buf );
-        if( renderHeader ) renderHeader( matrixStack, mouseX, mouseY, partialTicks, tessellator, buf );
-        renderScrollbar( matrixStack, mouseX, mouseY, partialTicks, tessellator, buf );
-        renderDecorations( matrixStack, mouseX, mouseY, partialTicks, tessellator, buf );
-        
-        //noinspection deprecation
-        RenderSystem.shadeModel( 0x1D00 );
-        //noinspection deprecation
-        RenderSystem.enableAlphaTest();
+        renderBackground( graphics, mouseX, mouseY, partialTicks, tesselator, buf );
+        renderList( graphics, mouseX, mouseY, partialTicks, tesselator, buf );
+        if( renderHeader ) renderHeader( graphics, mouseX, mouseY, partialTicks, tesselator, buf );
+        renderScrollbar( graphics, mouseX, mouseY, partialTicks, tesselator, buf );
+        renderDecorations( graphics, mouseX, mouseY, partialTicks, tesselator, buf );
+
+        //RenderSystem.shadeModel( 0x1D00 );
+        //RenderSystem.enableAlphaTest();
         RenderSystem.disableBlend();
     }
     
     /** Renders the list's background. */
     @SuppressWarnings( "unused" )
-    protected void renderBackground( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, Tessellator tessellator, BufferBuilder buf ) {
+    protected void renderBackground( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Tesselator tesselator, BufferBuilder buf ) {
         // Default background is solid dark gray
-        RenderSystem.disableTexture();
+        //RenderSystem.disableTexture();
         //noinspection deprecation
-        buf.begin( 7, DefaultVertexFormats.POSITION_TEX_COLOR );
+        buf.begin( VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR );
         drawBox( buf, x0, x1, y0, y1, 0x20 );
-        tessellator.end();
-        RenderSystem.enableTexture();
+        tesselator.end();
+        //RenderSystem.enableTexture();
     }
     
     /** Renders the list content (entries). */
-    protected void renderList( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, Tessellator tessellator, BufferBuilder buf ) {
+    protected void renderList( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Tesselator tesselator, BufferBuilder buf ) {
         int rowWidth = getRowWidth();
         int rowLeft = getRowLeft();
         int rowRight = rowLeft + rowWidth;
@@ -448,28 +454,28 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
             
             // Selection highlight
             if( renderSelectionBox && isSelectedItem( i ) ) {
-                RenderSystem.disableTexture();
-                buf.begin( 7, DefaultVertexFormats.POSITION );
+                //RenderSystem.disableTexture();
+                buf.begin( VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION );
                 drawBox( buf, rowLeft, rowRight, rowTop - 2, rowBottom - ENTRY_PADDING + 2, isFocused() ? 0xFF : 0x7F );
                 drawBox( buf, rowLeft + 1, rowRight - 1, rowTop - 1, rowBottom - ENTRY_PADDING + 1, 0x00 );
-                tessellator.end();
-                RenderSystem.enableTexture();
+                tesselator.end();
+                //RenderSystem.enableTexture();
             }
             
             // The list entry itself
             E entry = getEntry( i );
-            entry.render( matrixStack, i, rowLeft, rowTop, rowWidth, itemHeight - ENTRY_PADDING, mouseX, mouseY,
+            entry.render( graphics, i, rowLeft, rowTop, rowWidth, itemHeight - ENTRY_PADDING, mouseX, mouseY,
                     isMouseOver( mouseX, mouseY ) && entry.equals( getEntryAtPosition( mouseX, mouseY ) ),
                     partialTicks );
         }
     }
     
     @SuppressWarnings( "unused" )
-    protected void renderHeader( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, Tessellator tessellator, BufferBuilder buf ) { }
+    protected void renderHeader( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Tesselator tesselator, BufferBuilder buf ) { }
     
     @SuppressWarnings( "unused" )
-    protected void renderScrollbar( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, Tessellator tessellator, BufferBuilder buf ) {
-        RenderSystem.disableTexture();
+    protected void renderScrollbar( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Tesselator tesselator, BufferBuilder buf ) {
+        //RenderSystem.disableTexture();
         int maxScroll = getMaxScrollDistance();
         if( maxScroll > 0 ) {
             int scrollX0 = getScrollbarLeft();
@@ -481,17 +487,17 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
             }
             
             //noinspection deprecation
-            buf.begin( 7, DefaultVertexFormats.POSITION_TEX_COLOR );
+            buf.begin( VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR );
             drawBox( buf, scrollX0, scrollX1, y0, y1, 0x00 ); // Bar background
             drawBox( buf, scrollX0, scrollX1, handleY, handleY + handleH, 0x80 ); // Handle shadow
             drawBox( buf, scrollX0, scrollX1 - 1, handleY, handleY + handleH - 1, 0xC0 ); // Handle
-            tessellator.end();
+            tesselator.end();
         }
-        RenderSystem.enableTexture();
+        //RenderSystem.enableTexture();
     }
     
     @SuppressWarnings( "unused" )
-    protected void renderDecorations( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, Tessellator tessellator, BufferBuilder buf ) { }
+    protected void renderDecorations( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Tesselator tesselator, BufferBuilder buf ) { }
     
     /** Draws a gray box with brightness 0x00-0xFF. */
     protected static void drawBox( BufferBuilder buf, double x0, double x1, double y0, double y1, int b ) {
@@ -546,20 +552,31 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     }
     
     /** The class all entries in popup lists must extend. */
-    public abstract static class AbstractListEntry<E extends AbstractListEntry<E>> implements IGuiEventListener {
+    public abstract static class AbstractListEntry<E extends AbstractListEntry<E>> implements GuiEventListener {
         protected PopupListWidget<E> parent;
+        private boolean focused;
         
         /** Called each tick to update animations. */
         @SuppressWarnings( "unused" )
         public void tick() { }
         
         /** Called to render the list entry. */
-        public abstract void render( MatrixStack matrixStack, int index, int x, int y, int width, int height,
-                                     int mouseX, int mouseY, boolean mouseOver, float partialTicks );
+        public abstract void render( GuiGraphics graphics, int index, int x, int y, int width, int height,
+                                    int mouseX, int mouseY, boolean mouseOver, float partialTicks );
         
         @Override
         public boolean isMouseOver( double mouseX, double mouseY ) {
             return equals( parent.getEntryAtPosition( mouseX, mouseY ) );
+        }
+
+        @Override
+        public void setFocused( boolean focused ) {
+            this.focused = focused;
+        }
+
+        @Override
+        public boolean isFocused() {
+            return focused;
         }
     }
     
@@ -569,10 +586,10 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
      */
     public static class WidgetListEntry extends AbstractListEntry<WidgetListEntry> {
         
-        private final Widget[] WIDGETS;
+        private final AbstractWidget[] WIDGETS;
         private final OffsetWidget[] RENDER_WIDGETS;
         
-        public WidgetListEntry( Widget... widgets ) {
+        public WidgetListEntry( AbstractWidget... widgets ) {
             WIDGETS = widgets;
             RENDER_WIDGETS = new OffsetWidget[widgets.length];
             int offset = widgets.length - 1; // Render in reverse order, so lower priority widgets render in the back
@@ -580,23 +597,23 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         }
         
         @SuppressWarnings( "unused" )
-        public WidgetListEntry( Collection<Widget> widgets ) { this( widgets.toArray( new Widget[0] ) ); }
+        public WidgetListEntry( Collection<AbstractWidget> widgets ) { this( widgets.toArray( new AbstractWidget[0] ) ); }
         
         /** Called when the mouse is moved. */
         @Override
         public void mouseMoved( double x, double y ) {
-            for( Widget w : WIDGETS ) w.mouseMoved( x, y );
+            for( AbstractWidget w : WIDGETS ) w.mouseMoved( x, y );
         }
         
         /**
          * Called when a mouse button is clicked.
          *
-         * @param mouseKey The mouse key that was clicked (see {@link InputMappings.Type#MOUSE}).
+         * @param mouseKey The mouse key that was clicked (see {@link InputConstants.Type#MOUSE}).
          * @return True if the event has been handled.
          */
         @Override
         public boolean mouseClicked( double x, double y, int mouseKey ) {
-            for( Widget w : WIDGETS ) {
+            for( AbstractWidget w : WIDGETS ) {
                 if( w.mouseClicked( x, y, mouseKey ) ) return true;
             }
             return false;
@@ -605,12 +622,12 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         /**
          * Called when a mouse button is released.
          *
-         * @param mouseKey The mouse key that was released (see {@link InputMappings.Type#MOUSE}).
+         * @param mouseKey The mouse key that was released (see {@link InputConstants.Type#MOUSE}).
          * @return True if the event has been handled.
          */
         @Override
         public boolean mouseReleased( double x, double y, int mouseKey ) {
-            for( Widget w : WIDGETS ) {
+            for( AbstractWidget w : WIDGETS ) {
                 if( w.mouseReleased( x, y, mouseKey ) ) return true;
             }
             return false;
@@ -619,7 +636,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         /** Called when the mouse is moved while a mouse button is held. */
         @Override
         public boolean mouseDragged( double x, double y, int mouseKey, double deltaX, double deltaY ) {
-            for( Widget w : WIDGETS ) {
+            for( AbstractWidget w : WIDGETS ) {
                 if( w.mouseDragged( x, y, mouseKey, deltaX, deltaY ) ) return true;
             }
             return false;
@@ -628,7 +645,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         /** Called when the mouse wheel is scrolled. */
         @Override
         public boolean mouseScrolled( double x, double y, double deltaScroll ) {
-            for( Widget w : WIDGETS ) {
+            for( AbstractWidget w : WIDGETS ) {
                 if( w.mouseScrolled( x, y, deltaScroll ) ) return true;
             }
             return false;
@@ -637,15 +654,15 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         /**
          * Called when a keyboard key is pressed.
          *
-         * @param key      The keyboard key that was pressed (see {@link InputMappings.Type#KEYSYM}).
-         * @param scancode The system-specific scancode of the key (see {@link InputMappings.Type#SCANCODE}).
+         * @param key      The keyboard key that was pressed (see {@link InputConstants.Type#KEYSYM}).
+         * @param scancode The system-specific scancode of the key (see {@link InputConstants.Type#SCANCODE}).
          * @param mods     Bitfield describing which modifier keys were held down.
          * @return True if the event has been handled.
          * @see org.lwjgl.glfw.GLFWKeyCallbackI#invoke(long, int, int, int, int)
          */
         @Override
         public boolean keyPressed( int key, int scancode, int mods ) {
-            for( Widget w : WIDGETS ) {
+            for( AbstractWidget w : WIDGETS ) {
                 if( w.keyPressed( key, scancode, mods ) ) return true;
             }
             return false;
@@ -654,15 +671,15 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         /**
          * Called when a keyboard key is released.
          *
-         * @param key      The keyboard key that was released (see {@link InputMappings.Type#KEYSYM}).
-         * @param scancode The system-specific scancode of the key (see {@link InputMappings.Type#SCANCODE}).
+         * @param key      The keyboard key that was released (see {@link InputConstants.Type#KEYSYM}).
+         * @param scancode The system-specific scancode of the key (see {@link InputConstants.Type#SCANCODE}).
          * @param mods     Bitfield describing which modifier keys were held down.
          * @return True if the event has been handled.
          * @see org.lwjgl.glfw.GLFWKeyCallbackI#invoke(long, int, int, int, int)
          */
         @Override
         public boolean keyReleased( int key, int scancode, int mods ) {
-            for( Widget w : WIDGETS ) {
+            for( AbstractWidget w : WIDGETS ) {
                 if( w.keyReleased( key, scancode, mods ) ) return true;
             }
             return false;
@@ -671,48 +688,49 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         /** Called when a character is typed. */
         @Override
         public boolean charTyped( char codePoint, int mods ) {
-            for( Widget w : WIDGETS ) {
+            for( AbstractWidget w : WIDGETS ) {
                 if( w.charTyped( codePoint, mods ) ) return true;
             }
             return false;
         }
-        
+
         /**
          * Called when focus change is requested (for example, tab or shift+tab).
          *
-         * @param forward Whether focus should move forward. Typically, forward means left-to-right then top-to-bottom.
+         * @param event (Don't quite know how this thing works yet)
          * @return This gui's new focus state.
          */
         @Override
-        public boolean changeFocus( boolean forward ) {
-            for( Widget w : WIDGETS ) {
-                if( w.changeFocus( forward ) ) return true;
+        public ComponentPath nextFocusPath( FocusNavigationEvent event ) {
+            for( AbstractWidget w : WIDGETS ) {
+                ComponentPath path = w.nextFocusPath( event );
+                if( path != null ) return path;
             }
-            return false;
+            return null;
         }
-        
+
         /** Called to render the list entry. */
         @Override
-        public void render( MatrixStack matrixStack, int index, int x, int y, int width, int height,
+        public void render( GuiGraphics graphics, int index, int x, int y, int width, int height,
                             int mouseX, int mouseY, boolean mouseOver, float partialTicks ) {
             for( OffsetWidget off : RENDER_WIDGETS ) {
-                off.WIDGET.x = x + off.X_OFFSET;
-                off.WIDGET.y = y + off.Y_OFFSET;
-                off.WIDGET.render( matrixStack, mouseX, mouseY, partialTicks );
+                off.WIDGET.setX( x + off.X_OFFSET );
+                off.WIDGET.setY( y + off.Y_OFFSET );
+                off.WIDGET.render( graphics, mouseX, mouseY, partialTicks );
             }
         }
         
         /** Simple wrapper used to save the offsets of provided gui components. */
         private static class OffsetWidget {
             
-            final Widget WIDGET;
+            final AbstractWidget WIDGET;
             final int X_OFFSET;
             final int Y_OFFSET;
             
-            OffsetWidget( Widget widget ) {
+            OffsetWidget( AbstractWidget widget ) {
                 WIDGET = widget;
-                X_OFFSET = widget.x;
-                Y_OFFSET = widget.y;
+                X_OFFSET = widget.getX();
+                Y_OFFSET = widget.getY();
             }
         }
     }

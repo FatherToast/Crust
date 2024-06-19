@@ -1,6 +1,6 @@
 package fathertoast.crust.api.config.client;
 
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -17,5 +17,5 @@ public interface ITileBoundingBoxProvider {
      * The provided bounding boxes will be rendered right before the TE.
      */
     @Nullable
-    List<AxisAlignedBB> getBoundingBoxes();
+    List<AABB> getBoundingBoxes();
 }

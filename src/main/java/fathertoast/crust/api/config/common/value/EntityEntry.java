@@ -3,10 +3,10 @@ package fathertoast.crust.api.config.common.value;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.EntityListField;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -36,9 +36,9 @@ public class EntityEntry {
     /** Creates an entry used to compare entity classes internally with the entries in an entity list. */
     EntityEntry( Entity entity ) {
         FIELD = null;
-        ENTITY_KEY = entity.getType().getRegistryName();
         EXTEND = false;
         VALUES = null;
+        ENTITY_KEY = ForgeRegistries.ENTITY_TYPES.getKey( entity.getType() );
         entityType = entity.getType();
         entityClass = entity.getClass();
     }
@@ -51,7 +51,7 @@ public class EntityEntry {
     
     /** Creates an entry with the specified values. Used for creating default configs. */
     public EntityEntry( @Nullable EntityType<? extends Entity> type, boolean extend, double... values ) {
-        this( null, type == null ? null : type.getRegistryName(), extend, values );
+        this( null, type == null ? null : ForgeRegistries.ENTITY_TYPES.getKey( type ), extend, values );
         entityType = type;
     }
     
@@ -67,23 +67,23 @@ public class EntityEntry {
     private boolean validate() {
         if( entityType != null || ENTITY_KEY == null ) return true; // Null entity key means this is a default entry
         
-        if( !ForgeRegistries.ENTITIES.containsKey( ENTITY_KEY ) ) {
+        if( !ForgeRegistries.ENTITY_TYPES.containsKey( ENTITY_KEY ) ) {
             ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Invalid entry: {}",
                     FIELD.getClass(), FIELD.getKey(), ENTITY_KEY.toString() );
             return false;
         }
-        entityType = ForgeRegistries.ENTITIES.getValue( ENTITY_KEY );
+        entityType = ForgeRegistries.ENTITY_TYPES.getValue( ENTITY_KEY );
         return true;
     }
     
     /** Called on this entry before using it to check if the entity class has been determined, and loads the class if it has not been. */
-    void checkClass( World world ) {
+    void checkClass( Level level ) {
         if( validate() && entityType != null && entityClass == null ) {
             try {
-                final Entity entity = entityType.create( world );
+                final Entity entity = entityType.create( level );
                 if( entity != null ) {
                     entityClass = entity.getClass();
-                    entity.remove();
+                    entity.discard();
                 }
             }
             catch( Exception ex ) {

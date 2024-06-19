@@ -4,9 +4,9 @@ import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.environment.CompareLongEnvironment;
 import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
@@ -34,18 +34,18 @@ public class ApocalypseDifficultyEnvironment extends CompareLongEnvironment {
     
     /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Nullable
-    public Long getActual( World world, @Nullable BlockPos pos ) {
+    public Long getActual( Level level, @Nullable BlockPos pos ) {
         // Check if Apocalypse Rebooted is installed and any players exist
-        if( apiInstance.getDifficultyAccessor() == null || world.players().size() == 0 ) return null;
+        if( apiInstance.getDifficultyAccessor() == null || level.players().size() == 0 ) return null;
         
         // Get nearest player, if a position is available
         if( pos != null ) {
-            return apiInstance.getDifficultyAccessor().getNearestPlayerDifficulty( world, pos );
+            return apiInstance.getDifficultyAccessor().getNearestPlayerDifficulty( level, pos );
         }
         
         // Find player with lowest difficulty, if we don't have a position
         long minDiff = Long.MAX_VALUE;
-        for( PlayerEntity player : world.players() ) {
+        for( Player player : level.players() ) {
             long diff = apiInstance.getDifficultyAccessor().getPlayerDifficulty( player );
             if( diff < minDiff ) minDiff = diff;
         }

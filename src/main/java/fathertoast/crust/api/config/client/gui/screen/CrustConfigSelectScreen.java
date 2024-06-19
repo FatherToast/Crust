@@ -1,22 +1,22 @@
 package fathertoast.crust.api.config.client.gui.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFileList;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigModList;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.ConfigUtil;
-import net.minecraft.client.gui.DialogTexts;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.gui.widget.list.AbstractOptionList;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.Util;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractSelectionList;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 /**
  * Screen that displays available config files. Navigation starts by selecting the mod,
@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
  * The screen may also be opened directly to a specific mod's configs; for example,
  * when opened from the mod list "config" button.
  *
- * @see net.minecraft.client.gui.screen.ControlsScreen
+ * @see net.minecraft.client.gui.screens.controls.ControlsScreen
  * @see ConfigManager
  */
 public class CrustConfigSelectScreen extends Screen {
@@ -45,26 +45,26 @@ public class CrustConfigSelectScreen extends Screen {
     private final ConfigManager CFG_MANAGER;
     
     /** The text to render below the title. */
-    private final ITextComponent SUBTITLE;
+    private final Component SUBTITLE;
     
-    private AbstractOptionList<?> selectionList;
+    private AbstractSelectionList<?> selectionList;
     
     /** Creates a new config selection screen, opened to the mod select page. */
     public CrustConfigSelectScreen( @Nullable Screen parent ) {
-        this( parent, null, new TranslationTextComponent( "menu.crust.config.select.mod.title" ), null );
+        this( parent, null, Component.translatable( "menu.crust.config.select.mod.title" ), null );
     }
     
     /** Creates a new config selection screen, opened directly to mod's file select page. */
     public CrustConfigSelectScreen( @Nullable Screen parent, ConfigManager cfgManager ) {
         this( parent, cfgManager,
-                new TranslationTextComponent( "menu.crust.config.select.file.title",
+                Component.translatable( "menu.crust.config.select.file.title",
                         getModName( cfgManager.MOD_ID ) ),
-                new TranslationTextComponent( "menu.crust.config.select.file.subtitle",
+                Component.translatable( "menu.crust.config.select.file.subtitle",
                         ConfigUtil.toRelativePath( cfgManager.DIR ) ) );
     }
     
     /** Creates a new config selection screen, optionally opened directly to a specific mod's page. */
-    private CrustConfigSelectScreen( @Nullable Screen parent, @Nullable ConfigManager cfgManager, ITextComponent title, @Nullable ITextComponent subtitle ) {
+    private CrustConfigSelectScreen( @Nullable Screen parent, @Nullable ConfigManager cfgManager, Component title, @Nullable Component subtitle ) {
         super( title );
         LAST_SCREEN = parent;
         CFG_MANAGER = cfgManager;
@@ -90,34 +90,35 @@ public class CrustConfigSelectScreen extends Screen {
         else {
             selectionList = new CrustConfigFileList( this, minecraft, CFG_MANAGER );
         }
-        children.add( selectionList );
+        addRenderableWidget( selectionList );
         
         // Footer content
-        addButton( new Button( width / 2 - 155, height - 29,
-                150, 20, new TranslationTextComponent( "menu.crust.config.open_folder" ),
+        addRenderableWidget( new Button( width / 2 - 155, height - 29,
+                150, 20, Component.translatable( "menu.crust.config.open_folder" ),
                 ( button ) -> {
                     if( CFG_MANAGER == null ) Util.getPlatform().openFile( FMLPaths.CONFIGDIR.get().toFile() );
                     else Util.getPlatform().openFile( CFG_MANAGER.DIR );
-                } ) );
-        addButton( new Button( width / 2 - 155 + 160, height - 29,
-                150, 20, DialogTexts.GUI_DONE,
-                ( button ) -> minecraft.setScreen( LAST_SCREEN ) ) );
+                },
+                Supplier::get) );
+        addRenderableWidget( new Button( width / 2 - 155 + 160, height - 29,
+                150, 20, CommonComponents.GUI_DONE,
+                ( button ) -> minecraft.setScreen( LAST_SCREEN ), Supplier::get ) );
     }
     
     /** Called to render the screen. */
     @Override
-    public void render( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks ) {
-        renderBackground( matrixStack );
+    public void render( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks ) {
+        renderBackground( graphics );
         
-        selectionList.render( matrixStack, mouseX, mouseY, partialTicks );
+        selectionList.render( graphics, mouseX, mouseY, partialTicks );
         
         if( SUBTITLE != null ) {
-            drawCenteredString( matrixStack, font, SUBTITLE, width / 2,
+            graphics.drawCenteredString( font, SUBTITLE, width / 2,
                     24, 0x777777 );
         }
-        drawCenteredString( matrixStack, font, title, width / 2,
+        graphics.drawCenteredString( font, title, width / 2,
                 8, 0xFFFFFF );
         
-        super.render( matrixStack, mouseX, mouseY, partialTicks );
+        super.render( graphics, mouseX, mouseY, partialTicks );
     }
 }

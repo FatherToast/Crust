@@ -4,7 +4,7 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.IntField;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -39,7 +39,7 @@ public class WeightedList<T extends WeightedList.Value> {
         final IntField.Range fieldRange = IntField.Range.NON_NEGATIVE;
         if( description != null ) {
             List<String> comment = TomlHelper.newComment( description );
-            comment.add( TextFormatting.GRAY + TomlHelper.multiFieldInfo( fieldRange ) );
+            comment.add( ChatFormatting.GRAY + TomlHelper.multiFieldInfo( fieldRange ) );
             SPEC.titledComment( name, comment );
         }
         else {

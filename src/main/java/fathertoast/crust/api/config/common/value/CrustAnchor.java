@@ -23,14 +23,11 @@ public enum CrustAnchor {
      * @return The anchored position of the object's top-left corner.
      */
     public int pos( int regionSize, int size ) {
-        switch( this ) {
-            case TOP: case LEFT: case SCREEN_TOP: case SCREEN_LEFT:
-                return 0;
-            case BOTTOM: case RIGHT: case SCREEN_BOTTOM: case SCREEN_RIGHT:
-                return regionSize - size;
-            default:
-                return (regionSize - size) / 2;
-        }
+        return switch (this) {
+            case TOP, LEFT, SCREEN_TOP, SCREEN_LEFT -> 0;
+            case BOTTOM, RIGHT, SCREEN_BOTTOM, SCREEN_RIGHT -> regionSize - size;
+            default -> (regionSize - size) / 2;
+        };
     }
     
     /**
@@ -44,18 +41,13 @@ public enum CrustAnchor {
      * @see #pos(int, int, int, int) Anchoring to an off-center GUI window.
      */
     public int pos( int screenSize, int guiSize, int size ) {
-        switch( this ) {
-            case SCREEN_TOP: case SCREEN_LEFT:
-                return 0;
-            case SCREEN_BOTTOM: case SCREEN_RIGHT:
-                return screenSize - size;
-            case TOP: case LEFT:
-                return (screenSize - guiSize) / 2 - size;
-            case BOTTOM: case RIGHT:
-                return (screenSize + guiSize) / 2;
-            default:
-                return (screenSize - size) / 2;
-        }
+        return switch (this) {
+            case SCREEN_TOP, SCREEN_LEFT -> 0;
+            case SCREEN_BOTTOM, SCREEN_RIGHT -> screenSize - size;
+            case TOP, LEFT -> (screenSize - guiSize) / 2 - size;
+            case BOTTOM, RIGHT -> (screenSize + guiSize) / 2;
+            default -> (screenSize - size) / 2;
+        };
     }
     
     /**
@@ -70,17 +62,12 @@ public enum CrustAnchor {
      * @see #pos(int, int, int) Anchoring to a centered GUI window.
      */
     public int pos( int screenSize, int guiSize, int guiPos, int size ) {
-        switch( this ) {
-            case SCREEN_TOP: case SCREEN_LEFT:
-                return 0;
-            case SCREEN_BOTTOM: case SCREEN_RIGHT:
-                return screenSize - size;
-            case TOP: case LEFT:
-                return guiPos - size;
-            case BOTTOM: case RIGHT:
-                return guiPos + guiSize;
-            default:
-                return guiPos + (guiSize - size) / 2;
-        }
+        return switch (this) {
+            case SCREEN_TOP, SCREEN_LEFT -> 0;
+            case SCREEN_BOTTOM, SCREEN_RIGHT -> screenSize - size;
+            case TOP, LEFT -> guiPos - size;
+            case BOTTOM, RIGHT -> guiPos + guiSize;
+            default -> guiPos + (guiSize - size) / 2;
+        };
     }
 }

@@ -4,8 +4,8 @@ import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidge
 import fathertoast.crust.api.config.client.gui.widget.provider.NumberFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -215,10 +215,10 @@ public class DoubleField extends AbstractConfigField {
         }
         
         /** @return Returns the config field's value. */
-        public double get( World world, @Nullable BlockPos pos ) { return EXCEPTIONS.getOrElse( world, pos, BASE ); }
+        public double get( Level level, @Nullable BlockPos pos ) { return EXCEPTIONS.getOrElse( level, pos, BASE ); }
         
         /** @return Treats the config field's value as a percent chance (from 0 to 1) and returns the result of a single roll. */
-        public boolean rollChance( Random random, World world, @Nullable BlockPos pos ) { return random.nextDouble() < get( world, pos ); }
+        public boolean rollChance( Random random, Level level, @Nullable BlockPos pos ) { return random.nextDouble() < get( level, pos ); }
     }
     
     /**
@@ -251,28 +251,28 @@ public class DoubleField extends AbstractConfigField {
         
         /** @return Returns a random item from this weighted list. Null if none of the items have a positive weight. */
         @Nullable
-        public T next( Random random, World world, @Nullable BlockPos pos ) { return next( random, world, pos, null ); }
+        public T next( Random random, Level level, @Nullable BlockPos pos ) { return next( random, level, pos, null ); }
         
         /** @return Returns a random item from this weighted list. Null if none of the items have a positive weight. */
         @Nullable
-        public T next( Random random, World world, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
+        public T next( Random random, Level level, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
             // Due to the 'nebulous' nature of environment-based weights, we must recalculate weights for EVERY call
             double[] weights = new double[UNDERLYING_LIST.size()];
-            double totalWeight = calculateWeights( weights, world, pos, selector );
+            double totalWeight = calculateWeights( weights, level, pos, selector );
             
             return next( random, weights, totalWeight );
         }
         
         /** @return Returns a specified number of random items from this weighted list. */
         @Nullable
-        public List<T> next( Random random, int count, World world, @Nullable BlockPos pos ) { return next( random, count, world, pos, null ); }
+        public List<T> next( Random random, int count, Level level, @Nullable BlockPos pos ) { return next( random, count, level, pos, null ); }
         
         /** @return Returns a specified number of random items from this weighted list. */
         @Nullable
-        public List<T> next( Random random, int count, World world, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
+        public List<T> next( Random random, int count, Level level, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
             // Due to the 'nebulous' nature of environment-based weights, we must recalculate weights for EVERY call
             double[] weights = new double[UNDERLYING_LIST.size()];
-            double totalWeight = calculateWeights( weights, world, pos, selector );
+            double totalWeight = calculateWeights( weights, level, pos, selector );
             
             List<T> items = new ArrayList<>( count );
             for( int i = 0; i < count; i++ ) {
@@ -282,12 +282,12 @@ public class DoubleField extends AbstractConfigField {
         }
         
         /** Calculates the current weights, fills the provided weights array, and returns the total weight. */
-        private double calculateWeights( double[] weights, World world, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
+        private double calculateWeights( double[] weights, Level level, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
             double totalWeight = 0.0;
             for( int i = 0; i < weights.length; i++ ) {
                 final Entry<T> entry = UNDERLYING_LIST.get( i );
                 if( selector == null || selector.test( entry.VALUE ) ) {
-                    totalWeight += weights[i] = entry.WEIGHT.get( world, pos );
+                    totalWeight += weights[i] = entry.WEIGHT.get( level, pos );
                 }
             }
             return totalWeight;

@@ -2,9 +2,9 @@ package fathertoast.crust.api.config.common.value.environment.dimension;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.environment.EnumEnvironment;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.DimensionType;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.dimension.DimensionType;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
@@ -16,8 +16,8 @@ public class DimensionPropertyEnvironment extends EnumEnvironment<DimensionPrope
      *
      * @see <a href="https://minecraft.fandom.com/wiki/Custom_dimension#Syntax">Data pack format (Minecraft Wiki)</a>
      */
+    @SuppressWarnings("SpellCheckingInspection")
     public enum Value {
-        @SuppressWarnings( "SpellCheckingInspection" )
         ULTRAWARM( DimensionType::ultraWarm ),
         NATURAL( DimensionType::natural ),
         HAS_SKYLIGHT( DimensionType::hasSkyLight ),
@@ -41,5 +41,5 @@ public class DimensionPropertyEnvironment extends EnumEnvironment<DimensionPrope
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override
-    public boolean matches( World world, @Nullable BlockPos pos ) { return VALUE.of( world.dimensionType() ) != INVERT; }
+    public boolean matches( Level level, @Nullable BlockPos pos ) { return VALUE.of( level.dimensionType() ) != INVERT; }
 }

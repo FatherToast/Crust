@@ -1,8 +1,8 @@
 package fathertoast.crust.api.config.common.value;
 
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class EntityList implements IStringArray {
         if( entity == null ) return false;
         final EntityEntry targetEntry = new EntityEntry( entity );
         for( EntityEntry currentEntry : ENTRIES ) {
-            currentEntry.checkClass( entity.level );
+            currentEntry.checkClass( entity.level() );
             if( currentEntry.contains( targetEntry ) )
                 return true;
         }
@@ -85,7 +85,7 @@ public class EntityList implements IStringArray {
         final EntityEntry targetEntry = new EntityEntry( entity );
         EntityEntry bestMatch = null;
         for( EntityEntry currentEntry : ENTRIES ) {
-            currentEntry.checkClass( entity.level );
+            currentEntry.checkClass( entity.level() );
             // Immediately return if we match the most stringent entry possible
             if( !currentEntry.EXTEND && currentEntry.entityClass == targetEntry.entityClass ) {
                 return currentEntry.VALUES;

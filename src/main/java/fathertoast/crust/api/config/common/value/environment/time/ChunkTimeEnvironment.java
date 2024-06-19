@@ -3,8 +3,8 @@ package fathertoast.crust.api.config.common.value.environment.time;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.environment.CompareLongEnvironment;
 import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
@@ -20,9 +20,9 @@ public class ChunkTimeEnvironment extends CompareLongEnvironment {
     
     /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Override
-    public Long getActual( World world, @Nullable BlockPos pos ) {
+    public Long getActual( Level level, @Nullable BlockPos pos ) {
         // Ignore deprecation; this is intentionally the same method used by World#getCurrentDifficultyAt
         //noinspection deprecation
-        return pos == null || !world.hasChunkAt( pos ) ? null : world.getChunkAt( pos ).getInhabitedTime();
+        return pos == null || !level.hasChunkAt( pos ) ? null : level.getChunkAt( pos ).getInhabitedTime();
     }
 }

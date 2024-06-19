@@ -1,24 +1,28 @@
 package fathertoast.crust.api.config.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigFileScreen;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.gui.widget.list.AbstractOptionList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.ComponentPath;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Widget that displays a sorted, scrollable list of all config files for one mod.
@@ -26,7 +30,7 @@ import java.util.List;
  * Note that this will ONLY show files that have been defined. Files defined, but not
  * initialized, will be visible only as inactive buttons (cannot be opened).
  */
-public class CrustConfigFileList extends AbstractOptionList<CrustConfigFileList.Entry> {
+public class CrustConfigFileList extends ContainerObjectSelectionList<CrustConfigFileList.Entry> {
     
     private int maxNameWidth;
     
@@ -48,12 +52,12 @@ public class CrustConfigFileList extends AbstractOptionList<CrustConfigFileList.
             String dir = cfgFile.DIR;
             if( !dir.equals( currentDir ) ) {
                 currentDir = dir;
-                addEntry( new CategoryEntry( this, new StringTextComponent(
+                addEntry( new CategoryEntry( this, Component.literal(
                         makePrettyPath( cfgManager.DIR.getName(), cfgFile.REL_FILE ) ) ) );
             }
             
             // File buttons
-            ITextComponent name = new StringTextComponent( CrustConfigFileScreen.getSpecName( cfgFile.SPEC ) );
+            Component name = Component.literal( CrustConfigFileScreen.getSpecName( cfgFile.SPEC ) );
             int nameWidth = game.font.width( name );
             if( nameWidth > maxNameWidth ) maxNameWidth = nameWidth;
             
@@ -62,35 +66,43 @@ public class CrustConfigFileList extends AbstractOptionList<CrustConfigFileList.
     }
     
     /** The base entry for config file selection lists. */
-    public abstract static class Entry extends AbstractOptionList.Entry<CrustConfigFileList.Entry> { }
+    public abstract static class Entry extends ContainerObjectSelectionList.Entry<CrustConfigFileList.Entry> { }
     
     /** A file directory header for config file selection lists. */
     public static class CategoryEntry extends Entry {
         
         private final CrustConfigFileList PARENT;
-        private final ITextComponent NAME;
+        private final Component NAME;
         private final int WIDTH;
         
-        public CategoryEntry( CrustConfigFileList parent, ITextComponent name ) {
+        public CategoryEntry( CrustConfigFileList parent, Component name ) {
             PARENT = parent;
             NAME = name;
             WIDTH = parent.minecraft.font.width( name );
         }
         
         @Override
-        public void render( MatrixStack matrixStack, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
-                            int mouseX, int mouseY, boolean mouseOver, float partialTicks ) {
+        public void render( GuiGraphics graphics, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
+                           int mouseX, int mouseY, boolean mouseOver, float partialTicks ) {
             //noinspection ConstantConditions
-            PARENT.minecraft.font.draw( matrixStack, NAME,
+            graphics.drawString( PARENT.minecraft.font, NAME,
                     PARENT.minecraft.screen.width - WIDTH >> 1,
                     rowTop + rowHeight - 9 - 1, 0xFFFFFF );
         }
-        
+
+        @Nullable
         @Override
-        public boolean changeFocus( boolean forward ) { return false; }
-        
+        public ComponentPath nextFocusPath( FocusNavigationEvent event ) {
+            return null;
+        }
+
         @Override
-        public List<? extends IGuiEventListener> children() { return Collections.emptyList(); }
+        public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
+
+        @Override
+        public List<? extends NarratableEntry> narratables() {
+            return List.of();
+        }
     }
     
     /** A file display row for config file selection lists. */
@@ -98,45 +110,50 @@ public class CrustConfigFileList extends AbstractOptionList<CrustConfigFileList.
         
         private final CrustConfigFileList PARENT;
         private final CrustConfigSpec SPEC;
-        private final ITextComponent NAME;
+        private final Component NAME;
         private final Button OPEN_BUTTON;
         
-        private FileEntry( CrustConfigFileList parent, CrustConfigSpec spec, ITextComponent name ) {
+        private FileEntry( CrustConfigFileList parent, CrustConfigSpec spec, Component name ) {
             PARENT = parent;
             SPEC = spec;
             NAME = name;
             //noinspection ConstantConditions
             OPEN_BUTTON = new Button( 0, 0, 20, 20,
-                    new StringTextComponent( ">" ),
+                    Component.literal( ">" ),
                     ( button ) -> PARENT.minecraft.setScreen(
-                            new CrustConfigFileScreen( PARENT.minecraft.screen, SPEC ) ) );
+                            new CrustConfigFileScreen( PARENT.minecraft.screen, SPEC ) ), Supplier::get );
             OPEN_BUTTON.active = SPEC.isInitialized();
         }
         
         @Override
-        public void render( MatrixStack matrixStack, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
+        public void render( GuiGraphics graphics, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
                             int mouseX, int mouseY, boolean mouseOver, float partialTicks ) {
             //noinspection ConstantConditions
-            PARENT.minecraft.font.draw( matrixStack, NAME,
+            graphics.drawString( PARENT.minecraft.font, NAME,
                     PARENT.minecraft.screen.width - PARENT.maxNameWidth - 30 >> 1,
                     rowTop + (rowHeight - 9 >> 1), 0xFFFFFF );
             
-            OPEN_BUTTON.x = (PARENT.minecraft.screen.width + PARENT.maxNameWidth + 30 >> 1) - 20;
-            OPEN_BUTTON.y = rowTop;
-            OPEN_BUTTON.render( matrixStack, mouseX, mouseY, partialTicks );
+            OPEN_BUTTON.setX( (PARENT.minecraft.screen.width + PARENT.maxNameWidth + 30 >> 1) - 20);
+            OPEN_BUTTON.setY( rowTop );
+            OPEN_BUTTON.render( graphics, mouseX, mouseY, partialTicks );
         }
         
         @Override
-        public List<? extends IGuiEventListener> children() { return ImmutableList.of( OPEN_BUTTON ); }
+        public List<? extends GuiEventListener> children() { return ImmutableList.of( OPEN_BUTTON ); }
         
         @Override
         public boolean mouseClicked( double x, double y, int mouseKey ) {
             return OPEN_BUTTON.mouseClicked( x, y, mouseKey );
         }
-        
+
         @Override
         public boolean mouseReleased( double x, double y, int mouseKey ) {
             return OPEN_BUTTON.mouseReleased( x, y, mouseKey );
+        }
+
+        @Override
+        public List<? extends NarratableEntry> narratables() {
+            return List.of();
         }
     }
     

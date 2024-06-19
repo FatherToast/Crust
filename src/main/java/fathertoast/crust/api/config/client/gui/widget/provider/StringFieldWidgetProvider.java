@@ -2,9 +2,9 @@ package fathertoast.crust.api.config.client.gui.widget.provider;
 
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import fathertoast.crust.api.config.common.field.StringField;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -30,15 +30,15 @@ public class StringFieldWidgetProvider implements IConfigFieldWidgetProvider {
      * @param displayValue The current raw value to display in the GUI.
      */
     @Override
-    public void apply( List<Widget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
-        TextFieldWidget textWidget = new TextFieldWidget( listEntry.minecraft().font,
+    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+        EditBox editBox = new EditBox( listEntry.minecraft().font,
                 1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for ~1px frame
-                new StringTextComponent( FIELD.getKey() ) );
-        textWidget.setMaxLength( Integer.MAX_VALUE );
+                Component.literal( FIELD.getKey() ) );
+        editBox.setMaxLength( Integer.MAX_VALUE );
+
+        editBox.setValue( displayValue.toString() );
+        editBox.setResponder( listEntry::updateValue );
         
-        textWidget.setValue( displayValue.toString() );
-        textWidget.setResponder( listEntry::updateValue );
-        
-        components.add( textWidget );
+        components.add( editBox );
     }
 }

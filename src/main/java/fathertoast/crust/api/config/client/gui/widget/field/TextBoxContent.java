@@ -1,6 +1,6 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public class TextBoxContent {
     }
     
     /** @return The position, clamped within the bounds for the current text content. */
-    public int clampPosition( int pos ) { return MathHelper.clamp( pos, 0, plainText.length() ); }
+    public int clampPosition( int pos ) { return Mth.clamp( pos, 0, plainText.length() ); }
     
     /** @return The index of the line containing a particular position. Returns -1 if the position is out of bounds. */
     public int getLineIndexAtPosition( int pos ) {

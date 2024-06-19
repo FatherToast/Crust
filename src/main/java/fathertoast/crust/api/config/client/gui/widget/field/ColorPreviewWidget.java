@@ -1,16 +1,17 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * A simple gui component that displays a color.
  */
-public class ColorPreviewWidget extends Widget {
+public class ColorPreviewWidget extends AbstractWidget {
     
     private static final ResourceLocation BACKGROUND_TEXTURE =
             new ResourceLocation( "crust", "textures/swatch.png" );
@@ -20,7 +21,7 @@ public class ColorPreviewWidget extends Widget {
     private int argb;
     
     public ColorPreviewWidget( int x, int y ) {
-        super( x, y, SIZE, SIZE, StringTextComponent.EMPTY );
+        super( x, y, SIZE, SIZE, Component.empty() );
     }
     
     /** Sets the color displayed in this swatch. */
@@ -29,14 +30,18 @@ public class ColorPreviewWidget extends Widget {
     }
     
     @Override
-    public void renderButton( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks ) {
+    public void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks ) {
         if( !visible ) return;
-        
-        Minecraft.getInstance().getTextureManager().bind( BACKGROUND_TEXTURE );
+
         RenderSystem.enableDepthTest();
-        blit( matrixStack, x, y, 0.0F, SIZE,
+        graphics.blit( BACKGROUND_TEXTURE, getX(), getY(), 0.0F, SIZE,
                 SIZE, SIZE, SIZE, SIZE );
-        fill( matrixStack, x + 1, y + 1,
-                x + SIZE - 1, y + SIZE - 1, argb );
+        graphics.fill( getX() + 1, getY() + 1,
+                getX() + SIZE - 1, getY() + SIZE - 1, argb );
+    }
+
+    @Override
+    protected void updateWidgetNarration( NarrationElementOutput output ) {
+
     }
 }

@@ -1,9 +1,9 @@
 package fathertoast.crust.api.config.common.value;
 
 import fathertoast.crust.api.config.common.field.AttributeListField;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -11,14 +11,14 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 @SuppressWarnings( "unused" )
-public class ConfigDrivenAttributeModifierMap extends AttributeModifierMap {
+public class ConfigDrivenAttributeModifierMap extends AttributeSupplier {
     
     private final AttributeListField FIELD;
-    private final Map<Attribute, ModifiableAttributeInstance> BASE_ATTRIBUTES;
+    private final Map<Attribute, AttributeInstance> BASE_ATTRIBUTES;
     
-    private AttributeModifierMap underlyingMap;
+    private AttributeSupplier underlyingMap;
     
-    public ConfigDrivenAttributeModifierMap( AttributeListField field, MutableAttribute builder ) {
+    public ConfigDrivenAttributeModifierMap( AttributeListField field, AttributeSupplier.Builder builder ) {
         super( builder.builder );
         FIELD = field;
         BASE_ATTRIBUTES = builder.builder;
@@ -33,8 +33,8 @@ public class ConfigDrivenAttributeModifierMap extends AttributeModifierMap {
         if( underlyingMap != null ) return;
         
         // Create a deep clone of the base attribute map
-        final MutableAttribute builder = builder();
-        for( Map.Entry<Attribute, ModifiableAttributeInstance> entry : BASE_ATTRIBUTES.entrySet() ) {
+        final AttributeSupplier.Builder builder = builder();
+        for( Map.Entry<Attribute, AttributeInstance> entry : BASE_ATTRIBUTES.entrySet() ) {
             builder.add( entry.getKey(), entry.getValue().getBaseValue() );
         }
         FIELD.apply( builder );
@@ -61,7 +61,7 @@ public class ConfigDrivenAttributeModifierMap extends AttributeModifierMap {
     
     @Override
     @Nullable
-    public ModifiableAttributeInstance createInstance( Consumer<ModifiableAttributeInstance> onChanged, Attribute attribute ) {
+    public AttributeInstance createInstance( Consumer<AttributeInstance> onChanged, Attribute attribute ) {
         validate();
         return underlyingMap.createInstance( onChanged, attribute );
     }

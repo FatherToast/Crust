@@ -6,8 +6,8 @@ import fathertoast.crust.api.config.common.value.EnvironmentEntry;
 import fathertoast.crust.api.config.common.value.EnvironmentList;
 import fathertoast.crust.api.config.common.value.environment.AbstractEnvironment;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -132,12 +132,12 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
     // Convenience methods
     
     /** @return The value matching the given environment, or the default value if no matching environment is defined. */
-    public double getOrElse( World world, @Nullable BlockPos pos, DoubleField defaultValue ) { return get().getOrElse( world, pos, defaultValue ); }
+    public double getOrElse( Level level, @Nullable BlockPos pos, DoubleField defaultValue ) { return get().getOrElse( level, pos, defaultValue ); }
     
     /** @return The value matching the given environment, or the default value if no matching environment is defined. */
-    public double getOrElse( World world, @Nullable BlockPos pos, double defaultValue ) { return get().getOrElse( world, pos, defaultValue ); }
+    public double getOrElse( Level level, @Nullable BlockPos pos, double defaultValue ) { return get().getOrElse( level, pos, defaultValue ); }
     
     /** @return The value matching the given environment, or null if no matching environment is defined. */
     @Nullable
-    public Double get( World world, @Nullable BlockPos pos ) { return get().get( world, pos ); }
+    public Double get( Level level, @Nullable BlockPos pos ) { return get().get( level, pos ); }
 }

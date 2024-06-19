@@ -2,8 +2,8 @@ package fathertoast.crust.api.config.common.value.environment.time;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.environment.EnumEnvironment;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
@@ -33,7 +33,7 @@ public class DayTimeEnvironment extends EnumEnvironment<DayTimeEnvironment.Value
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override
-    public boolean matches( World world, @Nullable BlockPos pos ) {
-        return (VALUE.matches( (int) (world.dayTime() / 24_000L) )) != INVERT;
+    public boolean matches( Level level, @Nullable BlockPos pos ) {
+        return (VALUE.matches( (int) (level.dayTime() / 24_000L) )) != INVERT;
     }
 }

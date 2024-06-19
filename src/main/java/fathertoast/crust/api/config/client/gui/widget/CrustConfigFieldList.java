@@ -1,24 +1,28 @@
 package fathertoast.crust.api.config.client.gui.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigFileScreen;
-import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.client.gui.widget.field.ResetButton;
+import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.RestartNote;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.gui.widget.list.AbstractOptionList;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.ComponentPath;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
+import org.jline.reader.Widget;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -31,7 +35,7 @@ import java.util.List;
  * The layout of this screen is largely driven by the spec itself, while
  * each field decides how it displays its own info.
  */
-public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldList.Entry> {
+public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConfigFieldList.Entry> {
     
     /** The maximum width for text lines in tooltips. */
     public static final int TOOLTIP_WIDTH = 150;
@@ -85,9 +89,9 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
     
     /** Adds a single-line comment. */
     public void comment( String str, int color ) {
-        List<IReorderingProcessor> lines = minecraft.font.split(
-                new StringTextComponent( str ), MAX_WIDTH );
-        for( IReorderingProcessor line : lines ) addEntry( new LeftAlignedStringEntry( line, color ) );
+        List<FormattedCharSequence> lines = minecraft.font.split(
+                Component.literal( str ), MAX_WIDTH );
+        for( FormattedCharSequence line : lines ) addEntry( new LeftAlignedStringEntry( line, color ) );
     }
     
     /** Adds a tooltip comment. */
@@ -125,8 +129,8 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
     
     /** Called each frame to draw this component. */
     @Override
-    public void render( MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks ) {
-        super.render( matrixStack, mouseX, mouseY, partialTicks );
+    public void render( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks ) {
+        super.render( graphics, mouseX, mouseY, partialTicks );
         
         if( isMouseOver( mouseX, mouseY ) ) {
             Entry entryMouseOver = getEntryAtPosition( mouseX, mouseY );
@@ -158,8 +162,7 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
     public void saveChanges() {
         if( changed ) {
             for( Entry child : children() ) {
-                if( child instanceof FieldEntry ) {
-                    FieldEntry fieldEntry = (FieldEntry) child;
+                if(child instanceof FieldEntry fieldEntry) {
                     if( fieldEntry.changed ) {
                         SPEC.getNightConfig().set( fieldEntry.FIELD.getKey(), fieldEntry.pendingValue );
                     }
@@ -170,133 +173,151 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
     }
     
     
-    public static abstract class Entry extends AbstractOptionList.Entry<Entry> {
+    public static abstract class Entry extends ContainerObjectSelectionList.Entry<Entry> {
         
         public Minecraft minecraft() { return Minecraft.getInstance(); }
-        
+
         @Nullable
-        public List<IReorderingProcessor> getTooltip() { return null; }
+        public List<FormattedCharSequence> getTooltip() { return null; }
+
+        @Override
+        public List<? extends NarratableEntry> narratables() {
+            return List.of();
+        }
     }
     
     public static class NewLineEntry extends Entry {
         
         @Override
-        public void render( MatrixStack matrixStack, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
+        public void render( GuiGraphics graphics, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
                             int mouseX, int mouseY, boolean mouseOver, float partialTicks ) { }
-        
+
+        @Nullable
         @Override
-        public boolean changeFocus( boolean forward ) { return false; }
-        
+        public ComponentPath nextFocusPath( FocusNavigationEvent event ) {
+            return super.nextFocusPath( event );
+        }
+
         @Override
-        public List<? extends IGuiEventListener> children() { return Collections.emptyList(); }
+        public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
     }
     
     public static class LeftAlignedStringEntry extends Entry {
         
-        private final IReorderingProcessor TEXT;
+        private final FormattedCharSequence TEXT;
         private final int COLOR;
         
-        public LeftAlignedStringEntry( IReorderingProcessor text, int color ) {
+        public LeftAlignedStringEntry( FormattedCharSequence text, int color ) {
             TEXT = text;
             COLOR = color;
         }
         
         @Override
-        public void render( MatrixStack matrixStack, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
+        public void render( GuiGraphics graphics, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
                             int mouseX, int mouseY, boolean mouseOver, float partialTicks ) {
-            minecraft().font.draw( matrixStack, TEXT,
-                    rowLeft, rowTop + 5, COLOR );
+
+            graphics.drawString( minecraft().font, TEXT, rowLeft, rowTop + 5, COLOR );
         }
-        
+
+        @Nullable
         @Override
-        public boolean changeFocus( boolean forward ) { return false; }
-        
+        public ComponentPath nextFocusPath( FocusNavigationEvent event ) {
+            return super.nextFocusPath( event );
+        }
+
         @Override
-        public List<? extends IGuiEventListener> children() { return Collections.emptyList(); }
+        public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
     }
     
     public static class TitledCommentEntry extends Entry {
         
-        private final ITextComponent TEXT;
-        private final List<IReorderingProcessor> TOOLTIP;
+        private final Component TEXT;
+        private final List<FormattedCharSequence> TOOLTIP;
         private final int COLOR;
         
         public TitledCommentEntry( String text, List<String> comment, int color ) {
-            TEXT = new StringTextComponent( text );
+            TEXT = Component.literal( text );
             COLOR = color;
             
             if( comment.isEmpty() ) TOOLTIP = null;
             else {
                 TOOLTIP = new ArrayList<>();
-                TOOLTIP.addAll( minecraft().font.split( new StringTextComponent(
-                        text ).withStyle( TextFormatting.YELLOW ), TOOLTIP_WIDTH ) );
+                TOOLTIP.addAll( minecraft().font.split( Component.literal(
+                        text ).withStyle( ChatFormatting.YELLOW ), TOOLTIP_WIDTH ) );
                 for( String line : comment ) {
-                    TOOLTIP.addAll( minecraft().font.split( new StringTextComponent(
+                    TOOLTIP.addAll( minecraft().font.split( Component.literal(
                             line ), TOOLTIP_WIDTH ) );
                 }
             }
         }
         
         @Override
-        public void render( MatrixStack matrixStack, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
+        public void render( GuiGraphics graphics, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
                             int mouseX, int mouseY, boolean mouseOver, float partialTicks ) {
-            minecraft().font.draw( matrixStack, TEXT,
+
+            graphics.drawString(minecraft().font, TEXT,
                     rowLeft, rowTop + 5, COLOR );
         }
-        
+
+        @Nullable
         @Override
-        public boolean changeFocus( boolean forward ) { return false; }
-        
+        public ComponentPath nextFocusPath( FocusNavigationEvent event ) {
+            return super.nextFocusPath( event );
+        }
+
         @Override
-        public List<? extends IGuiEventListener> children() { return Collections.emptyList(); }
+        public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
         
         @Override
         @Nullable
-        public List<IReorderingProcessor> getTooltip() { return TOOLTIP; }
+        public List<FormattedCharSequence> getTooltip() { return TOOLTIP; }
     }
     
     public static class CenteredStringEntry extends Entry {
         
-        private final ITextComponent TEXT;
+        private final Component TEXT;
         private final int COLOR;
         
         public final int WIDTH;
         
-        public CenteredStringEntry( ITextComponent text, int color ) {
+        public CenteredStringEntry( Component text, int color ) {
             TEXT = text;
             COLOR = color;
             WIDTH = Minecraft.getInstance().font.width( TEXT );
         }
         
         @Override
-        public void render( MatrixStack matrixStack, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
+        public void render( GuiGraphics graphics, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
                             int mouseX, int mouseY, boolean mouseOver, float partialTicks ) {
             //noinspection ConstantConditions
-            minecraft().font.draw( matrixStack, TEXT,
+            graphics.drawString( minecraft().font, TEXT,
                     minecraft().screen.width - WIDTH - 5 >> 1, rowTop + 5, COLOR );
         }
-        
+
+        @Nullable
         @Override
-        public boolean changeFocus( boolean forward ) { return false; }
-        
+        public ComponentPath nextFocusPath( FocusNavigationEvent event ) {
+            return super.nextFocusPath( event );
+        }
+
         @Override
-        public List<? extends IGuiEventListener> children() { return Collections.emptyList(); }
+        public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
     }
     
     public static class HeaderEntry extends CenteredStringEntry {
         
-        private final List<IReorderingProcessor> TOOLTIP;
+        private final List<FormattedCharSequence> TOOLTIP;
         
         public HeaderEntry( String text, @Nullable List<String> comment, int color ) {
-            super( new StringTextComponent( ConfigUtil.properCase( CrustConfigFileScreen.decodeString( text ) ) ), color );
+            super( Component.literal( ConfigUtil.properCase( CrustConfigFileScreen.decodeString( text ) ) ), color );
             
             if( comment == null || comment.isEmpty() ) TOOLTIP = null;
             else {
                 TOOLTIP = new ArrayList<>();
-                TOOLTIP.addAll( minecraft().font.split( new StringTextComponent(
-                        text ).withStyle( TextFormatting.YELLOW ), TOOLTIP_WIDTH ) );
+                TOOLTIP.addAll( minecraft().font.split( Component.literal(
+                        text ).withStyle( ChatFormatting.YELLOW ), TOOLTIP_WIDTH ) );
                 for( String line : comment ) {
-                    TOOLTIP.addAll( minecraft().font.split( new StringTextComponent(
+                    TOOLTIP.addAll( minecraft().font.split( Component.literal(
                             line ), TOOLTIP_WIDTH ) );
                 }
             }
@@ -304,7 +325,7 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
         
         @Override
         @Nullable
-        public List<IReorderingProcessor> getTooltip() { return TOOLTIP; }
+        public List<FormattedCharSequence> getTooltip() { return TOOLTIP; }
     }
     
     public static class FieldEntry extends Entry {
@@ -312,10 +333,10 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
         public final CrustConfigFieldList PARENT;
         public final AbstractConfigField FIELD;
         
-        private final List<IReorderingProcessor> NAME;
-        private final List<IReorderingProcessor> TOOLTIP;
+        private final List<FormattedCharSequence> NAME;
+        private final List<FormattedCharSequence> TOOLTIP;
         
-        private final List<Widget> COMPONENTS = new ArrayList<>();
+        private final List<AbstractWidget> COMPONENTS = new ArrayList<>();
         private final List<OffsetWidget> RENDER_COMPONENTS = new ArrayList<>();
         
         private final Button RESET_BUTTON;
@@ -328,7 +349,7 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
                            @Nullable RestartNote restartNote, List<String> addedComment ) {
             PARENT = parent;
             FIELD = field;
-            NAME = minecraft().font.split( new StringTextComponent( name ),
+            NAME = minecraft().font.split( Component.literal( name ),
                     MAX_WIDTH - 2 - IConfigFieldWidgetProvider.VALUE_WIDTH - RESET_BUTTON_WIDTH );
             
             TOOLTIP = new ArrayList<>();
@@ -343,7 +364,7 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
             }
             
             CURRENT_VALUE = pendingValue = field.getValue();
-            
+
             RESET_BUTTON = new ResetButton( ( button ) -> {
                 updateValue( FIELD.getDefaultValue() );
                 populateComponents();
@@ -357,11 +378,11 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
             COMPONENTS.clear();
             RENDER_COMPONENTS.clear();
             
-            RESET_BUTTON.x = IConfigFieldWidgetProvider.VALUE_WIDTH + 1;
-            RESET_BUTTON.y = 0;
+            RESET_BUTTON.setX( IConfigFieldWidgetProvider.VALUE_WIDTH + 1 );
+            RESET_BUTTON.setY( 0 );
             COMPONENTS.add( RESET_BUTTON );
             FIELD.getWidgetProvider().apply( COMPONENTS, this, pendingValue );
-            for( Widget component : COMPONENTS ) RENDER_COMPONENTS.add( new OffsetWidget( component ) );
+            for( AbstractWidget component : COMPONENTS ) RENDER_COMPONENTS.add( new OffsetWidget( component ) );
         }
         
         /** @return The field's pending "new" value. */
@@ -390,75 +411,80 @@ public class CrustConfigFieldList extends AbstractOptionList<CrustConfigFieldLis
         
         /** Builds this field entry's tooltip. */
         private void buildTooltip( int width, @Nullable RestartNote restartNote, List<String> addedComment ) {
-            TOOLTIP.addAll( minecraft().font.split( new StringTextComponent(
-                    FIELD.getKey() ).withStyle( TextFormatting.YELLOW ), width ) );
+            TOOLTIP.addAll( minecraft().font.split( Component.literal(
+                    FIELD.getKey() ).withStyle( ChatFormatting.YELLOW ), width ) );
             if( FIELD.getComment() != null && !FIELD.getComment().isEmpty() ) {
                 for( String line : FIELD.getComment() ) {
-                    TOOLTIP.addAll( minecraft().font.split( new StringTextComponent(
+                    TOOLTIP.addAll( minecraft().font.split( Component.literal(
                             line ), width ) );
                 }
             }
             if( restartNote != null ) {
-                TOOLTIP.addAll( minecraft().font.split( new StringTextComponent(
-                        restartNote.COMMENT ).withStyle( TextFormatting.RED ), width ) );
+                TOOLTIP.addAll( minecraft().font.split( Component.literal(
+                        restartNote.COMMENT ).withStyle( ChatFormatting.RED ), width ) );
             }
             if( !addedComment.isEmpty() ) {
                 for( String line : addedComment ) {
-                    TOOLTIP.addAll( minecraft().font.split( new StringTextComponent(
-                            line ).withStyle( TextFormatting.GRAY ), width ) );
+                    TOOLTIP.addAll( minecraft().font.split( Component.literal(
+                            line ).withStyle( ChatFormatting.GRAY ), width ) );
                 }
             }
         }
         
         /** Opens a popup widget over the screen. Setting to null closes any open popup. */
-        public void setPopupWidget( @Nullable Widget popup ) { PARENT.PARENT.setPopupWidget( popup ); }
+        public void setPopupWidget( @Nullable AbstractWidget popup ) { PARENT.PARENT.setPopupWidget( popup ); }
         
         @Override
-        public void render( MatrixStack matrixStack, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
+        public void render( GuiGraphics graphics, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
                             int mouseX, int mouseY, boolean mouseOver, float partialTicks ) {
             int color = changed ? 0x55FFFF : 0xFFFFFF;
             if( NAME.size() == 1 ) {
-                minecraft().font.draw( matrixStack, NAME.get( 0 ),
+                graphics.drawString( minecraft().font, NAME.get( 0 ),
                         rowLeft, rowTop + 5, color );
             }
             else if( NAME.size() >= 2 ) {
-                minecraft().font.draw( matrixStack, NAME.get( NAME.size() - 2 ),
+                graphics.drawString( minecraft().font, NAME.get( NAME.size() - 2 ),
                         rowLeft, rowTop, color );
-                minecraft().font.draw( matrixStack, NAME.get( NAME.size() - 1 ),
+                graphics.drawString( minecraft().font, NAME.get( NAME.size() - 1 ),
                         rowLeft, rowTop + 10, color );
             }
             
             for( OffsetWidget component : RENDER_COMPONENTS ) {
-                component.WIDGET.x = component.X_OFFSET + rowLeft + MAX_WIDTH - IConfigFieldWidgetProvider.VALUE_WIDTH - RESET_BUTTON_WIDTH;
-                component.WIDGET.y = component.Y_OFFSET + rowTop;
-                component.WIDGET.render( matrixStack, mouseX, mouseY, partialTicks );
+                component.WIDGET.setX( component.X_OFFSET + rowLeft + MAX_WIDTH - IConfigFieldWidgetProvider.VALUE_WIDTH - RESET_BUTTON_WIDTH );
+                component.WIDGET.setY( component.Y_OFFSET + rowTop );
+                component.WIDGET.render( graphics, mouseX, mouseY, partialTicks );
             }
         }
         
         @Override
         @Nullable
-        public List<IReorderingProcessor> getTooltip() { return TOOLTIP; }
+        public List<FormattedCharSequence> getTooltip() { return TOOLTIP; }
         
         @Override
-        public List<? extends IGuiEventListener> children() { return COMPONENTS; }
+        public List<? extends GuiEventListener> children() { return COMPONENTS; }
         
         @Override
-        public void setFocused( @Nullable IGuiEventListener component ) {
-            if( component instanceof TextFieldWidget ) PARENT.PARENT.setFocusedTextBox( (TextFieldWidget) component );
+        public void setFocused( @Nullable GuiEventListener component ) {
+            if( component instanceof EditBox editBox) PARENT.PARENT.setFocusedTextBox( editBox );
             super.setFocused( component );
         }
-        
+
+        @Override
+        public List<? extends NarratableEntry> narratables() {
+            return List.of();
+        }
+
         /** Simple wrapper used to save the offsets of provided field gui components. */
         private static class OffsetWidget {
             
-            final Widget WIDGET;
+            final AbstractWidget WIDGET;
             final int X_OFFSET;
             final int Y_OFFSET;
             
-            OffsetWidget( Widget widget ) {
+            OffsetWidget( AbstractWidget widget ) {
                 WIDGET = widget;
-                X_OFFSET = widget.x;
-                Y_OFFSET = widget.y;
+                X_OFFSET = widget.getX();
+                Y_OFFSET = widget.getY();
             }
         }
     }

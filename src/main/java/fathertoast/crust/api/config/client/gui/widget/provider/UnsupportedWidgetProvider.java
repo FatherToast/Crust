@@ -1,12 +1,12 @@
 package fathertoast.crust.api.config.client.gui.widget.provider;
 
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Represents a field that is not allowed to be modified by the in-game editor.
@@ -16,11 +16,11 @@ import java.util.List;
 public class UnsupportedWidgetProvider implements IConfigFieldWidgetProvider {
     
     /** The message to display on the disabled button. */
-    private final ITextComponent TEXT;
+    private final Component TEXT;
     
-    public UnsupportedWidgetProvider() { this( new StringTextComponent( "In-Game Edit NYI" ) ); }
+    public UnsupportedWidgetProvider() { this( Component.literal( "In-Game Edit NYI" ) ); }
     
-    public UnsupportedWidgetProvider( ITextComponent text ) { TEXT = text; }
+    public UnsupportedWidgetProvider( Component text ) { TEXT = text; }
     
     /**
      * Called to initialize the field's gui components.
@@ -34,9 +34,9 @@ public class UnsupportedWidgetProvider implements IConfigFieldWidgetProvider {
      * @param displayValue The current raw value to display in the GUI.
      */
     @Override
-    public void apply( List<Widget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
         Button dummyButton = new Button( 0, 0, VALUE_WIDTH, VALUE_HEIGHT,
-                TEXT, ( button ) -> { } );
+                TEXT, ( button ) -> { }, Supplier::get );
         dummyButton.active = false;
         components.add( dummyButton );
     }

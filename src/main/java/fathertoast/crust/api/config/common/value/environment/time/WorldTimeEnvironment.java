@@ -3,8 +3,8 @@ package fathertoast.crust.api.config.common.value.environment.time;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.environment.CompareLongEnvironment;
 import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
@@ -20,5 +20,5 @@ public class WorldTimeEnvironment extends CompareLongEnvironment {
     
     /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Override
-    public Long getActual( World world, @Nullable BlockPos pos ) { return world.dayTime(); }
+    public Long getActual( Level level, @Nullable BlockPos pos ) { return level.dayTime(); }
 }

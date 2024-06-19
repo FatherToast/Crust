@@ -1,10 +1,9 @@
 package fathertoast.crust.api.config.common;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -86,12 +85,12 @@ public final class ConfigUtil {
     
     /** @return A string representation of the file from the game directory. */
     public static String toRelativePath( File gameFile ) { return FMLPaths.GAMEDIR.get().relativize( gameFile.toPath() ).toString(); }
-    
+
     /** @return Returns a Forge registry entry as a string, or "null" if it is null. */
-    public static String toString( @Nullable ForgeRegistryEntry<?> regEntry ) { return regEntry == null ? "null" : toString( regEntry.getRegistryName() ); }
+    //public static String toString( @Nullable ForgeRegistryEntry<?> regEntry ) { return regEntry == null ? "null" : toString( regEntry.getRegistryName() ); }
     
     /** @return Returns a dynamic registry entry as a string, or "null" if it is null. */
-    public static String toString( @Nullable RegistryKey<?> regKey ) { return regKey == null ? "null" : toString( regKey.location() ); }
+    public static String toString( @Nullable ResourceKey<?> regKey ) { return regKey == null ? "null" : toString( regKey.location() ); }
     
     /** @return Returns the resource location as a string, or "null" if it is null. */
     public static String toString( @Nullable ResourceLocation res ) { return res == null ? "null" : res.toString(); }

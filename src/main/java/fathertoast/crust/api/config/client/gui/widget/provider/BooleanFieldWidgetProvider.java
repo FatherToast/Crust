@@ -3,11 +3,12 @@ package fathertoast.crust.api.config.client.gui.widget.provider;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import fathertoast.crust.api.config.common.field.BooleanField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import net.minecraft.client.gui.DialogTexts;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.CommonComponents;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Displays an on/off toggle button for a boolean value.
@@ -31,13 +32,13 @@ public class BooleanFieldWidgetProvider implements IConfigFieldWidgetProvider {
      * @param displayValue The current raw value to display in the GUI.
      */
     @Override
-    public void apply( List<Widget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
         Button toggleButton = new Button( 0, 0, VALUE_WIDTH, VALUE_HEIGHT,
-                DialogTexts.optionStatus( cast( displayValue ) ), ( button ) -> {
+                CommonComponents.optionStatus( cast( displayValue ) ), (button ) -> {
             boolean newValue = !cast( listEntry.getValue() );
-            button.setMessage( DialogTexts.optionStatus( newValue ) );
+            button.setMessage( CommonComponents.optionStatus( newValue ) );
             listEntry.updateValue( newValue );
-        } );
+        }, Supplier::get );
         
         components.add( toggleButton );
     }

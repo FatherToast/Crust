@@ -2,8 +2,8 @@ package fathertoast.crust.api.config.common.value.environment.biome;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.environment.EnumEnvironment;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
@@ -15,7 +15,7 @@ public class BiomeCategoryEnvironment extends EnumEnvironment<BiomeCategory> {
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override
-    public boolean matches( World world, @Nullable BlockPos pos ) {
-        return (pos != null && VALUE.BASE.equals( world.getBiome( pos ).getBiomeCategory() )) != INVERT;
+    public boolean matches( Level level, @Nullable BlockPos pos ) {
+        return (pos != null && (VALUE == BiomeCategory.NONE || level.getBiome( pos ).is( VALUE.BIOME_TAG ))) != INVERT;
     }
 }

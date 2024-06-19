@@ -3,9 +3,8 @@ package fathertoast.crust.api.config.common.value;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -16,7 +15,7 @@ import java.util.*;
  * See also: {@link net.minecraftforge.registries.ForgeRegistries}
  */
 @SuppressWarnings( "unused" )
-public class RegistryEntryList<T extends IForgeRegistryEntry<T>> implements IStringArray {
+public class RegistryEntryList<T> implements IStringArray {
     
     /** The registry this list acts as a subset of. */
     private final IForgeRegistry<T> REGISTRY;

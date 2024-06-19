@@ -1,6 +1,8 @@
 {
     "pack": {
-        "description": "Crust Resources",
-        "pack_format": 6
+        "description": {
+            "text": "Crust Resources"
+        },
+        "pack_format": 15
     }
 }

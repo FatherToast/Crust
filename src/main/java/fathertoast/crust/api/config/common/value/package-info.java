@@ -2,6 +2,6 @@
 @ParametersAreNonnullByDefault
 package fathertoast.crust.api.config.common.value;
 
-import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

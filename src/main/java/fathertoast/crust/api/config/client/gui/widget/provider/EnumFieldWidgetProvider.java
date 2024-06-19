@@ -5,15 +5,15 @@ import fathertoast.crust.api.config.client.gui.widget.field.PopupListWidget;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.EnumField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 
 /**
  * Displays a button that opens a dropdown menu for an enum value.
@@ -37,9 +37,9 @@ public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldW
      * @param displayValue The current raw value to display in the GUI.
      */
     @Override
-    public void apply( List<Widget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
         Button dropdownButton = new Button( 0, 0, VALUE_WIDTH, VALUE_HEIGHT,
-                rawToText( displayValue ), ( button ) -> openDropdownMenu( button, listEntry, this ) );
+                rawToText( displayValue ), ( button ) -> openDropdownMenu( button, listEntry, this ), Supplier::get );
         
         components.add( dropdownButton );
     }
@@ -59,15 +59,15 @@ public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldW
             height = screenHeight;
             hasScrollbar = true;
         }
-        else if( openingButton.y + height <= screenHeight ) {
+        else if( openingButton.getY() + height <= screenHeight ) {
             // Can fit as a traditional dropdown
-            y = openingButton.y;
+            y = openingButton.getY();
         }
-        else if( openingButton.y + openingButton.getHeight() - height >= 0 ) {
+        else if( openingButton.getY() + openingButton.getHeight() - height >= 0 ) {
             // Can fit when flipped upward
-            y = openingButton.y + openingButton.getHeight() - height;
+            y = openingButton.getY() + openingButton.getHeight() - height;
         }
-        else if( openingButton.y + openingButton.getHeight() / 2 < screenHeight / 2 ) {
+        else if( openingButton.getY() + openingButton.getHeight() / 2 < screenHeight / 2 ) {
             // Push from the top
             y = 0;
         }
@@ -76,20 +76,20 @@ public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldW
             y = screenHeight - height;
         }
         
-        PopupListWidget<PopupListWidget.WidgetListEntry> dropdownMenu = new PopupListWidget<>( openingButton.x - 2, y,
+        PopupListWidget<PopupListWidget.WidgetListEntry> dropdownMenu = new PopupListWidget<>( openingButton.getX() - 2, y,
                 openingButton.getWidth() + 4 + (hasScrollbar ? PopupListWidget.SCROLLBAR_WIDTH + 2 : 0),
-                height, rowHeight, new StringTextComponent( provider.FIELD.getKey() ) );
+                height, rowHeight, Component.literal(provider.FIELD.getKey()) );
         PopupListWidget.WidgetListEntry selectedEntry = null;
         for( T value : validValues ) {
             boolean isSelected = TomlHelper.equals( value, listEntry.getValue() );
             Button selectButton = new Button( 0, 0,
                     openingButton.getWidth(), rowHeight - PopupListWidget.ENTRY_PADDING,
-                    toText( value, isSelected ? TextFormatting.GREEN : null ),
+                    toText( value, isSelected ? ChatFormatting.GREEN : null ),
                     ( button ) -> {
                         openingButton.setMessage( toText( value ) );
                         listEntry.updateValue( value );
                         listEntry.setPopupWidget( null );
-                    } );
+                    }, Supplier::get );
             
             PopupListWidget.WidgetListEntry entry = new PopupListWidget.WidgetListEntry( selectButton );
             dropdownMenu.addEntry( entry );
@@ -106,18 +106,18 @@ public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldW
     }
     
     /** Converts the enum into its display text component. Assumes the enum's declared name is in UPPER_UNDERSCORE format. */
-    protected ITextComponent toText( T value ) {
-        return new StringTextComponent( toReadable( value ) );
+    protected Component toText( T value ) {
+        return Component.literal( toReadable( value ) );
     }
     
     /** Converts the enum into its display text component. Assumes the enum's declared name is in UPPER_UNDERSCORE format. */
-    protected ITextComponent toText( T value, @Nullable TextFormatting format ) {
+    protected Component toText( T value, @Nullable ChatFormatting format ) {
         if( format == null ) return toText( value );
-        return new StringTextComponent( toReadable( value ) ).withStyle( format );
+        return Component.literal( toReadable( value ) ).withStyle( format );
     }
     
     /** Converts the unprocessed value into its display text component. */
-    protected ITextComponent rawToText( Object value ) {
+    protected Component rawToText( Object value ) {
         try {
             //noinspection unchecked
             return toText( (T) value );
@@ -126,9 +126,9 @@ public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldW
             // Not directly assignable, try parsing
         }
         if( value instanceof String ) {
-            return new StringTextComponent( ConfigUtil.properCase( ((String) value)
+            return Component.literal( ConfigUtil.properCase( ((String) value)
                     .toLowerCase( Locale.ROOT ).replace( '_', ' ' ) ) );
         }
-        return StringTextComponent.EMPTY;
+        return Component.empty();
     }
 }

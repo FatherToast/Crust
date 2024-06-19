@@ -3,12 +3,12 @@ package fathertoast.crust.api.config.common.value;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.state.Property;
-import net.minecraft.state.StateContainer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
@@ -84,7 +84,7 @@ public class BlockEntry implements Cloneable {
     @Override
     public String toString() {
         // Block name
-        String registryName = ConfigUtil.toString( BLOCK );
+        String registryName = ConfigUtil.toString( ForgeRegistries.BLOCKS.getKey( BLOCK ) );
         if( MATCHERS.isEmpty() ) {
             return registryName;
         }
@@ -99,7 +99,7 @@ public class BlockEntry implements Cloneable {
     /** Used to sort this object in a hash table. */
     @Override
     public int hashCode() {
-        ResourceLocation regKey = BLOCK.getRegistryName();
+        ResourceLocation regKey = ForgeRegistries.BLOCKS.getKey(BLOCK);
         return regKey == null ? 0 : regKey.hashCode();
     }
     
@@ -136,7 +136,7 @@ public class BlockEntry implements Cloneable {
         if( stateString.isEmpty() ) {
             return new State( Collections.emptyList() );
         }
-        final StateContainer<Block, BlockState> stateContainer = block.getStateDefinition();
+        final StateDefinition<Block, BlockState> stateContainer = block.getStateDefinition();
         
         // Parse the state and build the matcher
         final StateBuilder builder = new StateBuilder( block );
@@ -163,12 +163,12 @@ public class BlockEntry implements Cloneable {
                 }
                 ConfigUtil.LOG.warn( "Invalid block property key for {} \"{}\". Valid property keys for '{}' are {}. " +
                                 "Deleting property. Invalid property: {}", field.getClass(), field.getKey(),
-                        ConfigUtil.toString( block ), TomlHelper.literalList( propertyNames ), combinedEntry.trim() );
+                        ConfigUtil.toString( ForgeRegistries.BLOCKS.getKey( block )), TomlHelper.literalList( propertyNames ), combinedEntry.trim() );
                 continue;
             }
             // Parse the property value
             final Optional<? extends Comparable<?>> value = property.getValue( pair[1] );
-            if( !value.isPresent() ) {
+            if( value.isEmpty() ) {
                 // Make a list of valid property values to give better feedback
                 List<Object> valueNames = new ArrayList<>();
                 for( Comparable<?> allowed : property.getPossibleValues() ) {

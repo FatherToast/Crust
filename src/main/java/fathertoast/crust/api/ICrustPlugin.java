@@ -1,6 +1,6 @@
 package fathertoast.crust.api;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * This interface can be implemented into a class to make it a valid Crust mod plugin.

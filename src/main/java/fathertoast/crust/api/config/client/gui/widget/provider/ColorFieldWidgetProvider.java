@@ -4,9 +4,9 @@ import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import fathertoast.crust.api.config.client.gui.widget.field.ColorPreviewWidget;
 import fathertoast.crust.api.config.common.field.ColorIntField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -32,37 +32,37 @@ public class ColorFieldWidgetProvider implements IConfigFieldWidgetProvider {
      * @param displayValue The current raw value to display in the GUI.
      */
     @Override
-    public void apply( List<Widget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
         ColorPreviewWidget previewWidget = new ColorPreviewWidget( VALUE_WIDTH - ColorPreviewWidget.SIZE, 0 );
         
         Number startValue = TomlHelper.asNumber( displayValue );
         previewWidget.setColor( startValue == null ? 0 : startValue.intValue(), FIELD.usesAlpha() );
         
-        TextFieldWidget textWidget = new TextFieldWidget( listEntry.minecraft().font, 1, 1,
+        EditBox editBox = new EditBox( listEntry.minecraft().font, 1, 1,
                 VALUE_WIDTH - 3 - ColorPreviewWidget.SIZE, VALUE_HEIGHT - 2, // Account for 1px frame
-                new StringTextComponent( FIELD.getKey() ) );
-        textWidget.setMaxLength( FIELD.getMinDigits() );
+                Component.literal(FIELD.getKey()) );
+        editBox.setMaxLength( FIELD.getMinDigits() );
         
         TomlHelper.HEX_MODE = FIELD.getMinDigits();
-        textWidget.setValue( TomlHelper.toLiteral( displayValue ).substring( 2 ) );
+        editBox.setValue( TomlHelper.toLiteral( displayValue ).substring( 2 ) );
         TomlHelper.HEX_MODE = 0;
-        
-        textWidget.setResponder( ( value ) -> {
+
+        editBox.setResponder( ( value ) -> {
             Integer newValue = TomlHelper.parseHexInt( value );
             if( newValue == null || !isValid( newValue ) ) {
                 previewWidget.setColor( 0, true );
-                textWidget.setTextColor( INVALID_COLOR );
+                editBox.setTextColor( INVALID_COLOR );
                 listEntry.clearValue();
             }
             else {
                 previewWidget.setColor( newValue, FIELD.usesAlpha() );
-                textWidget.setTextColor( DEFAULT_COLOR );
+                editBox.setTextColor( DEFAULT_COLOR );
                 listEntry.updateValue( newValue );
             }
         } );
         
         components.add( previewWidget );
-        components.add( textWidget );
+        components.add( editBox );
     }
     
     /** Returns true when the input number is valid. */

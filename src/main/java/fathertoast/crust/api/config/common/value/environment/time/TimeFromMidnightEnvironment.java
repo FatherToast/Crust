@@ -3,8 +3,8 @@ package fathertoast.crust.api.config.common.value.environment.time;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.environment.CompareIntEnvironment;
 import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
@@ -24,8 +24,8 @@ public class TimeFromMidnightEnvironment extends CompareIntEnvironment {
     
     /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Override
-    public Integer getActual( World world, @Nullable BlockPos pos ) {
-        int dayTime = (int) (world.dayTime() / 24_000L);
+    public Integer getActual( Level level, @Nullable BlockPos pos ) {
+        int dayTime = (int) (level.dayTime() / 24_000L);
         if( dayTime < 18_000 ) dayTime += 24_000;
         return dayTime - 18_000;
     }

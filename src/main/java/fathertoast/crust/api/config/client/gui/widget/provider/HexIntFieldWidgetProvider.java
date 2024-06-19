@@ -3,9 +3,9 @@ package fathertoast.crust.api.config.client.gui.widget.provider;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import fathertoast.crust.api.config.common.field.IntField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.function.Function;
@@ -37,28 +37,28 @@ public class HexIntFieldWidgetProvider implements IConfigFieldWidgetProvider {
      * @param displayValue The current raw value to display in the GUI.
      */
     @Override
-    public void apply( List<Widget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
-        TextFieldWidget textWidget = new TextFieldWidget( listEntry.minecraft().font,
+    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+        EditBox editBox = new EditBox( listEntry.minecraft().font,
                 1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for 1px frame
-                new StringTextComponent( FIELD.getKey() ) );
-        textWidget.setMaxLength( 127 );
+                Component.literal( FIELD.getKey() ) );
+        editBox.setMaxLength( 127 );
         
         TomlHelper.HEX_MODE = FIELD.getMinDigits();
-        textWidget.setValue( TomlHelper.toLiteral( displayValue ).substring( 2 ) );
+        editBox.setValue( TomlHelper.toLiteral( displayValue ).substring( 2 ) );
         TomlHelper.HEX_MODE = 0;
-        
-        textWidget.setResponder( ( value ) -> {
+
+        editBox.setResponder( ( value ) -> {
             Integer newValue = TomlHelper.parseHexInt( value );
             if( newValue == null || !VALIDATOR.apply( newValue ) ) {
-                textWidget.setTextColor( INVALID_COLOR );
+                editBox.setTextColor( INVALID_COLOR );
                 listEntry.clearValue();
             }
             else {
-                textWidget.setTextColor( DEFAULT_COLOR );
+                editBox.setTextColor( DEFAULT_COLOR );
                 listEntry.updateValue( newValue );
             }
         } );
         
-        components.add( textWidget );
+        components.add( editBox );
     }
 }

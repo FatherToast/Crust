@@ -2,17 +2,18 @@ package fathertoast.crust.api.config.client.gui.widget.provider;
 
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Displays a button that opens a popup text editor for a generic value.
  *
- * @see TextFieldWidget
+ * @see net.minecraft.client.gui.components.EditBox
  */
 public class RawTextWidgetProvider implements IConfigFieldWidgetProvider {
     
@@ -33,22 +34,22 @@ public class RawTextWidgetProvider implements IConfigFieldWidgetProvider {
      * @param displayValue The current raw value to display in the GUI.
      */
     @Override
-    public void apply( List<Widget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
         Button editButton = new Button( 0, 0, VALUE_WIDTH, VALUE_HEIGHT,
-                new StringTextComponent( "Edit..." ),
-                ( button ) -> openTextBoxMenu( button, listEntry, this ) );
+                Component.literal( "Edit..." ),
+                ( button ) -> openTextBoxMenu( button, listEntry, this ), Supplier::get );
         
         components.add( editButton );
         
-        TextFieldWidget textWidget = new TextFieldWidget( listEntry.minecraft().font,
+        EditBox editBox = new EditBox( listEntry.minecraft().font,
                 1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for ~1px frame
-                new StringTextComponent( FIELD.getKey() ) );
-        textWidget.setMaxLength( Integer.MAX_VALUE );
+                Component.literal( FIELD.getKey() ) );
+        editBox.setMaxLength( Integer.MAX_VALUE );
+
+        editBox.setValue( displayValue.toString() );
+        editBox.setResponder( listEntry::updateValue );
         
-        textWidget.setValue( displayValue.toString() );
-        textWidget.setResponder( listEntry::updateValue );
-        
-        components.add( textWidget );
+        components.add( editBox );
     }
     
     /** Called when the button is pressed to open a text box popup. */

@@ -2,8 +2,8 @@ package fathertoast.crust.api.config.common.value.environment.time;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.environment.EnumEnvironment;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
@@ -18,9 +18,9 @@ public class WeatherEnvironment extends EnumEnvironment<WeatherEnvironment.Value
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override
-    public boolean matches( World world, @Nullable BlockPos pos ) {
-        if( world.getLevelData().isThundering() ) return (VALUE == Value.CLEAR) == INVERT; // Thunder implies rain
-        if( world.getLevelData().isRaining() ) return (VALUE == Value.RAIN) != INVERT;
+    public boolean matches( Level level, @Nullable BlockPos pos ) {
+        if( level.getLevelData().isThundering() ) return (VALUE == Value.CLEAR) == INVERT; // Thunder implies rain
+        if( level.getLevelData().isRaining() ) return (VALUE == Value.RAIN) != INVERT;
         return (VALUE == Value.CLEAR) != INVERT;
     }
 }

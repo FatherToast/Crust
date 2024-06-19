@@ -5,9 +5,10 @@ import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.AttributeEntry;
 import fathertoast.crust.api.config.common.value.AttributeList;
 import fathertoast.crust.api.config.common.value.ConfigDrivenAttributeModifierMap;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.monster.Blaze;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -103,17 +104,15 @@ public class AttributeListField extends GenericField<AttributeList> {
             operator = OP_ADD;
         }
         else {
-            switch( args[1] ) {
-                case "*": operator = OP_MULTIPLY;
-                    break;
-                case "+": operator = OP_ADD;
-                    break;
-                case "-": operator = OP_SUBTRACT;
-                    break;
-                default: operator = OP_ADD;
-                    ConfigUtil.LOG.warn( "Entry has invalid operator {} for {} \"{}\"! Replacing operator with +. " +
-                            "Invalid entry: {}", args[1], getClass(), getKey(), line );
-                    break;
+            switch (args[1]) {
+                case "*" -> operator = OP_MULTIPLY;
+                case "+" -> operator = OP_ADD;
+                case "-" -> operator = OP_SUBTRACT;
+                default -> {
+                    operator = OP_ADD;
+                    ConfigUtil.LOG.warn("Entry has invalid operator {} for {} \"{}\"! Replacing operator with +. " +
+                            "Invalid entry: {}", args[1], getClass(), getKey(), line);
+                }
             }
         }
         final int identityValue = operator == OP_MULTIPLY ? 1 : 0;
@@ -127,7 +126,7 @@ public class AttributeListField extends GenericField<AttributeList> {
         else {
             value = parseValue( args[2], line, identityValue );
         }
-        
+
         return operator == OP_MULTIPLY ? new AttributeEntry( this, regKey, true, value ) :
                 new AttributeEntry( this, regKey, false, value * operator );
     }
@@ -152,7 +151,7 @@ public class AttributeListField extends GenericField<AttributeList> {
     // Convenience methods
     
     /** Applies all attribute changes in this list to the entity attribute builder. */
-    public void apply( AttributeModifierMap.MutableAttribute builder ) { get().apply( builder ); }
+    public void apply( AttributeSupplier.Builder builder ) { get().apply( builder ); }
     
     /** Applies all attribute changes in this list to the entity. */
     public void apply( LivingEntity entity ) { get().apply( entity ); }

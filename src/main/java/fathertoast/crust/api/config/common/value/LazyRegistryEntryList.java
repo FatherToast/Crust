@@ -2,10 +2,9 @@ package fathertoast.crust.api.config.common.value;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.Set;
  * See also: {@link net.minecraftforge.registries.ForgeRegistries}
  */
 @SuppressWarnings( "unused" )
-public class LazyRegistryEntryList<T extends IForgeRegistryEntry<T>> extends RegistryEntryList<T> {
+public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
     
     /** The field containing this list. We save a reference to help improve error/warning reports. */
     private final AbstractConfigField FIELD;
@@ -31,9 +30,9 @@ public class LazyRegistryEntryList<T extends IForgeRegistryEntry<T>> extends Reg
      * This method of creation can only use entries that are loaded (typically only vanilla entries)
      * and cannot take advantage of the * notation.
      */
-    @SafeVarargs
-    public LazyRegistryEntryList( IForgeRegistry<T> registry, T... entries ) {
-        super( registry, entries );
+    @SuppressWarnings("unchecked")
+    public LazyRegistryEntryList( IForgeRegistry<T> registry, List<T> entries ) {
+        super( registry, (T[]) entries.toArray() );
         FIELD = null;
         populated = true;
     }
@@ -44,18 +43,12 @@ public class LazyRegistryEntryList<T extends IForgeRegistryEntry<T>> extends Reg
      * This method of creation is less safe, but can take advantage of the regular vanilla entries, deferred entries,
      * resource locations, and raw strings.
      */
+    @SuppressWarnings("unchecked")
     public LazyRegistryEntryList( IForgeRegistry<T> registry, Object... entries ) {
         super( registry );
         FIELD = null;
         for( Object entry : entries ) {
-            if( entry instanceof IForgeRegistryEntry ) {
-                final ResourceLocation regKey = ((IForgeRegistryEntry<?>) entry).getRegistryName();
-                if( regKey == null ) {
-                    throw new IllegalArgumentException( "Invalid default lazy registry list entry! " + entry );
-                }
-                PRINT_LIST.add( regKey.toString() );
-            }
-            else if( entry instanceof RegistryObject ) {
+            if( entry instanceof RegistryObject ) {
                 PRINT_LIST.add( ((RegistryObject<?>) entry).getId().toString() );
             }
             else if( entry instanceof ResourceLocation ) {
@@ -64,9 +57,11 @@ public class LazyRegistryEntryList<T extends IForgeRegistryEntry<T>> extends Reg
             else if( entry instanceof String ) {
                 PRINT_LIST.add( (String) entry );
             }
-            else {
+            final ResourceLocation regKey = registry.getKey( (T) entry );
+            if( regKey == null ) {
                 throw new IllegalArgumentException( "Invalid default lazy registry list entry! " + entry );
             }
+            PRINT_LIST.add( regKey.toString() );
         }
     }
     

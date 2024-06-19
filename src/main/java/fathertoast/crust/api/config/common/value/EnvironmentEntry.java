@@ -15,13 +15,13 @@ import fathertoast.crust.api.config.common.value.environment.position.StructureE
 import fathertoast.crust.api.config.common.value.environment.position.YEnvironment;
 import fathertoast.crust.api.config.common.value.environment.position.YFromSeaEnvironment;
 import fathertoast.crust.api.config.common.value.environment.time.*;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.DimensionType;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.feature.structure.Structure;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.levelgen.structure.Structure;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -49,9 +49,9 @@ public class EnvironmentEntry {
     }
     
     /** @return Returns true if all this entry's conditions match the provided environment. */
-    public boolean matches( World world, @Nullable BlockPos pos ) {
+    public boolean matches( Level level, @Nullable BlockPos pos ) {
         for( AbstractEnvironment condition : CONDITIONS ) {
-            if( !condition.matches( world, pos ) ) return false;
+            if( !condition.matches( level, pos ) ) return false;
         }
         return true;
     }
@@ -137,19 +137,19 @@ public class EnvironmentEntry {
             return in( new DimensionPropertyEnvironment( property, invert ) );
         }
         
-        public Builder inOverworld() { return inDimensionType( DimensionType.OVERWORLD_LOCATION, false ); }
+        public Builder inOverworld() { return inDimensionType( Level.OVERWORLD, false ); }
         
-        public Builder notInOverworld() { return inDimensionType( DimensionType.OVERWORLD_LOCATION, true ); }
+        public Builder notInOverworld() { return inDimensionType( Level.OVERWORLD, true ); }
         
-        public Builder inNether() { return inDimensionType( DimensionType.NETHER_LOCATION, false ); }
+        public Builder inNether() { return inDimensionType( Level.NETHER, false ); }
         
-        public Builder notInNether() { return inDimensionType( DimensionType.NETHER_LOCATION, true ); }
+        public Builder notInNether() { return inDimensionType( Level.NETHER, true ); }
         
-        public Builder inTheEnd() { return inDimensionType( DimensionType.END_LOCATION, false ); }
+        public Builder inTheEnd() { return inDimensionType( Level.END, false ); }
         
-        public Builder notInTheEnd() { return inDimensionType( DimensionType.END_LOCATION, true ); }
+        public Builder notInTheEnd() { return inDimensionType( Level.END, true ); }
         
-        private Builder inDimensionType( RegistryKey<DimensionType> dimType, boolean invert ) {
+        private Builder inDimensionType( ResourceKey<Level> dimType, boolean invert ) {
             return in( new DimensionTypeEnvironment( MANAGER, dimType, invert ) );
         }
         
@@ -235,19 +235,19 @@ public class EnvironmentEntry {
         public Builder notInBiomeCategory( BiomeCategory category ) { return in( new BiomeCategoryEnvironment( category, true ) ); }
         
         /** Check if the biome is a specific one. */
-        public Builder inBiome( RegistryKey<Biome> biome ) { return in( new BiomeEnvironment( MANAGER, biome, false ) ); }
+        public Builder inBiome( ResourceKey<Biome> biome ) { return in( new BiomeEnvironment( MANAGER, biome, false ) ); }
         
         /** Check if the biome is a specific one. */
-        public Builder notInBiome( RegistryKey<Biome> biome ) { return in( new BiomeEnvironment( MANAGER, biome, true ) ); }
+        public Builder notInBiome( ResourceKey<Biome> biome ) { return in( new BiomeEnvironment( MANAGER, biome, true ) ); }
         
         
         // ---- Position-based ---- //
         
         /** Check if the position is inside a particular structure. See {@link Structure}. */
-        public Builder inStructure( Structure<?> structure ) { return in( new StructureEnvironment( structure, false ) ); }
+        public Builder inStructure( ResourceKey<Structure> structure ) { return in( new StructureEnvironment( MANAGER, structure, false ) ); }
         
         /** Check if the position is inside a particular structure. See {@link Structure}. */
-        public Builder notInStructure( Structure<?> structure ) { return in( new StructureEnvironment( structure, true ) ); }
+        public Builder notInStructure( ResourceKey<Structure> structure ) { return in( new StructureEnvironment( MANAGER, structure, true ) ); }
         
         /** Check if diamond/redstone ore can generate at the position. */
         public Builder belowDiamondLevel() { return belowY( 15 ); } // TODO update ore-based logic in 1.18
