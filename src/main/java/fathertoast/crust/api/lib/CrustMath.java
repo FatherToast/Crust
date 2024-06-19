@@ -1,6 +1,7 @@
 package fathertoast.crust.api.lib;
 
-import net.minecraft.util.math.MathHelper;
+
+import net.minecraft.util.Mth;
 
 @SuppressWarnings( "unused" )
 public final class CrustMath {
@@ -9,14 +10,14 @@ public final class CrustMath {
     
     /** @return The separate RGB float values (0.0-1.0) combined into a single ARGB color int with no alpha. */
     public static int toRGB( float r, float g, float b ) {
-        return bitsToRGB( MathHelper.ceil( r * 0xFF ), MathHelper.ceil( g * 0xFF ),
-                MathHelper.ceil( b * 0xFF ) );
+        return bitsToRGB( Mth.ceil( r * 0xFF ), Mth.ceil( g * 0xFF ),
+                Mth.ceil( b * 0xFF ) );
     }
     
     /** @return The separate ARGB float values (0.0-1.0) combined into a single ARGB color int. */
     public static int toARGB( float a, float r, float g, float b ) {
-        return bitsToARGB( MathHelper.ceil( a * 0xFF ), MathHelper.ceil( r * 0xFF ),
-                MathHelper.ceil( g * 0xFF ), MathHelper.ceil( b * 0xFF ) );
+        return bitsToARGB( Mth.ceil( a * 0xFF ), Mth.ceil( r * 0xFF ),
+                Mth.ceil( g * 0xFF ), Mth.ceil( b * 0xFF ) );
     }
     
     /** @return The separate RGB values (0x00 - 0xFF) combined into a single ARGB color int with no alpha. */

@@ -9,7 +9,7 @@ import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.network.CrustPacketHandler;
 import fathertoast.crust.common.portal.CrustPortals;
 import fathertoast.crust.common.potion.CrustEffects;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
@@ -100,7 +100,8 @@ public class Crust {
         CrustConfig.initialize();
         
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-        
+
+        modBus.addListener( CrustPortals::onRegistryCreate );
         CrustEffects.register( modBus );
         CrustPortals.register( modBus );
         
@@ -114,20 +115,20 @@ public class Crust {
         ModList.get().getAllScanData().forEach( ( scanData ) ->
                 scanData.getAnnotations().forEach( ( annotationData ) -> {
                     // Look for classes annotated with @CrustPlugin
-                    if( annotationData.getAnnotationType().getClassName().equals( CrustPlugin.class.getName() ) ) {
+                    if( annotationData.annotationType().getClassName().equals( CrustPlugin.class.getName() ) ) {
                         try {
-                            Class<?> pluginClass = Class.forName( annotationData.getMemberName() );
+                            Class<?> pluginClass = Class.forName( annotationData.memberName() );
                             
                             if( ICrustPlugin.class.isAssignableFrom( pluginClass ) ) {
                                 ICrustPlugin plugin = (ICrustPlugin) pluginClass.getDeclaredConstructor().newInstance();
                                 plugin.onLoad( apiInstance );
                                 LOG.info( "Found Crust plugin at {} with plugin ID: {}",
-                                        annotationData.getMemberName(), plugin.getId() );
+                                        annotationData.memberName(), plugin.getId() );
                             }
                         }
                         catch( Exception ex ) {
                             LOG.error( "Failed to load a Crust plugin! Plugin class: {}",
-                                    annotationData.getMemberName() );
+                                    annotationData.memberName() );
                             ex.printStackTrace();
                         }
                     }

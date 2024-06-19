@@ -1,21 +1,21 @@
 package fathertoast.crust.api.lib;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.MusicDiscItem;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.RecordItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 
 /**
- * Level events. Sent from the server using {@link World#levelEvent(int, BlockPos, int)}, then executed on the
- * client via {@link net.minecraft.client.renderer.WorldRenderer#levelEvent(PlayerEntity, int, BlockPos, int)}.
+ * Level events. Sent from the server using {@link Level#levelEvent(int, BlockPos, int)}, then executed on the
+ * client via {@link net.minecraft.client.renderer.LevelRenderer#levelEvent(int, BlockPos, int)}.
  */
 @SuppressWarnings( "unused" )
 public enum LevelEventHelper {
@@ -63,7 +63,7 @@ public enum LevelEventHelper {
     // Particles Only
     /** Spawns smoke particles directionally; used by dispensers. */
     public static final DispenserSmokeEvent DISPENSER_SMOKE = new DispenserSmokeEvent( 2000 );
-    /** Spawns a specific number of happy villager particles via {@link net.minecraft.item.BoneMealItem#addGrowthParticles(IWorld, BlockPos, int)}. */
+    /** Spawns a specific number of happy villager particles via {@link net.minecraft.world.item.BoneMealItem#addGrowthParticles(LevelAccessor, BlockPos, int)}. */
     public static final BoneMealEvent BONE_MEAL_USE = new BoneMealEvent( 2005 );
     
     // Sound & Particles
@@ -86,14 +86,14 @@ public enum LevelEventHelper {
     LevelEventHelper( int id ) { ID = id; }
     
     /** Plays this event at the entity's position, if the entity is not silenced. */
-    public void play( Entity entity ) { if( !entity.isSilent() ) play( entity.level, entity.blockPosition() ); }
+    public void play( Entity entity ) { if( !entity.isSilent() ) play( entity.level(), entity.blockPosition() ); }
     
     /** Plays this event at a particular position. */
-    public void play( World world, BlockPos pos ) { play( world, null, pos ); }
+    public void play( Level level, BlockPos pos ) { play( level, null, pos ); }
     
     /** Plays this event at a particular position, optionally excluding a particular player. */
-    public void play( World world, @Nullable PlayerEntity player, BlockPos pos ) {
-        world.levelEvent( player, ID, pos, 0 );
+    public void play( Level level, @Nullable Player player, BlockPos pos ) {
+        level.levelEvent( player, ID, pos, 0 );
     }
     
     
@@ -106,8 +106,8 @@ public enum LevelEventHelper {
         private MetadataEvent( int id ) { ID = id; }
         
         /** Plays this event at a particular position, optionally excluding a particular player. */
-        protected void play( World world, @Nullable PlayerEntity player, BlockPos pos, int metadata ) {
-            world.levelEvent( player, ID, pos, metadata );
+        protected void play( Level level, @Nullable Player player, BlockPos pos, int metadata ) {
+            level.levelEvent( player, ID, pos, metadata );
         }
     }
     
@@ -116,11 +116,11 @@ public enum LevelEventHelper {
         private MusicDiscEvent( int id ) { super( id ); }
         
         /** Plays this event at a particular position, optionally excluding a particular player. */
-        public void stop( World world, @Nullable PlayerEntity player, BlockPos pos ) { play( world, player, pos, null ); }
+        public void stop( Level level, @Nullable Player player, BlockPos pos ) { play( level, player, pos, null ); }
         
         /** Plays this event at a particular position, optionally excluding a particular player. */
-        public void play( World world, @Nullable PlayerEntity player, BlockPos pos, @Nullable Item musicDisc ) {
-            play( world, player, pos, musicDisc instanceof MusicDiscItem ? Item.getId( musicDisc ) : 0 );
+        public void play( Level level, @Nullable Player player, BlockPos pos, @Nullable Item musicDisc ) {
+            play( level, player, pos, musicDisc instanceof RecordItem ? Item.getId( musicDisc ) : 0 );
         }
     }
     
@@ -129,8 +129,8 @@ public enum LevelEventHelper {
         private ComposterFillEvent( int id ) { super( id ); }
         
         /** Plays this event at a particular position, optionally excluding a particular player. */
-        public void play( World world, @Nullable PlayerEntity player, BlockPos pos, boolean success ) {
-            play( world, player, pos, success ? 1 : 0 );
+        public void play( Level level, @Nullable Player player, BlockPos pos, boolean success ) {
+            play( level, player, pos, success ? 1 : 0 );
         }
     }
     
@@ -139,8 +139,8 @@ public enum LevelEventHelper {
         private DispenserSmokeEvent( int id ) { super( id ); }
         
         /** Plays this event at a particular position, optionally excluding a particular player. */
-        public void play( World world, @Nullable PlayerEntity player, BlockPos pos, Direction direction ) {
-            play( world, player, pos, direction.get3DDataValue() );
+        public void play( Level level, @Nullable Player player, BlockPos pos, Direction direction ) {
+            play( level, player, pos, direction.get3DDataValue() );
         }
     }
     
@@ -149,8 +149,8 @@ public enum LevelEventHelper {
         private BlockBreakEvent( int id ) { super( id ); }
         
         /** Plays this event at a particular position, optionally excluding a particular player. */
-        public void play( World world, @Nullable PlayerEntity player, BlockPos pos, BlockState blockState ) {
-            play( world, player, pos, Block.getId( blockState ) );
+        public void play( Level level, @Nullable Player player, BlockPos pos, BlockState blockState ) {
+            play( level, player, pos, Block.getId( blockState ) );
         }
     }
     
@@ -159,18 +159,18 @@ public enum LevelEventHelper {
         private ColorEvent( int id ) { super( id ); }
         
         /** Plays this event at a particular position, optionally excluding a particular player. */
-        public void playRGBFloats( World world, @Nullable PlayerEntity player, BlockPos pos, float r, float g, float b ) {
-            playRGB( world, player, pos, CrustMath.toRGB( r, g, b ) );
+        public void playRGBFloats( Level level, @Nullable Player player, BlockPos pos, float r, float g, float b ) {
+            playRGB( level, player, pos, CrustMath.toRGB( r, g, b ) );
         }
         
         /** Plays this event at a particular position, optionally excluding a particular player. */
-        public void playRGB( World world, @Nullable PlayerEntity player, BlockPos pos, int r, int g, int b ) {
-            playRGB( world, player, pos, CrustMath.bitsToRGB( r, g, b ) );
+        public void playRGB( Level level, @Nullable Player player, BlockPos pos, int r, int g, int b ) {
+            playRGB( level, player, pos, CrustMath.bitsToRGB( r, g, b ) );
         }
         
         /** Plays this event at a particular position, optionally excluding a particular player. */
-        public void playRGB( World world, @Nullable PlayerEntity player, BlockPos pos, int rgb ) {
-            play( world, player, pos, rgb );
+        public void playRGB( Level level, @Nullable Player player, BlockPos pos, int rgb ) {
+            play( level, player, pos, rgb );
         }
     }
     
@@ -179,11 +179,11 @@ public enum LevelEventHelper {
         private BoneMealEvent( int id ) { super( id ); }
         
         /** Plays this event at a particular position, optionally excluding a particular player. Uses the default number of particles (15). */
-        public void play( World world, @Nullable PlayerEntity player, BlockPos pos ) { play( world, player, pos, 0 ); }
+        public void play( Level level, @Nullable Player player, BlockPos pos ) { play( level, player, pos, 0 ); }
         
         /** Plays this event at a particular position, optionally excluding a particular player. */
-        public void play( World world, @Nullable PlayerEntity player, BlockPos pos, int particleCount ) {
-            super.play( world, player, pos, particleCount );
+        public void play( Level level, @Nullable Player player, BlockPos pos, int particleCount ) {
+            super.play( level, player, pos, particleCount );
         }
     }
     
@@ -192,8 +192,8 @@ public enum LevelEventHelper {
         private OptionalSoundEvent( int id ) { super( id ); }
         
         /** Plays this event at a particular position, optionally excluding a particular player. */
-        public void play( World world, @Nullable PlayerEntity player, BlockPos pos, boolean playSound ) {
-            play( world, player, pos, playSound ? 1 : -1 );
+        public void play( Level level, @Nullable Player player, BlockPos pos, boolean playSound ) {
+            play( level, player, pos, playSound ? 1 : -1 );
         }
     }
 }

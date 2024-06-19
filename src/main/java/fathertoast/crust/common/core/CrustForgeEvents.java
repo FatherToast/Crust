@@ -3,12 +3,16 @@ package fathertoast.crust.common.core;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.common.network.CrustPacketHandler;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.DamageSource;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -22,20 +26,20 @@ import java.util.Set;
 public class CrustForgeEvents {
     
     /** Set of all players that have had their Crust modes changed recently. */
-    private static final Set<ServerPlayerEntity> NEED_CRUST_MODE_UPDATE = new HashSet<>();
+    private static final Set<ServerPlayer> NEED_CRUST_MODE_UPDATE = new HashSet<>();
     
     private static int updateCounter;
     
     /** Queues the player for a Crust mode update to notify the client of changes. */
-    public static void markModesDirty( PlayerEntity player ) {
-        NEED_CRUST_MODE_UPDATE.add( (ServerPlayerEntity) player );
+    public static void markModesDirty( Player player ) {
+        NEED_CRUST_MODE_UPDATE.add( (ServerPlayer) player );
     }
     
     /** Called when an entity is spawned/added into the world. */
     @SubscribeEvent
-    static void onEntityJoinWorld( EntityJoinWorldEvent event ) {
-        if( !event.getWorld().isClientSide() && event.getEntity() instanceof ServerPlayerEntity ) {
-            markModesDirty( (PlayerEntity) event.getEntity() );
+    static void onEntityJoinWorld( EntityJoinLevelEvent event ) {
+        if( !event.getLevel().isClientSide() && event.getEntity() instanceof ServerPlayer serverPlayer ) {
+            markModesDirty( serverPlayer );
         }
     }
     
@@ -47,7 +51,7 @@ public class CrustForgeEvents {
             if( updateCounter >= 3 ) {
                 updateCounter = 0;
                 if( !NEED_CRUST_MODE_UPDATE.isEmpty() ) {
-                    for( ServerPlayerEntity player : NEED_CRUST_MODE_UPDATE ) {
+                    for( ServerPlayer player : NEED_CRUST_MODE_UPDATE ) {
                         CrustPacketHandler.sendCrustModesUpdate( player );
                     }
                     NEED_CRUST_MODE_UPDATE.clear();
@@ -59,10 +63,12 @@ public class CrustForgeEvents {
     /** Called when an entity is taking damage. */
     @SubscribeEvent( priority = EventPriority.NORMAL )
     static void onLivingHurt( LivingHurtEvent event ) {
-        if( event.getEntityLiving() != null && event.getSource() != DamageSource.OUT_OF_WORLD && !event.getSource().isBypassMagic() &&
-                event.getEntityLiving().hasEffect( CrustObjects.vulnerability() ) ) {
+        Level level = event.getEntity().level();
+
+        if( event.getEntity() != null && event.getSource().type() != level.damageSources().fellOutOfWorld().type() && !event.getSource().is(DamageTypeTags.BYPASSES_ENCHANTMENTS) &&
+                event.getEntity().hasEffect( CrustObjects.vulnerability() ) ) {
             
-            final EffectInstance vulnerability = event.getEntityLiving().getEffect( CrustObjects.vulnerability() );
+            final MobEffectInstance vulnerability = event.getEntity().getEffect( CrustObjects.vulnerability() );
             if( vulnerability == null ) return;
             
             // Take 25% more damage per effect level (vs. Damage Resistance's 20% less per level)
@@ -73,9 +79,9 @@ public class CrustForgeEvents {
     /** Called when an entity lands on the ground. */
     @SubscribeEvent( priority = EventPriority.NORMAL )
     static void onLivingFall( LivingFallEvent event ) {
-        if( event.getEntityLiving() != null && event.getEntityLiving().hasEffect( CrustObjects.weight() ) ) {
+        if( event.getEntity() != null && event.getEntity().hasEffect( CrustObjects.weight() ) ) {
             
-            final EffectInstance weight = event.getEntityLiving().getEffect( CrustObjects.weight() );
+            final MobEffectInstance weight = event.getEntity().getEffect( CrustObjects.weight() );
             if( weight == null ) return;
             
             // Increase effective fall distance by ~33% per effect level

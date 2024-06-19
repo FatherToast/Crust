@@ -1,8 +1,8 @@
 package fathertoast.crust.common.network.message;
 
 import fathertoast.crust.common.network.work.CrustClientWork;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -21,8 +21,8 @@ public class S2CDestroyItemOnPointer {
     }
     
     /** Reads the message from a data buffer. */
-    public static S2CDestroyItemOnPointer decode( @SuppressWarnings( "unused" ) PacketBuffer buffer ) { return new S2CDestroyItemOnPointer(); }
+    public static S2CDestroyItemOnPointer decode( @SuppressWarnings( "unused" ) FriendlyByteBuf buffer ) { return new S2CDestroyItemOnPointer(); }
     
     /** Writes the message to a data buffer. */
-    public static void encode( @SuppressWarnings( "unused" ) S2CDestroyItemOnPointer message, @SuppressWarnings( "unused" ) PacketBuffer buffer ) { }
+    public static void encode( @SuppressWarnings( "unused" ) S2CDestroyItemOnPointer message, @SuppressWarnings( "unused" ) FriendlyByteBuf buffer ) { }
 }

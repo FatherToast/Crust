@@ -4,13 +4,13 @@ import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.common.mode.CrustModesData;
 import fathertoast.crust.common.network.message.S2CDestroyItemOnPointer;
 import fathertoast.crust.common.network.message.S2CUpdateCrustModes;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -27,12 +27,12 @@ public class CrustPacketHandler {
     private static int messageIndex;
     
     /** Sends Crust modes data to its owner's client. */
-    public static void sendDestroyItemOnPointerUpdate( ServerPlayerEntity player ) {
+    public static void sendDestroyItemOnPointerUpdate( ServerPlayer player ) {
         sendToClient( player, new S2CDestroyItemOnPointer() );
     }
     
     /** Sends Crust modes data to its owner's client. */
-    public static void sendCrustModesUpdate( ServerPlayerEntity player ) {
+    public static void sendCrustModesUpdate( ServerPlayer player ) {
         sendToClient( player, new S2CUpdateCrustModes( CrustModesData.of( player ).getSaveTag() ) );
     }
     
@@ -43,8 +43,8 @@ public class CrustPacketHandler {
      * @param player  The player client that should receive this message.
      * @param <MSG>   Packet type.
      */
-    private static <MSG> void sendToClient( ServerPlayerEntity player, MSG message ) {
-        CHANNEL.sendTo( message, player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT );
+    private static <MSG> void sendToClient( ServerPlayer player, MSG message ) {
+        CHANNEL.sendTo( message, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT );
     }
     
     /** Registers this mod's messages. */
@@ -54,8 +54,8 @@ public class CrustPacketHandler {
     }
     
     /** Registers a message with an auto-assigned 'message index'. */
-    private static <MSG> void registerMessage( Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder,
-                                               BiConsumer<MSG, Supplier<NetworkEvent.Context>> handler ) {
+    private static <MSG> void registerMessage( Class<MSG> messageType, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder,
+                                              BiConsumer<MSG, Supplier<NetworkEvent.Context>> handler ) {
         CHANNEL.registerMessage( messageIndex++, messageType, encoder, decoder,
                 handler, Optional.empty() );
     }
