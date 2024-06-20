@@ -94,12 +94,16 @@ repositories {
             includeGroup 'curse.maven'
         }
     }
+    flatDir {
+        dir 'flat_deps'
+    }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
     implementation fg.deobf("curse.maven:apocalypse-500443:${apocalypse_version}")
+    runtimeOnly fg.deobf("curse.maven:jei-238222:${jei_version}")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
 }
