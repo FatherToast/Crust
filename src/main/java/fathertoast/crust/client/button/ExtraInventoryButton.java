@@ -65,7 +65,7 @@ public class ExtraInventoryButton extends Button {
     @Override
     public void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks ) {
         Minecraft mc = Minecraft.getInstance();
-
+        
         graphics.pose().pushPose();
         graphics.pose().translate( 0.0, 0.0, 31.0 ); // Right behind item on pointer
         
@@ -75,7 +75,7 @@ public class ExtraInventoryButton extends Button {
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
         
-        graphics.blit( INFO.isToggledOn() ? BUTTON_TEXTURE_ON : BUTTON_TEXTURE, getX(), getY(), 0.0F, BUTTON_SIZE * getTextureY( ),
+        graphics.blit( INFO.isToggledOn() ? BUTTON_TEXTURE_ON : BUTTON_TEXTURE, getX(), getY(), 0.0F, getTextureY(),
                 BUTTON_SIZE, BUTTON_SIZE, BUTTON_SIZE, BUTTON_SIZE * 3 );
         
         // Draw button detail (icon/text)
@@ -97,7 +97,10 @@ public class ExtraInventoryButton extends Button {
         graphics.pose().popPose();
     }
     
+    @Override
+    public int getTextureY() { return BUTTON_SIZE * (!active ? 0 : isHovered() ? 2 : 1); }
+    
     public static Tooltip createButtonTooltip( String tooltip ) {
-        return Tooltip.create( Component.translatable(tooltip) );
+        return Tooltip.create( Component.translatable( tooltip ) );
     }
 }
