@@ -32,8 +32,7 @@ public class CrustModesData {
         
         if( setDefaults ) {
             CrustModesConfigFile.General config = CrustConfig.MODES.GENERAL;
-            
-            if( config.magnetDefault.get() > 0.0 ) enable( CrustModes.MAGNET, config.magnetDefault.getFloat() );
+
             //if( config.multiMineDefault.get() > 0 ) enable( CrustModes.MULTI_MINE, config.multiMineDefault.get() );
             if( config.undyingDefault.get() ) enable( CrustModes.UNDYING, (byte) 1 );
             if( config.unbreakingDefault.get() ) enable( CrustModes.UNBREAKING, (byte) 1 );
