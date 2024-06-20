@@ -18,13 +18,12 @@ public class CrustModeClientEvents {
     
     private static Float originalStepHeight;
     private static Float originalFlySpeed;
-
-    // TODO - Fix this, no idea how this works currently
+    
     /** Called before rendering fog. */
     @SubscribeEvent
     static void onFogDensity( ViewportEvent.RenderFog event ) {
         if( CrustModes.SUPER_VISION.enabled( Minecraft.getInstance().player ) ) {
-            event.setNearPlaneDistance(1.0F);
+            event.setNearPlaneDistance( event.getFarPlaneDistance() );
             event.setCanceled( true ); // Event must be canceled to apply changes
         }
     }
@@ -43,7 +42,7 @@ public class CrustModeClientEvents {
      * Called each player tick. Server event is handled in
      * {@link fathertoast.crust.common.mode.CrustModeEvents#onPlayerTick(TickEvent.PlayerTickEvent)}.
      */
-    @SuppressWarnings("JavadocReference")
+    @SuppressWarnings( "JavadocReference" )
     @SubscribeEvent
     static void onPlayerTick( TickEvent.PlayerTickEvent event ) {
         if( event.phase != TickEvent.Phase.END || event.player != Minecraft.getInstance().player ) return;
@@ -60,7 +59,7 @@ public class CrustModeClientEvents {
         if( clock4 == 3 ) {
             if( player.isSprinting() && playerModes.enabled( CrustModes.SUPER_SPEED ) ) {
                 if( originalStepHeight == null ) originalStepHeight = player.maxUpStep();
-                player.setMaxUpStep( Math.max( originalStepHeight, 1.0F ));
+                player.setMaxUpStep( Math.max( originalStepHeight, 1.0F ) );
                 
                 if( player.getAbilities().flying ) {
                     if( originalFlySpeed == null ) originalFlySpeed = player.getAbilities().getFlyingSpeed();
