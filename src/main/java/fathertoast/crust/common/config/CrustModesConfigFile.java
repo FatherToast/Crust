@@ -94,7 +94,7 @@ public class CrustModesConfigFile extends AbstractConfigFile {
                     "The default settings for Crust's various modes initially applied to players. Note that these " +
                             "mode settings will be applied regardless of op level; if the player does not have permission to " +
                             "enable/disable the mode, they will be 'stuck' with whatever is assigned here." );
-            magnetDefault = SPEC.define( new DoubleField( "default.magnet", 10.0, DoubleField.Range.NON_NEGATIVE,
+            magnetDefault = SPEC.define( new DoubleField( "default.magnet", 0.0, DoubleField.Range.NON_NEGATIVE,
                     "The maximum range (blocks) for magnet mode. If 0, magnet mode will be off by default." ) );
             //multiMineDefault = SPEC.define( new ???( "default.multi_mine", 0, 0, 0 ) );
             undyingDefault = SPEC.define( new BooleanField( "default.undying", false ) );
