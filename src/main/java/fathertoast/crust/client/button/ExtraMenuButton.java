@@ -19,7 +19,7 @@ public class ExtraMenuButton extends Button {
     
     public ExtraMenuButton( int leftPos, int topPos, OnPress onPress ) {
         super( leftPos, topPos, BUTTON_SIZE, BUTTON_SIZE,
-                Component.literal(""), onPress, Supplier::get );
+                Component.literal( "" ), onPress, Supplier::get );
     }
     
     @Override
@@ -28,11 +28,11 @@ public class ExtraMenuButton extends Button {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-
-        graphics.blit( BUTTON_TEXTURE, getX(), getY(), 0.0F, BUTTON_SIZE * getTextureY( ),
+        
+        graphics.blit( BUTTON_TEXTURE, getX(), getY(), 0.0F, getTextureY(),
                 BUTTON_SIZE, BUTTON_SIZE, BUTTON_SIZE, BUTTON_SIZE * 2 );
     }
     
     @Override
-    public int getTextureY( ) { return isHovered ? 1 : 0; }
+    public int getTextureY() { return BUTTON_SIZE * (isHovered ? 1 : 0); }
 }

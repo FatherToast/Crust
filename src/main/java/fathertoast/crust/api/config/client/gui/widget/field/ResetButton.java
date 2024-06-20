@@ -22,12 +22,15 @@ public class ResetButton extends Button {
         super( 0, 0, WIDTH, HEIGHT,
                 Component.empty(), onPress, DEFAULT_NARRATION );
     }
-
+    
     @Override
     public void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTick ) {
         RenderSystem.enableDepthTest();
-
-        graphics.blit( RESET_BUTTON_TEXTURE, getX(), getY(), 0.0F, HEIGHT * getTextureY( ),
+        
+        graphics.blit( RESET_BUTTON_TEXTURE, getX(), getY(), 0.0F, getTextureY(),
                 WIDTH, HEIGHT, WIDTH, HEIGHT * 3 );
     }
+    
+    @Override
+    public int getTextureY() { return HEIGHT * (!active ? 0 : isHoveredOrFocused() ? 2 : 1); }
 }
