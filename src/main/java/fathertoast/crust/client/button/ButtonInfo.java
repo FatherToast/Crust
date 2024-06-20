@@ -377,7 +377,7 @@ public class ButtonInfo {
     // ---- Helper Methods ---- //
     
     /** Runs the given command as this client's player, if possible. */
-    private static void cmd( String command ) { player().sendSystemMessage(Component.literal("/" + command )); }
+    private static void cmd( String command ) { player().connection.sendCommand( command ); }
     
     /** @return True if the client player has the mode enabled. */
     private static boolean modeEnabled( CrustMode<?> mode ) { return CrustModesData.of( player() ).enabled( mode ); }
@@ -393,7 +393,7 @@ public class ButtonInfo {
      * Will be null if there is no client player (no world loaded).
      */
     @Nullable
-    private static ParseResults<SharedSuggestionProvider> parseCommand(String command ) {
+    private static ParseResults<SharedSuggestionProvider> parseCommand( String command ) {
         StringReader reader = new StringReader( StringUtils.normalizeSpace( command ) );
         if( reader.canRead() && reader.peek() == '/' ) reader.skip();
         
