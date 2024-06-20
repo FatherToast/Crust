@@ -23,7 +23,9 @@ public class CrustModeClientEvents {
     @SubscribeEvent
     static void onFogDensity( ViewportEvent.RenderFog event ) {
         if( CrustModes.SUPER_VISION.enabled( Minecraft.getInstance().player ) ) {
-            event.setNearPlaneDistance( event.getFarPlaneDistance() );
+            float reallyFarPlane = 1024.0F;
+            if( event.getFarPlaneDistance() < reallyFarPlane ) event.setFarPlaneDistance( reallyFarPlane );
+            if( event.getNearPlaneDistance() < reallyFarPlane ) event.setNearPlaneDistance( reallyFarPlane );
             event.setCanceled( true ); // Event must be canceled to apply changes
         }
     }
