@@ -24,7 +24,7 @@ public class ResetButton extends Button {
     }
 
     @Override
-    public void render( GuiGraphics graphics, int mouseX, int mouseY, float partialTick ) {
+    public void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTick ) {
         RenderSystem.enableDepthTest();
 
         graphics.blit( RESET_BUTTON_TEXTURE, getX(), getY(), 0.0F, HEIGHT * getTextureY( ),

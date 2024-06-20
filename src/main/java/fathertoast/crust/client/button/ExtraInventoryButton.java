@@ -95,15 +95,6 @@ public class ExtraInventoryButton extends Button {
         }
         
         graphics.pose().popPose();
-        
-        // Draw tooltip
-        // TODO - Check if this is still needed
-        /*
-        if( isHovered() ) {
-            graphics.renderTooltip( mc.font, mouseX, mouseY );
-        }
-
-         */
     }
     
     public static Tooltip createButtonTooltip( String tooltip ) {

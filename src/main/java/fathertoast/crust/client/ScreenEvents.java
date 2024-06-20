@@ -96,7 +96,7 @@ public class ScreenEvents {
         int guiHeight = 116;
         
         int posX = config.anchorX.get().pos( screenWidth, guiWidth, ExtraMenuButton.BUTTON_SIZE ) + config.offsetX.get();
-        int posY = config.anchorY.get().pos( screenHeight, guiHeight, screenHeight / 4 + 8, ExtraMenuButton.BUTTON_SIZE )
+        int posY = config.anchorY.get().pos( screenHeight, guiHeight, screenHeight / 4 + 9, ExtraMenuButton.BUTTON_SIZE )
                 + config.offsetY.get();
         
         event.addListener( new ExtraMenuButton( posX, posY,

@@ -19,14 +19,12 @@ public class CrustModeClientEvents {
     private static Float originalStepHeight;
     private static Float originalFlySpeed;
 
-    // TODO - Check if this works as intended
+    // TODO - Fix this, no idea how this works currently
     /** Called before rendering fog. */
     @SubscribeEvent
     static void onFogDensity( ViewportEvent.RenderFog event ) {
         if( CrustModes.SUPER_VISION.enabled( Minecraft.getInstance().player ) ) {
-            event.setFogShape( FogShape.CYLINDER );
-            event.scaleNearPlaneDistance( 0.0F );
-            event.scaleFarPlaneDistance( 0.0F );
+            event.setNearPlaneDistance(1.0F);
             event.setCanceled( true ); // Event must be canceled to apply changes
         }
     }
