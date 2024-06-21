@@ -7,10 +7,10 @@ import fathertoast.crust.api.config.client.gui.widget.provider.NumberFieldWidget
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import net.minecraft.util.RandomSource;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Represents a config field with an integer value.
@@ -59,7 +59,7 @@ public class IntField extends AbstractConfigField {
     public byte getByte() { return (byte) get(); }
     
     /** @return Treats the config field's value as a one-in-X chance and returns the result of a single roll. */
-    public boolean rollChance( Random random ) { return get() > 0 && random.nextInt( get() ) == 0; }
+    public boolean rollChance( RandomSource random ) { return get() > 0 && random.nextInt( get() ) == 0; }
     
     /** @return Returns the minimum value allowed by this field. */
     public int minValue() { return valueMin; }
@@ -241,7 +241,7 @@ public class IntField extends AbstractConfigField {
         public int getMax() { return MAXIMUM.get(); }
         
         /** @return Returns a random value between the minimum and the maximum (inclusive). */
-        public int next( Random random ) {
+        public int next( RandomSource random ) {
             final int delta = getMax() - getMin();
             if( delta > 0 ) {
                 return getMin() + random.nextInt( delta + 1 );
