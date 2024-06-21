@@ -5,9 +5,11 @@ import fathertoast.crust.api.config.common.field.IntField;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.ChatFormatting;
+import net.minecraft.util.RandomSource;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Represents a list of weighted items that can be chosen at random.
@@ -62,10 +64,24 @@ public class WeightedList<T extends WeightedList.Value> {
      * @return Returns a random item from this weighted list. Null if none of the items have a positive weight.
      */
     @Nullable
-    public T next( Random random ) {
+    public T next( Random random ) { return next( random::nextInt ); }
+    
+    /**
+     * @param random The RNG to use for rolling the item.
+     * @return Returns a random item from this weighted list. Null if none of the items have a positive weight.
+     */
+    @Nullable
+    public T next( RandomSource random ) { return next( random::nextInt ); }
+    
+    /**
+     * @param random The RNG to use for rolling the item.
+     * @return Returns a random item from this weighted list. Null if none of the items have a positive weight.
+     */
+    @Nullable
+    private T next( Function<Integer, Integer> random ) {
         if( isDisabled() ) return null;
         
-        int choice = random.nextInt( totalWeight );
+        int choice = random.apply( totalWeight );
         for( Entry<T> entry : ENTRIES ) {
             choice -= entry.getWeight();
             if( choice < 0 ) return entry.getValue();

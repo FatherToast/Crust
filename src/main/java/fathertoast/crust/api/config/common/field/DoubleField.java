@@ -12,7 +12,9 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Represents a config field with a double value.
@@ -58,7 +60,13 @@ public class DoubleField extends AbstractConfigField {
     public float getFloat() { return (float) get(); }
     
     /** @return Treats the config field's value as a percent chance (from 0 to 1) and returns the result of a single roll. */
-    public boolean rollChance( RandomSource random ) { return random.nextDouble() < get(); }
+    public boolean rollChance( Random random ) { return rollChance( random.nextDouble() ); }
+    
+    /** @return Treats the config field's value as a percent chance (from 0 to 1) and returns the result of a single roll. */
+    public boolean rollChance( RandomSource random ) { return rollChance( random.nextDouble() ); }
+    
+    /** @return Treats the config field's value as a percent chance (from 0 to 1) and returns the result of a single roll. */
+    private boolean rollChance( double roll ) { return roll < get(); }
     
     /** @return Returns the minimum value allowed by this field. */
     public double minValue() { return valueMin; }
@@ -184,10 +192,16 @@ public class DoubleField extends AbstractConfigField {
         public double getMax() { return MAXIMUM.get(); }
         
         /** @return Returns a random value between the minimum (inclusive) and the maximum (exclusive). */
-        public double next( RandomSource random ) {
+        public double next( Random random ) { return next( random::nextDouble ); }
+        
+        /** @return Returns a random value between the minimum (inclusive) and the maximum (exclusive). */
+        public double next( RandomSource random ) { return next( random::nextDouble ); }
+        
+        /** @return Returns a random value between the minimum (inclusive) and the maximum (exclusive). */
+        private double next( Supplier<Double> random ) {
             final double delta = getMax() - getMin();
             if( delta > 1.0e-4 ) {
-                return getMin() + random.nextDouble() * delta;
+                return getMin() + random.get() * delta;
             }
             if( delta < 0.0 ) {
                 ConfigUtil.LOG.warn( "Value for range \"({},{})\" is invalid ({} > {})! Ignoring maximum value.",
@@ -251,11 +265,27 @@ public class DoubleField extends AbstractConfigField {
         
         /** @return Returns a random item from this weighted list. Null if none of the items have a positive weight. */
         @Nullable
+        public T next( Random random, Level level, @Nullable BlockPos pos ) { return next( random, level, pos, null ); }
+        
+        /** @return Returns a random item from this weighted list. Null if none of the items have a positive weight. */
+        @Nullable
+        public T next( Random random, Level level, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
+            return next( random::nextDouble, level, pos, selector );
+        }
+        
+        /** @return Returns a random item from this weighted list. Null if none of the items have a positive weight. */
+        @Nullable
         public T next( RandomSource random, Level level, @Nullable BlockPos pos ) { return next( random, level, pos, null ); }
         
         /** @return Returns a random item from this weighted list. Null if none of the items have a positive weight. */
         @Nullable
         public T next( RandomSource random, Level level, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
+            return next( random::nextDouble, level, pos, selector );
+        }
+        
+        /** @return Returns a random item from this weighted list. Null if none of the items have a positive weight. */
+        @Nullable
+        private T next( Supplier<Double> random, Level level, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
             // Due to the 'nebulous' nature of environment-based weights, we must recalculate weights for EVERY call
             double[] weights = new double[UNDERLYING_LIST.size()];
             double totalWeight = calculateWeights( weights, level, pos, selector );
@@ -263,16 +293,33 @@ public class DoubleField extends AbstractConfigField {
             return next( random, weights, totalWeight );
         }
         
-        /** @return Returns a specified number of random items from this weighted list. */
+        /** @return Returns a specified number of random items from this weighted list. Null if none of the items have a positive weight. */
+        @Nullable
+        public List<T> next( Random random, int count, Level level, @Nullable BlockPos pos ) { return next( random, count, level, pos, null ); }
+        
+        /** @return Returns a specified number of random items from this weighted list. Null if none of the items have a positive weight. */
+        @Nullable
+        public List<T> next( Random random, int count, Level level, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
+            return next( random::nextDouble, count, level, pos, selector );
+        }
+        
+        /** @return Returns a specified number of random items from this weighted list. Null if none of the items have a positive weight. */
         @Nullable
         public List<T> next( RandomSource random, int count, Level level, @Nullable BlockPos pos ) { return next( random, count, level, pos, null ); }
         
-        /** @return Returns a specified number of random items from this weighted list. */
+        /** @return Returns a specified number of random items from this weighted list. Null if none of the items have a positive weight. */
         @Nullable
         public List<T> next( RandomSource random, int count, Level level, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
+            return next( random::nextDouble, count, level, pos, selector );
+        }
+        
+        /** @return Returns a specified number of random items from this weighted list. Null if none of the items have a positive weight. */
+        @Nullable
+        private List<T> next( Supplier<Double> random, int count, Level level, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
             // Due to the 'nebulous' nature of environment-based weights, we must recalculate weights for EVERY call
             double[] weights = new double[UNDERLYING_LIST.size()];
             double totalWeight = calculateWeights( weights, level, pos, selector );
+            if( totalWeight <= 0.0 ) return null;
             
             List<T> items = new ArrayList<>( count );
             for( int i = 0; i < count; i++ ) {
@@ -295,11 +342,11 @@ public class DoubleField extends AbstractConfigField {
         
         /** Returns a random item from this weighted list. Null if none of the items have a positive weight. */
         @Nullable
-        private T next( RandomSource random, double[] weights, double totalWeight ) {
+        private T next( Supplier<Double> random, double[] weights, double totalWeight ) {
             if( totalWeight <= 0.0 ) return null;
             
             // Now we pick a random value between zero and the total weight
-            double targetWeight = totalWeight * random.nextDouble();
+            double targetWeight = totalWeight * random.get();
             for( int i = 0; i < weights.length; i++ ) {
                 targetWeight -= weights[i];
                 if( targetWeight < 0.0 ) return UNDERLYING_LIST.get( i ).VALUE;

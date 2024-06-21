@@ -11,6 +11,8 @@ import net.minecraft.util.RandomSource;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Random;
+import java.util.function.Function;
 
 /**
  * Represents a config field with an integer value.
@@ -59,7 +61,13 @@ public class IntField extends AbstractConfigField {
     public byte getByte() { return (byte) get(); }
     
     /** @return Treats the config field's value as a one-in-X chance and returns the result of a single roll. */
-    public boolean rollChance( RandomSource random ) { return get() > 0 && random.nextInt( get() ) == 0; }
+    public boolean rollChance( Random random ) { return rollChance( random::nextInt ); }
+    
+    /** @return Treats the config field's value as a one-in-X chance and returns the result of a single roll. */
+    public boolean rollChance( RandomSource random ) { return rollChance( random::nextInt ); }
+    
+    /** @return Treats the config field's value as a one-in-X chance and returns the result of a single roll. */
+    private boolean rollChance( Function<Integer, Integer> random ) { return get() > 0 && random.apply( get() ) == 0; }
     
     /** @return Returns the minimum value allowed by this field. */
     public int minValue() { return valueMin; }
@@ -241,10 +249,16 @@ public class IntField extends AbstractConfigField {
         public int getMax() { return MAXIMUM.get(); }
         
         /** @return Returns a random value between the minimum and the maximum (inclusive). */
-        public int next( RandomSource random ) {
+        public int next( Random random ) { return next( random::nextInt ); }
+        
+        /** @return Returns a random value between the minimum and the maximum (inclusive). */
+        public int next( RandomSource random ) { return next( random::nextInt ); }
+        
+        /** @return Returns a random value between the minimum and the maximum (inclusive). */
+        private int next( Function<Integer, Integer> random ) {
             final int delta = getMax() - getMin();
             if( delta > 0 ) {
-                return getMin() + random.nextInt( delta + 1 );
+                return getMin() + random.apply( delta + 1 );
             }
             if( delta < 0 ) {
                 ConfigUtil.LOG.warn( "Value for range \"({},{})\" is invalid ({} > {})! Ignoring maximum value.",
