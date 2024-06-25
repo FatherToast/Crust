@@ -4,7 +4,11 @@ import fathertoast.crust.api.config.common.AbstractConfigCategory;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.*;
+import fathertoast.crust.api.config.common.value.BlockEntry;
+import fathertoast.crust.api.config.common.value.BlockList;
 import fathertoast.crust.common.command.CommandUtil;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Blocks;
 
 /**
  * File for configuring rules & limitations for Crust's modes.
@@ -56,13 +60,14 @@ public class CrustModesConfigFile extends AbstractConfigFile {
         public final BooleanField visionDefault;
         public final DoubleField speedDefault;
         public final BooleanField noPickupDefault;
-        
+
+
         General( CrustModesConfigFile parent ) {
             super( parent, "general",
                     "Options that apply to the 'modes' added by Crust, in general." );
             
             SPEC.increaseIndent();
-            
+
             SPEC.subcategory( "op_level",
                     "The op levels (aka permission levels) required to enable/disable Crust's various modes. You can " +
                             "disable any mode by setting this level very high (e.g., " + (CommandUtil.PERMISSION_SERVER_OP + 1) + ").",

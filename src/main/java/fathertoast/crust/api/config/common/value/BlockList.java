@@ -4,16 +4,15 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A list of block entries used to match specific block states.
@@ -23,6 +22,8 @@ public class BlockList implements IStringArray {
     
     /** The block-value entries in this list. */
     private final Map<Block, BlockEntry> UNDERLYING_MAP = new HashMap<>();
+    /** The block tags in this list. */
+    private final List<TagKey<Block>> TAGS = new ArrayList<>();
     /** The list used to write back to file. Consists of cloned single-state block entries. */
     private final List<BlockEntry> PRINT_LIST = new ArrayList<>();
     
@@ -36,13 +37,37 @@ public class BlockList implements IStringArray {
             mergeFrom( entry );
         }
     }
+
+    /**
+     * Create a new block list from an array of entries. Used for creating default configs.
+     * Also allows adding tags.
+     * <p>
+     * This method of block list creation can not take advantage of the * notation.
+     */
+    public BlockList( List<TagKey<Block>> tags, BlockEntry... entries ) {
+        this( entries );
+        tags( tags );
+    }
     
     /**
      * Create a new block list from a list of block state strings.
      */
     public BlockList( AbstractConfigField field, List<String> entries ) {
         for( String line : entries ) {
-            if( line.endsWith( "*" ) ) {
+            if ( line.startsWith( "#" ) ) {
+                // Get substring after '#' and check if it passes as a valid resource location
+                ResourceLocation tagLocation = ResourceLocation.tryParse( line.substring( 1 ) );
+
+                // Not a valid resource location, outrageous
+                if ( tagLocation == null ) {
+                    ConfigUtil.LOG.warn( "Invalid tag key for {} \"{}\"! Skipping tag. Invalid tag key: {}",
+                            field.getClass(), field.getKey(), line );
+                }
+                else {
+                    tag( BlockTags.create( tagLocation ) );
+                }
+            }
+            else if( line.endsWith( "*" ) ) {
                 // Handle special case; add all blocks in namespace
                 mergeFromNamespace( line.substring( 0, line.length() - 1 ) );
             }
@@ -58,6 +83,30 @@ public class BlockList implements IStringArray {
                 }
             }
         }
+    }
+
+    /** Adds the specified tag key to this BlockList, unless it already exists in the list. */
+    public final BlockList tag( TagKey<Block> tag ) {
+        boolean exists = false;
+
+        for ( TagKey<Block> tagKey : TAGS ) {
+            if ( tag.location().equals( tagKey.location() ) ) {
+                exists = true;
+                break;
+            }
+        }
+        if ( !exists ) {
+            TAGS.add( tag );
+        }
+        return this;
+    }
+
+    /** Adds the specified tag keys to this BlockList. */
+    public final void tags( Collection<TagKey<Block>> tags ) {
+        if ( tags.isEmpty() ) return;
+
+        for ( TagKey<Block> tag : tags )
+            tag( tag );
     }
     
     /** @return A string representation of this object. */
@@ -80,16 +129,30 @@ public class BlockList implements IStringArray {
         for( BlockEntry entry : PRINT_LIST ) {
             list.add( entry.toString() );
         }
+        for ( TagKey<Block> tagKey : TAGS ) {
+            list.add( ConfigUtil.toString( tagKey ) );
+        }
         return list;
     }
     
     /** @return Returns true if there are no entries in this block list. */
-    public boolean isEmpty() { return UNDERLYING_MAP.isEmpty(); }
+    public boolean isEmpty( boolean checkTags ) {
+        return checkTags
+            ? (UNDERLYING_MAP.isEmpty() && TAGS.isEmpty())
+            : UNDERLYING_MAP.isEmpty();
+    }
     
-    /** @return Returns true if the block is contained in this list. */
+    /** @return Returns true if the block is contained in this list. Prioritizes unique entries over tags. */
     public boolean matches( BlockState blockState ) {
+        // Check entries before tags
         BlockEntry entry = UNDERLYING_MAP.get( blockState.getBlock() );
-        return entry != null && entry.matches( blockState );
+        if ( entry != null ) return entry.matches( blockState );
+
+        for ( TagKey<Block> tagKey : TAGS ) {
+            if ( blockState.is( tagKey ) )
+                return true;
+        }
+        return false;
     }
     
     /** @param otherEntry Merges all matching from a block entry into this list. */

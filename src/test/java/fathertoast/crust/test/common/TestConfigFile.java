@@ -8,6 +8,8 @@ import fathertoast.crust.api.config.common.value.*;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
 import fathertoast.crust.api.config.common.value.environment.biome.BiomeCategory;
 import net.minecraft.ChatFormatting;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -59,6 +61,7 @@ public class TestConfigFile extends AbstractConfigFile {
         public final EnumField<BiomeCategory> enumField;
         public final EnvironmentListField environmentListField;
         public final IntField intField;
+        public final RegistryEntryListField<EntityType<?>> registryEntryListField;
         public final LazyRegistryEntryListField<MobEffect> lazyRegistryEntryListField;
         public final ScaledDoubleField scaledDoubleField;
         public final SqrDoubleField sqrDoubleField;
@@ -82,6 +85,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             (String[]) null ), General::testCallback ) ).field();
             blockListField = SPEC.define( new InjectionWrapperField<>(
                     new BlockListField( "block_list", new BlockList(
+                            List.of( BlockTags.ENDERMAN_HOLDABLE ),
                             new BlockEntry( Blocks.GRASS_BLOCK ),
                             new BlockEntry( Blocks.FURNACE.defaultBlockState().setValue( AbstractFurnaceBlock.LIT, true ) ) ),
                             (String[]) null ), General::testCallback ) ).field();
@@ -119,6 +123,10 @@ public class TestConfigFile extends AbstractConfigFile {
             intField = SPEC.define( new InjectionWrapperField<>(
                     new IntField( "int", 1, IntField.Range.ANY,
                             (String[]) null ), General::testCallback ) ).field();
+            registryEntryListField = SPEC.define( new InjectionWrapperField<>(
+                    new RegistryEntryListField<>( "registry_entry_list",
+                            new RegistryEntryList<>( ForgeRegistries.ENTITY_TYPES, List.of( EntityTypeTags.FALL_DAMAGE_IMMUNE ), EntityType.SHEEP, EntityType.ALLAY ),
+                            (String[]) null), General::testCallback ) ).field();
             lazyRegistryEntryListField = SPEC.define( new InjectionWrapperField<>(
                     new LazyRegistryEntryListField<>( "lazy_registry_entry_list",
                             new LazyRegistryEntryList<>( ForgeRegistries.MOB_EFFECTS, MobEffects.CONFUSION ),

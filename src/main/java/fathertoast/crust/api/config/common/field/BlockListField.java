@@ -66,8 +66,11 @@ public class BlockListField extends GenericField<BlockList> {
     
     // Convenience methods
     
-    /** @return Returns true if there are no entries in this block list. */
-    public boolean isEmpty() { return get().isEmpty(); }
+    /**
+     *  @return Returns true if there are no entries in this block list.
+     *          Optionally checks if there are no tags as well if checkTags is true.
+     */
+    public boolean isEmpty( boolean checkTags ) { return get().isEmpty( checkTags ); }
     
     /** @return Returns true if the block is contained in this list. */
     public boolean matches( BlockState blockState ) { return get().matches( blockState ); }
@@ -89,7 +92,7 @@ public class BlockListField extends GenericField<BlockList> {
         }
         
         /** @return Returns true if there are no entries in this block list. */
-        public boolean isEmpty() { return WHITELIST.get().isEmpty(); }
+        public boolean isEmpty( boolean checkTags ) { return WHITELIST.get().isEmpty( checkTags ); }
         
         /** @return Returns true if the block is contained in this list. */
         public boolean matches( BlockState blockState ) {

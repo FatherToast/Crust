@@ -3,16 +3,18 @@ package fathertoast.crust.api.config.common.value;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * A list of entries used to match registry entries. Can safely be loaded before its target registry is loaded, but
- * is not able to error check as well.
+ * is not able to error check as well. Note that any tags that may be added will not go through any validation.
  * <p>
  * See also: {@link net.minecraftforge.registries.ForgeRegistries}
  */
@@ -35,6 +37,18 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
         super( registry, (T[]) entries.toArray() );
         FIELD = null;
         populated = true;
+    }
+
+    /**
+     * Create a new registry entry list from an array of entries. Used for creating default configs.
+     * Also allows adding tags.
+     * <p>
+     * This method of creation can only use entries that are loaded (typically only vanilla entries)
+     * and cannot take advantage of the * notation.
+     */
+    public LazyRegistryEntryList( IForgeRegistry<T> registry, List<TagKey<T>> tags, List<T> entries ) {
+        this( registry, entries );
+        tags( tags );
     }
     
     /**
@@ -64,6 +78,18 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
             PRINT_LIST.add( regKey.toString() );
         }
     }
+
+    /**
+     * Create a new registry entry list from an array of entries. Used for creating default configs.
+     * Also allows adding tags.
+     * <p>
+     * This method of creation is less safe, but can take advantage of the regular vanilla entries, deferred entries,
+     * resource locations, and raw strings.
+     */
+    public LazyRegistryEntryList( IForgeRegistry<T> registry, List<TagKey<T>> tags, Object... entries ) {
+        this( registry, entries );
+        tags( tags );
+    }
     
     /**
      * Create a new registry entry list from a list of registry key strings.
@@ -72,7 +98,20 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
         super( registry );
         FIELD = field;
         for( String line : entries ) {
-            if( line.endsWith( "*" ) ) {
+            if ( line.startsWith( "#" ) ) {
+                // Get substring after '#' and check if it passes as a valid resource location
+                ResourceLocation tagLocation = ResourceLocation.tryParse( line.substring( 1 ) );
+
+                // Not a valid resource location, outrageous
+                if ( tagLocation == null ) {
+                    ConfigUtil.LOG.warn( "Invalid tag key for {} \"{}\"! Skipping tag. Invalid tag key: {}",
+                            field.getClass(), field.getKey(), line );
+                }
+                else {
+                    tag( new TagKey<>( registry.getRegistryKey(), tagLocation ) );
+                }
+            }
+            else if( line.endsWith( "*" ) ) {
                 PRINT_LIST.add( line );
             }
             else {
@@ -105,7 +144,7 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
         }
     }
     
-    /** @return The entries in this list. */
+    /** @return The entries in this list, except tag contents. */
     @Override
     public Set<T> getEntries() {
         populateEntries();
@@ -121,5 +160,11 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
     public boolean contains( @Nullable T entry ) {
         populateEntries();
         return super.contains( entry );
+    }
+
+    @Override
+    public boolean containsOrTag(@Nullable T entry, Predicate<TagKey<T>> tagPredicate) {
+        populateEntries();
+        return super.containsOrTag(entry, tagPredicate);
     }
 }

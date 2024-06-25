@@ -1,13 +1,18 @@
 package fathertoast.crust.api.config.common.value;
 
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.block.Block;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+
+// TODO - Tag support (have tags be the lowest priority when finding best match)
 /**
  * A list of entity-value entries used to link one or more numbers to specific entity types.
  */
@@ -16,6 +21,8 @@ public class EntityList implements IStringArray {
     
     /** The entity-value entries in this list. */
     private final EntityEntry[] ENTRIES;
+    /** The entity type tags in this list. */
+    private final List<TagKey<EntityType<?>>> TAGS = new ArrayList<>();
     
     /** The number of values each entry must have. If this is negative, then entries may have any non-zero number of values. */
     private int entryValues = -1;
