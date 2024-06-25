@@ -38,6 +38,7 @@ public class Crust {
      *              + environment list
      *              + reg entry list
      *              + string list
+     *              + dimension ID based sub-lists
      *  - helpers
      *      - advancement load event
      *      - tile entity bounding box renderer
