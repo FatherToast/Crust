@@ -129,7 +129,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             (String[]) null), General::testCallback ) ).field();
             lazyRegistryEntryListField = SPEC.define( new InjectionWrapperField<>(
                     new LazyRegistryEntryListField<>( "lazy_registry_entry_list",
-                            new LazyRegistryEntryList<>( ForgeRegistries.MOB_EFFECTS, MobEffects.CONFUSION ),
+                            new LazyRegistryEntryList<>( ForgeRegistries.MOB_EFFECTS, true, MobEffects.CONFUSION ),
                             (String[]) null ), General::testCallback ) ).field();
             scaledDoubleField = SPEC.define( new InjectionWrapperField<>(
                     new ScaledDoubleField( "scaled_double", 1.0, 6.0, DoubleField.Range.ANY,

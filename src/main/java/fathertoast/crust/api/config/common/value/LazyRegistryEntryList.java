@@ -50,32 +50,45 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
         this( registry, entries );
         tags( tags );
     }
-    
+
     /**
      * Create a new registry entry list from an array of entries. Used for creating default configs.
      * <p>
      * This method of creation is less safe, but can take advantage of the regular vanilla entries, deferred entries,
      * resource locations, and raw strings.
+     * <p>
+     * @param vanilla If true, assume all entries are from vanilla (already loaded)
      */
     @SuppressWarnings("unchecked")
-    public LazyRegistryEntryList( IForgeRegistry<T> registry, Object... entries ) {
+    public LazyRegistryEntryList( IForgeRegistry<T> registry, boolean vanilla, Object... entries ) {
         super( registry );
         FIELD = null;
-        for( Object entry : entries ) {
-            if( entry instanceof RegistryObject ) {
-                PRINT_LIST.add( ((RegistryObject<?>) entry).getId().toString() );
+
+        if ( vanilla ) {
+            populated = true;
+        }
+        else if ( entries.length > 0 ) {
+            for (Object entry : entries) {
+                if (registry.containsValue((T)entry)) {
+                    final ResourceLocation regKey = registry.getKey((T)entry);
+                    if (regKey == null) {
+                        throw new IllegalArgumentException("Invalid default lazy registry list entry! " + entry);
+                    }
+                    PRINT_LIST.add(regKey.toString());
+                }
+                else if (entry instanceof RegistryObject) {
+                    PRINT_LIST.add(((RegistryObject<?>) entry).getId().toString());
+                }
+                else if (entry instanceof ResourceLocation) {
+                    PRINT_LIST.add(entry.toString());
+                }
+                else if (entry instanceof String) {
+                    PRINT_LIST.add((String) entry);
+                }
+                else {
+                    throw new IllegalArgumentException("Invalid default lazy registry list entry! " + entry);
+                }
             }
-            else if( entry instanceof ResourceLocation ) {
-                PRINT_LIST.add( entry.toString() );
-            }
-            else if( entry instanceof String ) {
-                PRINT_LIST.add( (String) entry );
-            }
-            final ResourceLocation regKey = registry.getKey( (T) entry );
-            if( regKey == null ) {
-                throw new IllegalArgumentException( "Invalid default lazy registry list entry! " + entry );
-            }
-            PRINT_LIST.add( regKey.toString() );
         }
     }
 
@@ -86,8 +99,8 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
      * This method of creation is less safe, but can take advantage of the regular vanilla entries, deferred entries,
      * resource locations, and raw strings.
      */
-    public LazyRegistryEntryList( IForgeRegistry<T> registry, List<TagKey<T>> tags, Object... entries ) {
-        this( registry, entries );
+    public LazyRegistryEntryList( IForgeRegistry<T> registry, boolean vanilla, List<TagKey<T>> tags, Object... entries ) {
+        this( registry, vanilla, entries );
         tags( tags );
     }
     
