@@ -37,8 +37,8 @@ public class KeyBindingEvents {
     /** Registers this mod's additional key bindings. */
     static void register( RegisterKeyMappingsEvent event ) {
         event.register( CONFIG_EDITOR );
-
-        //ClientRegistry.registerKeyBinding( EQUIP );
+        
+        //event.register( EQUIP );
         for( KeyMapping binding : BUTTONS ) {
             event.register( binding );
         }

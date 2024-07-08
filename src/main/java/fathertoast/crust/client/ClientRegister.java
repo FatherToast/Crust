@@ -4,6 +4,7 @@ import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.client.ClientConfigUtil;
 import fathertoast.crust.api.config.common.ConfigManager;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -29,9 +30,13 @@ public class ClientRegister {
         
         // Tell Forge to open the config editor when our mod's "Config" button is clicked in the Mods screen
         ClientConfigUtil.registerConfigButtonAsEditScreen();
-
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-
-        modBus.addListener( KeyBindingEvents::register );
+        
+        //IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    }
+    
+    /** Registers this mod's additional key bindings. */
+    @SubscribeEvent
+    static void onRegisterKeyMappings( RegisterKeyMappingsEvent event ) {
+        KeyBindingEvents.register( event );
     }
 }
