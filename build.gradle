@@ -78,7 +78,7 @@ repositories {
             includeGroup 'curse.maven'
         }
     }
-    // Apocalypse isn't hosted on any maven servers anymore, oh well
+    // Just in case!
     flatDir {
         dir 'flat_deps'
     }
@@ -88,8 +88,10 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
     // Group ID must be present for flat dir repositories, but are effectively ignored
-    runtimeOnly fg.deobf("blank:Apocalypse-Rebooted:${mc_version}-${apocalypse_version}")
-    compileOnly fg.deobf("blank:Apocalypse-Rebooted:${mc_version}-${apocalypse_version}:api")
+    //runtimeOnly fg.deobf("blank:some_mod:version:descriptor")
+
+    runtimeOnly fg.deobf("curse.maven:apocalypse-229199:${apocalypse_version}")
+    compileOnly fg.deobf("curse.maven:apocalypse_api-229199:${apocalypse_api_version}")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
