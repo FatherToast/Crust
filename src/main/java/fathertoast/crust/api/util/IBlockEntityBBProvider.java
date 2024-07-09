@@ -1,4 +1,4 @@
-package fathertoast.crust.api.config.client;
+package fathertoast.crust.api.util;
 
 import net.minecraft.world.phys.AABB;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * that have bounding boxes that should be rendered in
  * debug mode (similar to how entity hitboxes are rendered).
  */
-public interface ITileBoundingBoxProvider {
+public interface IBlockEntityBBProvider {
     
     /**
      * @return A List of bounding boxes that should be rendered in the world.

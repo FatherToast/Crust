@@ -1,7 +1,7 @@
 package fathertoast.crust.common.mixin_work;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import fathertoast.crust.api.config.client.ITileBoundingBoxProvider;
+import fathertoast.crust.api.util.IBlockEntityBBProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -19,11 +19,11 @@ public class ClientMixinHooks {
     //        tile entity that has boxes (DeadlyWorld most likely)
     /**
      * Render various bounding boxes for tile entities
-     * that provide them through {@link ITileBoundingBoxProvider}
+     * that provide them through {@link IBlockEntityBBProvider}
      */
     public static void handleTileEntityRendering(BlockEntity blockEntity, PoseStack poseStack, MultiBufferSource bufferSource) {
-        if (blockEntity instanceof ITileBoundingBoxProvider) {
-            List<AABB> boxes = ((ITileBoundingBoxProvider) blockEntity).getBoundingBoxes();
+        if (blockEntity instanceof IBlockEntityBBProvider) {
+            List<AABB> boxes = ((IBlockEntityBBProvider) blockEntity).getBoundingBoxes();
 
             if (boxes == null || boxes.isEmpty())
                 return;
