@@ -2,6 +2,8 @@ package fathertoast.crust.common.config;
 
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.common.core.Crust;
+import net.minecraft.util.StringUtils;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 /**
@@ -10,6 +12,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
  * We also add functionality to the Forge "Config" button and load client configs in the client setup event
  * ({@link fathertoast.crust.client.ClientRegister#onClientSetup(FMLClientSetupEvent)}).
  */
+@SuppressWarnings("JavadocReference")
 public final class CrustConfig {
     
     /** Crust's config manager. Defines the mod config folder. */

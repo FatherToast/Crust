@@ -22,7 +22,7 @@ public final class ConfigUtil {
     
     /** Logger instance for the Crust Config API. */
     public static final Logger LOG = LogManager.getLogger( "crust/configs" );
-    
+
     /** The plus or minus symbol (+/-). */
     public static final String PLUS_OR_MINUS = "\u00b1";
     /** The less than or equal to symbol (<=). */
@@ -95,7 +95,7 @@ public final class ConfigUtil {
     
     /** @return Returns the resource location as a string, or "null" if it is null. */
     public static String toString( @Nullable ResourceLocation res ) { return res == null ? "null" : res.toString(); }
-    
+
     /**
      * @param str    The string we wish to wrap.
      * @param length Maximum characters to fit in each line.

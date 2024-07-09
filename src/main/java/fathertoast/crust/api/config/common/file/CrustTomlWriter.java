@@ -124,7 +124,7 @@ public class CrustTomlWriter implements ConfigWriter {
     
     /** Writes a single-line comment. Auto-wrapped. */
     public void writeComment( String comment, CharacterOutput output ) {
-        for( String line : ConfigUtil.wrap( StringUtils.stripColor( comment ), getEffectiveWrapLength() ) ) {
+        for( String line : ConfigUtil.wrap( TomlHelper.stripColor( comment ), getEffectiveWrapLength() ) ) {
             writeCommentLine( line, output );
         }
     }

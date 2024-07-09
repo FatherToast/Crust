@@ -9,13 +9,18 @@ import fathertoast.crust.api.config.common.value.IStringArray;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.regex.Pattern;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings( {"unused", "JavadocReference"} )
 public final class TomlHelper {
     
     /** While positive, integers are written in hex with this many minimum digits. */
     public static int HEX_MODE = 0; // TODO make this non-static somehow
-    
+
+    /** Regex for stripping color. Same as {@link net.minecraft.util.StringUtils#STRIP_COLOR_PATTERN } */
+    public static final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)\\u00A7[0-9A-FK-OR]");
+
+
     /** Attempts to convert a toml literal to a string list. May or may not be accurate. */
     public static List<String> parseStringList( Object value ) {
         final List<String> list = new ArrayList<>();
@@ -295,5 +300,10 @@ public final class TomlHelper {
         }
         key.delete( key.length() - 2, key.length() );
         return key.toString();
+    }
+
+    /** @return Returns a copy of the given string, stripped by the {@link TomlHelper#STRIP_COLOR_PATTERN} regex. */
+    public static String stripColor( String str ) {
+        return STRIP_COLOR_PATTERN.matcher( str ).replaceAll( "" );
     }
 }
