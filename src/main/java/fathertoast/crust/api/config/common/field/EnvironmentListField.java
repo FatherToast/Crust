@@ -6,7 +6,9 @@ import fathertoast.crust.api.config.common.value.EnvironmentEntry;
 import fathertoast.crust.api.config.common.value.EnvironmentList;
 import fathertoast.crust.api.config.common.value.environment.AbstractEnvironment;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
+import fathertoast.crust.api.lib.EnvironmentHelper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -132,12 +134,68 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
     // Convenience methods
     
     /** @return The value matching the given environment, or the default value if no matching environment is defined. */
-    public double getOrElse( World world, @Nullable BlockPos pos, DoubleField defaultValue ) { return get().getOrElse( world, pos, defaultValue ); }
+    public double getOrElse( World world, DoubleField defaultValue ) { return get().getOrElse( world, defaultValue ); }
     
     /** @return The value matching the given environment, or the default value if no matching environment is defined. */
-    public double getOrElse( World world, @Nullable BlockPos pos, double defaultValue ) { return get().getOrElse( world, pos, defaultValue ); }
+    public double getOrElse( World world, double defaultValue ) { return get().getOrElse( world, defaultValue ); }
     
     /** @return The value matching the given environment, or null if no matching environment is defined. */
     @Nullable
-    public Double get( World world, @Nullable BlockPos pos ) { return get().get( world, pos ); }
+    public Double get( World world ) { return get().get( world ); }
+    
+    /**
+     * @return The value matching the given environment, or the default value if no matching environment is defined.
+     * @throws IllegalStateException If the position is not in a fully loaded chunk.
+     * @see EnvironmentHelper#isLoaded(IWorldReader, BlockPos)
+     */
+    public double getOrElse( World world, BlockPos pos, DoubleField defaultValue ) { return get().getOrElse( world, pos, defaultValue ); }
+    
+    /**
+     * @return The value matching the given environment, or the default value if no matching environment is defined.
+     * @throws IllegalStateException If the position is not in a fully loaded chunk.
+     * @see EnvironmentHelper#isLoaded(IWorldReader, BlockPos)
+     */
+    public double getOrElse( World world, BlockPos pos, double defaultValue ) { return get().getOrElse( world, pos, defaultValue ); }
+    
+    /**
+     * @return The value matching the given environment, or null if no matching environment is defined.
+     * @throws IllegalStateException If the position is not in a fully loaded chunk.
+     * @see EnvironmentHelper#isLoaded(IWorldReader, BlockPos)
+     */
+    @Nullable
+    public Double get( World world, BlockPos pos ) { return get().get( world, pos ); }
+    
+    /**
+     * @return True if the position is in a fully loaded chunk.
+     * @see EnvironmentHelper#isLoaded(IWorldReader, BlockPos)
+     */
+    public boolean isLoaded( World world, BlockPos pos ) { return EnvironmentHelper.isLoaded( world, pos ); }
+    
+    /**
+     * @return The value matching the given environment, or the default value if no matching environment is defined.
+     * Uses the position if it is in a fully loaded chunk, otherwise ignores it.
+     */
+    public double getOrElseIfLoaded( World world, @Nullable BlockPos pos, DoubleField defaultValue ) {
+        if( pos != null && isLoaded( world, pos ) ) return getOrElse( world, pos, defaultValue );
+        else return getOrElse( world, defaultValue );
+    }
+    
+    /**
+     * @return The value matching the given environment, or the default value if no matching environment is defined.
+     * Uses the position if it is in a fully loaded chunk, otherwise ignores it.
+     */
+    public double getOrElseIfLoaded( World world, @Nullable BlockPos pos, double defaultValue ) {
+        if( pos != null && isLoaded( world, pos ) ) return getOrElse( world, pos, defaultValue );
+        else return getOrElse( world, defaultValue );
+    }
+    
+    /**
+     * @return The value matching the given environment, or null if no matching environment is defined.
+     * Uses the position if it is in a fully loaded chunk, otherwise ignores it.
+     */
+    @Nullable
+    public Double getIfLoaded( World world, @Nullable BlockPos pos ) {
+        if( pos != null && isLoaded( world, pos ) ) return get( world, pos );
+        else return get( world );
+    }
 }

@@ -1,4 +1,7 @@
 1.16.5-1.3.4
+    - BREAKING CHANGE: Environment condition tests are now broken into required pos and no pos methods
+        instead of one method with nullable pos. Required pos test throws an exception if unloaded.
+            - This change is required to avoid world load deadlocks.
     - All added key bindings are now unbound by default.
     - Extra inventory buttons are now disabled by default.
 1.16.5-1.2.1

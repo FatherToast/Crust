@@ -15,10 +15,12 @@ import fathertoast.crust.api.config.common.value.environment.position.StructureE
 import fathertoast.crust.api.config.common.value.environment.position.YEnvironment;
 import fathertoast.crust.api.config.common.value.environment.position.YFromSeaEnvironment;
 import fathertoast.crust.api.config.common.value.environment.time.*;
+import fathertoast.crust.api.lib.EnvironmentHelper;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DimensionType;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.feature.structure.Structure;
@@ -48,8 +50,26 @@ public class EnvironmentEntry {
         CONDITIONS = conditions;
     }
     
+    /**
+     * @return Returns true if all this entry's conditions match the provided environment.
+     * @throws IllegalStateException If the position is not in a fully loaded chunk.
+     * @see EnvironmentHelper#isLoaded(IWorldReader, BlockPos)
+     */
+    public boolean matches( World world, BlockPos pos ) {
+        if( !EnvironmentHelper.isLoaded( world, pos ) ) {
+            throw new IllegalStateException( "Attempted to query world data in an unloaded chunk. This is bad!" );
+        }
+        return unsafeMatches( world, pos );
+    }
+    
     /** @return Returns true if all this entry's conditions match the provided environment. */
-    public boolean matches( World world, @Nullable BlockPos pos ) {
+    public boolean matches( World world ) { return unsafeMatches( world, null ); }
+    
+    /**
+     * @return Returns true if all this entry's conditions match the provided environment.
+     * May cause a world loading deadlock if the position is not in a fully loaded chunk.
+     */
+    boolean unsafeMatches( World world, @Nullable BlockPos pos ) {
         for( AbstractEnvironment condition : CONDITIONS ) {
             if( !condition.matches( world, pos ) ) return false;
         }
