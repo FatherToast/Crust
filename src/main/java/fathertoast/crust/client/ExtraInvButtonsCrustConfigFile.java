@@ -51,6 +51,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
     public static class General extends AbstractConfigCategory<ExtraInvButtonsCrustConfigFile> {
         
         public final BooleanField enabled;
+        
         public final BooleanField disableInvalid;
         public final BooleanField hideUnusable;
         public final BooleanField hideForRecipeBook;
@@ -70,9 +71,12 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                             "are essentially macros that send commands for you.",
                     "You still need permission to run the commands." );
             
-            enabled = SPEC.define( new BooleanField( "enabled", true,
-                    "Set this to false to hide all extra inventory buttons.",
+            enabled = SPEC.define( new BooleanField( "enabled", false,
+                    "Whether extra inventory buttons are enabled. Each may still be hidden/disabled individually.",
                     "Does not affect hotkeys (key bindings) assigned to buttons." ) );
+            
+            SPEC.newLine();
+            
             disableInvalid = SPEC.define( new BooleanField( "disable_invalid", true,
                     "If true, built-in buttons that are invalid due to temporary conditions will be grayed-out." ) );
             hideUnusable = SPEC.define( new BooleanField( "hide_unusable", true,

@@ -3,7 +3,7 @@ package fathertoast.crust.test.client;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.IDifficultyAccessor;
 import fathertoast.crust.api.config.common.field.EnvironmentListField;
-import fathertoast.crust.client.KeyBindingEvents.Key;
+//import fathertoast.crust.client.KeyBindingEvents.Key;
 import fathertoast.crust.client.SortedKeyBinding;
 import fathertoast.crust.test.common.TestCrust;
 import net.minecraft.client.Minecraft;
@@ -14,8 +14,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.settings.KeyConflictContext;
-import net.minecraftforge.client.settings.KeyModifier;
+//import net.minecraftforge.client.settings.KeyConflictContext;
+//import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -32,8 +32,7 @@ public class TestClientForgeEventHandler {
     
     
     private static final String KEY_CAT = "CRUST TEST KEYS";
-    private static final KeyBinding KEY_CFG = new SortedKeyBinding( 0, "TEST CONFIG", KeyConflictContext.UNIVERSAL,
-            KeyModifier.CONTROL, Key.code( "c" ), KEY_CAT );
+    private static final KeyBinding KEY_CFG = new SortedKeyBinding( 0, "TEST CONFIG", KEY_CAT );
     
     /** Called when a key is pressed. */
     @SubscribeEvent

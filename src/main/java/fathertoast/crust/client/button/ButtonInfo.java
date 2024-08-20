@@ -7,7 +7,6 @@ import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.client.ClientRegister;
 import fathertoast.crust.client.ExtraInvButtonsCrustConfigFile;
-import fathertoast.crust.client.KeyBindingEvents;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
 import fathertoast.crust.common.mode.type.CrustMode;
@@ -21,7 +20,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.settings.KeyModifier;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -100,13 +98,11 @@ public class ButtonInfo {
     @SuppressWarnings( "unused" )
     public static final ButtonInfo NETHER_PORTAL = builtIn( new ButtonInfo( "netherPortal", "portal_nether.png",
             "crustportal " + CrustPortals.NETHER_PORTAL )
-            .condition( () -> CrustObjects.netherPortal().isValidDimension( world() ) )
-            .key( KeyModifier.CONTROL, "0" ) );
+            .condition( () -> CrustObjects.netherPortal().isValidDimension( world() ) ) );
     @SuppressWarnings( "unused" )
     public static final ButtonInfo END_PORTAL = builtIn( new ButtonInfo( "endPortal", "portal_end.png",
             "crustportal " + CrustPortals.END_PORTAL )
-            .condition( () -> CrustObjects.endPortal().isValidDimension( world() ) )
-            .key( KeyModifier.ALT, "0" ) );
+            .condition( () -> CrustObjects.endPortal().isValidDimension( world() ) ) );
     
     // Time control
     public static final ButtonInfo DAY = builtIn( new ButtonInfo( "day", "day.png",
@@ -135,8 +131,7 @@ public class ButtonInfo {
             .toggle( () -> player().isCreative() ) );
     public static final ButtonInfo MAGNET_MODE = builtIn( new ButtonInfo( "magnetMode", "magnet.png",
             ButtonInfo::magnetMode, Command.forMode( CrustModes.MAGNET ) )
-            .toggle( () -> modeEnabled( CrustModes.MAGNET ) )
-            .key( KeyModifier.CONTROL, "m" ) );
+            .toggle( () -> modeEnabled( CrustModes.MAGNET ) ) );
     //public static final ButtonInfo MULTI_MINE_MODE = builtIn( new ButtonInfo( "multiMineMode", "haste.png",
     //        ButtonInfo::multiMineMode, Command.forMode( CrustModes.MULTI_MINE ) )
     //        .toggle( () -> modeEnabled( CrustModes.MULTI_MINE ) )
@@ -192,8 +187,8 @@ public class ButtonInfo {
     /** Whether the button is 'toggled on'. */
     private Supplier<Boolean> toggledOn;
     
-    /** This button's default key binding. */
-    private KeyBindingEvents.Key keyBinding;
+    //    /** This button's default key binding. */
+    //    private KeyBindingEvents.Key keyBinding;
     
     
     // ---- Button Info Builders ---- //
@@ -247,11 +242,11 @@ public class ButtonInfo {
         return this;
     }
     
-    /** Builder-like method that adds a default key binding to this button. */
-    protected ButtonInfo key( KeyModifier modifier, String key ) {
-        keyBinding = KeyBindingEvents.Key.of( modifier, key );
-        return this;
-    }
+    //    /** Builder-like method that adds a default key binding to this button. */
+    //    protected ButtonInfo key( KeyModifier modifier, String key ) {
+    //        keyBinding = KeyBindingEvents.Key.of( modifier, key );
+    //        return this;
+    //    }
     
     
     // ---- Button Logic ---- //
@@ -292,9 +287,9 @@ public class ButtonInfo {
         }
     }
     
-    /** @return This button's default key binding, or null if it should be unbound by default. */
-    @Nullable
-    public KeyBindingEvents.Key getDefaultKey() { return keyBinding; }
+    //    /** @return This button's default key binding, or null if it should be unbound by default. */
+    //    @Nullable
+    //    public KeyBindingEvents.Key getDefaultKey() { return keyBinding; }
     
     
     // ---- Built-In Button Impl ---- //

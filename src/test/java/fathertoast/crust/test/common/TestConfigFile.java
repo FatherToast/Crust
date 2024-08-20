@@ -35,7 +35,7 @@ public class TestConfigFile extends AbstractConfigFile {
      */
     TestConfigFile( ConfigManager cfgManager, String cfgName ) {
         super( cfgManager, cfgName,
-                "In-game config editor client preferences." );
+                "Test config file." );
         
         GENERAL = new General( this );
         ENVIRONMENT = new Environment( this );
