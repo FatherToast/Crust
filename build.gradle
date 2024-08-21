@@ -113,6 +113,7 @@ jar {
 
 task srcJar(type: Jar) {
     archiveClassifier.set('src')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     // Include the entire mod (deobf) plus java files
     from sourceSets.main.output
