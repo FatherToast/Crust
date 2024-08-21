@@ -1,3 +1,5 @@
+1.20.1-2.3.5
+    - Fixed default pause menu options button position.
 1.20.1-2.3.4
     - BREAKING CHANGE: Environment condition tests are now broken into required pos and no pos methods
         instead of one method with nullable pos. Required pos test throws an exception if unloaded.

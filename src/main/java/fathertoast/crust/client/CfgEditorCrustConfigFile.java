@@ -36,7 +36,7 @@ public class CfgEditorCrustConfigFile extends AbstractConfigFile {
                 "Set this to false to hide the config editor button on the main menu." );
         PAUSE_BUTTON = new Button( this, "pause_menu_button",
                 "Options to modify the in-game config editor button on the pause menu.",
-                -44, buttonConflict,
+                -45, buttonConflict,
                 "Set this to false to hide the in-game config editor button.",
                 "You may assign a hotkey to the editor in your options, whether or not you choose to display a button." );
     }
