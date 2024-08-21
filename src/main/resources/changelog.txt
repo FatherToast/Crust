@@ -1,3 +1,25 @@
+1.20.1-2.3.4
+    - TODO BREAKING CHANGE: Environment condition tests are now broken into required pos and no pos methods
+        instead of one method with nullable pos. Required pos test throws an exception if unloaded.
+            - This change is required to avoid world load deadlocks.
+    - TODO All added key bindings are now unbound by default.
+    - TODO Extra inventory buttons are now disabled by default.
+1.20.1-2.3.3
+    - Fixed Crust key bindings not registering and showing up in the key binds GUI.
+1.20.1-2.3.2
+    - Made LazyRegistryEntryList a bit safer.
+1.20.1-2.2.2
+    - Fixed Minecraft version being included in the jar mod version.
+1.20.1-2.2.1
+    - Tag support for RegistryEntryList, LazyRegistryEntryList and BlockList.
+1.20.1-2.1.1
+    - API: Backwards compat for java.util.Random.
+1.20.1-2.0.1
+    - API: Fixed DoubleField and IntField methods that require RNG not using RandomSource.
+1.16.5-1.2.1
+    - Fixed CrustTomlWriter calling StringUtils#stripColor, crashing servers.
+1.16.5-1.1.1
+    - Magnet mode is now disabled by default.
 1.16.5-1.1.0
     Feature changes:
     - Added the Weight and Vulnerability effects from Special Mobs.
