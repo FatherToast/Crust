@@ -15,12 +15,12 @@ import fathertoast.crust.api.config.common.value.environment.position.StructureE
 import fathertoast.crust.api.config.common.value.environment.position.YEnvironment;
 import fathertoast.crust.api.config.common.value.environment.position.YFromSeaEnvironment;
 import fathertoast.crust.api.config.common.value.environment.time.*;
+import fathertoast.crust.api.lib.EnvironmentHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.structure.Structure;
 
 import javax.annotation.Nullable;
@@ -48,10 +48,28 @@ public class EnvironmentEntry {
         CONDITIONS = conditions;
     }
     
+    /**
+     * @return Returns true if all this entry's conditions match the provided environment.
+     * @throws IllegalStateException If the position is not in a fully loaded chunk.
+     * @see EnvironmentHelper#isLoaded(net.minecraft.world.level.LevelAccessor, BlockPos)
+     */
+    public boolean matches( Level world, BlockPos pos ) {
+        if( !EnvironmentHelper.isLoaded( world, pos ) ) {
+            throw new IllegalStateException( "Attempted to query world data in an unloaded chunk. This is bad!" );
+        }
+        return unsafeMatches( world, pos );
+    }
+    
     /** @return Returns true if all this entry's conditions match the provided environment. */
-    public boolean matches( Level level, @Nullable BlockPos pos ) {
+    public boolean matches( Level world ) { return unsafeMatches( world, null ); }
+    
+    /**
+     * @return Returns true if all this entry's conditions match the provided environment.
+     * May cause a world loading deadlock if the position is not in a fully loaded chunk.
+     */
+    boolean unsafeMatches( Level world, @Nullable BlockPos pos ) {
         for( AbstractEnvironment condition : CONDITIONS ) {
-            if( !condition.matches( level, pos ) ) return false;
+            if( !condition.matches( world, pos ) ) return false;
         }
         return true;
     }

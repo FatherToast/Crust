@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.IDifficultyAccessor;
 import fathertoast.crust.api.config.common.field.EnvironmentListField;
-import fathertoast.crust.client.KeyBindingEvents.Key;
 import fathertoast.crust.client.SortedKeyBinding;
 import fathertoast.crust.test.common.TestCrust;
 import net.minecraft.client.KeyMapping;
@@ -15,8 +14,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.client.settings.KeyConflictContext;
-import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
@@ -26,17 +23,16 @@ public class TestClientForgeEventHandler {
     
     /** Register anything needed specific to client-side Forge events. */
     static void register() {
-
+    
     }
-
+    
     public static void registerKeyBindings( RegisterKeyMappingsEvent event ) {
         event.register( KEY_CFG );
     }
     
     
     private static final String KEY_CAT = "CRUST TEST KEYS";
-    private static final KeyMapping KEY_CFG = new SortedKeyBinding( 0, "TEST CONFIG", KeyConflictContext.UNIVERSAL,
-            KeyModifier.CONTROL, Key.code( "c" ), KEY_CAT );
+    private static final KeyMapping KEY_CFG = new SortedKeyBinding( 0, "TEST CONFIG", KEY_CAT );
     
     /** Called when a key is pressed. */
     @SubscribeEvent

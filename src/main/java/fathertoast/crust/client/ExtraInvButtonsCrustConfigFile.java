@@ -12,8 +12,6 @@ import fathertoast.crust.client.button.ButtonInfo;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.entries.LootTableReference;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.awt.*;
@@ -73,9 +71,12 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                             "are essentially macros that send commands for you.",
                     "You still need permission to run the commands." );
             
-            enabled = SPEC.define( new BooleanField( "enabled", true,
-                    "Set this to false to hide all extra inventory buttons.",
+            enabled = SPEC.define( new BooleanField( "enabled", false,
+                    "Whether extra inventory buttons are enabled. Each may still be hidden/disabled individually.",
                     "Does not affect hotkeys (key bindings) assigned to buttons." ) );
+            
+            SPEC.newLine();
+            
             disableInvalid = SPEC.define( new BooleanField( "disable_invalid", true,
                     "If true, built-in buttons that are invalid due to temporary conditions will be grayed-out." ) );
             hideUnusable = SPEC.define( new BooleanField( "hide_unusable", true,
@@ -91,7 +92,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
                     ButtonInfo.MAGNET_MODE.ID, ButtonInfo.DESTROY_POINTER_ITEM.ID, ButtonInfo.TOGGLE_RAIN.ID, ButtonInfo.WEATHER_STORM.ID,
                     ButtonInfo.SUPER_VISION_MODE.ID, ButtonInfo.SUPER_SPEED_MODE.ID, ButtonInfo.DAY.ID, ButtonInfo.NIGHT.ID,
                     ButtonInfo.NO_PICKUP_MODE.ID, ButtonInfo.GOD_MODE.ID, ButtonInfo.GAME_MODE.ID, ButtonInfo.KILL_ALL.ID,
-                    ButtonInfo.CLEAR_EFFECTS.ID, ButtonInfo.FULL_HEAL.ID ),
+                    ButtonInfo.NETHER_PORTAL.ID, ButtonInfo.END_PORTAL.ID, ButtonInfo.CLEAR_EFFECTS.ID, ButtonInfo.FULL_HEAL.ID ),
                     "The buttons displayed in the inventory, in the order you want them displayed. These are " +
                             "ordered left-to-right, then wrapped into rows. See below for all valid button names.",
                     "You may assign a hotkey to any button in your options, whether or not you choose to display it." ) );

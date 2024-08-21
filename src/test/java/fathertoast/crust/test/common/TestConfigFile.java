@@ -37,7 +37,7 @@ public class TestConfigFile extends AbstractConfigFile {
      */
     TestConfigFile( ConfigManager cfgManager, String cfgName ) {
         super( cfgManager, cfgName,
-                "In-game config editor client preferences." );
+                "Test config file." );
         
         GENERAL = new General( this );
         ENVIRONMENT = new Environment( this );
@@ -126,7 +126,7 @@ public class TestConfigFile extends AbstractConfigFile {
             registryEntryListField = SPEC.define( new InjectionWrapperField<>(
                     new RegistryEntryListField<>( "registry_entry_list",
                             new RegistryEntryList<>( ForgeRegistries.ENTITY_TYPES, List.of( EntityTypeTags.FALL_DAMAGE_IMMUNE ), EntityType.SHEEP, EntityType.ALLAY ),
-                            (String[]) null), General::testCallback ) ).field();
+                            (String[]) null ), General::testCallback ) ).field();
             lazyRegistryEntryListField = SPEC.define( new InjectionWrapperField<>(
                     new LazyRegistryEntryListField<>( "lazy_registry_entry_list",
                             new LazyRegistryEntryList<>( ForgeRegistries.MOB_EFFECTS, true, MobEffects.CONFUSION ),

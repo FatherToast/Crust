@@ -1,9 +1,10 @@
 1.20.1-2.3.4
-    - TODO BREAKING CHANGE: Environment condition tests are now broken into required pos and no pos methods
+    - BREAKING CHANGE: Environment condition tests are now broken into required pos and no pos methods
         instead of one method with nullable pos. Required pos test throws an exception if unloaded.
             - This change is required to avoid world load deadlocks.
-    - TODO All added key bindings are now unbound by default.
-    - TODO Extra inventory buttons are now disabled by default.
+    - All added key bindings are now unbound by default.
+    - Extra inventory buttons are now disabled by default.
+    - Added Nether and End portal buttons to the default inventory buttons.
 1.20.1-2.3.3
     - Fixed Crust key bindings not registering and showing up in the key binds GUI.
 1.20.1-2.3.2

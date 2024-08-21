@@ -2,6 +2,7 @@ package fathertoast.crust.api.config.common.value;
 
 import fathertoast.crust.api.config.common.field.DoubleField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.lib.EnvironmentHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
@@ -63,21 +64,78 @@ public class EnvironmentList implements IStringArray {
     }
     
     /** @return The value matching the given environment, or the default value if no matching environment is defined. */
-    public double getOrElse( Level level, @Nullable BlockPos pos, DoubleField defaultValue ) {
-        return getOrElse( level, pos, defaultValue.get() );
-    }
+    public double getOrElse( Level world, DoubleField defaultValue ) { return unsafeGetOrElse( world, null, defaultValue ); }
     
     /** @return The value matching the given environment, or the default value if no matching environment is defined. */
-    public double getOrElse( Level level, @Nullable BlockPos pos, double defaultValue ) {
-        final Double value = get( level, pos );
-        return value == null ? defaultValue : value;
-    }
+    public double getOrElse( Level world, double defaultValue ) { return unsafeGetOrElse( world, null, defaultValue ); }
     
     /** @return The value matching the given environment, or null if no matching environment is defined. */
     @Nullable
-    public Double get( Level level, @Nullable BlockPos pos ) {
+    public Double get( Level world ) { return unsafeGet( world, null ); }
+    
+    /**
+     * @return The value matching the given environment, or the default value if no matching environment is defined.
+     * @throws IllegalStateException If the position is not in a fully loaded chunk.
+     * @see EnvironmentHelper#isLoaded(net.minecraft.world.level.LevelAccessor, BlockPos)
+     */
+    public double getOrElse( Level world, BlockPos pos, DoubleField defaultValue ) {
+        validatePos( world, pos );
+        return unsafeGetOrElse( world, pos, defaultValue );
+    }
+    
+    /**
+     * @return The value matching the given environment, or the default value if no matching environment is defined.
+     * @throws IllegalStateException If the position is not in a fully loaded chunk.
+     * @see EnvironmentHelper#isLoaded(net.minecraft.world.level.LevelAccessor, BlockPos)
+     */
+    public double getOrElse( Level world, BlockPos pos, double defaultValue ) {
+        validatePos( world, pos );
+        return unsafeGetOrElse( world, pos, defaultValue );
+    }
+    
+    /**
+     * @return The value matching the given environment, or null if no matching environment is defined.
+     * @throws IllegalStateException If the position is not in a fully loaded chunk.
+     * @see EnvironmentHelper#isLoaded(net.minecraft.world.level.LevelAccessor, BlockPos)
+     */
+    @Nullable
+    public Double get( Level world, BlockPos pos ) {
+        validatePos( world, pos );
+        return unsafeGet( world, pos );
+    }
+    
+    /** @throws IllegalStateException If the position is not in a fully loaded chunk. */
+    private void validatePos( Level world, BlockPos pos ) {
+        if( !EnvironmentHelper.isLoaded( world, pos ) ) {
+            throw new IllegalStateException( "Attempted to query world data in an unloaded chunk. This is bad!" );
+        }
+    }
+    
+    /**
+     * @return The value matching the given environment, or the default value if no matching environment is defined.
+     * May cause a world loading deadlock if the position is not in a fully loaded chunk.
+     */
+    private double unsafeGetOrElse( Level world, @Nullable BlockPos pos, DoubleField defaultValue ) {
+        return unsafeGetOrElse( world, pos, defaultValue.get() );
+    }
+    
+    /**
+     * @return The value matching the given environment, or the default value if no matching environment is defined.
+     * May cause a world loading deadlock if the position is not in a fully loaded chunk.
+     */
+    private double unsafeGetOrElse( Level world, @Nullable BlockPos pos, double defaultValue ) {
+        final Double value = unsafeGet( world, pos );
+        return value == null ? defaultValue : value;
+    }
+    
+    /**
+     * @return The value matching the given environment, or null if no matching environment is defined.
+     * May cause a world loading deadlock if the position is not in a fully loaded chunk.
+     */
+    @Nullable
+    private Double unsafeGet( Level world, @Nullable BlockPos pos ) {
         for( EnvironmentEntry entry : ENTRIES ) {
-            if( entry.matches( level, pos ) ) return entry.VALUE;
+            if( entry.unsafeMatches( world, pos ) ) return entry.VALUE;
         }
         return null;
     }

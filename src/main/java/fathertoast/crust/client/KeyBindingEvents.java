@@ -10,8 +10,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.client.settings.KeyConflictContext;
-import net.minecraftforge.client.settings.KeyModifier;
+//import net.minecraftforge.client.settings.KeyConflictContext;
+//import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
@@ -27,10 +27,8 @@ public class KeyBindingEvents {
     
     private static final String KEY = "key." + ICrustApi.MOD_ID + ".";
     
-    private static final KeyMapping CONFIG_EDITOR = new SortedKeyBinding( 0, KEY + "configs", KeyConflictContext.UNIVERSAL,
-            KeyModifier.CONTROL, Key.code( "o" ), KEY_CAT );
-    //    private static final KeyBinding EQUIP = new SortedKeyBinding( 0, KEY + "equip", KeyConflictContext.GUI,
-    //            KeyModifier.NONE, InputMappings.getKey( "key.mouse.middle" ), KEY_CAT );
+    private static final KeyMapping CONFIG_EDITOR = new SortedKeyBinding( 0, KEY + "configs", KEY_CAT );
+    //    private static final KeyBinding EQUIP = new SortedKeyBinding( 1, KEY + "equip", KEY_CAT );
     
     private static final KeyMapping[] BUTTONS;
     
@@ -56,6 +54,7 @@ public class KeyBindingEvents {
                 // Open the config editor
                 minecraft.setScreen( new CrustConfigSelectScreen( screen ) );
             }
+            // Equip the currently held or moused-over item
             //            else if( event.getKey() == EQUIP.getKey().getValue() && EQUIP.isConflictContextAndModifierActive() ) {
             //                // NYI
             //            }
@@ -91,42 +90,42 @@ public class KeyBindingEvents {
         for( ; index < builtInButtons.size(); index++ ) {
             ButtonInfo button = ButtonInfo.get( builtInButtons.get( index ) );
             if( button != null ) {
-                if( button.getDefaultKey() != null ) {
-                    BUTTONS[index] = new SortedKeyBinding( index, key + button.ID.toLowerCase( Locale.ROOT ),
-                            KeyConflictContext.UNIVERSAL, button.getDefaultKey().MODIFIER,
-                            button.getDefaultKey().KEY_CODE, KEY_CAT_BUTTONS );
-                }
-                else {
-                    BUTTONS[index] = new SortedKeyBinding( index, key + button.ID.toLowerCase( Locale.ROOT ),
-                            InputConstants.UNKNOWN.getValue(), KEY_CAT_BUTTONS );
-                }
+                //                if( button.getDefaultKey() != null ) {
+                //                    BUTTONS[index] = new SortedKeyBinding( index, key + button.ID.toLowerCase( Locale.ROOT ),
+                //                            KeyConflictContext.UNIVERSAL, button.getDefaultKey().MODIFIER,
+                //                            button.getDefaultKey().KEY_CODE, KEY_CAT_BUTTONS );
+                //                }
+                //                else {
+                //                    // Do the below here
+                //                }
+                BUTTONS[index] = new SortedKeyBinding( index,
+                        key + button.ID.toLowerCase( Locale.ROOT ), KEY_CAT_BUTTONS );
             }
         }
         
         // User-defined buttons
         for( int i = 0; i < ClientRegister.EXTRA_INV_BUTTONS.CUSTOM_BUTTONS.length; i++ ) {
-            BUTTONS[index + i] = new SortedKeyBinding( index + i, key + "custom" + (i + 1),
-                    InputConstants.UNKNOWN.getValue(), KEY_CAT_BUTTONS );
+            BUTTONS[index + i] = new SortedKeyBinding( index + i, key + "custom" + (i + 1), KEY_CAT_BUTTONS );
         }
     }
     
-    public static class Key {
-        
-        /** @return A new object that holds info about a specific keystroke with no modifiers. */
-        public static Key of( String key ) { return of( KeyModifier.NONE, key ); }
-        
-        /** @return A new object that holds info about a specific keystroke, including required modifier. */
-        public static Key of( KeyModifier modifier, String key ) { return new Key( modifier, code( key ) ); }
-        
-        /** @return The key code for a keyboard key. */
-        public static InputConstants.Key code( String key ) { return InputConstants.getKey( "key.keyboard." + key ); }
-        
-        final KeyModifier MODIFIER;
-        final InputConstants.Key KEY_CODE;
-        
-        private Key( KeyModifier modifier, InputConstants.Key keyCode ) {
-            MODIFIER = modifier;
-            KEY_CODE = keyCode;
-        }
-    }
+    //    public static class Key {
+    //
+    //        /** @return A new object that holds info about a specific keystroke with no modifiers. */
+    //        public static Key of( String key ) { return of( KeyModifier.NONE, key ); }
+    //
+    //        /** @return A new object that holds info about a specific keystroke, including required modifier. */
+    //        public static Key of( KeyModifier modifier, String key ) { return new Key( modifier, code( key ) ); }
+    //
+    //        /** @return The key code for a keyboard key. */
+    //        public static InputConstants.Key code( String key ) { return InputConstants.getKey( "key.keyboard." + key ); }
+    //
+    //        final KeyModifier MODIFIER;
+    //        final InputConstants.Key KEY_CODE;
+    //
+    //        private Key( KeyModifier modifier, InputConstants.Key keyCode ) {
+    //            MODIFIER = modifier;
+    //            KEY_CODE = keyCode;
+    //        }
+    //    }
 }

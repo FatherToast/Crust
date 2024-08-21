@@ -159,6 +159,7 @@ public final class CrustEnvironmentRegistry {
          *  - Create the environment class
          *  - Register and describe it here
          *  - Add any applicable builder methods in EnvironmentEntry.Builder
+         *  - Create a test case in TestConfigFile using the builder method
          */
         // Dimension-based
         register( "dimension_property", DimensionPropertyEnvironment::new, DimensionPropertyEnvironment.class,
