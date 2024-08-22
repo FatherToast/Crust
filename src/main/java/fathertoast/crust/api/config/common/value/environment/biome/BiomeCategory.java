@@ -7,12 +7,15 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.common.Tags;
 
 /**
+ * Replaced by the addition of biome tags. Will be removed on next Minecraft version.
+ * <p>
  * Used to wrap the vanilla enum Biome.Category so that it can be safely used in configs.
  * The declared names should match the string passed into vanilla enums' constructors so that both enums serialize identically.
  */
-@SuppressWarnings("ConstantConditions")
+@SuppressWarnings( "ConstantConditions" )
+@Deprecated // TODO Remove when updating beyond MC 1.20
 public enum BiomeCategory {
-
+    
     NONE( null ),
     TAIGA( BiomeTags.IS_TAIGA ),
     HILLS( BiomeTags.IS_HILL ),
@@ -30,7 +33,7 @@ public enum BiomeCategory {
     SWAMP( Tags.Biomes.IS_SWAMP ),
     MUSHROOM( Tags.Biomes.IS_MUSHROOM ),
     NETHER( BiomeTags.IS_NETHER );
-
+    
     public final TagKey<Biome> BIOME_TAG;
     
     BiomeCategory( TagKey<Biome> biomeTag ) { BIOME_TAG = biomeTag; }

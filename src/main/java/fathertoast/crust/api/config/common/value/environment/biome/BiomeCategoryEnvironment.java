@@ -7,6 +7,7 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
+// TODO Replace with biome tags
 public class BiomeCategoryEnvironment extends EnumEnvironment<BiomeCategory> {
     
     public BiomeCategoryEnvironment( BiomeCategory value, boolean invert ) { super( value, invert ); }

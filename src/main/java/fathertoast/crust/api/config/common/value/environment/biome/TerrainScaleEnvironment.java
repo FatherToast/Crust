@@ -8,7 +8,8 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
-// TODO - Reconsider what to do with this. Biomes no longer decide the noise of the terrain
+/** No longer a property of biomes. Will be removed on next Minecraft version. */
+@Deprecated // TODO Remove when updating beyond MC 1.20
 public class TerrainScaleEnvironment extends CompareFloatEnvironment {
     
     public TerrainScaleEnvironment( ComparisonOperator op, float value ) { super( op, value ); }

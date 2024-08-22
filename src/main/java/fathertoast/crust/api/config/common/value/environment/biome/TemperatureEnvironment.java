@@ -40,6 +40,7 @@ public class TemperatureEnvironment extends CompareFloatEnvironment {
     /** @return Returns the actual value to compare, or Float.NaN if there isn't enough information. */
     @Override
     public float getActual( Level level, @Nullable BlockPos pos ) {
+        //noinspection deprecation
         return pos == null ? Float.NaN : level.getBiome( pos ).value().getTemperature( pos );
     }
 }

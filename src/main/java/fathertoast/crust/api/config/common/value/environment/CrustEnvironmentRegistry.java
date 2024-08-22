@@ -175,15 +175,15 @@ public final class CrustEnvironmentRegistry {
                         "\"minecraft:the_nether\", or \"minecraft:the_end\"." );
         
         // Biome-based
-        register( "terrain_depth", TerrainDepthEnvironment::new, TerrainDepthEnvironment.class,
-                "op value",//TODO see if this changes in MC 1.18
-                "Biome's depth parameter. A measure of how high the terrain generates; depth < 0 makes a " +
-                        "watery biome. For reference, generally vanilla plateaus are 1.5, mountains are 1, plains are " +
-                        "0.125, swamps are -0.2, rivers are -0.5, oceans are -1, and deep oceans are -1.8." );
-        register( "terrain_scale", TerrainScaleEnvironment::new, TerrainScaleEnvironment.class,
-                "op value",
-                "Biome's scale parameter. A measure of how 'wavy' the terrain generates. For reference, " +
-                        "generally vanilla mountains are 0.5 and plains are 0.05." );
+        //        register( "terrain_depth", TerrainDepthEnvironment::new, TerrainDepthEnvironment.class,
+        //                "op value",
+        //                "Biome's depth parameter. A measure of how high the terrain generates; depth < 0 makes a " +
+        //                        "watery biome. For reference, generally vanilla plateaus are 1.5, mountains are 1, plains are " +
+        //                        "0.125, swamps are -0.2, rivers are -0.5, oceans are -1, and deep oceans are -1.8." );
+        //        register( "terrain_scale", TerrainScaleEnvironment::new, TerrainScaleEnvironment.class,
+        //                "op value",
+        //                "Biome's scale parameter. A measure of how 'wavy' the terrain generates. For reference, " +
+        //                        "generally vanilla mountains are 0.5 and plains are 0.05." );
         register( "rainfall", RainfallEnvironment::new, RainfallEnvironment.class,
                 "op value",
                 "Biome's rainfall parameter. If this is \"= 0\", it checks that rain is disabled. For " +
@@ -197,8 +197,9 @@ public final class CrustEnvironmentRegistry {
                 "Height-adjusted temperature. For reference, freezing is < 0.15 and hot is generally " +
                         "considered > 0.95." );
         register( "biome_category", BiomeCategoryEnvironment::new, BiomeCategoryEnvironment.class,
-                "(!)category",
+                "(!)category", // TODO Remove when updating beyond MC 1.20
                 "Valid category values: " + TomlHelper.toLiteralList( (Object[]) BiomeCategory.values() ) );
+        // TODO biome_tag
         register( "biome", ( field, value ) -> value.endsWith( "*" ) ?
                         new BiomeGroupEnvironment( field, value ) : new BiomeEnvironment( field, value ),
                 Arrays.asList( BiomeGroupEnvironment.class, BiomeEnvironment.class ),
@@ -214,11 +215,11 @@ public final class CrustEnvironmentRegistry {
                 "The structure. See the wiki for vanilla structure names " +
                         "[https://minecraft.fandom.com/wiki/Structure#ID]." );
         register( "y", YEnvironment::new, YEnvironment.class,
-                "op value",//TODO change lava level to -54 for MC 1.18
-                "The y-value. For reference, sea level is normally 63 and lava level is normally 10." );
+                "op value",
+                "The y-value. For reference, sea level is normally 63 and lava level is normally -54." );
         register( "y_from_sea", YFromSeaEnvironment::new, YFromSeaEnvironment.class,
                 "op value",
-                "The y-value from sea level. Expect the only air <= 0 to be in caves/ravines (which may " +
+                "The y-value from sea level. Expect the only air < 0 to be in caves/ravines (which may " +
                         "still have direct view of the sky)." );
         register( "position", PositionEnvironment::new, PositionEnvironment.class,
                 "(!)state",

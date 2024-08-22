@@ -184,32 +184,44 @@ public class EnvironmentEntry {
         
         // ---- Biome-based ---- //
         
-        /** Check if the biome is a water or beach biome (depth at or below sea level). */
+        /** @see TerrainDepthEnvironment */
+        @Deprecated // TODO Reimplement as biome tag
         public Builder inWaterBiome() { return isDepth( ComparisonOperator.LESS_OR_EQUAL, 0.0F ); }
         
-        /** Check if the biome is a water or beach biome (depth at or below sea level). */
+        /** @see TerrainDepthEnvironment */
+        @Deprecated // TODO Reimplement as biome tag
         public Builder notInWaterBiome() { return isDepth( ComparisonOperator.LESS_OR_EQUAL.invert(), 0.0F ); }
         
-        /** Check if the biome has relatively high elevation. */
+        /** @see TerrainDepthEnvironment */
+        @Deprecated // TODO Reimplement as biome tag
         public Builder inMountainBiome() { return isDepth( ComparisonOperator.GREATER_OR_EQUAL, 0.4F ); }
         
-        /** Check if the biome has relatively high elevation. */
+        /** @see TerrainDepthEnvironment */
+        @Deprecated // TODO Reimplement as biome tag
         public Builder notInMountainBiome() { return isDepth( ComparisonOperator.GREATER_OR_EQUAL.invert(), 0.4F ); }
         
+        /** @see TerrainDepthEnvironment */
+        @Deprecated
         private Builder isDepth( ComparisonOperator op, float value ) { return in( new TerrainDepthEnvironment( op, value ) ); }
         
-        /** Check if the biome is relatively flat. */
+        /** @see TerrainScaleEnvironment */
+        @Deprecated // TODO Reimplement as biome tag
         public Builder inFlatBiome() { return isScale( ComparisonOperator.LESS_OR_EQUAL, 0.1F ); }
         
-        /** Check if the biome is relatively flat. */
+        /** @see TerrainScaleEnvironment */
+        @Deprecated // TODO Reimplement as biome tag
         public Builder notInFlatBiome() { return isScale( ComparisonOperator.LESS_OR_EQUAL.invert(), 0.1F ); }
         
-        /** Check if the biome is relatively hilly. */
+        /** @see TerrainScaleEnvironment */
+        @Deprecated // TODO Reimplement as biome tag
         public Builder inHillyBiome() { return isScale( ComparisonOperator.GREATER_OR_EQUAL, 0.3F ); }
         
-        /** Check if the biome is relatively hilly. */
+        /** @see TerrainScaleEnvironment */
+        @Deprecated // TODO Reimplement as biome tag
         public Builder notInHillyBiome() { return isScale( ComparisonOperator.GREATER_OR_EQUAL.invert(), 0.3F ); }
         
+        /** @see TerrainScaleEnvironment */
+        @Deprecated
         private Builder isScale( ComparisonOperator op, float value ) { return in( new TerrainScaleEnvironment( op, value ) ); }
         
         /** Check if the biome has rain disabled. */
@@ -246,10 +258,10 @@ public class EnvironmentEntry {
         
         private Builder isTemperature( ComparisonOperator op, float value ) { return in( new TemperatureEnvironment( op, value ) ); }
         
-        /** Check if the biome belongs to a specific category. */
+        /** Check if the biome belongs to a specific category. */ // TODO Reimplement as biome tag
         public Builder inBiomeCategory( BiomeCategory category ) { return in( new BiomeCategoryEnvironment( category, false ) ); }
         
-        /** Check if the biome belongs to a specific category. */
+        /** Check if the biome belongs to a specific category. */ // TODO Reimplement as biome tag
         public Builder notInBiomeCategory( BiomeCategory category ) { return in( new BiomeCategoryEnvironment( category, true ) ); }
         
         /** Check if the biome is a specific one. */
@@ -268,10 +280,10 @@ public class EnvironmentEntry {
         public Builder notInStructure( ResourceKey<Structure> structure ) { return in( new StructureEnvironment( MANAGER, structure, true ) ); }
         
         /** Check if diamond/redstone ore can generate at the position. */
-        public Builder belowDiamondLevel() { return belowY( 15 ); } // TODO update ore-based logic in 1.18
+        public Builder belowDiamondLevel() { return belowY( 17 ); }
         
         /** Check if diamond/redstone ore can generate at the position. */
-        public Builder aboveDiamondLevel() { return aboveY( 15 ); }
+        public Builder aboveDiamondLevel() { return aboveY( 17 ); }
         
         /** Check if gold/lapis ore can generate at the position. */
         public Builder belowGoldLevel() { return belowY( 33 ); }
@@ -290,16 +302,16 @@ public class EnvironmentEntry {
         public Builder aboveSeaLevel() { return aboveSeaLevel( 0 ); }
         
         /** Check if the position is above/below the average sea floor. */
-        public Builder belowSeaDepths() { return belowSeaLevel( -6 ); }
+        public Builder belowSeaDepths() { return belowSeaLevel( -17 ); }
         
         /** Check if the position is above/below the average sea floor. */
-        public Builder aboveSeaDepths() { return aboveSeaLevel( -6 ); }
+        public Builder aboveSeaDepths() { return aboveSeaLevel( -17 ); }
         
         /** Check if the position is above/below the average sea floor. */
-        public Builder belowSeaFloor() { return belowSeaLevel( -18 ); }
+        public Builder belowSeaFloor() { return belowSeaLevel( -27 ); }
         
         /** Check if the position is above/below the average sea floor. */
-        public Builder aboveSeaFloor() { return aboveSeaLevel( -18 ); }
+        public Builder aboveSeaFloor() { return aboveSeaLevel( -27 ); }
         
         /** Check if the position is above/below 'mountain level' - that is, high enough to die from falling to sea level. */
         public Builder belowMountainLevel() { return belowSeaLevel( 25 ); }

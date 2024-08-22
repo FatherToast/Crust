@@ -1,5 +1,9 @@
 1.20.1-2.3.5
+    - TODO Added new environment condition biome_tag.
     - Fixed default pause menu options button position.
+    API changes:
+    - Corrected outdated diamond and sea floor reference values.
+    - Environment conditions terrain_depth, terrain_scale, and biome_category are now deprecated.
 1.20.1-2.3.4
     - BREAKING CHANGE: Environment condition tests are now broken into required pos and no pos methods
         instead of one method with nullable pos. Required pos test throws an exception if unloaded.
