@@ -39,7 +39,7 @@ public class CrustConfigFileScreen extends Screen {
     
     /** @return The string made into something more readable. */
     public static String decodeString( String str ) {
-        return ConfigUtil.camelCaseToLowerSpace( str.replace( '_', ' ' ).replace( ".", " > " ) );
+        return ConfigUtil.camelCaseToLowerSpace( str.replace( '_', ' ' ).replace( ".", " > " ).trim() );
     }
     
     
@@ -125,7 +125,7 @@ public class CrustConfigFileScreen extends Screen {
                     if( fieldList.isChanged() ) resetScreen();
                     else Util.getPlatform().openFile( SPEC.getFile().getParentFile() );
                 },
-                Supplier::get) );
+                Supplier::get ) );
         addRenderableWidget( bottomRightButton = new Button( width / 2 - 155 + 160, height - 29,
                 150, 20, CommonComponents.GUI_DONE,
                 ( button ) -> {
@@ -135,7 +135,7 @@ public class CrustConfigFileScreen extends Screen {
                     }
                     else minecraft.setScreen( LAST_SCREEN );
                 },
-                Supplier::get) );
+                Supplier::get ) );
     }
     
     /** Called when the footer text might need to be changed. */
@@ -271,14 +271,14 @@ public class CrustConfigFileScreen extends Screen {
         }
         return super.charTyped( codePoint, mods );
     }
-
+    
     // TODO - check out how this actually works
     @Nullable
     @Override
     public ComponentPath nextFocusPath( FocusNavigationEvent event ) {
         return super.nextFocusPath( event );
     }
-
+    
     /**
      * Called when focus change is requested (for example, tab or shift+tab).
      *
@@ -326,7 +326,7 @@ public class CrustConfigFileScreen extends Screen {
         
         setTooltip( null );
         fieldList.render( graphics, mouseX, mouseY, partialTicks );
-
+        
         graphics.drawCenteredString( font, SUBTITLE, width / 2,
                 24, 0x777777 );
         graphics.drawCenteredString( font, title, width / 2,
