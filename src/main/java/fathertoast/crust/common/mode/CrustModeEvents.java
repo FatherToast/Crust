@@ -3,6 +3,7 @@ package fathertoast.crust.common.mode;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.common.config.CrustConfig;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.commands.EffectCommands;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -119,10 +120,11 @@ public class CrustModeEvents {
             FoodData foodData = player.getFoodData();
             if( foodData.getFoodLevel() < minimum ) foodData.eat( 20, 0.125F );
         }
+
         // Super vision
         else if( clock16 == 13 && playerModes.enabled( CrustModes.SUPER_VISION ) ) {
             if( !player.hasEffect( MobEffects.NIGHT_VISION ) ) {
-                player.addEffect( new MobEffectInstance( MobEffects.NIGHT_VISION, Integer.MAX_VALUE,
+                player.addEffect( new MobEffectInstance( MobEffects.NIGHT_VISION, -1,
                         0, true, false, false ) );
             }
             // Not needed, but looks nicer this way
