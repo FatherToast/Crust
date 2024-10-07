@@ -27,6 +27,7 @@ public class Crust {
      * (KEY: - = complete in current version, o = incomplete feature from previous version,
      *       + = incomplete new feature, ? = feature to consider adding)
      *  - configs
+     *      - TODO Added new environment condition biome_tag.
      *      - config button opens config folder or in-game editor
      *      - in-game config editor
      *          - menu buttons and hotkey to access
@@ -102,7 +103,7 @@ public class Crust {
         CrustConfig.initialize();
         
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-
+        
         modBus.addListener( CrustPortals::onRegistryCreate );
         CrustEffects.register( modBus );
         CrustPortals.register( modBus );

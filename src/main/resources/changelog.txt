@@ -1,5 +1,5 @@
 1.20.1-2.3.5
-    - TODO Added new environment condition biome_tag.
+    - Possibly fixed comod issue causing mod incompatibility.
     - Fixed default pause menu options button position.
     API changes:
     - Corrected outdated diamond and sea floor reference values.
