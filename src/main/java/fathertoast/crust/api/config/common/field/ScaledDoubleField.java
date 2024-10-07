@@ -51,7 +51,7 @@ public class ScaledDoubleField extends DoubleField {
     public static class Rate extends ScaledDoubleField {
         
         /** Conversion factor to convert from more meaningful units (blocks per second or m/s) to blocks per tick. */
-        private static final double PER_SECOND_TO_PER_TICK = 0.05;
+        private static final double PER_SECOND_TO_PER_TICK = 0.05;// 1.0 / SharedConstants.TICKS_PER_SECOND
         
         /** Creates a new field that accepts a common range of values. */
         public Rate( String key, double defaultValue, Range range, String... description ) {

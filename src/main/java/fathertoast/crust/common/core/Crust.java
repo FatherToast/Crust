@@ -3,6 +3,7 @@ package fathertoast.crust.common.core;
 import fathertoast.crust.api.CrustPlugin;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.ICrustPlugin;
+import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDifficultyEnvironment;
 import fathertoast.crust.common.api.impl.CrustApi;
 import fathertoast.crust.common.command.impl.CrustArgumentTypes;
@@ -99,8 +100,8 @@ public class Crust {
         ApocalypseDifficultyEnvironment.register( apiInstance );
         CrustPacketHandler.registerMessages();
         
-        // Perform first-time loading of the common configs for this mod
-        CrustConfig.initialize();
+        // Crust's config manager; defines the mod config folder
+        ConfigManager.create( "Crust" );
         
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         
@@ -112,7 +113,14 @@ public class Crust {
         modBus.addListener( this::onCommonSetup );
     }
     
-    private void onCommonSetup( FMLCommonSetupEvent event ) { event.enqueueWork( this::processPlugins ); }
+    private void onCommonSetup( FMLCommonSetupEvent event ) {
+        event.enqueueWork( () -> {
+            // Perform first-time loading of the common configs for this mod
+            CrustConfig.initialize();
+            
+            processPlugins();
+        } );
+    }
     
     private void processPlugins() {
         // Load mod plugins
