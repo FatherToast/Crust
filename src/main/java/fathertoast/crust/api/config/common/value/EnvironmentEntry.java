@@ -202,7 +202,7 @@ public class EnvironmentEntry {
         
         /** @see TerrainDepthEnvironment */
         @Deprecated
-        private Builder isDepth( ComparisonOperator op, float value ) { return in( new TerrainDepthEnvironment( op, value ) ); }
+        private Builder isDepth( ComparisonOperator op, float value ) { return this;/*in( new TerrainDepthEnvironment( op, value ) );*/ }
         
         /** @see TerrainScaleEnvironment */
         @Deprecated // TODO Reimplement as biome tag
@@ -222,7 +222,7 @@ public class EnvironmentEntry {
         
         /** @see TerrainScaleEnvironment */
         @Deprecated
-        private Builder isScale( ComparisonOperator op, float value ) { return in( new TerrainScaleEnvironment( op, value ) ); }
+        private Builder isScale( ComparisonOperator op, float value ) { return this;/*in( new TerrainScaleEnvironment( op, value ) );*/ }
         
         /** Check if the biome has rain disabled. */
         public Builder inDryBiome() { return inAvgRainfall( ComparisonOperator.EQUAL_TO, 0.0F ); }
