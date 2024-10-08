@@ -202,7 +202,7 @@ public class EnvironmentEntry {
         
         /** @see TerrainDepthEnvironment */
         @Deprecated
-        private Builder isDepth( ComparisonOperator op, float value ) { return in( new TerrainDepthEnvironment( op, value ) ); }
+        private Builder isDepth( ComparisonOperator op, float value ) { return this;/*in( new TerrainDepthEnvironment( op, value ) );*/ }
         
         /** @see TerrainScaleEnvironment */
         @Deprecated // TODO Reimplement as biome tag
@@ -222,7 +222,7 @@ public class EnvironmentEntry {
         
         /** @see TerrainScaleEnvironment */
         @Deprecated
-        private Builder isScale( ComparisonOperator op, float value ) { return in( new TerrainScaleEnvironment( op, value ) ); }
+        private Builder isScale( ComparisonOperator op, float value ) { return this;/*in( new TerrainScaleEnvironment( op, value ) );*/ }
         
         /** Check if the biome has rain disabled. */
         public Builder inDryBiome() { return inAvgRainfall( ComparisonOperator.EQUAL_TO, 0.0F ); }
@@ -291,9 +291,9 @@ public class EnvironmentEntry {
         /** Check if gold/lapis ore can generate at the position. */
         public Builder aboveGoldLevel() { return aboveY( 33 ); }
         
-        private Builder belowY( int y ) { return in( new YEnvironment( ComparisonOperator.LESS_OR_EQUAL, y ) ); }
+        private Builder belowY( int y ) { return in( new YEnvironment( ComparisonOperator.LESS_THAN, y ) ); }
         
-        private Builder aboveY( int y ) { return in( new YEnvironment( ComparisonOperator.LESS_OR_EQUAL.invert(), y ) ); }
+        private Builder aboveY( int y ) { return in( new YEnvironment( ComparisonOperator.LESS_THAN.invert(), y ) ); }
         
         /** Check if the position is above/below sea level. */
         public Builder belowSeaLevel() { return belowSeaLevel( 0 ); }
@@ -319,9 +319,9 @@ public class EnvironmentEntry {
         /** Check if the position is above/below 'mountain level' - that is, high enough to die from falling to sea level. */
         public Builder aboveMountainLevel() { return aboveSeaLevel( 25 ); }
         
-        private Builder belowSeaLevel( int dY ) { return in( new YFromSeaEnvironment( ComparisonOperator.LESS_OR_EQUAL, dY ) ); }
+        private Builder belowSeaLevel( int dY ) { return in( new YFromSeaEnvironment( ComparisonOperator.LESS_THAN, dY ) ); }
         
-        private Builder aboveSeaLevel( int dY ) { return in( new YFromSeaEnvironment( ComparisonOperator.LESS_OR_EQUAL.invert(), dY ) ); }
+        private Builder aboveSeaLevel( int dY ) { return in( new YFromSeaEnvironment( ComparisonOperator.LESS_THAN.invert(), dY ) ); }
         
         public Builder canSeeSky() { return inPositionWithState( PositionEnvironment.Value.CAN_SEE_SKY, false ); }
         

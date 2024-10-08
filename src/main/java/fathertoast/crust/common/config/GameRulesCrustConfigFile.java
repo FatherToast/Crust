@@ -11,6 +11,8 @@ import fathertoast.crust.api.config.common.field.RestartNote;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.world.level.GameRules;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -46,10 +48,11 @@ public class GameRulesCrustConfigFile extends AbstractConfigFile {
         
         SPEC.increaseIndent();
         
+        final List<Map.Entry<GameRules.Key<?>, GameRules.Type<?>>> rules = new ArrayList<>( GameRules.GAME_RULE_TYPES.entrySet() );
         //CATEGORIES = new GRConfigCategory[Category.values().length];
         for( Category category : Category.values() ) {
             //CATEGORIES[category.ordinal()] =
-            new GRConfigCategory( this, category );
+            new GRConfigCategory( this, category, rules );
         }
     }
     
@@ -58,11 +61,11 @@ public class GameRulesCrustConfigFile extends AbstractConfigFile {
      */
     public static class GRConfigCategory extends AbstractConfigCategory<GameRulesCrustConfigFile> {
         
-        GRConfigCategory( GameRulesCrustConfigFile parent, Category category ) {
+        GRConfigCategory( GameRulesCrustConfigFile parent, Category category, List<Map.Entry<GameRules.Key<?>, GameRules.Type<?>>> rules ) {
             super( parent, category.name().toLowerCase( Locale.ROOT ),
                     "Default game rule settings for the '" + category.name().toLowerCase() + "' category." );
             
-            for( Map.Entry<GameRules.Key<?>, GameRules.Type<?>> rule : GameRules.GAME_RULE_TYPES.entrySet() ) {
+            for( Map.Entry<GameRules.Key<?>, GameRules.Type<?>> rule : rules ) {
                 if( category.BASE.equals( rule.getKey().getCategory() ) ) {
                     final GameRules.Value<?> testValue = rule.getValue().createRule();
                     if( testValue instanceof GameRules.BooleanValue ) {
