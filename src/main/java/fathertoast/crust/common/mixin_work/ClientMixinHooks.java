@@ -34,7 +34,6 @@ public class ClientMixinHooks {
                 BlockPos pos = blockEntity.getBlockPos();
 
                 for (AABB box : boxes) {
-                    box = box.move(-pos.getX(), -pos.getY(), -pos.getZ());
                     LevelRenderer.renderLineBox(poseStack, bufferSource.getBuffer(RenderType.lines()), box, 0.0F, 1.0F, 0.0F, 1.0F);
                 }
             }
