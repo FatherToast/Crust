@@ -11,10 +11,7 @@ import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.network.CrustPacketHandler;
 import fathertoast.crust.common.portal.CrustPortals;
 import fathertoast.crust.common.potion.CrustEffects;
-import fathertoast.crust.common.temp.TestBlock;
-import fathertoast.crust.common.temp.TestBlockEntity;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -25,7 +22,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -103,15 +99,10 @@ public class Crust {
     public final CrustApi apiInstance;
 
 
-
-    // TEMPORARY JUNK GOES HERE - REMEMBER TO REMOVE
-    public static final DeferredRegister<BlockEntityType<?>> BE = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, ICrustApi.MOD_ID);
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ICrustApi.MOD_ID);
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ICrustApi.MOD_ID);
-
-    public static final RegistryObject<Block> TEST_BLOCK = BLOCKS.register("test", TestBlock::new);
-    public static final RegistryObject<Item> TEST_BLOCK_ITEM = ITEMS.register("test", () -> new BlockItem(TEST_BLOCK.get(), new Item.Properties()));
-    public static final RegistryObject<BlockEntityType<TestBlockEntity>> TEST_BE = BE.register("test", () -> BlockEntityType.Builder.of(TestBlockEntity::new, TEST_BLOCK.get()).build(null));
+    // Registries
+    public static final DeferredRegister<Block> BLOCK_REGISTRY = DeferredRegister.create(ForgeRegistries.BLOCKS, ICrustApi.MOD_ID);
+    public static final DeferredRegister<Item> ITEM_REGISTRY = DeferredRegister.create(ForgeRegistries.ITEMS, ICrustApi.MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BE_REGISTRY = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, ICrustApi.MOD_ID);
 
     
     public Crust() {
@@ -130,10 +121,9 @@ public class Crust {
         CrustPortals.register( modBus );
         CrustArgumentTypes.register( modBus );
 
-        // REMOVE
-        BE.register(modBus);
-        BLOCKS.register(modBus);
-        ITEMS.register(modBus);
+        BE_REGISTRY.register(modBus);
+        BLOCK_REGISTRY.register(modBus);
+        ITEM_REGISTRY.register(modBus);
         
         modBus.addListener( this::onCommonSetup );
     }

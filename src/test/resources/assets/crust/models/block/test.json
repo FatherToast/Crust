@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "up": "crust:block/cobbletoast",
+    "down": "crust:block/cobbletoast",
+    "east": "crust:block/cobbletoast",
+    "north": "crust:block/cobbletoast",
+    "south": "crust:block/cobbletoast",
+    "west": "crust:block/cobbletoast",
+    "particle": "crust:block/cobbletoast"
+  }
+}

@@ -1,4 +1,4 @@
-package fathertoast.crust.common.temp;
+package fathertoast.crust.test.common.game_objects;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;

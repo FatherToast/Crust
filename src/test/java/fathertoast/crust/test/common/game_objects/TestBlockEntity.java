@@ -1,7 +1,8 @@
-package fathertoast.crust.common.temp;
+package fathertoast.crust.test.common.game_objects;
 
 import fathertoast.crust.api.util.IBlockEntityBBProvider;
 import fathertoast.crust.common.core.Crust;
+import fathertoast.crust.test.common.TestRegistryObjects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -15,7 +16,7 @@ public class TestBlockEntity extends BlockEntity implements IBlockEntityBBProvid
     private AABB renderBox = null;
 
     public TestBlockEntity(BlockPos pos, BlockState state) {
-        super(Crust.TEST_BE.get(), pos, state);
+        super(TestRegistryObjects.TEST_BE.get(), pos, state);
     }
 
     @Override

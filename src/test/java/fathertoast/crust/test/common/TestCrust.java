@@ -17,6 +17,8 @@ public class TestCrust implements ICrustPlugin {
     
     /** API instance */
     public static ICrustApi API;
+
+
     
     /** File for testing the config api. */
     public static final TestConfigFile CONFIG = new TestConfigFile(
