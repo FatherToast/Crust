@@ -29,10 +29,12 @@ public class RenderEvents {
             VertexConsumer linesBuffer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer( RenderType.lines() );
             int chunkX = playerPos.getX() >> 4;
             int chunkZ = playerPos.getZ() >> 4;
+            // Radius value from config, capped at current effective render distance
             int radius = Math.min(
                     ClientRegister.RENDER_SETTINGS.BLOCK_ENTITY_BB_RENDERING.distance.get(),
                     Minecraft.getInstance().options.getEffectiveRenderDistance() );
 
+            // Don't bother with a loop if we only render for one chunk
             if ( radius <= 1 ) {
                 for ( BlockEntity blockEntity : level.getChunk( chunkX, chunkZ ).getBlockEntities().values() ) {
                     renderBoundingBoxes( blockEntity, event.getPoseStack(), event.getCamera().getPosition(), linesBuffer );
@@ -57,18 +59,19 @@ public class RenderEvents {
      * Checks if the given BlockEntity is an instance of {@link IBlockEntityBBProvider}
      * and attempts to draw the bounding boxes it provides.
      */
-    public static void renderBoundingBoxes( BlockEntity blockEntity, PoseStack poseStack, Vec3 cameraPos, VertexConsumer buffer ) {
+    private void renderBoundingBoxes( BlockEntity blockEntity, PoseStack poseStack, Vec3 cameraPos, VertexConsumer buffer ) {
         if ( blockEntity instanceof IBlockEntityBBProvider bbProvider ) {
             List<AABB> boxes = bbProvider.getBoundingBoxes();
 
             if ( boxes == null || boxes.isEmpty() )
                 return;
 
+            // Don't render unless entity hitbox rendering is enabled
             if ( Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes() &&
                     !Minecraft.getInstance().showOnlyReducedInfo() ) {
 
                 poseStack.pushPose();
-                poseStack.translate( -cameraPos.x, -cameraPos.y, -cameraPos.z );
+                poseStack.translate( -cameraPos.x, -cameraPos.y, -cameraPos.z ); // Only move relative to camera position
 
                 for ( AABB box : boxes ) {
                     LevelRenderer.renderLineBox( poseStack, buffer, box, 0.0F, 1.0F, 0.0F, 1.0F );
