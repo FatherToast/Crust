@@ -74,7 +74,9 @@ public class RenderEvents {
                 poseStack.translate( -cameraPos.x, -cameraPos.y, -cameraPos.z ); // Only move relative to camera position
 
                 for ( AABB box : boxes ) {
-                    LevelRenderer.renderLineBox( poseStack, buffer, box, 0.0F, 1.0F, 0.0F, 1.0F );
+                    if ( box != null ) {
+                        LevelRenderer.renderLineBox(poseStack, buffer, box, 0.0F, 1.0F, 0.0F, 1.0F);
+                    }
                 }
                 poseStack.popPose();
             }
