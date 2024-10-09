@@ -1,4 +1,4 @@
-package fathertoast.crust.client;
+package fathertoast.crust.client.config;
 
 import fathertoast.crust.api.config.common.AbstractConfigCategory;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
@@ -22,7 +22,7 @@ public class CfgEditorCrustConfigFile extends AbstractConfigFile {
      * @param cfgManager The mod's config manager.
      * @param cfgName    Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
      */
-    CfgEditorCrustConfigFile( ConfigManager cfgManager, String cfgName ) {
+    public CfgEditorCrustConfigFile( ConfigManager cfgManager, String cfgName ) {
         super( cfgManager, cfgName,
                 "In-game config editor client preferences." );
         

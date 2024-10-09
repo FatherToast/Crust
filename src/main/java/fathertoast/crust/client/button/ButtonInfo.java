@@ -6,7 +6,7 @@ import com.mojang.brigadier.StringReader;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.client.ClientRegister;
-import fathertoast.crust.client.ExtraInvButtonsCrustConfigFile;
+import fathertoast.crust.client.config.ExtraInvButtonsCrustConfigFile;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
 import fathertoast.crust.common.mode.type.CrustMode;

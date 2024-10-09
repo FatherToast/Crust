@@ -1,4 +1,4 @@
-package fathertoast.crust.client;
+package fathertoast.crust.client.config;
 
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.common.AbstractConfigCategory;
@@ -32,7 +32,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
      * @param cfgManager The mod's config manager.
      * @param cfgName    Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
      */
-    ExtraInvButtonsCrustConfigFile( ConfigManager cfgManager, String cfgName ) {
+    public ExtraInvButtonsCrustConfigFile( ConfigManager cfgManager, String cfgName ) {
         super( cfgManager, cfgName,
                 "Options to modify the extra inventory buttons displayed. Extra inventory buttons are essentially " +
                         "macros that send commands for you. You still need adequate permission to run the commands.",

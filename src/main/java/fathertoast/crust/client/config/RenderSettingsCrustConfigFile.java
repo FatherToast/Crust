@@ -1,4 +1,4 @@
-package fathertoast.crust.client;
+package fathertoast.crust.client.config;
 
 import fathertoast.crust.api.config.common.AbstractConfigCategory;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
@@ -14,13 +14,13 @@ public class RenderSettingsCrustConfigFile extends AbstractConfigFile {
      * @param cfgManager The mod's config manager.
      * @param cfgName    Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
      */
-    RenderSettingsCrustConfigFile( ConfigManager cfgManager, String cfgName ) {
+    public RenderSettingsCrustConfigFile( ConfigManager cfgManager, String cfgName ) {
         super( cfgManager, cfgName,
                 "Misc. settings for in-world rendering related features." );
 
 
         BLOCK_ENTITY_BB_RENDERING = new RenderSettingsCrustConfigFile.BlockEntityBBRendering( this, "block_entity_BB_rendering",
-                "Options for Crust's block entity bounding box renderer.");
+                "Options for Crust's block entity bounding box renderer." );
     }
 
     /**
@@ -39,8 +39,8 @@ public class RenderSettingsCrustConfigFile extends AbstractConfigFile {
 
             SPEC.newLine();
 
-            distance = SPEC.define( new IntField("distance", 3, IntField.Range.POSITIVE, "If block entity bounding box rendering is enabled, this value determines the 'radius' in chunks around" +
-                    " the player in which Crust will look for block entities to render bounding boxes for. A value of 1 means only the chunk the player is standing in. This value is also capped by the effective render distance."));
+            distance = SPEC.define( new IntField( "distance", 3, IntField.Range.POSITIVE, "If block entity bounding box rendering is enabled, this value determines the 'radius' in chunks around" +
+                    " the player in which Crust will look for block entities to render bounding boxes for. A value of 1 means only the chunk the player is standing in. This value is also capped by the effective render distance." ) );
         }
     }
 }

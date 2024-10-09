@@ -5,6 +5,8 @@ import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
 import fathertoast.crust.client.button.ButtonInfo;
 import fathertoast.crust.client.button.ExtraMenuButton;
 import fathertoast.crust.client.button.ExtraInventoryButton;
+import fathertoast.crust.client.config.CfgEditorCrustConfigFile;
+import fathertoast.crust.client.config.ExtraInvButtonsCrustConfigFile;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.PauseScreen;
