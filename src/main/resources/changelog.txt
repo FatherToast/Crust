@@ -1,7 +1,6 @@
 1.20.1-2.4.6
     - The BlockEntity bounding box render API now actually does something
     - Introduced new client-side config file "render_settings"
-    - (DEV NOTE: remember to remove the test stuff before release, like the test block and test block entity)
 1.20.1-2.3.5
     - Mitigated potential for comod exceptions that were causing incompatibility with some mods.
     - Fixed default pause menu options button position.
