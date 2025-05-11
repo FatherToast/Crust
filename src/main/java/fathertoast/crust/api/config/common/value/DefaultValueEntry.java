@@ -29,7 +29,7 @@ public class DefaultValueEntry {
      */
     @Override
     public String toString() {
-        // Start with the namespace wildcard string
+        // Start with the wildcard string
         StringBuilder str = new StringBuilder( KEY_DEFAULT );
 
         // Append values array

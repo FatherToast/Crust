@@ -109,6 +109,7 @@ public class EntityListField extends GenericField<EntityList> {
                     if ( args[0].equals( "default" ) ) {
                         double[] values = parseValues( line, args );
                         defaultEntry = new DefaultValueEntry( values );
+                        continue;
                     }
                 }
                 // Check for namespace entries
