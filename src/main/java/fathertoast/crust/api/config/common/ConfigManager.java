@@ -89,7 +89,6 @@ public final class ConfigManager {
         return cfgManager;
     }
     
-    
     // ---- Instance Methods ---- //
     
     /** The id of the mod that owns this config manager. */

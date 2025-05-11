@@ -3,7 +3,9 @@ package fathertoast.crust.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
+import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.client.button.ButtonInfo;
+import fathertoast.crust.client.config.ExtraInvButtonsCrustConfigFile;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -30,10 +32,15 @@ public class KeyBindingEvents {
     private static final KeyMapping CONFIG_EDITOR = new SortedKeyBinding( 0, KEY + "configs", KEY_CAT );
     //    private static final KeyBinding EQUIP = new SortedKeyBinding( 1, KEY + "equip", KEY_CAT );
     
-    private static final KeyMapping[] BUTTONS;
-    
+    private static KeyMapping[] BUTTONS;
+
+
     /** Registers this mod's additional key bindings. */
     static void register( RegisterKeyMappingsEvent event ) {
+        ClientRegister.EXTRA_INV_BUTTONS = new ExtraInvButtonsCrustConfigFile(
+                ConfigManager.getRequired( ICrustApi.MOD_ID ), "client_extra_inv_buttons" );
+        init();
+
         event.register( CONFIG_EDITOR );
         
         //event.register( EQUIP );
@@ -80,7 +87,7 @@ public class KeyBindingEvents {
         button.ON_PRESS.onPress( null );
     }
     
-    static {
+    protected static void init() {
         String key = KEY + "buttons.";
         List<String> builtInButtons = ButtonInfo.builtInIds();
         BUTTONS = new KeyMapping[builtInButtons.size() + ClientRegister.EXTRA_INV_BUTTONS.CUSTOM_BUTTONS.length];

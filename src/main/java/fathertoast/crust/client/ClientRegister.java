@@ -17,20 +17,23 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 public class ClientRegister {
     
     /** File for configuring in-game config edit button client preferences. */
-    public static final CfgEditorCrustConfigFile CONFIG_EDITOR = new CfgEditorCrustConfigFile(
-            ConfigManager.getRequired( ICrustApi.MOD_ID ), "client_config_editor" );
+    public static CfgEditorCrustConfigFile CONFIG_EDITOR;
     /** File for configuring extra inventory button client preferences. */
-    public static final ExtraInvButtonsCrustConfigFile EXTRA_INV_BUTTONS = new ExtraInvButtonsCrustConfigFile(
-            ConfigManager.getRequired( ICrustApi.MOD_ID ), "client_extra_inv_buttons" );
-    /** File for configuring block entity BB renderer behavior. */
-    public static final RenderSettingsCrustConfigFile RENDER_SETTINGS = new RenderSettingsCrustConfigFile(
-            ConfigManager.getRequired( ICrustApi.MOD_ID ), "render_settings");
+    public static ExtraInvButtonsCrustConfigFile EXTRA_INV_BUTTONS;
+    /** File for misc rendering settings. */
+    public static RenderSettingsCrustConfigFile RENDER_SETTINGS;
 
 
     /** Called after common setup to perform client-side-only setup. */
     @SubscribeEvent
     static void onClientSetup( FMLClientSetupEvent event ) {
         // Perform first-time loading of the client-only configs
+        // EXTRA_INV_BUTTONS is loaded in KeyBindingEvents
+        CONFIG_EDITOR = new CfgEditorCrustConfigFile(
+                ConfigManager.getRequired( ICrustApi.MOD_ID ), "client_config_editor" );
+        RENDER_SETTINGS = new RenderSettingsCrustConfigFile(
+                ConfigManager.getRequired( ICrustApi.MOD_ID ), "render_settings");
+
         CONFIG_EDITOR.SPEC.initialize();
         EXTRA_INV_BUTTONS.SPEC.initialize();
         RENDER_SETTINGS.SPEC.initialize();
