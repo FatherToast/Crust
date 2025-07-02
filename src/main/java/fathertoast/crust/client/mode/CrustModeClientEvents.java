@@ -44,7 +44,6 @@ public class CrustModeClientEvents {
      * Called each player tick. Server event is handled in
      * {@link fathertoast.crust.common.mode.CrustModeEvents#onPlayerTick(TickEvent.PlayerTickEvent)}.
      */
-    @SuppressWarnings( "JavadocReference" )
     @SubscribeEvent
     static void onPlayerTick( TickEvent.PlayerTickEvent event ) {
         if( event.phase != TickEvent.Phase.END || event.player != Minecraft.getInstance().player ) return;
