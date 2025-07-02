@@ -14,7 +14,7 @@ import java.util.List;
 @SuppressWarnings( "unused" )
 public class StringListField extends GenericField<List<String>> {
     
-    private final String type;
+    protected final String type;
     
     /** Creates a new field. */
     public StringListField( String key, List<String> defaultValue, @Nullable String... description ) {
