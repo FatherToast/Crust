@@ -8,6 +8,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
+
 /**
  * Helper class for accessing Apocalypse difficulty data.
  * (Take care not to call any of this if Apocalypse is not installed, will result in runtime-anger :biglist:)
@@ -45,5 +47,5 @@ public final class DifficultyAccessor implements IDifficultyAccessor {
     public long getMaxPlayerDifficulty( Player player ) { return provider.getMaxPlayerDifficulty( player ); }
     
     @Override
-    public int currentEventId( ServerPlayer player ) { return provider.currentEventId( player ); }
+    public List<Integer> currentEventIds( ServerPlayer player ) { return provider.getEventIds( player ); }
 }

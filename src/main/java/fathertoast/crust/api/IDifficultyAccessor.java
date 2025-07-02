@@ -5,6 +5,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
+
 /**
  * Interface for accessing Apocalypse Rebooted difficulty data.
  */
@@ -26,5 +28,5 @@ public interface IDifficultyAccessor {
     long getMaxPlayerDifficulty( Player player );
     
     /** @return The id for the currently running event. */
-    int currentEventId( ServerPlayer player );
+    List<Integer> currentEventIds( ServerPlayer player );
 }
