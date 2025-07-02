@@ -18,7 +18,7 @@ public class StringListField extends GenericField<List<String>> {
     
     /** Creates a new field. */
     public StringListField( String key, List<String> defaultValue, @Nullable String... description ) {
-        this( "String", key, defaultValue, description );
+        this( key, "String", defaultValue, description );
     }
     
     /** Creates a new field referred to as something other than a "String" list. */
