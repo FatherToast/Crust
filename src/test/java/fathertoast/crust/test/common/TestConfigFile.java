@@ -70,6 +70,7 @@ public class TestConfigFile extends AbstractConfigFile {
         public final SqrDoubleField sqrDoubleField;
         public final StringField stringField;
         public final StringListField stringListField;
+        public final PredicateStringListField predicateStringListField;
 
         General( TestConfigFile parent ) {
             super( parent, "general", generateFormatTest() );
@@ -168,6 +169,9 @@ public class TestConfigFile extends AbstractConfigFile {
             stringListField = SPEC.define( new InjectionWrapperField<>(
                     new StringListField( "string_list", Arrays.asList( "test0", "test1", "test2" ),
                             (String[]) null ), General::testCallback ) ).field();
+            predicateStringListField = SPEC.define( new InjectionWrapperField<>(
+                    new PredicateStringListField( "predicate_string_list", Arrays.asList( "test0", "test1", "test2", "test:3" ),
+                            (line) -> !line.contains( ":" ), (String[]) null ), General::testCallback ) ).field();
         }
         
         private static void testCallback( AbstractConfigField field ) {
