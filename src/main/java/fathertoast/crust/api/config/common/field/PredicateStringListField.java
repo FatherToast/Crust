@@ -53,6 +53,10 @@ public class PredicateStringListField extends StringListField {
      * Uses this field's line validator predicate to determine if the
      * tested line is valid or not. Invalid lines are discarded from the field's
      * String list value.
+     *
+     * @param strings The List of Strings that was just parsed by {@link TomlHelper#parseStringList(Object)}
+     *                in {@link PredicateStringListField#load(Object)}.
+     * @param lineValidator This field's line validator predicate.
      */
     protected List<String> loadValidated( List<String> strings, Predicate<String> lineValidator ) {
         strings.removeIf( (line) -> !lineValidator.test( line ) );
