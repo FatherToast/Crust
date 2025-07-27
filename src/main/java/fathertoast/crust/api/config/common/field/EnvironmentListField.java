@@ -147,7 +147,7 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
      * @throws IllegalStateException If the position is not in a fully loaded chunk.
      * @see EnvironmentHelper#isLoaded(net.minecraft.world.level.LevelAccessor, BlockPos)
      */
-    public double getOrElse( Level world, BlockPos pos, DoubleField defaultValue ) { return get().getOrElse( world, pos, defaultValue ); }
+    public double getOrElse( Level world, @Nullable BlockPos pos, DoubleField defaultValue ) { return get().getOrElse( world, pos, defaultValue ); }
     
     /**
      * @return The value matching the given environment, or the default value if no matching environment is defined.

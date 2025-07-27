@@ -78,7 +78,7 @@ public class EnvironmentList implements IStringArray {
      * @throws IllegalStateException If the position is not in a fully loaded chunk.
      * @see EnvironmentHelper#isLoaded(net.minecraft.world.level.LevelAccessor, BlockPos)
      */
-    public double getOrElse( Level world, BlockPos pos, DoubleField defaultValue ) {
+    public double getOrElse( Level world, @Nullable BlockPos pos, DoubleField defaultValue ) {
         validatePos( world, pos );
         return unsafeGetOrElse( world, pos, defaultValue );
     }
@@ -88,7 +88,7 @@ public class EnvironmentList implements IStringArray {
      * @throws IllegalStateException If the position is not in a fully loaded chunk.
      * @see EnvironmentHelper#isLoaded(net.minecraft.world.level.LevelAccessor, BlockPos)
      */
-    public double getOrElse( Level world, BlockPos pos, double defaultValue ) {
+    public double getOrElse( Level world, @Nullable BlockPos pos, double defaultValue ) {
         validatePos( world, pos );
         return unsafeGetOrElse( world, pos, defaultValue );
     }
@@ -99,14 +99,14 @@ public class EnvironmentList implements IStringArray {
      * @see EnvironmentHelper#isLoaded(net.minecraft.world.level.LevelAccessor, BlockPos)
      */
     @Nullable
-    public Double get( Level world, BlockPos pos ) {
+    public Double get( Level world, @Nullable BlockPos pos ) {
         validatePos( world, pos );
         return unsafeGet( world, pos );
     }
     
     /** @throws IllegalStateException If the position is not in a fully loaded chunk. */
-    private void validatePos( Level world, BlockPos pos ) {
-        if( !EnvironmentHelper.isLoaded( world, pos ) ) {
+    private void validatePos( Level world, @Nullable BlockPos pos ) {
+        if( pos != null && !EnvironmentHelper.isLoaded( world, pos ) ) {
             throw new IllegalStateException( "Attempted to query world data in an unloaded chunk. This is bad!" );
         }
     }
