@@ -5,6 +5,7 @@ import fathertoast.crust.api.config.client.gui.widget.provider.HexIntFieldWidget
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.client.gui.widget.provider.NumberFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
+import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.util.RandomSource;
@@ -231,6 +232,29 @@ public class IntField extends AbstractConfigField {
         private final IntField MINIMUM;
         /** The maximum. Defines the upper limit of the range (inclusive). */
         private final IntField MAXIMUM;
+        
+        /**
+         * Links two values together as minimum and maximum.
+         * <p>
+         * Helper method to automatically generate the minimum and maximum int fields and define them in the spec.
+         * Appends ".min" and ".max" to the provided key, and only supports comments on the first field.
+         */
+        public RandomRange( CrustConfigSpec spec, String keyBase, int defaultMinValue, int defaultMaxValue, Range range, @Nullable String... description ) {
+            this( spec, keyBase, defaultMinValue, defaultMaxValue, range.MIN, range.MAX, description );
+        }
+        
+        /**
+         * Links two values together as minimum and maximum.
+         * <p>
+         * Helper method to automatically generate the minimum and maximum int fields and define them in the spec.
+         * Appends ".min" and ".max" to the provided key, and only supports comments on the first field.
+         */
+        public RandomRange( CrustConfigSpec spec, String keyBase, int defaultMinValue, int defaultMaxValue, int min, int max, @Nullable String... description ) {
+            this(
+                    spec.define( new IntField( keyBase + ".min", defaultMinValue, min, max, description ) ),
+                    spec.define( new IntField( keyBase + ".max", defaultMaxValue, min, max ) )
+            );
+        }
         
         /** Links two values together as minimum and maximum. */
         public RandomRange( IntField minimum, IntField maximum ) {

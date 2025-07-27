@@ -3,6 +3,7 @@ package fathertoast.crust.api.config.common.field;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.client.gui.widget.provider.NumberFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
+import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -174,6 +175,29 @@ public class DoubleField extends AbstractConfigField {
         private final DoubleField MINIMUM;
         /** The maximum. Defines the upper limit of the range (exclusive). */
         private final DoubleField MAXIMUM;
+        
+        /**
+         * Links two values together as minimum and maximum.
+         * <p>
+         * Helper method to automatically generate the minimum and maximum double fields and define them in the spec.
+         * Appends ".min" and ".max" to the provided key, and only supports comments on the first field.
+         */
+        public RandomRange( CrustConfigSpec spec, String keyBase, double defaultMinValue, double defaultMaxValue, Range range, @Nullable String... description ) {
+            this( spec, keyBase, defaultMinValue, defaultMaxValue, range.MIN, range.MAX, description );
+        }
+        
+        /**
+         * Links two values together as minimum and maximum.
+         * <p>
+         * Helper method to automatically generate the minimum and maximum double fields and define them in the spec.
+         * Appends ".min" and ".max" to the provided key, and only supports comments on the first field.
+         */
+        public RandomRange( CrustConfigSpec spec, String keyBase, double defaultMinValue, double defaultMaxValue, double min, double max, @Nullable String... description ) {
+            this(
+                    spec.define( new DoubleField( keyBase + ".min", defaultMinValue, min, max, description ) ),
+                    spec.define( new DoubleField( keyBase + ".max", defaultMaxValue, min, max ) )
+            );
+        }
         
         /** Links two values together as minimum and maximum. */
         public RandomRange( DoubleField minimum, DoubleField maximum ) {
