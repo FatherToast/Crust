@@ -77,8 +77,8 @@ public class ScreenEvents {
         int width = buttonsPerRow * ExtraInventoryButton.BUTTON_SPACING - ExtraInventoryButton.BUTTON_PADDING;
         int height = buttonRows * ExtraInventoryButton.BUTTON_SPACING - ExtraInventoryButton.BUTTON_PADDING;
         
-        int posX = config.anchorX.get().pos( screenWidth, screen.getXSize(), width ) + config.offsetX.get();
-        int posY = config.anchorY.get().pos( screenHeight, screen.getYSize(), height ) + config.offsetY.get();
+        int posX = config.anchorX.get().pos( screenWidth, screen.getXSize(), screen.getGuiLeft(), width ) + config.offsetX.get();
+        int posY = config.anchorY.get().pos( screenHeight, screen.getYSize(), screen.getGuiTop(), height ) + config.offsetY.get();
         
         for( int i = 0; i < buttonCount; i++ ) {
             event.addListener( new ExtraInventoryButton( screen,
