@@ -94,6 +94,7 @@ public class ExtraInventoryButton extends Button {
                     ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE );
         }
         
+        RenderSystem.setShaderColor( 1.0F, 1.0F, 1.0F, alpha );
         graphics.pose().popPose();
     }
     
