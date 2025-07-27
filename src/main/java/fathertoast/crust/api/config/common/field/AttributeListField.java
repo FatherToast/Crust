@@ -90,7 +90,7 @@ public class AttributeListField extends GenericField<AttributeList> {
                     getClass(), getKey(), line );
         }
         
-        final ResourceLocation regKey = new ResourceLocation( args[0].trim() );
+        final ResourceLocation regKey = ResourceLocation.parse( args[0].trim() );
         
         // 1 and -1 are used for add and subtract as a shortcut to convert to addition
         final byte OP_MULTIPLY = 0;
@@ -104,14 +104,14 @@ public class AttributeListField extends GenericField<AttributeList> {
             operator = OP_ADD;
         }
         else {
-            switch (args[1]) {
+            switch( args[1] ) {
                 case "*" -> operator = OP_MULTIPLY;
                 case "+" -> operator = OP_ADD;
                 case "-" -> operator = OP_SUBTRACT;
                 default -> {
                     operator = OP_ADD;
-                    ConfigUtil.LOG.warn("Entry has invalid operator {} for {} \"{}\"! Replacing operator with +. " +
-                            "Invalid entry: {}", args[1], getClass(), getKey(), line);
+                    ConfigUtil.LOG.warn( "Entry has invalid operator {} for {} \"{}\"! Replacing operator with +. " +
+                            "Invalid entry: {}", args[1], getClass(), getKey(), line );
                 }
             }
         }
@@ -126,7 +126,7 @@ public class AttributeListField extends GenericField<AttributeList> {
         else {
             value = parseValue( args[2], line, identityValue );
         }
-
+        
         return operator == OP_MULTIPLY ? new AttributeEntry( this, regKey, true, value ) :
                 new AttributeEntry( this, regKey, false, value * operator );
     }

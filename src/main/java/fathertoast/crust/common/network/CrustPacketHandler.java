@@ -55,14 +55,14 @@ public class CrustPacketHandler {
     
     /** Registers a message with an auto-assigned 'message index'. */
     private static <MSG> void registerMessage( Class<MSG> messageType, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder,
-                                              BiConsumer<MSG, Supplier<NetworkEvent.Context>> handler ) {
+                                               BiConsumer<MSG, Supplier<NetworkEvent.Context>> handler ) {
         CHANNEL.registerMessage( messageIndex++, messageType, encoder, decoder,
                 handler, Optional.empty() );
     }
     
     private static SimpleChannel createChannel() {
         return NetworkRegistry.ChannelBuilder
-                .named( new ResourceLocation( ICrustApi.MOD_ID, "channel" ) )
+                .named( ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "channel" ) )
                 .serverAcceptedVersions( PROTOCOL_VERSION::equals )
                 .clientAcceptedVersions( PROTOCOL_VERSION::equals )
                 .networkProtocolVersion( () -> PROTOCOL_VERSION )

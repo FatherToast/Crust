@@ -173,12 +173,12 @@ public class EnvironmentEntry {
         
         /** Check if the dimension type is vanilla (registered with the "minecraft" namespace). */
         public Builder inVanillaDimension() {
-            return in( new DimensionTypeGroupEnvironment( MANAGER, new ResourceLocation( "" ), false ) );
+            return in( new DimensionTypeGroupEnvironment( MANAGER, ResourceLocation.parse( "" ), false ) );
         }
         
         /** Check if the dimension type is vanilla (registered with the "minecraft" namespace). */
         public Builder notInVanillaDimension() {
-            return in( new DimensionTypeGroupEnvironment( MANAGER, new ResourceLocation( "" ), true ) );
+            return in( new DimensionTypeGroupEnvironment( MANAGER, ResourceLocation.parse( "" ), true ) );
         }
         
         

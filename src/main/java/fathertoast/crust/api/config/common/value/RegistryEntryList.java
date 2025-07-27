@@ -33,8 +33,8 @@ public class RegistryEntryList<T> implements IStringArray {
     private final List<String> NAMESPACES = new ArrayList<>();
     /** The list used to write back to file. */
     protected final List<String> PRINT_LIST = new ArrayList<>();
-
-
+    
+    
     protected RegistryEntryList( IForgeRegistry<T> registry ) { REGISTRY = registry; }
     
     /**
@@ -47,7 +47,7 @@ public class RegistryEntryList<T> implements IStringArray {
             if( UNDERLYING_SET.add( entry ) ) PRINT_LIST.add( ConfigUtil.toString( registry.getKey( entry ) ) );
         }
     }
-
+    
     /**
      * Create a new registry entry list from an array of entries. Used for creating default configs.
      * Also allows adding tags.
@@ -55,11 +55,11 @@ public class RegistryEntryList<T> implements IStringArray {
     @SafeVarargs
     public RegistryEntryList( IForgeRegistry<T> registry, @Nullable List<String> namespaces, @Nullable List<TagKey<T>> tags, T... entries ) {
         this( registry, entries );
-
-        if ( tags != null )
+        
+        if( tags != null )
             tags( tags );
-
-        if ( namespaces != null )
+        
+        if( namespaces != null )
             namespaces( namespaces );
     }
     
@@ -69,12 +69,12 @@ public class RegistryEntryList<T> implements IStringArray {
     public RegistryEntryList( AbstractConfigField field, IForgeRegistry<T> registry, List<String> entries ) {
         this( registry );
         for( String line : entries ) {
-            if ( line.startsWith( "#" ) ) {
+            if( line.startsWith( "#" ) ) {
                 // Get substring after '#' and check if it passes as a valid resource location
                 ResourceLocation tagLocation = ResourceLocation.tryParse( line.substring( 1 ) );
-
+                
                 // Not a valid resource location, outrageous
-                if ( tagLocation == null ) {
+                if( tagLocation == null ) {
                     ConfigUtil.LOG.warn( "Invalid tag key for {} \"{}\"! Skipping tag. Invalid tag key: {}",
                             field.getClass(), field.getKey(), line );
                 }
@@ -85,8 +85,8 @@ public class RegistryEntryList<T> implements IStringArray {
             }
             else if( line.endsWith( "*" ) ) {
                 String[] parts = line.split( ":" );
-
-                if ( parts[0].isEmpty() ) {
+                
+                if( parts[0].isEmpty() ) {
                     ConfigUtil.LOG.warn( "Invalid namespace entry for {} \"{}\"! Skipping. Invalid namespace entry: {}",
                             field.getClass(), field.getKey(), line );
                 }
@@ -97,7 +97,7 @@ public class RegistryEntryList<T> implements IStringArray {
             }
             else {
                 // Add a single registry entry
-                final ResourceLocation regKey = new ResourceLocation( line );
+                final ResourceLocation regKey = ResourceLocation.parse( line );
                 if( mergeFrom( regKey ) ) {
                     PRINT_LIST.add( regKey.toString() );
                 }
@@ -108,51 +108,51 @@ public class RegistryEntryList<T> implements IStringArray {
             }
         }
     }
-
+    
     /** Adds the specified tag key to this registry list, unless it already exists in the list. */
     public final void tag( TagKey<T> tag ) {
         boolean exists = false;
-
-        for ( TagKey<T> tagKey : TAGS ) {
-            if ( tag.location().equals( tagKey.location() ) ) {
+        
+        for( TagKey<T> tagKey : TAGS ) {
+            if( tag.location().equals( tagKey.location() ) ) {
                 exists = true;
                 break;
             }
         }
-        if ( !exists ) {
+        if( !exists ) {
             TAGS.add( tag );
             PRINT_LIST.add( ConfigUtil.toString( tag ) );
         }
     }
-
+    
     /** Adds the specified tag keys to this registry list. */
     public final void tags( Collection<TagKey<T>> tags ) {
-        if ( tags.isEmpty() ) return;
-
-        for ( TagKey<T> tag : tags )
+        if( tags.isEmpty() ) return;
+        
+        for( TagKey<T> tag : tags )
             tag( tag );
     }
-
+    
     /** Adds the specified namespace to the list, unless it already exists in the list. */
     public final void namespace( String namespace ) {
         boolean exists = false;
-
-        for ( String s : NAMESPACES ) {
-            if ( s.equals( namespace ) ) {
+        
+        for( String s : NAMESPACES ) {
+            if( s.equals( namespace ) ) {
                 exists = true;
                 break;
             }
         }
-        if ( !exists ) {
+        if( !exists ) {
             NAMESPACES.add( namespace );
         }
     }
-
+    
     /** Adds the specified namespace strings to this registry list. */
     public final void namespaces( Collection<String> namespaces ) {
-        if ( namespaces.isEmpty() ) return;
-
-        for ( String s : namespaces ) {
+        if( namespaces.isEmpty() ) return;
+        
+        for( String s : namespaces ) {
             namespace( s );
         }
     }
@@ -162,10 +162,10 @@ public class RegistryEntryList<T> implements IStringArray {
     
     /** @return The entries in this list, except tags and namespaces. */
     public Set<T> getEntries() { return Collections.unmodifiableSet( UNDERLYING_SET ); }
-
+    
     /** @return A list of tag keys in this list. */
     public List<TagKey<T>> getTags() { return Collections.unmodifiableList( TAGS ); }
-
+    
     /** @return A list of specified namespaces in this list. */
     public List<String> getNamespaces() { return Collections.unmodifiableList( NAMESPACES ); }
     
@@ -191,27 +191,27 @@ public class RegistryEntryList<T> implements IStringArray {
     
     /**
      * @return Returns true if the entry is contained in this list.<br></br>
-     *         Use {@link RegistryEntryList#containsOrTag(Object, Predicate)} to check against tags as well.
+     * Use {@link RegistryEntryList#containsOrTag(Object, Predicate)} to check against tags as well.
      */
     public boolean contains( @Nullable T entry ) {
-        if ( UNDERLYING_SET.contains( entry ) )
+        if( UNDERLYING_SET.contains( entry ) )
             return true;
-
-        if ( REGISTRY.getKey( entry ) != null ) {
-            for ( String namespace : NAMESPACES ) {
-                if ( namespace.equals( REGISTRY.getKey( entry ).getNamespace() ) )
+        
+        if( REGISTRY.getKey( entry ) != null ) {
+            for( String namespace : NAMESPACES ) {
+                if( namespace.equals( REGISTRY.getKey( entry ).getNamespace() ) )
                     return true;
             }
         }
         return false;
     }
-
+    
     /** @return Returns true if the entry is contained in this list, also checking against tags. */
     public boolean containsOrTag( @Nullable T entry, Predicate<TagKey<T>> tagPredicate ) {
-        if ( contains( entry ) ) return true;
-
-        for ( TagKey<T> tagKey : TAGS ) {
-            if ( tagPredicate.test(tagKey) ) return true;
+        if( contains( entry ) ) return true;
+        
+        for( TagKey<T> tagKey : TAGS ) {
+            if( tagPredicate.test( tagKey ) ) return true;
         }
         return false;
     }

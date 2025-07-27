@@ -13,7 +13,7 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 
 public abstract class DynamicRegistryEnvironment<T> extends AbstractEnvironment {
-
+    
     /** The config manager responsible for this entry. */
     private final ConfigManager MANAGER;
     /** The field containing this entry. We save a reference to help improve error/warning reports. */
@@ -39,7 +39,7 @@ public abstract class DynamicRegistryEnvironment<T> extends AbstractEnvironment 
         MANAGER = field.getSpec().MANAGER;
         FIELD = field;
         INVERT = line.startsWith( "!" );
-        REGISTRY_KEY = new ResourceLocation( INVERT ? line.substring( 1 ) : line );
+        REGISTRY_KEY = ResourceLocation.parse( INVERT ? line.substring( 1 ) : line );
     }
     
     /** @return The string value of this environment, as it would appear in a config file. */

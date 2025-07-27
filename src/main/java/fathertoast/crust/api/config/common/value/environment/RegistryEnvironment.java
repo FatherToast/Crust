@@ -31,7 +31,7 @@ public abstract class RegistryEnvironment<T> extends AbstractEnvironment {
     public RegistryEnvironment( AbstractConfigField field, String line ) {
         FIELD = field;
         INVERT = line.startsWith( "!" );
-        REGISTRY_KEY = new ResourceLocation( INVERT ? line.substring( 1 ) : line );
+        REGISTRY_KEY = ResourceLocation.parse( INVERT ? line.substring( 1 ) : line );
     }
     
     /** @return The string value of this environment, as it would appear in a config file. */

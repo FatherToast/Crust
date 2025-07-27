@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 public class ExtraMenuButton extends Button {
     
-    public static final ResourceLocation BUTTON_TEXTURE = new ResourceLocation( ICrustApi.MOD_ID, "textures/editor_button.png" );
+    public static final ResourceLocation BUTTON_TEXTURE = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "textures/editor_button.png" );
     
     public static final int BUTTON_SIZE = 20;
     

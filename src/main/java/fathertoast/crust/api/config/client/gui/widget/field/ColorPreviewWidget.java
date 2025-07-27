@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 public class ColorPreviewWidget extends AbstractWidget {
     
     private static final ResourceLocation BACKGROUND_TEXTURE =
-            new ResourceLocation( "crust", "textures/swatch.png" );
+            ResourceLocation.fromNamespaceAndPath( "crust", "textures/swatch.png" );
     
     public static final int SIZE = 20;
     
@@ -32,16 +32,16 @@ public class ColorPreviewWidget extends AbstractWidget {
     @Override
     public void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks ) {
         if( !visible ) return;
-
+        
         RenderSystem.enableDepthTest();
         graphics.blit( BACKGROUND_TEXTURE, getX(), getY(), 0.0F, SIZE,
                 SIZE, SIZE, SIZE, SIZE );
         graphics.fill( getX() + 1, getY() + 1,
                 getX() + SIZE - 1, getY() + SIZE - 1, argb );
     }
-
+    
     @Override
     protected void updateWidgetNarration( NarrationElementOutput output ) {
-
+    
     }
 }

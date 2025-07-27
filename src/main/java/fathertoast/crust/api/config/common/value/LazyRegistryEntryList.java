@@ -32,13 +32,13 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
      * This method of creation can only use entries that are loaded (typically only vanilla entries)
      * and cannot take advantage of the * notation.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public LazyRegistryEntryList( IForgeRegistry<T> registry, List<T> entries ) {
         super( registry, (T[]) entries.toArray() );
         FIELD = null;
         populated = true;
     }
-
+    
     /**
      * Create a new registry entry list from an array of entries. Used for creating default configs.
      * Also allows adding tags.
@@ -48,55 +48,56 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
      */
     public LazyRegistryEntryList( IForgeRegistry<T> registry, @Nullable List<String> namespaces, @Nullable List<TagKey<T>> tags, List<T> entries ) {
         this( registry, entries );
-
-        if ( tags != null )
+        
+        if( tags != null )
             tags( tags );
-
-        if ( namespaces != null )
+        
+        if( namespaces != null )
             namespaces( namespaces );
     }
-
+    
     /**
      * Create a new registry entry list from an array of entries. Used for creating default configs.
      * <p>
      * This method of creation is less safe, but can take advantage of the regular vanilla entries, deferred entries,
      * resource locations, and raw strings.
      * <p>
+     *
      * @param vanilla If true, assume all entries are from vanilla (already loaded)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public LazyRegistryEntryList( IForgeRegistry<T> registry, boolean vanilla, Object... entries ) {
         super( registry );
         FIELD = null;
-
-        if ( vanilla ) {
+        
+        if( vanilla ) {
             populated = true;
         }
-        else if ( entries.length > 0 ) {
-            for (Object entry : entries) {
-                if (registry.containsValue((T)entry)) {
-                    final ResourceLocation regKey = registry.getKey((T)entry);
-                    if (regKey == null) {
-                        throw new IllegalArgumentException("Invalid default lazy registry list entry! " + entry);
+        else if( entries.length > 0 ) {
+            for( Object entry : entries ) {
+                if( registry.containsValue( (T) entry ) ) {
+                    final ResourceLocation regKey = registry.getKey( (T) entry );
+                    if( regKey == null ) {
+                        throw new IllegalArgumentException( "Invalid default lazy registry list entry! " + entry );
                     }
-                    PRINT_LIST.add(regKey.toString());
+                    PRINT_LIST.add( regKey.toString() );
                 }
-                else if (entry instanceof RegistryObject) {
-                    PRINT_LIST.add(((RegistryObject<?>) entry).getId().toString());
+                else if( entry instanceof RegistryObject ) {
+                    PRINT_LIST.add( ((RegistryObject<?>) entry).getId().toString() );
                 }
-                else if (entry instanceof ResourceLocation) {
-                    PRINT_LIST.add(entry.toString());
+                else if( entry instanceof ResourceLocation ) {
+                    PRINT_LIST.add( entry.toString() );
                 }
-                else if (entry instanceof String) {
-                    PRINT_LIST.add((String) entry);
+                else if( entry instanceof String ) {
+                    PRINT_LIST.add( (String) entry );
                 }
                 else {
-                    throw new IllegalArgumentException("Invalid default lazy registry list entry! " + entry);
+                    throw new IllegalArgumentException( "Invalid default lazy registry list entry! " + entry );
                 }
             }
         }
     }
-
+    
     /**
      * Create a new registry entry list from an array of entries. Used for creating default configs.
      * Also allows adding tags and namespaces.
@@ -106,11 +107,11 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
      */
     public LazyRegistryEntryList( IForgeRegistry<T> registry, boolean vanilla, @Nullable List<String> namespaces, @Nullable List<TagKey<T>> tags, Object... entries ) {
         this( registry, vanilla, entries );
-
-        if ( tags != null )
+        
+        if( tags != null )
             tags( tags );
-
-        if ( namespaces != null )
+        
+        if( namespaces != null )
             namespaces( namespaces );
     }
     
@@ -120,14 +121,14 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
     public LazyRegistryEntryList( AbstractConfigField field, IForgeRegistry<T> registry, List<String> entries ) {
         super( registry );
         FIELD = field;
-
+        
         for( String line : entries ) {
-            if ( line.startsWith( "#" ) ) {
+            if( line.startsWith( "#" ) ) {
                 // Get substring after '#' and check if it passes as a valid resource location
                 ResourceLocation tagLocation = ResourceLocation.tryParse( line.substring( 1 ) );
-
+                
                 // Not a valid resource location, outrageous
-                if ( tagLocation == null ) {
+                if( tagLocation == null ) {
                     ConfigUtil.LOG.warn( "Invalid tag key for {} \"{}\"! Skipping tag. Invalid tag key: {}",
                             field.getClass(), field.getKey(), line );
                 }
@@ -138,8 +139,8 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
             }
             else if( line.endsWith( "*" ) ) {
                 String[] parts = line.split( ":" );
-
-                if ( parts[0].isEmpty() ) {
+                
+                if( parts[0].isEmpty() ) {
                     ConfigUtil.LOG.warn( "Invalid namespace entry for {} \"{}\"! Skipping. Invalid namespace entry: {}",
                             field.getClass(), field.getKey(), line );
                 }
@@ -149,7 +150,7 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
                 }
             }
             else {
-                PRINT_LIST.add( new ResourceLocation( line ).toString() );
+                PRINT_LIST.add( ResourceLocation.parse( line ).toString() );
             }
         }
     }
@@ -161,12 +162,12 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
         
         for( String line : PRINT_LIST ) {
             // Do not worry about tags or namespace entries
-            if ( line.startsWith( "#" ) || line.endsWith( "*" ) )
+            if( line.startsWith( "#" ) || line.endsWith( "*" ) )
                 continue;
-
+            
             // Add a single registry entry
-            final ResourceLocation regKey = new ResourceLocation( line );
-
+            final ResourceLocation regKey = ResourceLocation.parse( line );
+            
             if( !mergeFrom( regKey ) ) {
                 ConfigUtil.LOG.warn( "Invalid or duplicate entry for {} \"{}\"! Invalid entry: {}",
                         FIELD.getClass(), FIELD.getKey(), line );
@@ -191,7 +192,7 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
         populateEntries();
         return super.contains( entry );
     }
-
+    
     @Override
     public boolean containsOrTag( @Nullable T entry, Predicate<TagKey<T>> tagPredicate ) {
         populateEntries();

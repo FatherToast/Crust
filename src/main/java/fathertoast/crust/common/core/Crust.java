@@ -97,15 +97,15 @@ public class Crust {
     
     /** API instance. */
     public final CrustApi apiInstance;
-
-
-    // Registries
-    public static final DeferredRegister<Block> BLOCK_REGISTRY = DeferredRegister.create(ForgeRegistries.BLOCKS, ICrustApi.MOD_ID);
-    public static final DeferredRegister<Item> ITEM_REGISTRY = DeferredRegister.create(ForgeRegistries.ITEMS, ICrustApi.MOD_ID);
-    public static final DeferredRegister<BlockEntityType<?>> BE_REGISTRY = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, ICrustApi.MOD_ID);
-
     
-    public Crust() {
+    
+    // Registries
+    public static final DeferredRegister<Block> BLOCK_REGISTRY = DeferredRegister.create( ForgeRegistries.BLOCKS, ICrustApi.MOD_ID );
+    public static final DeferredRegister<Item> ITEM_REGISTRY = DeferredRegister.create( ForgeRegistries.ITEMS, ICrustApi.MOD_ID );
+    public static final DeferredRegister<BlockEntityType<?>> BE_REGISTRY = DeferredRegister.create( ForgeRegistries.BLOCK_ENTITY_TYPES, ICrustApi.MOD_ID );
+    
+    
+    public Crust( FMLJavaModLoadingContext context ) {
         INSTANCE = this;
         apiInstance = new CrustApi();
         ApocalypseDifficultyEnvironment.register( apiInstance );
@@ -113,17 +113,17 @@ public class Crust {
         
         // Crust's config manager; defines the mod config folder
         ConfigManager.create( "Crust", ICrustApi.MOD_ID );
-
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        
+        IEventBus modBus = context.getModEventBus();
         
         modBus.addListener( CrustPortals::onRegistryCreate );
         CrustEffects.register( modBus );
         CrustPortals.register( modBus );
         CrustArgumentTypes.register( modBus );
-
-        BE_REGISTRY.register(modBus);
-        BLOCK_REGISTRY.register(modBus);
-        ITEM_REGISTRY.register(modBus);
+        
+        BE_REGISTRY.register( modBus );
+        BLOCK_REGISTRY.register( modBus );
+        ITEM_REGISTRY.register( modBus );
         
         modBus.addListener( this::onCommonSetup );
     }
@@ -134,7 +134,7 @@ public class Crust {
             CrustConfig.initialize();
             
             processPlugins();
-        });
+        } );
     }
     
     private void processPlugins() {
@@ -159,8 +159,8 @@ public class Crust {
                             ex.printStackTrace();
                         }
                     }
-                }));
+                } ) );
     }
     
-    public static ResourceLocation resLoc( String path ) { return new ResourceLocation( ICrustApi.MOD_ID, path ); }
+    public static ResourceLocation resLoc( String path ) { return ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, path ); }
 }

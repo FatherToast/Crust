@@ -46,7 +46,7 @@ public class BlockEntry implements Cloneable {
     public BlockEntry( AbstractConfigField field, String line ) {
         // Parse the base block
         final String[] pair = line.split( "\\[", 2 );
-        final Block block = ForgeRegistries.BLOCKS.getValue( new ResourceLocation( pair[0] ) );
+        final Block block = ForgeRegistries.BLOCKS.getValue( ResourceLocation.parse( pair[0] ) );
         BLOCK = block == null ? Blocks.AIR : block;
         
         // We are done constructing if the entry is invalid or does not specify block states
@@ -99,7 +99,7 @@ public class BlockEntry implements Cloneable {
     /** Used to sort this object in a hash table. */
     @Override
     public int hashCode() {
-        ResourceLocation regKey = ForgeRegistries.BLOCKS.getKey(BLOCK);
+        ResourceLocation regKey = ForgeRegistries.BLOCKS.getKey( BLOCK );
         return regKey == null ? 0 : regKey.hashCode();
     }
     
@@ -163,7 +163,7 @@ public class BlockEntry implements Cloneable {
                 }
                 ConfigUtil.LOG.warn( "Invalid block property key for {} \"{}\". Valid property keys for '{}' are {}. " +
                                 "Deleting property. Invalid property: {}", field.getClass(), field.getKey(),
-                        ConfigUtil.toString( ForgeRegistries.BLOCKS.getKey( block )), TomlHelper.literalList( propertyNames ), combinedEntry.trim() );
+                        ConfigUtil.toString( ForgeRegistries.BLOCKS.getKey( block ) ), TomlHelper.literalList( propertyNames ), combinedEntry.trim() );
                 continue;
             }
             // Parse the property value

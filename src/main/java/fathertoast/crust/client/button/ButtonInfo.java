@@ -202,7 +202,7 @@ public class ButtonInfo {
         
         if( display.endsWith( ".png" ) ) {
             TEXT = "";
-            ICON = new ResourceLocation( ICrustApi.MOD_ID, ICON_PATH + display );
+            ICON = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, ICON_PATH + display );
         }
         else {
             TEXT = display;

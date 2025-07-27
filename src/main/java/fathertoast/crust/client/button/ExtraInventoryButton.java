@@ -18,8 +18,8 @@ import java.util.function.Supplier;
 
 public class ExtraInventoryButton extends Button {
     
-    public static final ResourceLocation BUTTON_TEXTURE = new ResourceLocation( ICrustApi.MOD_ID, "textures/button.png" );
-    public static final ResourceLocation BUTTON_TEXTURE_ON = new ResourceLocation( ICrustApi.MOD_ID, "textures/button_on.png" );
+    public static final ResourceLocation BUTTON_TEXTURE = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "textures/button.png" );
+    public static final ResourceLocation BUTTON_TEXTURE_ON = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "textures/button_on.png" );
     
     public static final int ICON_SIZE = 9;
     public static final int ICON_BORDER = 3;

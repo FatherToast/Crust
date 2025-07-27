@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 public class ResetButton extends Button {
     
     private static final ResourceLocation RESET_BUTTON_TEXTURE =
-            new ResourceLocation( "crust", "textures/reset_button.png" );
+            ResourceLocation.fromNamespaceAndPath( "crust", "textures/reset_button.png" );
     
     public static final int WIDTH = 10;
     public static final int HEIGHT = 20;
