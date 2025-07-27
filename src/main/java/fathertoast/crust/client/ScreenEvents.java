@@ -33,7 +33,7 @@ public class ScreenEvents {
         if( ClientRegister.EXTRA_INV_BUTTONS.GENERAL.enabled.get() && event.getScreen() instanceof AbstractContainerScreen ) {
             MultiPlayerGameMode gameMode = Minecraft.getInstance().gameMode;
             boolean creative = gameMode != null && gameMode.hasInfiniteItems(); // Avoid double-initializing our buttons
-            if( !(creative && event.getScreen() instanceof InventoryScreen) && !(!creative && event.getScreen() instanceof CreativeModeInventoryScreen ) ) {
+            if( !(creative && event.getScreen() instanceof InventoryScreen) && !(!creative && event.getScreen() instanceof CreativeModeInventoryScreen) ) {
                 addExtraInventoryButtons( event, (AbstractContainerScreen<?>) event.getScreen() );
             }
         }
@@ -95,11 +95,17 @@ public class ScreenEvents {
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
         int guiWidth = 204;
-        int guiHeight = 116;
+        int guiHeight = 140;
+        int topPadding = 50;
+        // Padding is 4, rows are 20 tall, total of 6 rows => 140 height
+        // First row has a top padding of 50 to offset all buttons downward
         
-        int posX = config.anchorX.get().pos( screenWidth, guiWidth, ExtraMenuButton.BUTTON_SIZE ) + config.offsetX.get();
-        int posY = config.anchorY.get().pos( screenHeight, guiHeight, screenHeight / 4 + 9, ExtraMenuButton.BUTTON_SIZE )
-                + config.offsetY.get();
+        int posX = config.anchorX.get().pos( screenWidth, guiWidth,
+                (int) Mth.lerp( 0.5F, 0.0F, (float) (screenWidth - guiWidth) ),
+                ExtraMenuButton.BUTTON_SIZE ) + config.offsetX.get();
+        int posY = config.anchorY.get().pos( screenHeight, guiHeight,
+                (int) Mth.lerp( 0.25F, 0.0F, (float) (screenHeight - guiHeight - topPadding) ) + topPadding,
+                ExtraMenuButton.BUTTON_SIZE ) + config.offsetY.get();
         
         event.addListener( new ExtraMenuButton( posX, posY,
                 button -> mc.setScreen( new CrustConfigSelectScreen( screen ) ) ) );
@@ -114,6 +120,7 @@ public class ScreenEvents {
         int screenHeight = mc.getWindow().getGuiScaledHeight();
         int guiWidth = 200;
         int guiHeight = 104;
+        // Bottom element is placed at top + 72 + 12 and is 20 tall => 104 height
         
         int posX = config.anchorX.get().pos( screenWidth, guiWidth, ExtraMenuButton.BUTTON_SIZE ) + config.offsetX.get();
         int posY = config.anchorY.get().pos( screenHeight, guiHeight, screenHeight / 4 + 48, ExtraMenuButton.BUTTON_SIZE )
