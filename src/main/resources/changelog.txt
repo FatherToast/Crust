@@ -1,24 +1,36 @@
+1.20.1-3.6.13
+    - Fixed portal command not working when below y=0.
+1.20.1-3.6.12
+    - Fixed StringListField constructor passing on parameters in the wrong order to the "main" constructor.
+    - Changed field "type" in StringListField to have protected visibility.
+    - Updated Apocalypse difficulty accessor to do what it is supposed to in more recent versions of Apocalypse.
+    - Updated required Apocalypse version range.
+    - Fixed default position of the Crust config button in the pause menu being off.
+1.20.1-2.5.11
+    - Internal client configs are now initialized and loaded during appropriate events to avoid weird crashes.
+1.20.1-2.5.10
+    - Fixed default value entries getting parsed incorrectly, resulting in duplicate invalid entries being written.
 1.20.1-2.5.9
-    - Added config field type RegistryEntryValueList
-    - Updated icon for mob effect "weight"
-    - Updated verbose description of BlockListField
-    - Fixed DimensionTypeEnvironment causing a crash if level registry is not "available" at the time of comparison
-    - Default values for EntityList is now lowest priority for best match
+    - Added config field type RegistryEntryValueList.
+    - Updated icon for mob effect "weight".
+    - Updated verbose description of BlockListField.
+    - Fixed DimensionTypeEnvironment causing a crash if level registry is not "available" at the time of comparison.
+    - Default values for EntityList is now lowest priority for best match.
 1.20.1-2.4.8
-    - Downgraded min required Forge version to 47.3.0
-    - Namespace wildcard entries now work properly
-        - Fixed for BlockList, EntityList and RegistryEntryList
-    - Added tag entries for EntityList
+    - Downgraded min required Forge version to 47.3.0.
+    - Namespace wildcard entries now work properly.
+        - Fixed for BlockList, EntityList and RegistryEntryList.
+    - Added tag entries for EntityList.
 1.20.1-2.3.7
-    - Bumped min required Forge version to 47.3.10
-
+    - Bumped min required Forge version to 47.3.10.
     API Changes:
-        - Teeny tiny javadoc fixes
-        - Deprecated ConfigManager#create(String)
-        - Deprecated ConfigManager#createSimple()
+    - Teeny tiny javadoc fixes.
+    - Deprecated ConfigManager#create(String).
+    - Deprecated ConfigManager#createSimple().
 1.20.1-2.3.6
-    - The BlockEntity bounding box render API now actually does something
-    - Introduced new client-side config file "render_settings"
+    - The BlockEntity bounding box render API now actually does something.
+    - Introduced new client-side config file "render_settings".
+    - Fixed sources jar manifest (missing version metadata and mixin config).
 1.20.1-2.3.5
     - Mitigated potential for comod exceptions that were causing incompatibility with some mods.
     - Fixed default pause menu options button position.
