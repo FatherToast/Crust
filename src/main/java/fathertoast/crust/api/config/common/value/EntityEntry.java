@@ -2,7 +2,6 @@ package fathertoast.crust.api.config.common.value;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.field.EntityListField;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -102,7 +101,7 @@ public class EntityEntry {
      */
     public boolean contains( EntityEntry entry ) {
         if( !validate() ) return false;
-
+        
         if( entry.entityType == null ) return false;
         // Same entity, but non-extendable is more specific
         if( entityClass == entry.entityClass ) return !entry.EXTEND;

@@ -2,7 +2,6 @@ package fathertoast.crust.client.button;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import fathertoast.crust.api.ICrustApi;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;

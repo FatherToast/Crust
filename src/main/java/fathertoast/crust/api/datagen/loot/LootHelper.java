@@ -1,12 +1,9 @@
 package fathertoast.crust.api.datagen.loot;
 
-import net.minecraft.data.loot.EntityLootSubProvider;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.FunctionUserBuilder;
-import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.predicates.*;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
@@ -41,18 +38,18 @@ public final class LootHelper {
     
     /** Convenience method to put all loot entries, conditions, and functions into a loot pool. Returns the loot pool. */
     public static LootPool.Builder build( LootPool.Builder builder, List<LootPoolEntryContainer.Builder<?>> entries,
-                                         List<LootItemCondition.Builder> conditions, List<LootItemFunction.Builder> functions ) {
+                                          List<LootItemCondition.Builder> conditions, List<LootItemFunction.Builder> functions ) {
         return build( build( builder, entries ), conditions, functions );
     }
-
-
+    
+    
     /** Convenience method to put all loot conditions and functions into a loot builder. Returns the loot builder. */
     public static <T extends FunctionUserBuilder<?>> // Can't figure out how to require both, but function consumer is more stringent
     T build( T builder, List<LootItemCondition.Builder> conditions, List<LootItemFunction.Builder> functions ) {
-        build( (ConditionUserBuilder<?> ) builder, conditions );
+        build( (ConditionUserBuilder<?>) builder, conditions );
         return build( builder, functions );
     }
-
+    
     /** Convenience method to put all loot pools into a loot table. Returns the loot table. */
     public static LootTable.Builder build( LootTable.Builder builder, List<LootPool.Builder> pools ) {
         for( LootPool.Builder pool : pools ) builder.withPool( pool );
@@ -66,13 +63,13 @@ public final class LootHelper {
     }
     
     /** Convenience method to put all loot conditions into a loot builder. Returns the loot builder. */
-    public static <T extends ConditionUserBuilder<?>> T build(T builder, List<LootItemCondition.Builder> conditions ) {
+    public static <T extends ConditionUserBuilder<?>> T build( T builder, List<LootItemCondition.Builder> conditions ) {
         for( LootItemCondition.Builder condition : conditions ) builder.when( condition );
         return builder;
     }
     
     /** Convenience method to put all loot functions into a loot builder. Returns the loot builder. */
-    public static <T extends FunctionUserBuilder<?>> T build(T builder, List<LootItemFunction.Builder> functions ) {
+    public static <T extends FunctionUserBuilder<?>> T build( T builder, List<LootItemFunction.Builder> functions ) {
         for( LootItemFunction.Builder function : functions ) builder.apply( function );
         return builder;
     }

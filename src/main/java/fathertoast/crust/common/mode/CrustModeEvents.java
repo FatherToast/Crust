@@ -3,7 +3,6 @@ package fathertoast.crust.common.mode;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.common.config.CrustConfig;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.commands.EffectCommands;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -40,7 +39,7 @@ public class CrustModeEvents {
     /** Called when an entity dies. */
     @SubscribeEvent
     static void onLivingDeath( LivingDeathEvent event ) {
-        if( event.getEntity() instanceof  Player player ) {
+        if( event.getEntity() instanceof Player player ) {
             if( CrustModes.UNDYING.enabled( player ) ) {
                 player.setHealth( player.getMaxHealth() );
                 // Also stop non-temporary damaging effects
@@ -119,7 +118,7 @@ public class CrustModeEvents {
             FoodData foodData = player.getFoodData();
             if( foodData.getFoodLevel() < minimum ) foodData.eat( 20, 0.125F );
         }
-
+        
         // Super vision
         else if( clock16 == 13 && playerModes.enabled( CrustModes.SUPER_VISION ) ) {
             if( !player.hasEffect( MobEffects.NIGHT_VISION ) ) {
@@ -143,7 +142,7 @@ public class CrustModeEvents {
     
     /** Called each tick for each world, on both the client and server side. */
     public static void onWorldTickStart( Level level ) {
-        if( ( level.getGameTime() & 1) == 0 ) return;
+        if( (level.getGameTime() & 1) == 0 ) return;
         
         for( Player player : level.players() ) {
             CrustModesData playerModes = CrustModesData.of( player );

@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class PortalTypeArgument implements ArgumentType<PortalBuilder> {
     
-    public static final SimpleCommandExceptionType INVALID_PORTAL_TYPE = new SimpleCommandExceptionType( Component.translatable( "crust.argument.portal_type.notfound" ) );
+    public static final SimpleCommandExceptionType INVALID_PORTAL_TYPE = new SimpleCommandExceptionType( Component.translatable( "commands.crustportal.portaltype.failure" ) );
     
     
     public static PortalTypeArgument portalType() {

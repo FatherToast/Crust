@@ -88,6 +88,7 @@ public class RegistryEntryValueListField<T> extends GenericField<RegistryEntryVa
         
         if( raw instanceof RegistryEntryValueList<?> ) {
             try {
+                //noinspection unchecked
                 value = (RegistryEntryValueList<T>) raw;
             }
             catch( Exception e ) {

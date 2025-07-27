@@ -34,7 +34,6 @@ public class LootEntryItemBuilder {
      * Predicate for 'entity on fire'. Copied from the not-easily-accessible field
      * {@link net.minecraft.data.loot.EntityLootSubProvider#ENTITY_ON_FIRE}.
      */
-    @SuppressWarnings("JavadocReference")
     public static final EntityPredicate.Builder ENTITY_ON_FIRE = EntityPredicate.Builder.entity()
             .flags( EntityFlagsPredicate.Builder.flags().setOnFire( true ).build() );
     

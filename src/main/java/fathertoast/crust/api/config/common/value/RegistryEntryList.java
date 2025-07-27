@@ -4,10 +4,7 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.tags.TagManager;
-import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import javax.annotation.Nullable;
@@ -197,9 +194,10 @@ public class RegistryEntryList<T> implements IStringArray {
         if( UNDERLYING_SET.contains( entry ) )
             return true;
         
-        if( REGISTRY.getKey( entry ) != null ) {
+        ResourceLocation regKey = REGISTRY.getKey( entry );
+        if( regKey != null ) {
             for( String namespace : NAMESPACES ) {
-                if( namespace.equals( REGISTRY.getKey( entry ).getNamespace() ) )
+                if( namespace.equals( regKey.getNamespace() ) )
                     return true;
             }
         }

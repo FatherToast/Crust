@@ -8,7 +8,7 @@ import net.minecraftforge.registries.ObjectHolder;
 /**
  * This helper class contains references/getters for all registry objects provided by Crust.
  */
-@SuppressWarnings( { "FieldMayBeFinal", "unused" } )
+@SuppressWarnings( { "unused" } )
 public final class CrustObjects {
     
     /** The Vulnerability potion effect. Take 25% more damage per level (vs. Damage Resistance's 20% less per level). */
@@ -32,7 +32,7 @@ public final class CrustObjects {
         String EFFECT_REGISTRY = "minecraft:mob_effect";
         String VULNERABILITY = "vulnerability";
         String WEIGHT = "weight";
-
+        
         String PORTAL_REGISTRY = "crust:portal_builder";
         String NETHER_PORTAL = "nether_portal";
         String END_PORTAL = "end_portal";

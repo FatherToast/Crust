@@ -1,6 +1,5 @@
 package fathertoast.crust.client.mode;
 
-import com.mojang.blaze3d.shaders.FogShape;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.common.mode.CrustModeEvents;
 import fathertoast.crust.common.mode.CrustModes;

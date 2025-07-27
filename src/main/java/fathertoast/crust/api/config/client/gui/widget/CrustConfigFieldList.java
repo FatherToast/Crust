@@ -19,10 +19,8 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
-import org.jline.reader.Widget;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -162,7 +160,7 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
     public void saveChanges() {
         if( changed ) {
             for( Entry child : children() ) {
-                if(child instanceof FieldEntry fieldEntry) {
+                if( child instanceof FieldEntry fieldEntry ) {
                     if( fieldEntry.changed ) {
                         SPEC.getNightConfig().set( fieldEntry.FIELD.getKey(), fieldEntry.pendingValue );
                     }
@@ -176,10 +174,10 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
     public static abstract class Entry extends ContainerObjectSelectionList.Entry<Entry> {
         
         public Minecraft minecraft() { return Minecraft.getInstance(); }
-
+        
         @Nullable
         public List<FormattedCharSequence> getTooltip() { return null; }
-
+        
         @Override
         public List<? extends NarratableEntry> narratables() {
             return List.of();
@@ -191,13 +189,13 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
         @Override
         public void render( GuiGraphics graphics, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
                             int mouseX, int mouseY, boolean mouseOver, float partialTicks ) { }
-
+        
         @Nullable
         @Override
         public ComponentPath nextFocusPath( FocusNavigationEvent event ) {
             return super.nextFocusPath( event );
         }
-
+        
         @Override
         public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
     }
@@ -215,16 +213,16 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
         @Override
         public void render( GuiGraphics graphics, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
                             int mouseX, int mouseY, boolean mouseOver, float partialTicks ) {
-
+            
             graphics.drawString( minecraft().font, TEXT, rowLeft, rowTop + 5, COLOR );
         }
-
+        
         @Nullable
         @Override
         public ComponentPath nextFocusPath( FocusNavigationEvent event ) {
             return super.nextFocusPath( event );
         }
-
+        
         @Override
         public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
     }
@@ -254,17 +252,17 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
         @Override
         public void render( GuiGraphics graphics, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
                             int mouseX, int mouseY, boolean mouseOver, float partialTicks ) {
-
-            graphics.drawString(minecraft().font, TEXT,
+            
+            graphics.drawString( minecraft().font, TEXT,
                     rowLeft, rowTop + 5, COLOR );
         }
-
+        
         @Nullable
         @Override
         public ComponentPath nextFocusPath( FocusNavigationEvent event ) {
             return super.nextFocusPath( event );
         }
-
+        
         @Override
         public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
         
@@ -293,13 +291,13 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
             graphics.drawString( minecraft().font, TEXT,
                     minecraft().screen.width - WIDTH - 5 >> 1, rowTop + 5, COLOR );
         }
-
+        
         @Nullable
         @Override
         public ComponentPath nextFocusPath( FocusNavigationEvent event ) {
             return super.nextFocusPath( event );
         }
-
+        
         @Override
         public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
     }
@@ -364,7 +362,7 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
             }
             
             CURRENT_VALUE = pendingValue = field.getValue();
-
+            
             RESET_BUTTON = new ResetButton( ( button ) -> {
                 updateValue( FIELD.getDefaultValue() );
                 populateComponents();
@@ -465,15 +463,15 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
         
         @Override
         public void setFocused( @Nullable GuiEventListener component ) {
-            if( component instanceof EditBox editBox) PARENT.PARENT.setFocusedTextBox( editBox );
+            if( component instanceof EditBox editBox ) PARENT.PARENT.setFocusedTextBox( editBox );
             super.setFocused( component );
         }
-
+        
         @Override
         public List<? extends NarratableEntry> narratables() {
             return List.of();
         }
-
+        
         /** Simple wrapper used to save the offsets of provided field gui components. */
         private static class OffsetWidget {
             

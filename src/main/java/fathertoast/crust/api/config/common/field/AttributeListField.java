@@ -8,7 +8,6 @@ import fathertoast.crust.api.config.common.value.ConfigDrivenAttributeModifierMa
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.entity.monster.Blaze;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

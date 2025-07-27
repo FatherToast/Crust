@@ -2,11 +2,10 @@ package fathertoast.crust.common.config;
 
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.common.ConfigManager;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 /**
  * The config manager that determines the mod's config folder is created in the Crust mod's constructor
- * ({@link fathertoast.crust.common.core.Crust#Crust()}). You may create this wherever you want, as long as it exists
+ * ({@link fathertoast.crust.common.core.Crust#Crust(net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext)}). You may create this wherever you want, as long as it exists
  * before you initialize any of your config files.
  * <p>
  * The initial loading for this is done by the work queue in the Crust mod's common setup event

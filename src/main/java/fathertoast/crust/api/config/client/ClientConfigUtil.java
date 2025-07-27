@@ -9,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 
 /**
@@ -33,7 +32,7 @@ public final class ClientConfigUtil {
         }
         else {
             ctx.registerExtensionPoint( ConfigScreenHandler.ConfigScreenFactory.class,
-                    (  ) -> new ConfigScreenHandler.ConfigScreenFactory( ( mc, parent ) -> new CrustConfigSelectScreen( null, cfgManager ) ) );
+                    () -> new ConfigScreenHandler.ConfigScreenFactory( ( mc, parent ) -> new CrustConfigSelectScreen( null, cfgManager ) ) );
         }
     }
     
@@ -54,7 +53,7 @@ public final class ClientConfigUtil {
         }
         else {
             ctx.registerExtensionPoint( ConfigScreenHandler.ConfigScreenFactory.class,
-                    ( ) -> new ConfigScreenHandler.ConfigScreenFactory(( mc, parent ) -> new OpenFolderScreen( cfgManager ) ) );
+                    () -> new ConfigScreenHandler.ConfigScreenFactory( ( mc, parent ) -> new OpenFolderScreen( cfgManager ) ) );
             
             MinecraftForge.EVENT_BUS.addListener( new OpenFolderHandler( cfgManager )::onGuiOpen );
         }
@@ -87,7 +86,7 @@ public final class ClientConfigUtil {
         
         OpenFolderScreen( ConfigManager cfgManager ) {
             // We don't need to localize the name or do anything since the opening of this screen is always canceled
-            super( Component.literal("Opening folder") );
+            super( Component.literal( "Opening folder" ) );
             CFG_MANAGER = cfgManager;
         }
     }

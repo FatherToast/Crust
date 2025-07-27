@@ -2,7 +2,6 @@ package fathertoast.crust.common.command.impl;
 
 import com.mojang.brigadier.CommandDispatcher;
 import fathertoast.crust.api.ICrustApi;
-import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.api.portal.PortalBuilder;
 import fathertoast.crust.common.command.CommandUtil;
 import fathertoast.crust.common.portal.CrustPortals;

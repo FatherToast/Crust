@@ -17,7 +17,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
 import javax.annotation.Nullable;
-import java.util.AbstractList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
@@ -257,12 +256,12 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     /** @return True if the mouse is over this widget. */
     @Override
     public boolean isMouseOver( double x, double y ) { return y >= y0 && y <= y1 && x >= x0 && x <= x1; }
-
+    
     @Override
     protected void updateWidgetNarration( NarrationElementOutput output ) {
-
+    
     }
-
+    
     /** True if currently scrolling (from clicking on the scrollbar). */
     private boolean scrolling;
     
@@ -277,7 +276,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         updateScrollingState( x, mouseKey );
         if( !isMouseOver( x, y ) ) return false;
         if( scrolling ) return true;
-
+        
         // Find the entry being clicked on
         E entry = getEntryAtPosition( x, y );
         if( entry != null ) {
@@ -292,7 +291,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
                     (int) (y - y0) + (int) getScrollDistance() - ENTRY_PADDING );
             return true;
         }
-
+        
         return false;
     }
     
@@ -387,7 +386,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     /** Moves the selection based on the ordering given, optionally skipping entries based on a filter. */
     protected void moveSelection( int dir, Predicate<E> filter ) {
         if( entries().isEmpty() ) return;
-
+        
         for( int i = entries().indexOf( getSelected() ) + dir; i >= 0 && i < getItemCount(); i += dir ) {
             E entry = getEntry( i );
             if( filter.test( entry ) ) {
@@ -422,7 +421,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         if( renderHeader ) renderHeader( graphics, mouseX, mouseY, partialTicks, tesselator, buf );
         renderScrollbar( graphics, mouseX, mouseY, partialTicks, tesselator, buf );
         renderDecorations( graphics, mouseX, mouseY, partialTicks, tesselator, buf );
-
+        
         //RenderSystem.shadeModel( 0x1D00 );
         //RenderSystem.enableAlphaTest();
         RenderSystem.disableBlend();
@@ -433,7 +432,6 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     protected void renderBackground( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Tesselator tesselator, BufferBuilder buf ) {
         // Default background is solid dark gray
         //RenderSystem.disableTexture();
-        //noinspection deprecation
         buf.begin( VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR );
         drawBox( buf, x0, x1, y0, y1, 0x20 );
         tesselator.end();
@@ -486,7 +484,6 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
                 handleY = y0;
             }
             
-            //noinspection deprecation
             buf.begin( VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR );
             drawBox( buf, scrollX0, scrollX1, y0, y1, 0x00 ); // Bar background
             drawBox( buf, scrollX0, scrollX1, handleY, handleY + handleH, 0x80 ); // Handle shadow
@@ -562,18 +559,18 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         
         /** Called to render the list entry. */
         public abstract void render( GuiGraphics graphics, int index, int x, int y, int width, int height,
-                                    int mouseX, int mouseY, boolean mouseOver, float partialTicks );
+                                     int mouseX, int mouseY, boolean mouseOver, float partialTicks );
         
         @Override
         public boolean isMouseOver( double mouseX, double mouseY ) {
             return equals( parent.getEntryAtPosition( mouseX, mouseY ) );
         }
-
+        
         @Override
         public void setFocused( boolean focused ) {
             this.focused = focused;
         }
-
+        
         @Override
         public boolean isFocused() {
             return focused;
@@ -693,7 +690,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
             }
             return false;
         }
-
+        
         /**
          * Called when focus change is requested (for example, tab or shift+tab).
          *
@@ -708,7 +705,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
             }
             return null;
         }
-
+        
         /** Called to render the list entry. */
         @Override
         public void render( GuiGraphics graphics, int index, int x, int y, int width, int height,

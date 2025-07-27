@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.common.command.CommandUtil;
 import fathertoast.crust.common.network.CrustPacketHandler;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;

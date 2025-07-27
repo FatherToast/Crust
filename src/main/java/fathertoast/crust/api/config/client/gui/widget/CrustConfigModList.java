@@ -5,7 +5,6 @@ import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
 import fathertoast.crust.api.config.common.ConfigManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -22,10 +21,10 @@ import java.util.function.Supplier;
  * Widget that displays a sorted, scrollable list of all mods that use Crust configs.
  */
 public class CrustConfigModList extends ContainerObjectSelectionList<CrustConfigModList.Entry> {
-
+    
     private int maxNameWidth;
     
-    public CrustConfigModList(Screen parent, Minecraft game ) {
+    public CrustConfigModList( Screen parent, Minecraft game ) {
         super( game, parent.width + 45, parent.height,
                 43, parent.height - 32, 20 );
         // Gather all mod config managers and sort
@@ -55,7 +54,6 @@ public class CrustConfigModList extends ContainerObjectSelectionList<CrustConfig
             PARENT = parent;
             CFG_MANAGER = cfgManager;
             NAME = name;
-            //noinspection ConstantConditions
             MOD_BUTTON = new Button( 0, 0, 20, 20,
                     Component.literal( ">" ),
                     ( button ) -> PARENT.minecraft.setScreen(
@@ -64,7 +62,7 @@ public class CrustConfigModList extends ContainerObjectSelectionList<CrustConfig
         
         @Override
         public void render( GuiGraphics graphics, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
-                           int mouseX, int mouseY, boolean mouseOver, float partialTicks ) {
+                            int mouseX, int mouseY, boolean mouseOver, float partialTicks ) {
             //noinspection ConstantConditions
             graphics.drawString( PARENT.minecraft.font, NAME,
                     PARENT.minecraft.screen.width - PARENT.maxNameWidth - 30 >> 1,
@@ -82,12 +80,12 @@ public class CrustConfigModList extends ContainerObjectSelectionList<CrustConfig
         public boolean mouseClicked( double x, double y, int mouseKey ) {
             return MOD_BUTTON.mouseClicked( x, y, mouseKey );
         }
-
+        
         @Override
         public boolean mouseReleased( double x, double y, int mouseKey ) {
             return MOD_BUTTON.mouseReleased( x, y, mouseKey );
         }
-
+        
         @Override
         public List<? extends NarratableEntry> narratables() {
             return List.of();

@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.StructureManager;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.structure.Structure;
 
 import javax.annotation.Nullable;
@@ -25,7 +24,7 @@ public class StructureGroupEnvironment extends DynamicRegistryGroupEnvironment<S
     public StructureGroupEnvironment( ConfigManager cfgManager, ResourceLocation regKey, boolean invert ) { super( cfgManager, regKey, invert ); }
     
     public StructureGroupEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
-
+    
     
     /** @return The registry used. */
     @Override

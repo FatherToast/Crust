@@ -1,7 +1,6 @@
 package fathertoast.crust.common.api.impl.accessor.apocalypse;
 
 import com.toast.apocalypse.api.plugin.DifficultyProvider;
-import com.toast.apocalypse.api.plugin.IApocalypseApi;
 import fathertoast.crust.api.IDifficultyAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,16 +14,16 @@ import java.util.List;
  * (Take care not to call any of this if Apocalypse is not installed, will result in runtime-anger :biglist:)
  */
 public final class DifficultyAccessor implements IDifficultyAccessor {
-
+    
     // Note to Toast man: I am opting for using Apocalypse's API
     // instead of directly accessing the capability helper getters
     // so we don't have to worry about me suddenly changing something and forgetting about it
     private DifficultyProvider provider;
-
+    
     public void setDifficultyProvider( DifficultyProvider provider ) {
         this.provider = provider;
     }
-
+    
     @Override
     public double getDifficultyRate( Player player ) { return provider.getDifficultyRate( player ); }
     

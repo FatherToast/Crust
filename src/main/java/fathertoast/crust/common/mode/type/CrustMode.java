@@ -5,7 +5,6 @@ import com.mojang.brigadier.context.CommandContext;
 import fathertoast.crust.api.lib.NBTHelper;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -59,7 +58,7 @@ public abstract class CrustMode<T> {
     
     
     /** @return The argument for this mode's value when referenced by the crustmode command. */
-    public abstract RequiredArgumentBuilder<CommandSourceStack, ?> commandArgument(String arg );
+    public abstract RequiredArgumentBuilder<CommandSourceStack, ?> commandArgument( String arg );
     
     /**
      * Updates this mode's data based on command input.
@@ -67,7 +66,7 @@ public abstract class CrustMode<T> {
      *
      * @param arg The argument corresponding to the value for an 'enable' command. Null for a 'disable' command.
      */
-    public abstract void onCommand(CommandContext<CommandSourceStack> context, @Nullable String arg, ServerPlayer player );
+    public abstract void onCommand( CommandContext<CommandSourceStack> context, @Nullable String arg, ServerPlayer player );
     
     /** Validates and applies a command set request. */
     protected void validate( ServerPlayer player, @Nullable T value ) {

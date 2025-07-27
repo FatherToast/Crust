@@ -5,9 +5,6 @@ import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.common.network.CrustPacketHandler;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -64,8 +61,8 @@ public class CrustForgeEvents {
     @SubscribeEvent( priority = EventPriority.NORMAL )
     static void onLivingHurt( LivingHurtEvent event ) {
         Level level = event.getEntity().level();
-
-        if( event.getEntity() != null && event.getSource().type() != level.damageSources().fellOutOfWorld().type() && !event.getSource().is(DamageTypeTags.BYPASSES_ENCHANTMENTS) &&
+        
+        if( event.getEntity() != null && event.getSource().type() != level.damageSources().fellOutOfWorld().type() && !event.getSource().is( DamageTypeTags.BYPASSES_ENCHANTMENTS ) &&
                 event.getEntity().hasEffect( CrustObjects.vulnerability() ) ) {
             
             final MobEffectInstance vulnerability = event.getEntity().getEffect( CrustObjects.vulnerability() );

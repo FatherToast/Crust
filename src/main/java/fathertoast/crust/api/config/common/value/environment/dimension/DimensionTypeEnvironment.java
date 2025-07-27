@@ -3,14 +3,12 @@ package fathertoast.crust.api.config.common.value.environment.dimension;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.environment.DynamicRegistryEnvironment;
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 
 
@@ -27,25 +25,25 @@ public class DimensionTypeEnvironment extends DynamicRegistryEnvironment<Level> 
     /** @return The registry used. */
     @Override
     public ResourceKey<Registry<Level>> getRegistry() { return Registries.DIMENSION; }
-
+    
     /** @return Returns true if this environment matches the provided environment. */
     @Override
     public boolean matches( ServerLevel level, @Nullable BlockPos pos ) {
         ResourceKey<Level> dimensionKey;
-        Object o = getRegistryEntry( level );
-
-        if ( o == null ) return false;
-
+        Object o = getRegistryEntry( level ); // TODO Something is wonky with this line, should always return a Level
+        
+        if( o == null ) return false;
+        
         // Still in level creation or something
         // noinspection ConstantValue
-        if ( o instanceof LevelStem levelStem ) {
+        if( o instanceof LevelStem levelStem ) { // TODO See above, Level cannot be LevelStem
             try {
                 dimensionKey = Registries.levelStemToLevel( level.registryAccess().registry(
-                        Registries.LEVEL_STEM ).orElseThrow()
+                                Registries.LEVEL_STEM ).orElseThrow()
                         .getResourceKey( levelStem ).orElseThrow()
                 );
             }
-            catch ( Exception ignored ) {
+            catch( Exception ignored ) {
                 return false;
             }
         }
@@ -53,10 +51,10 @@ public class DimensionTypeEnvironment extends DynamicRegistryEnvironment<Level> 
             try {
                 dimensionKey = ((Level) o).dimension();
             }
-            catch ( Exception ignored ) {
+            catch( Exception ignored ) {
                 return false;
             }
         }
-        return ( dimensionKey.equals( level.dimension() ) ) != INVERT;
+        return (dimensionKey.equals( level.dimension() )) != INVERT;
     }
 }

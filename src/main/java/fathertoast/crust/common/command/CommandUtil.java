@@ -12,7 +12,6 @@ import fathertoast.crust.common.command.impl.CrustCleanCommand;
 import fathertoast.crust.common.command.impl.CrustModeCommand;
 import fathertoast.crust.common.command.impl.CrustPortalCommand;
 import fathertoast.crust.common.command.impl.CrustRecoverCommand;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -136,7 +135,7 @@ public class CommandUtil {
     }
     
     /** @return A single entity target (the player sending the command). */
-    public static ServerPlayer player(CommandContext<CommandSourceStack> context ) throws CommandSyntaxException {
+    public static ServerPlayer player( CommandContext<CommandSourceStack> context ) throws CommandSyntaxException {
         return context.getSource().getPlayerOrException();
     }
     

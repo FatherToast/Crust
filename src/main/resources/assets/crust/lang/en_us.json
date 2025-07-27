@@ -51,6 +51,7 @@
   "commands.crustmode.enable.multiple.success": "Enabled \"%s\" mode for %s players",
 
   "commands.crustportal.success": "Placed \"%s\" portal at [%s, %s, %s]",
+  "commands.crustportal.portaltype.failure": "Portal type not found",
   "commands.crustportal.dimension.failure": "Invalid dimension for portal",
   "commands.crustportal.failure": "Could not find valid portal position",
 

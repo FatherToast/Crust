@@ -279,7 +279,7 @@ public class CrustConfigFileScreen extends Screen {
         return super.nextFocusPath( event );
     }
     
-    /**
+    /* *
      * Called when focus change is requested (for example, tab or shift+tab).
      *
      * @param forward Whether focus should move forward. Typically, forward means left-to-right then top-to-bottom.
@@ -294,7 +294,6 @@ public class CrustConfigFileScreen extends Screen {
         }
         return super.changeFocus( forward );
     }
-
      */
     
     /** Called each tick to update animations. */

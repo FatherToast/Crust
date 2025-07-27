@@ -1,7 +1,6 @@
 package fathertoast.crust.common.portal;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.math.Constants;
 import fathertoast.crust.api.portal.PortalBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -62,7 +61,7 @@ public class EndPortalBuilder extends PortalBuilder {
             for( int fw = 0; fw < 3; fw++ ) {
                 currentPos.set( portalCorner ).move( transverse, tv )
                         .move( forward, fw );
-
+                
                 level.setBlock( currentPos, portalBlock, Block.UPDATE_ALL );
             }
         }

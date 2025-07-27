@@ -3,7 +3,6 @@ package fathertoast.crust.api.config.common.field;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.RegistryEntryList;
-import net.minecraft.tags.BlockTags;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import javax.annotation.Nullable;
@@ -29,7 +28,7 @@ public class RegistryEntryListField<T> extends GenericField<RegistryEntryList<T>
         comment.add( "  An asterisk '*' can be used to match all registry entries/keys belonging to X namespace. For example, 'minecraft:*' will " +
                 "match all vanilla entries." );
         comment.add( "  Tags can also be used here. To declare a tag, start with a '#' followed by the rest of the tag path." );
-        comment.add( "  Tag example: '#minecraft:oak_logs'");
+        comment.add( "  Tag example: '#minecraft:oak_logs'" );
         return comment;
     }
     
