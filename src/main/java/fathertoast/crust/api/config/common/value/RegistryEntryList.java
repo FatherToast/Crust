@@ -53,11 +53,13 @@ public class RegistryEntryList<T> implements IStringArray {
     public RegistryEntryList( IForgeRegistry<T> registry, @Nullable List<String> namespaces, @Nullable List<TagKey<T>> tags, T... entries ) {
         this( registry, entries );
         
-        if( tags != null )
-            tags( tags );
+        if( tags != null && !tags.isEmpty() ) {
+            for( TagKey<T> tag : tags ) tag( tag ); // tag tags tag tag
+        }
         
-        if( namespaces != null )
-            namespaces( namespaces );
+        if( namespaces != null && !namespaces.isEmpty() ) {
+            for( String namespace : namespaces ) namespace( namespace ); // namespace namespaces namespace namespace
+        }
     }
     
     /**
@@ -77,7 +79,6 @@ public class RegistryEntryList<T> implements IStringArray {
                 }
                 else {
                     tag( new TagKey<>( registry.getRegistryKey(), tagLocation ) );
-                    PRINT_LIST.add( line );
                 }
             }
             else if( line.endsWith( "*" ) ) {
@@ -89,7 +90,6 @@ public class RegistryEntryList<T> implements IStringArray {
                 }
                 else {
                     namespace( parts[0] );
-                    PRINT_LIST.add( line );
                 }
             }
             else {
@@ -122,14 +122,6 @@ public class RegistryEntryList<T> implements IStringArray {
         }
     }
     
-    /** Adds the specified tag keys to this registry list. */
-    public final void tags( Collection<TagKey<T>> tags ) {
-        if( tags.isEmpty() ) return;
-        
-        for( TagKey<T> tag : tags )
-            tag( tag );
-    }
-    
     /** Adds the specified namespace to the list, unless it already exists in the list. */
     public final void namespace( String namespace ) {
         boolean exists = false;
@@ -141,16 +133,7 @@ public class RegistryEntryList<T> implements IStringArray {
             }
         }
         if( !exists ) {
-            NAMESPACES.add( namespace );
-        }
-    }
-    
-    /** Adds the specified namespace strings to this registry list. */
-    public final void namespaces( Collection<String> namespaces ) {
-        if( namespaces.isEmpty() ) return;
-        
-        for( String s : namespaces ) {
-            namespace( s );
+            NAMESPACES.add( ConfigUtil.namespaceWildcard( namespace ) );
         }
     }
     
