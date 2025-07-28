@@ -1,5 +1,6 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,25 +14,30 @@ import java.util.function.Predicate;
  * Useful when you want to parse each line in the String list with restrictions without going too crazy.
  */
 public class PredicateStringListField extends StringListField {
-
+    
     /**
      * A predicate for validating each line in the String list.<br>
      * Should return true if the tested String is considered valid.
      */
     private final Predicate<String> lineValidator;
-
-
+    
     public PredicateStringListField( String key, String typeName, List<String> defaultValue,
                                      Predicate<String> lineValidator, @Nullable String... description ) {
         super( key, typeName, defaultValue, description );
         Objects.requireNonNull( lineValidator );
         this.lineValidator = lineValidator;
+        for( String line : defaultValue ) {
+            if( !lineValidator.test( line ) ) {
+                throw new IllegalArgumentException( String.format( "Predicate string list has invalid default value! (%s) See: (%s)",
+                        line, getKey() ) );
+            }
+        }
     }
-
-    public PredicateStringListField( String key, List<String> defaultValue, Predicate<String> lineInvalidator, @Nullable String... description ) {
-        this( key, "String", defaultValue, lineInvalidator, description );
+    
+    public PredicateStringListField( String key, List<String> defaultValue, Predicate<String> lineValidator, @Nullable String... description ) {
+        this( key, "String", defaultValue, lineValidator, description );
     }
-
+    
     /**
      * Loads this field's value from the given raw toml value. If anything goes wrong, correct it at the lowest level possible.
      * <p>
@@ -47,19 +53,24 @@ public class PredicateStringListField extends StringListField {
         List<String> rawParsed = TomlHelper.parseStringList( raw );
         value = loadValidated( rawParsed, lineValidator );
     }
-
+    
     /**
      * Called when this field's String list value is being loaded.<br><br>
      * Uses this field's line validator predicate to determine if the
      * tested line is valid or not. Invalid lines are discarded from the field's
      * String list value.
      *
-     * @param strings The List of Strings that was just parsed by {@link TomlHelper#parseStringList(Object)}
-     *                in {@link PredicateStringListField#load(Object)}.
+     * @param strings       The List of Strings that was just parsed by {@link TomlHelper#parseStringList(Object)}
+     *                      in {@link PredicateStringListField#load(Object)}.
      * @param lineValidator This field's line validator predicate.
      */
     protected List<String> loadValidated( List<String> strings, Predicate<String> lineValidator ) {
-        strings.removeIf( (line) -> !lineValidator.test( line ) );
+        strings.removeIf( ( line ) -> {
+            if( lineValidator.test( line ) ) return false;
+            ConfigUtil.LOG.warn( "Value for {} \"{}\" is invalid! Ignoring value. Invalid value: {}",
+                    getClass(), getKey(), line );
+            return true;
+        } );
         return strings;
     }
 }
