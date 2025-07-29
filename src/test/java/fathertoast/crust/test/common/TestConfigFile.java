@@ -12,7 +12,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -128,7 +127,7 @@ public class TestConfigFile extends AbstractConfigFile {
                     new EnvironmentListField( "environment_list_field", new EnvironmentList(
                             EnvironmentEntry.builder( SPEC, 0.0 ).belowSeaLevel().isRaining().build(),
                             EnvironmentEntry.builder( SPEC, 1.0 ).aboveGoldLevel().isRaining().build(),
-                            EnvironmentEntry.builder( SPEC, 666.0 ).inBiomeTag( BiomeTags.IS_FOREST ).build(),
+                            EnvironmentEntry.builder( SPEC, 666.0 ).inBiome( BiomeTags.IS_FOREST ).build(),
                             EnvironmentEntry.builder( SPEC, 20.0 ).afterMonthsOrApocalypseDifficulty( 1 ).build(),
                             EnvironmentEntry.builder( SPEC, 6.9 ).inOverworld().build(),
                             EnvironmentEntry.builder( SPEC, -1.0 ).build() )

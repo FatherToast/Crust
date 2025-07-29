@@ -8,7 +8,7 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
-@Deprecated( forRemoval = true )
+@Deprecated( forRemoval = true ) // TODO Remove when updating beyond 1.20.1
 public class BiomeCategoryEnvironment extends EnumEnvironment<BiomeCategory> {
     
     @Deprecated( forRemoval = true )

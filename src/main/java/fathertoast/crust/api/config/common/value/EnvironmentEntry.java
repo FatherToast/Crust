@@ -24,6 +24,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -186,46 +187,6 @@ public class EnvironmentEntry {
         
         // ---- Biome-based ---- //
         
-        /** @see TerrainDepthEnvironment */
-        @Deprecated // TODO Reimplement as biome tag
-        public Builder inWaterBiome() { return isDepth( ComparisonOperator.LESS_OR_EQUAL, 0.0F ); }
-        
-        /** @see TerrainDepthEnvironment */
-        @Deprecated // TODO Reimplement as biome tag
-        public Builder notInWaterBiome() { return isDepth( ComparisonOperator.LESS_OR_EQUAL.invert(), 0.0F ); }
-        
-        /** @see TerrainDepthEnvironment */
-        @Deprecated // TODO Reimplement as biome tag
-        public Builder inMountainBiome() { return isDepth( ComparisonOperator.GREATER_OR_EQUAL, 0.4F ); }
-        
-        /** @see TerrainDepthEnvironment */
-        @Deprecated // TODO Reimplement as biome tag
-        public Builder notInMountainBiome() { return isDepth( ComparisonOperator.GREATER_OR_EQUAL.invert(), 0.4F ); }
-        
-        /** @see TerrainDepthEnvironment */
-        @Deprecated
-        private Builder isDepth( ComparisonOperator op, float value ) { return this;/*in( new TerrainDepthEnvironment( op, value ) );*/ }
-        
-        /** @see TerrainScaleEnvironment */
-        @Deprecated // TODO Reimplement as biome tag
-        public Builder inFlatBiome() { return isScale( ComparisonOperator.LESS_OR_EQUAL, 0.1F ); }
-        
-        /** @see TerrainScaleEnvironment */
-        @Deprecated // TODO Reimplement as biome tag
-        public Builder notInFlatBiome() { return isScale( ComparisonOperator.LESS_OR_EQUAL.invert(), 0.1F ); }
-        
-        /** @see TerrainScaleEnvironment */
-        @Deprecated // TODO Reimplement as biome tag
-        public Builder inHillyBiome() { return isScale( ComparisonOperator.GREATER_OR_EQUAL, 0.3F ); }
-        
-        /** @see TerrainScaleEnvironment */
-        @Deprecated // TODO Reimplement as biome tag
-        public Builder notInHillyBiome() { return isScale( ComparisonOperator.GREATER_OR_EQUAL.invert(), 0.3F ); }
-        
-        /** @see TerrainScaleEnvironment */
-        @Deprecated
-        private Builder isScale( ComparisonOperator op, float value ) { return this;/*in( new TerrainScaleEnvironment( op, value ) );*/ }
-        
         /** Check if the biome has rain disabled. */
         public Builder inDryBiome() { return inAvgRainfall( ComparisonOperator.EQUAL_TO, 0.0F ); }
         
@@ -260,25 +221,67 @@ public class EnvironmentEntry {
         
         private Builder isTemperature( ComparisonOperator op, float value ) { return in( new TemperatureEnvironment( op, value ) ); }
         
-        /** Check if the biome is contained in a biome tag. See {@link BiomeTags} and {@link net.minecraftforge.common.Tags.Biomes}. */
-        public Builder inBiomeTag( TagKey<Biome> biome ) { return in( new BiomeTagEnvironment( biome, false ) ); }
+        /** Check if the biome is contained in the water biome tag. */
+        public Builder inWaterBiome() { return inBiome( Tags.Biomes.IS_WATER ); }
         
-        /** Check if the biome is contained in a biome tag. See {@link BiomeTags} and {@link net.minecraftforge.common.Tags.Biomes} */
-        public Builder notInBiomeTag( TagKey<Biome> biome ) { return in( new BiomeTagEnvironment( biome, true ) ); }
+        /** Check if the biome is contained in the water biome tag. */
+        public Builder notInWaterBiome() { return notInBiome( Tags.Biomes.IS_WATER ); }
         
-        /** Check if the biome belongs to a specific category. Please use {@link #inBiomeTag(TagKey)} instead! */
-        @Deprecated( forRemoval = true )
-        public Builder inBiomeCategory( BiomeCategory category ) { return in( new BiomeCategoryEnvironment( category, false ) ); }
+        /** Check if the biome is contained in the mountain biome tag. */
+        public Builder inMountainBiome() { return inBiome( Tags.Biomes.IS_MOUNTAIN ); }
         
-        /** Check if the biome belongs to a specific category. Please use {@link #notInBiomeTag(TagKey)} instead! */
-        @Deprecated( forRemoval = true )
-        public Builder notInBiomeCategory( BiomeCategory category ) { return in( new BiomeCategoryEnvironment( category, true ) ); }
+        /** Check if the biome is contained in the mountain biome tag. */
+        public Builder notInMountainBiome() { return notInBiome( Tags.Biomes.IS_MOUNTAIN ); }
+        
+        /** Check if the biome is contained in the plains biome tag. */
+        public Builder inFlatBiome() { return inBiome( Tags.Biomes.IS_PLAINS ); }
+        
+        /** Check if the biome is contained in the plains biome tag. */
+        public Builder notInFlatBiome() { return notInBiome( Tags.Biomes.IS_PLAINS ); }
+        
+        /** Check if the biome is contained in the slope biome tag. Will be removed, no good replacement tag. */
+        @Deprecated( forRemoval = true ) // TODO Remove when updating beyond 1.20.1
+        public Builder inHillyBiome() { return inBiome( Tags.Biomes.IS_SLOPE ); }
+        
+        /** Check if the biome is contained in the slope biome tag. Will be removed, no good replacement tag. */
+        @Deprecated( forRemoval = true ) // TODO Remove when updating beyond 1.20.1
+        public Builder notInHillyBiome() { return notInBiome( Tags.Biomes.IS_SLOPE ); }
+        
+        /** Check if the biome is contained in the spooky biome tag. */
+        public Builder inSpookyBiome() { return inBiome( Tags.Biomes.IS_SPOOKY ); }
+        
+        /** Check if the biome is contained in the spooky biome tag. */
+        public Builder notInSpookyBiome() { return notInBiome( Tags.Biomes.IS_SPOOKY ); }
+        
+        /** Check if the biome is contained in the rare biome tag. */
+        public Builder inRareBiome() { return inBiome( Tags.Biomes.IS_RARE ); }
+        
+        /** Check if the biome is contained in the rare biome tag. */
+        public Builder notInRareBiome() { return notInBiome( Tags.Biomes.IS_RARE ); }
+        
+        /** Check if the biome is contained in a biome tag. See {@link BiomeTags} and {@link Tags.Biomes}. */
+        public Builder inBiome( TagKey<Biome> biome ) { return in( new BiomeTagEnvironment( biome, false ) ); }
+        
+        /** Check if the biome is contained in a biome tag. See {@link BiomeTags} and {@link Tags.Biomes}. */
+        public Builder notInBiome( TagKey<Biome> biome ) { return in( new BiomeTagEnvironment( biome, true ) ); }
         
         /** Check if the biome is a specific one. */
         public Builder inBiome( ResourceKey<Biome> biome ) { return in( new BiomeEnvironment( MANAGER, biome, false ) ); }
         
         /** Check if the biome is a specific one. */
         public Builder notInBiome( ResourceKey<Biome> biome ) { return in( new BiomeEnvironment( MANAGER, biome, true ) ); }
+        
+        /** Check if the biome belongs to a specific category. Please use {@link #inBiome(TagKey)} instead! */
+        @Deprecated( forRemoval = true ) // TODO Remove when updating beyond 1.20.1
+        public Builder inBiomeCategory( BiomeCategory category ) { //noinspection removal
+            return in( new BiomeCategoryEnvironment( category, false ) );
+        }
+        
+        /** Check if the biome belongs to a specific category. Please use {@link #notInBiome(TagKey)} instead! */
+        @Deprecated( forRemoval = true ) // TODO Remove when updating beyond 1.20.1
+        public Builder notInBiomeCategory( BiomeCategory category ) { //noinspection removal
+            return in( new BiomeCategoryEnvironment( category, true ) );
+        }
         
         
         // ---- Position-based ---- //
