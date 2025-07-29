@@ -19,6 +19,8 @@ import fathertoast.crust.api.lib.EnvironmentHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BiomeTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -258,10 +260,18 @@ public class EnvironmentEntry {
         
         private Builder isTemperature( ComparisonOperator op, float value ) { return in( new TemperatureEnvironment( op, value ) ); }
         
-        /** Check if the biome belongs to a specific category. */ // TODO Reimplement as biome tag
+        /** Check if the biome is contained in a biome tag. See {@link BiomeTags} and {@link net.minecraftforge.common.Tags.Biomes}. */
+        public Builder inBiomeTag( TagKey<Biome> biome ) { return in( new BiomeTagEnvironment( biome, false ) ); }
+        
+        /** Check if the biome is contained in a biome tag. See {@link BiomeTags} and {@link net.minecraftforge.common.Tags.Biomes} */
+        public Builder notInBiomeTag( TagKey<Biome> biome ) { return in( new BiomeTagEnvironment( biome, true ) ); }
+        
+        /** Check if the biome belongs to a specific category. Please use {@link #inBiomeTag(TagKey)} instead! */
+        @Deprecated( forRemoval = true )
         public Builder inBiomeCategory( BiomeCategory category ) { return in( new BiomeCategoryEnvironment( category, false ) ); }
         
-        /** Check if the biome belongs to a specific category. */ // TODO Reimplement as biome tag
+        /** Check if the biome belongs to a specific category. Please use {@link #notInBiomeTag(TagKey)} instead! */
+        @Deprecated( forRemoval = true )
         public Builder notInBiomeCategory( BiomeCategory category ) { return in( new BiomeCategoryEnvironment( category, true ) ); }
         
         /** Check if the biome is a specific one. */

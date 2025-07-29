@@ -1,5 +1,6 @@
 package fathertoast.crust.api.config.common.value.environment.biome;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.environment.EnumEnvironment;
 import net.minecraft.core.BlockPos;
@@ -7,12 +8,19 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
-// TODO Replace with biome tags
+@Deprecated( forRemoval = true )
 public class BiomeCategoryEnvironment extends EnumEnvironment<BiomeCategory> {
     
+    @Deprecated( forRemoval = true )
     public BiomeCategoryEnvironment( BiomeCategory value, boolean invert ) { super( value, invert ); }
     
-    public BiomeCategoryEnvironment( AbstractConfigField field, String line ) { super( field, line, BiomeCategory.values() ); }
+    @Deprecated( forRemoval = true )
+    public BiomeCategoryEnvironment( AbstractConfigField field, String line ) {
+        super( field, line, BiomeCategory.values() );
+        ConfigUtil.LOG.warn( "Deprecated entry for {} \"{}\"! The \"biome_category\" environment condition will " +
+                        "be removed in a future version. Deprecated entry: {}",
+                field.getClass(), field.getKey(), line );
+    }
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override

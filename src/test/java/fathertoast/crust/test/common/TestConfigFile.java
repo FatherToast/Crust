@@ -8,10 +8,11 @@ import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.config.common.value.*;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
 import fathertoast.crust.api.config.common.value.environment.biome.BiomeCategory;
-import fathertoast.crust.api.config.common.value.environment.biome.BiomeEnvironment;
 import net.minecraft.ChatFormatting;
+import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -71,7 +72,7 @@ public class TestConfigFile extends AbstractConfigFile {
         public final StringField stringField;
         public final StringListField stringListField;
         public final PredicateStringListField predicateStringListField;
-
+        
         General( TestConfigFile parent ) {
             super( parent, "general", generateFormatTest() );
             
@@ -112,12 +113,12 @@ public class TestConfigFile extends AbstractConfigFile {
                             new EntityEntry( EntityType.CREEPER, true, 1.0 ),
                             new EntityEntry( EntityType.ZOMBIE, false, 2.0 )
                     ).addTagEntries( List.of(
-                            new EntityTagEntry( EntityTypeTags.SKELETONS, 2.0 )
-                            ))
-                    .addNamespaceEntries( List.of(
-                            new NamespaceRegistryEntry( ICrustApi.MOD_ID, 2.0 ),
-                            new NamespaceRegistryEntry( "minecraft", 1.5 )
-                            ))
+                                    new EntityTagEntry( EntityTypeTags.SKELETONS, 2.0 )
+                            ) )
+                            .addNamespaceEntries( List.of(
+                                    new NamespaceRegistryEntry( ICrustApi.MOD_ID, 2.0 ),
+                                    new NamespaceRegistryEntry( "minecraft", 1.5 )
+                            ) )
                             .setSingleValue().setRange( 0.0, 2.0 ),
                             (String[]) null ), General::testCallback ) ).field();
             enumField = SPEC.define( new InjectionWrapperField<>(
@@ -127,7 +128,7 @@ public class TestConfigFile extends AbstractConfigFile {
                     new EnvironmentListField( "environment_list_field", new EnvironmentList(
                             EnvironmentEntry.builder( SPEC, 0.0 ).belowSeaLevel().isRaining().build(),
                             EnvironmentEntry.builder( SPEC, 1.0 ).aboveGoldLevel().isRaining().build(),
-                            EnvironmentEntry.builder( SPEC, 666.0 ).inBiomeCategory( BiomeCategory.FOREST ).build(),
+                            EnvironmentEntry.builder( SPEC, 666.0 ).inBiomeTag( BiomeTags.IS_FOREST ).build(),
                             EnvironmentEntry.builder( SPEC, 20.0 ).afterMonthsOrApocalypseDifficulty( 1 ).build(),
                             EnvironmentEntry.builder( SPEC, 6.9 ).inOverworld().build(),
                             EnvironmentEntry.builder( SPEC, -1.0 ).build() )
@@ -149,10 +150,10 @@ public class TestConfigFile extends AbstractConfigFile {
                                     new RegistryValueEntry<>( ForgeRegistries.MOB_EFFECTS.getKey( MobEffects.CONFUSION ), 1.2 ),
                                     new RegistryValueEntry<>( ForgeRegistries.MOB_EFFECTS.getKey( MobEffects.ABSORPTION ), 2.0 )
                             ).setSingleValue()
-                    ));
+                    ) );
             lazyRegistryEntryListField = SPEC.define( new InjectionWrapperField<>(
                     new LazyRegistryEntryListField<>( "lazy_registry_entry_list",
-                            new LazyRegistryEntryList<>( ForgeRegistries.MOB_EFFECTS, true,
+                            new LazyRegistryEntryList<>( ForgeRegistries.MOB_EFFECTS,
                                     List.of( "minecraft" ),
                                     null,
                                     MobEffects.CONFUSION ),
@@ -170,8 +171,8 @@ public class TestConfigFile extends AbstractConfigFile {
                     new StringListField( "string_list", Arrays.asList( "test0", "test1", "test2" ),
                             (String[]) null ), General::testCallback ) ).field();
             predicateStringListField = SPEC.define( new InjectionWrapperField<>(
-                    new PredicateStringListField( "predicate_string_list", Arrays.asList( "test0", "test1", "test2", "test:3" ),
-                            (line) -> !line.contains( ":" ), (String[]) null ), General::testCallback ) ).field();
+                    new PredicateStringListField( "predicate_string_list", Arrays.asList( "test0", "test1", "test2", "test3" ),
+                            ( line ) -> !line.contains( ":" ), (String[]) null ), General::testCallback ) ).field();
         }
         
         private static void testCallback( AbstractConfigField field ) {

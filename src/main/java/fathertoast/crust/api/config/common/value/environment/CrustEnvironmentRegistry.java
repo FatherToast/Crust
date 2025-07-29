@@ -198,8 +198,11 @@ public final class CrustEnvironmentRegistry {
                         "considered > 0.95." );
         register( "biome_category", BiomeCategoryEnvironment::new, BiomeCategoryEnvironment.class,
                 "(!)category", // TODO Remove when updating beyond MC 1.20
-                "Valid category values: " + TomlHelper.toLiteralList( (Object[]) BiomeCategory.values() ) );
-        // TODO biome_tag
+                "Deprecated, use \"biome_tag\" instead!" );
+        register( "biome_tag", BiomeTagEnvironment::new, BiomeTagEnvironment.class,
+                "(!)#namespace:biome_tag",
+                "The biome tag. See the wiki for vanilla biome tags (resource locations) " +
+                        "[https://minecraft.wiki/w/Biome_tag_(Java_Edition)]." );
         register( "biome", ( field, value ) -> value.endsWith( "*" ) ?
                         new BiomeGroupEnvironment( field, value ) : new BiomeEnvironment( field, value ),
                 Arrays.asList( BiomeGroupEnvironment.class, BiomeEnvironment.class ),

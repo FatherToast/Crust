@@ -1,10 +1,13 @@
 1.20.1-3.6.13
+    - Added new "biome_tag" environment condition, replaces/deprecates "biome_category".
     - Fixed portal command not working when below y=0.
     - Fixed anchor positions for added buttons in pause and inventory screens.
     - Fixed GUIs having incorrect/dark shading in some cases.
+    - PredicateStringList now prints a warning during loading when it filters out invalid strings.
     API Changes:
     - Added simple helper constructors for int and double $RandomRange field containers.
     - Updated EntityEventHelper, deprecated hurt events.
+    - PredicateStringList now throws an exception if you provide any invalid strings in its default value.
 1.20.1-3.6.12
     - Fixed StringListField constructor passing on parameters in the wrong order to the "main" constructor.
     - Changed field "type" in StringListField to have protected visibility.
