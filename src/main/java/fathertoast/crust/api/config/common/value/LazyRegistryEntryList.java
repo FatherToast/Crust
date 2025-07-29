@@ -31,12 +31,24 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
      * <p>
      * This method of creation can only use entries that are loaded (typically only vanilla entries)
      * and cannot take advantage of the * notation.
+     * <p>
+     * Please use the varargs signature (T...) instead.
      */
     @SuppressWarnings( "unchecked" )
+    @Deprecated( forRemoval = true )
     public LazyRegistryEntryList( IForgeRegistry<T> registry, List<T> entries ) {
-        super( registry, (T[]) entries.toArray() );
-        FIELD = null;
-        populated = true;
+        this( registry, (T[]) entries.toArray() );
+    }
+    
+    /**
+     * Create a new registry entry list from an array of entries. Used for creating default configs.
+     * <p>
+     * This method of creation can only use entries that are loaded (typically only vanilla entries)
+     * and cannot take advantage of the * notation.
+     */
+    @SafeVarargs
+    public LazyRegistryEntryList( IForgeRegistry<T> registry, T... entries ) {
+        this( registry, null, null, entries );
     }
     
     /**
@@ -46,34 +58,25 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
      * This method of creation can only use entries that are loaded (typically only vanilla entries)
      * and cannot take advantage of the * notation.
      */
-    public LazyRegistryEntryList( IForgeRegistry<T> registry, @Nullable List<String> namespaces, @Nullable List<TagKey<T>> tags, List<T> entries ) {
-        this( registry, entries );
-        
-        if( tags != null )
-            tags( tags );
-        
-        if( namespaces != null )
-            namespaces( namespaces );
+    @SuppressWarnings( "unchecked" )
+    public LazyRegistryEntryList( IForgeRegistry<T> registry, @Nullable List<String> namespaces, @Nullable List<TagKey<T>> tags, T... entries ) {
+        super( registry, namespaces, tags, entries );
+        FIELD = null;
+        populated = true;
     }
     
     /**
      * Create a new registry entry list from an array of entries. Used for creating default configs.
      * <p>
      * This method of creation is less safe, but can take advantage of the regular vanilla entries, deferred entries,
-     * resource locations, and raw strings.
-     * <p>
-     *
-     * @param vanilla If true, assume all entries are from vanilla (already loaded)
+     * tags, resource locations, and raw strings.
      */
     @SuppressWarnings( "unchecked" )
-    public LazyRegistryEntryList( IForgeRegistry<T> registry, boolean vanilla, Object... entries ) {
+    public LazyRegistryEntryList( IForgeRegistry<T> registry, boolean ignored, Object... entries ) {
         super( registry );
         FIELD = null;
         
-        if( vanilla ) {
-            populated = true;
-        }
-        else if( entries.length > 0 ) {
+        if( entries.length > 0 ) {
             for( Object entry : entries ) {
                 if( registry.containsValue( (T) entry ) ) {
                     final ResourceLocation regKey = registry.getKey( (T) entry );
@@ -81,6 +84,9 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
                         throw new IllegalArgumentException( "Invalid default lazy registry list entry! " + entry );
                     }
                     PRINT_LIST.add( regKey.toString() );
+                }
+                else if( entry instanceof TagKey ) {
+                    PRINT_LIST.add( ConfigUtil.toString( (TagKey<?>) entry ) );
                 }
                 else if( entry instanceof RegistryObject ) {
                     PRINT_LIST.add( ((RegistryObject<?>) entry).getId().toString() );
@@ -91,28 +97,11 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
                 else if( entry instanceof String ) {
                     PRINT_LIST.add( (String) entry );
                 }
-                else {
+                else if( !(entry instanceof Boolean) ) { // For protection when the ignored boolean gets removed later
                     throw new IllegalArgumentException( "Invalid default lazy registry list entry! " + entry );
                 }
             }
         }
-    }
-    
-    /**
-     * Create a new registry entry list from an array of entries. Used for creating default configs.
-     * Also allows adding tags and namespaces.
-     * <p>
-     * This method of creation is less safe, but can take advantage of the regular vanilla entries, deferred entries,
-     * resource locations, and raw strings.
-     */
-    public LazyRegistryEntryList( IForgeRegistry<T> registry, boolean vanilla, @Nullable List<String> namespaces, @Nullable List<TagKey<T>> tags, Object... entries ) {
-        this( registry, vanilla, entries );
-        
-        if( tags != null )
-            tags( tags );
-        
-        if( namespaces != null )
-            namespaces( namespaces );
     }
     
     /**
@@ -134,7 +123,6 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
                 }
                 else {
                     tag( new TagKey<>( registry.getRegistryKey(), tagLocation ) );
-                    PRINT_LIST.add( line );
                 }
             }
             else if( line.endsWith( "*" ) ) {
@@ -146,7 +134,6 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
                 }
                 else {
                     namespace( parts[0] );
-                    PRINT_LIST.add( line );
                 }
             }
             else {

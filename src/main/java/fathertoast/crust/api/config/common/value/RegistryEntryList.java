@@ -39,10 +39,7 @@ public class RegistryEntryList<T> implements IStringArray {
      */
     @SafeVarargs
     public RegistryEntryList( IForgeRegistry<T> registry, T... entries ) {
-        this( registry );
-        for( T entry : entries ) {
-            if( UNDERLYING_SET.add( entry ) ) PRINT_LIST.add( ConfigUtil.toString( registry.getKey( entry ) ) );
-        }
+        this( registry, null, null, entries );
     }
     
     /**
@@ -51,12 +48,14 @@ public class RegistryEntryList<T> implements IStringArray {
      */
     @SafeVarargs
     public RegistryEntryList( IForgeRegistry<T> registry, @Nullable List<String> namespaces, @Nullable List<TagKey<T>> tags, T... entries ) {
-        this( registry, entries );
+        this( registry );
         
+        for( T entry : entries ) {
+            if( UNDERLYING_SET.add( entry ) ) PRINT_LIST.add( ConfigUtil.toString( registry.getKey( entry ) ) );
+        }
         if( tags != null && !tags.isEmpty() ) {
             for( TagKey<T> tag : tags ) tag( tag ); // tag tags tag tag
         }
-        
         if( namespaces != null && !namespaces.isEmpty() ) {
             for( String namespace : namespaces ) namespace( namespace ); // namespace namespaces namespace namespace
         }
@@ -109,7 +108,6 @@ public class RegistryEntryList<T> implements IStringArray {
     /** Adds the specified tag key to this registry list, unless it already exists in the list. */
     public final void tag( TagKey<T> tag ) {
         boolean exists = false;
-        
         for( TagKey<T> tagKey : TAGS ) {
             if( tag.location().equals( tagKey.location() ) ) {
                 exists = true;
@@ -125,7 +123,6 @@ public class RegistryEntryList<T> implements IStringArray {
     /** Adds the specified namespace to the list, unless it already exists in the list. */
     public final void namespace( String namespace ) {
         boolean exists = false;
-        
         for( String s : NAMESPACES ) {
             if( s.equals( namespace ) ) {
                 exists = true;
