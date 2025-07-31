@@ -8,7 +8,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class BoxShape extends ColoredShape {
     
-    protected final AABB box;
+    protected AABB box;
     
     public BoxShape( double minX, double minY, double minZ, double maxX, double maxY, double maxZ ) {
         this( new AABB( minX, minY, minZ, maxX, maxY, maxZ ) );
@@ -37,5 +37,11 @@ public class BoxShape extends ColoredShape {
     public void renderShape( PoseStack poseStack, Vec3 cameraPos, VertexConsumer buffer ) {
         LevelRenderer.renderLineBox( poseStack, buffer, box,
                 red, green, blue, alpha );
+    }
+
+    public void setBounds( double minX, double minY, double minZ, double maxX, double maxY, double maxZ ) {
+        box.setMinX( minX ); box.setMaxX( maxX );
+        box.setMinY( minY ); box.setMaxY( maxY );
+        box.setMinZ( minZ ); box.setMaxZ( maxZ );
     }
 }
