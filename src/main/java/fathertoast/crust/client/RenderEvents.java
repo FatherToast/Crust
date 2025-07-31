@@ -73,7 +73,7 @@ public class RenderEvents {
             poseStack.pushPose();
             poseStack.translate( -cameraPos.x, -cameraPos.y, -cameraPos.z ); // Only move relative to camera position
             
-            shapes.forEach( ( shape ) -> shape.renderShape( poseStack, cameraPos, buffer ) );
+            shapes.forEach( ( shape ) -> shape.renderShape( poseStack, blockEntity.getBlockPos(), cameraPos, buffer ) );
             
             poseStack.popPose();
         }

@@ -2,7 +2,10 @@ package fathertoast.crust.api.util;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
+
+import javax.annotation.Nullable;
 
 public class SphereMeshShape extends ColoredShape {
 
@@ -13,7 +16,9 @@ public class SphereMeshShape extends ColoredShape {
     }
 
     @Override
-    public void renderShape( PoseStack poseStack, Vec3 cameraPos, VertexConsumer buffer ) {
+    public void renderShape( PoseStack poseStack, @Nullable BlockPos pos, Vec3 cameraPos, VertexConsumer buffer ) {
+        // Don't know where to draw the shape
+        if ( pos == null ) return;
 
     }
 
@@ -21,7 +26,9 @@ public class SphereMeshShape extends ColoredShape {
         this.radius = radius;
     }
 
-    private void drawCircle() {
+    private void drawCircle( VertexConsumer vertexConsumer, PoseStack.Pose pose, int resolution,
+                             double x1, double y1, double z1, double x2, double y2, double z2 ) {
+
 
     }
 }

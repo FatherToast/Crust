@@ -3,8 +3,11 @@ package fathertoast.crust.api.util;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
+import javax.annotation.Nullable;
 
 public class BoxShape extends ColoredShape {
     
@@ -34,7 +37,7 @@ public class BoxShape extends ColoredShape {
     }
     
     @Override
-    public void renderShape( PoseStack poseStack, Vec3 cameraPos, VertexConsumer buffer ) {
+    public void renderShape (PoseStack poseStack, @Nullable BlockPos pos, Vec3 cameraPos, VertexConsumer buffer ) {
         LevelRenderer.renderLineBox( poseStack, buffer, box,
                 red, green, blue, alpha );
     }
