@@ -3,6 +3,8 @@ package fathertoast.crust.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import fathertoast.crust.api.util.IBlockEntityBBProvider;
+import fathertoast.crust.api.util.IBlockEntityDebugShapeProvider;
+import fathertoast.crust.api.util.IDebugShape;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -60,25 +62,38 @@ public class RenderEvents {
     
     
     /**
-     * Checks if the given BlockEntity is an instance of {@link IBlockEntityBBProvider}
-     * and attempts to draw the bounding boxes it provides.
+     * Checks if the given BlockEntity is an instance of {@link IBlockEntityDebugShapeProvider}
+     * or {@link IBlockEntityBBProvider} and attempts to draw the objects it provides.
      */
     private void renderBoundingBoxes( BlockEntity blockEntity, PoseStack poseStack, Vec3 cameraPos, VertexConsumer buffer ) {
-        if( blockEntity instanceof IBlockEntityBBProvider bbProvider ) {
-            List<AABB> boxes = bbProvider.getBoundingBoxes();
-            
-            if( boxes == null || boxes.isEmpty() )
-                return;
+        if( blockEntity instanceof IBlockEntityDebugShapeProvider shapeProvider ) {
+            List<IDebugShape> shapes = shapeProvider.getDebugShapes();
+            if( shapes == null || shapes.isEmpty() ) return;
             
             poseStack.pushPose();
             poseStack.translate( -cameraPos.x, -cameraPos.y, -cameraPos.z ); // Only move relative to camera position
             
-            for( AABB box : boxes ) {
-                if( box != null ) {
-                    LevelRenderer.renderLineBox( poseStack, buffer, box, 0.0F, 1.0F, 0.0F, 1.0F );
-                }
-            }
+            shapes.forEach( ( shape ) -> shape.renderShape( poseStack, cameraPos, buffer ) );
+            
             poseStack.popPose();
         }
+        
+        // TODO Remove when updating beyond 1.20.1
+        else //noinspection removal
+            if( blockEntity instanceof IBlockEntityBBProvider bbProvider ) {
+                //noinspection removal
+                List<AABB> boxes = bbProvider.getBoundingBoxes();
+                if( boxes == null || boxes.isEmpty() ) return;
+                
+                poseStack.pushPose();
+                poseStack.translate( -cameraPos.x, -cameraPos.y, -cameraPos.z ); // Only move relative to camera position
+                
+                for( AABB box : boxes ) {
+                    if( box != null ) {
+                        LevelRenderer.renderLineBox( poseStack, buffer, box, 0.0F, 1.0F, 0.0F, 1.0F );
+                    }
+                }
+                poseStack.popPose();
+            }
     }
 }
