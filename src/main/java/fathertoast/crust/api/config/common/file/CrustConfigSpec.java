@@ -55,12 +55,15 @@ public class CrustConfigSpec {
      */
     public void initialize() {
         ConfigUtil.LOG.info( "First-time loading config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+        boolean hasErrors = false;
+
         try {
             NIGHT_CONFIG_FILE.load();
         }
         catch( ParsingException ex ) {
             ConfigUtil.LOG.error( "Failed first-time loading of config file {} - this is bad!",
                     ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
+            hasErrors = true;
         }
         
         try {
@@ -70,9 +73,10 @@ public class CrustConfigSpec {
         catch( IOException ex ) {
             ConfigUtil.LOG.error( "Failed to watch config file {} - this file will NOT update in-game until restarted!",
                     ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
+            hasErrors = true;
         }
         
-        initialized = true;
+        initialized = !hasErrors;
     }
     
     

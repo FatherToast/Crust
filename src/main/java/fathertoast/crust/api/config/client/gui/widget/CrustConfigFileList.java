@@ -5,11 +5,13 @@ import fathertoast.crust.api.config.client.gui.screen.CrustConfigFileScreen;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
@@ -122,7 +124,12 @@ public class CrustConfigFileList extends ContainerObjectSelectionList<CrustConfi
                     Component.literal( ">" ),
                     ( button ) -> PARENT.minecraft.setScreen(
                             new CrustConfigFileScreen( PARENT.minecraft.screen, SPEC ) ), Supplier::get );
-            OPEN_BUTTON.active = SPEC.isInitialized();
+
+            if ( !SPEC.isInitialized() ) {
+                OPEN_BUTTON.active = false;
+                OPEN_BUTTON.setTooltip( Tooltip.create( Component.literal( "Config failed to load, check logs for details" )
+                        .withStyle( ChatFormatting.RED ) ) );
+            }
         }
         
         @Override
