@@ -71,6 +71,7 @@ public class TestConfigFile extends AbstractConfigFile {
         public final StringField stringField;
         public final StringListField stringListField;
         public final PredicateStringListField predicateStringListField;
+        public final BooleanField longCommentField;
         
         General( TestConfigFile parent ) {
             super( parent, "general", generateFormatTest() );
@@ -172,6 +173,11 @@ public class TestConfigFile extends AbstractConfigFile {
             predicateStringListField = SPEC.define( new InjectionWrapperField<>(
                     new PredicateStringListField( "predicate_string_list", Arrays.asList( "test0", "test1", "test2", "test3" ),
                             ( line ) -> !line.contains( ":" ), (String[]) null ), General::testCallback ) ).field();
+            longCommentField = SPEC.define( new BooleanField( "long_comment", true, "Oh boy, this comment sure is long! The reason it " +
+                    "is so very very long is because of the sheer length of the comment, which attributes to the comment's general longness.",
+                    "Now that we know how long this comment is, let us not make too lengthy commentary on the lengthness.",
+                    "Thank you for your longness! So long, and we long to hear from you again! Bye. Im just gonna write some more just in case.",
+                    "Gotta make sure the comment is long enough okay thats enough bye!" ) );
         }
         
         private static void testCallback( AbstractConfigField field ) {

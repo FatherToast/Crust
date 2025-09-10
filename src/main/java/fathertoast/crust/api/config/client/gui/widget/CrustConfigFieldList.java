@@ -7,6 +7,8 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.RestartNote;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
+import fathertoast.crust.api.config.common.file.CrustTomlParser;
+import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -422,9 +424,27 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
                         restartNote.COMMENT ).withStyle( ChatFormatting.RED ), width ) );
             }
             if( !addedComment.isEmpty() ) {
+                final int maxChars = 150;
+                int charCount = 0;
+
                 for( String line : addedComment ) {
-                    TOOLTIP.addAll( minecraft().font.split( Component.literal(
-                            line ).withStyle( ChatFormatting.GRAY ), width ) );
+                    charCount += line.length();
+
+                    // Prevent large tooltips from being
+                    // obnoxious and taking up the whole screen.
+                    if ( charCount > maxChars ) {
+                        int diff = charCount - maxChars;
+                        line = line.substring( 0, line.length() - diff );
+                        line = line + "...";
+
+                        TOOLTIP.addAll( minecraft().font.split( Component.literal(
+                                line ).withStyle( ChatFormatting.GRAY ), width ) );
+                        break;
+                    }
+                    else {
+                        TOOLTIP.addAll(minecraft().font.split(Component.literal(
+                                line).withStyle(ChatFormatting.GRAY), width));
+                    }
                 }
             }
         }
