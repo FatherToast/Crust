@@ -155,4 +155,9 @@ public class EnvironmentList implements IStringArray {
     
     /** @return The maximum value that can be given to entry values. */
     public double getMaxValue() { return maxValue; }
+
+    /** @return True if this list hold no condition entries. */
+    public boolean isEmpty() {
+        return ENTRIES.length == 0;
+    }
 }

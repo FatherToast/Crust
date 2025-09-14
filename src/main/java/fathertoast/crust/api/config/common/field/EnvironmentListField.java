@@ -197,4 +197,7 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
         if( pos != null && isLoaded( world, pos ) ) return get( world, pos );
         else return get( world );
     }
+
+    /** @return True if there are no entries in the environment condition list. */
+    public boolean isEmpty() { return get().isEmpty(); }
 }
