@@ -266,19 +266,26 @@ public class IntField extends AbstractConfigField {
             }
         }
         
-        /** @return Returns the minimum value of this range. */
+        /** @return The minimum value of this range. */
         public int getMin() { return MINIMUM.get(); }
         
-        /** @return Returns the maximum value of this range. */
+        /** @return The maximum value of this range. */
         public int getMax() { return MAXIMUM.get(); }
-        
-        /** @return Returns a random value between the minimum and the maximum (inclusive). */
+
+        /** @return The minimum value field. */
+        public IntField getMinField() { return MINIMUM; }
+
+        /** @return The maximum value field. */
+        public IntField getMaxField() { return MAXIMUM; }
+
+
+        /** @return A random value between the minimum and the maximum (inclusive). */
         public int next( Random random ) { return next( random::nextInt ); }
         
-        /** @return Returns a random value between the minimum and the maximum (inclusive). */
+        /** @return A random value between the minimum and the maximum (inclusive). */
         public int next( RandomSource random ) { return next( random::nextInt ); }
         
-        /** @return Returns a random value between the minimum and the maximum (inclusive). */
+        /** @return A random value between the minimum and the maximum (inclusive). */
         private int next( Function<Integer, Integer> random ) {
             final int delta = getMax() - getMin();
             if( delta > 0 ) {

@@ -1,3 +1,5 @@
+1.20.1-4.8.14
+    - Fixed IntField.RandomRange and DoubleField.RandomRange not having public getters for the internal min and max fields.
 1.20.1-4.7.14
     API Changes:
     - Added helper methods to EnvironmentList and EnvironmentListField to check if conditions are empty.

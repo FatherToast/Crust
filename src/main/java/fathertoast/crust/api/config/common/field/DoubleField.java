@@ -209,19 +209,26 @@ public class DoubleField extends AbstractConfigField {
             }
         }
         
-        /** @return Returns the minimum value of this range. */
+        /** @return The minimum value of this range. */
         public double getMin() { return MINIMUM.get(); }
         
-        /** @return Returns the maximum value of this range. */
+        /** @return The maximum value of this range. */
         public double getMax() { return MAXIMUM.get(); }
-        
-        /** @return Returns a random value between the minimum (inclusive) and the maximum (exclusive). */
+
+        /** @return The minimum value field. */
+        public DoubleField getMinField() { return MINIMUM; }
+
+        /** @return The maximum value field. */
+        public DoubleField getMaxField() { return MAXIMUM; }
+
+
+        /** @return A random value between the minimum (inclusive) and the maximum (exclusive). */
         public double next( Random random ) { return next( random::nextDouble ); }
         
-        /** @return Returns a random value between the minimum (inclusive) and the maximum (exclusive). */
+        /** @return A random value between the minimum (inclusive) and the maximum (exclusive). */
         public double next( RandomSource random ) { return next( random::nextDouble ); }
         
-        /** @return Returns a random value between the minimum (inclusive) and the maximum (exclusive). */
+        /** @return A random value between the minimum (inclusive) and the maximum (exclusive). */
         private double next( Supplier<Double> random ) {
             final double delta = getMax() - getMin();
             if( delta > 1.0e-4 ) {
