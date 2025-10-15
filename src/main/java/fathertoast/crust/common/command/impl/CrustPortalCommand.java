@@ -2,6 +2,7 @@ package fathertoast.crust.common.command.impl;
 
 import com.mojang.brigadier.CommandDispatcher;
 import fathertoast.crust.api.ICrustApi;
+import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.api.portal.PortalBuilder;
 import fathertoast.crust.common.command.CommandUtil;
 import fathertoast.crust.common.portal.CrustPortals;
@@ -52,7 +53,7 @@ public class CrustPortalCommand {
         }
         
         portalBuilder.generate( target.level(), currentPos, forward );
-        CommandUtil.sendSuccess( source, "portal", CrustPortals.PORTAL_REGISTRY.get().getKey( portalBuilder ),
+        CommandUtil.sendSuccess( source, "portal", CrustObjects.PORTAL_REGISTRY.get().getKey( portalBuilder ),
                 pos.getX(), pos.getY(), pos.getZ() );
         return 1;
     }

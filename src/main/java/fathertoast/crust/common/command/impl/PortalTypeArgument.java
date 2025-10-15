@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.api.portal.PortalBuilder;
 import fathertoast.crust.common.portal.CrustPortals;
 import net.minecraft.commands.CommandSourceStack;
@@ -33,9 +34,9 @@ public class PortalTypeArgument implements ArgumentType<PortalBuilder> {
         StringReader reader = new StringReader( suggestions.getInput() );
         reader.setCursor( suggestions.getStart() );
         
-        for( PortalBuilder builder : CrustPortals.PORTAL_REGISTRY.get().getValues() ) {
+        for( PortalBuilder builder : CrustObjects.PORTAL_REGISTRY.get().getValues() ) {
             //noinspection ConstantConditions
-            suggestions.suggest( CrustPortals.PORTAL_REGISTRY.get().getKey( builder ).toString() );
+            suggestions.suggest( CrustObjects.PORTAL_REGISTRY.get().getKey( builder ).toString() );
         }
         return suggestions.buildFuture();
     }
@@ -43,7 +44,7 @@ public class PortalTypeArgument implements ArgumentType<PortalBuilder> {
     @Override
     public PortalBuilder parse( StringReader reader ) throws CommandSyntaxException {
         ResourceLocation resourceLocation = ResourceLocation.read( reader );
-        PortalBuilder portalBuilder = CrustPortals.PORTAL_REGISTRY.get().getValue( resourceLocation );
+        PortalBuilder portalBuilder = CrustObjects.PORTAL_REGISTRY.get().getValue( resourceLocation );
         
         if( portalBuilder == null )
             throw INVALID_PORTAL_TYPE.create();

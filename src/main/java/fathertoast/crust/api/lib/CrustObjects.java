@@ -1,51 +1,31 @@
 package fathertoast.crust.api.lib;
 
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.portal.PortalBuilder;
-import fathertoast.crust.common.api.impl.CrustApi;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.registries.IForgeRegistry;
+
+import java.util.function.Supplier;
 
 /**
  * This helper class contains references/getters for all registry objects provided by Crust.
  */
 @SuppressWarnings( { "unused" } )
 public final class CrustObjects {
-    
-    /** The Vulnerability potion effect. Take 25% more damage per level (vs. Damage Resistance's 20% less per level). */
-    public static MobEffect vulnerability() { return VULNERABILITY; }
-    
+
     /**
-     * The Weight potion effect. Increases effective fall distance by ~33% per level.
-     * Applies downward acceleration, up to a maximum equivalent to one downward bubble column per level.
+     * The Forge registry for Crust portal builders.<br>
+     * Populated during {@link net.minecraftforge.registries.NewRegistryEvent}.
      */
-    public static MobEffect weight() { return WEIGHT; }
-    
-    /** Vanilla Nether portal; 3x3 configuration. */
-    public static PortalBuilder netherPortal() { return NETHER_PORTAL; }
-    
-    /** Vanilla End portal; stronghold configuration. */
-    public static PortalBuilder endPortal() { return END_PORTAL; }
+    public static Supplier<IForgeRegistry<PortalBuilder>> PORTAL_REGISTRY;
     
     
-    /** The 'path' portion of each Crust object's registry name. */
+    /** The registry IDs of misc game objects added by Crust. */
     public interface ID {
-        String EFFECT_REGISTRY = "minecraft:mob_effect";
-        String VULNERABILITY = "vulnerability";
-        String WEIGHT = "weight";
-        
-        String PORTAL_REGISTRY = "crust:portal_builder";
-        String NETHER_PORTAL = "nether_portal";
-        String END_PORTAL = "end_portal";
+        ResourceLocation VULNERABILITY_EFFECT = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "vulnerability" );
+        ResourceLocation WEIGHT_EFFECT = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "weight" );
+
+        ResourceLocation NETHER_PORTAL = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "nether_portal" );
+        ResourceLocation END_PORTAL = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "end_portal" );
     }
-    
-    
-    @ObjectHolder( registryName = ID.EFFECT_REGISTRY, value = CrustApi.MOD_ID + ":" + ID.VULNERABILITY )
-    private static MobEffect VULNERABILITY;
-    @ObjectHolder( registryName = ID.EFFECT_REGISTRY, value = CrustApi.MOD_ID + ":" + ID.WEIGHT )
-    private static MobEffect WEIGHT;
-    
-    @ObjectHolder( registryName = ID.PORTAL_REGISTRY, value = CrustApi.MOD_ID + ":" + ID.NETHER_PORTAL )
-    private static PortalBuilder NETHER_PORTAL;
-    @ObjectHolder( registryName = ID.PORTAL_REGISTRY, value = CrustApi.MOD_ID + ":" + ID.END_PORTAL )
-    private static PortalBuilder END_PORTAL;
 }

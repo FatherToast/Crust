@@ -7,6 +7,7 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
+// TODO - Actually do something with this
 public class SphereMeshShape extends ColoredShape {
 
     private double radius;
@@ -17,7 +18,6 @@ public class SphereMeshShape extends ColoredShape {
 
     @Override
     public void renderShape( PoseStack poseStack, @Nullable BlockPos pos, Vec3 cameraPos, VertexConsumer buffer ) {
-        // Don't know where to draw the shape
         if ( pos == null ) return;
 
     }

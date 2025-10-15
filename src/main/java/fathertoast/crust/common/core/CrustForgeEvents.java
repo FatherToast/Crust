@@ -3,6 +3,7 @@ package fathertoast.crust.common.core;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.common.network.CrustPacketHandler;
+import fathertoast.crust.common.potion.CrustEffects;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -63,9 +64,9 @@ public class CrustForgeEvents {
         Level level = event.getEntity().level();
         
         if( event.getEntity() != null && event.getSource().type() != level.damageSources().fellOutOfWorld().type() && !event.getSource().is( DamageTypeTags.BYPASSES_ENCHANTMENTS ) &&
-                event.getEntity().hasEffect( CrustObjects.vulnerability() ) ) {
+                event.getEntity().hasEffect( CrustEffects.VULNEARABILITY.get() ) ) {
             
-            final MobEffectInstance vulnerability = event.getEntity().getEffect( CrustObjects.vulnerability() );
+            final MobEffectInstance vulnerability = event.getEntity().getEffect( CrustEffects.VULNEARABILITY.get() );
             if( vulnerability == null ) return;
             
             // Take 25% more damage per effect level (vs. Damage Resistance's 20% less per level)
@@ -76,9 +77,9 @@ public class CrustForgeEvents {
     /** Called when an entity lands on the ground. */
     @SubscribeEvent( priority = EventPriority.NORMAL )
     static void onLivingFall( LivingFallEvent event ) {
-        if( event.getEntity() != null && event.getEntity().hasEffect( CrustObjects.weight() ) ) {
+        if( event.getEntity() != null && event.getEntity().hasEffect( CrustEffects.WEIGHT.get() ) ) {
             
-            final MobEffectInstance weight = event.getEntity().getEffect( CrustObjects.weight() );
+            final MobEffectInstance weight = event.getEntity().getEffect( CrustEffects.WEIGHT.get() );
             if( weight == null ) return;
             
             // Increase effective fall distance by ~33% per effect level

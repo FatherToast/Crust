@@ -99,11 +99,11 @@ public class ButtonInfo {
     @SuppressWarnings( "unused" )
     public static final ButtonInfo NETHER_PORTAL = builtIn( new ButtonInfo( "netherPortal", "portal_nether.png",
             "crustportal " + CrustPortals.NETHER_PORTAL )
-            .condition( () -> CrustObjects.netherPortal().isValidDimension( world() ) ) );
+            .condition( () -> CrustPortals.NETHER_PORTAL.get().isValidDimension( world() ) ) );
     @SuppressWarnings( "unused" )
     public static final ButtonInfo END_PORTAL = builtIn( new ButtonInfo( "endPortal", "portal_end.png",
             "crustportal " + CrustPortals.END_PORTAL )
-            .condition( () -> CrustObjects.endPortal().isValidDimension( world() ) ) );
+            .condition( () -> CrustPortals.END_PORTAL.get().isValidDimension( world() ) ) );
     
     // Time control
     public static final ButtonInfo DAY = builtIn( new ButtonInfo( "day", "day.png",
