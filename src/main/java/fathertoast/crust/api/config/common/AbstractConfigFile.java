@@ -34,9 +34,8 @@ public abstract class AbstractConfigFile {
      *                        Each string is printed as a separate line.
      */
     public AbstractConfigFile( ConfigManager cfgManager, String cfgName, String... fileDescription ) {
-        cfgManager.register( this );
-        
         SPEC = new CrustConfigSpec( cfgManager, this, cfgName );
+        cfgManager.register( this );
         SPEC.loadingCategory = "";
         SPEC.header( TomlHelper.newComment( fileDescription ) );
     }

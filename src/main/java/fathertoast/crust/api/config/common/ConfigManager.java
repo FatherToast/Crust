@@ -1,7 +1,9 @@
 package fathertoast.crust.api.config.common;
 
+import fathertoast.crust.api.ICrustApi;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 
@@ -105,7 +107,12 @@ public final class ConfigManager {
     /** The root folder for managed config files. */
     public final File DIR;
     
-    /** It's a good idea to freeze the file watcher while initializing a large number of files; can prevent a few unneeded reloads. */
+    /**
+     * It's a good idea to freeze the file watcher while initializing a large number of files;
+     * can prevent a few unneeded reloads.
+     * During mod loading, the file watcher is typically already frozen, so this only helps if
+     * you initialize your files after mod loading has completed for some reason.
+     */
     public volatile boolean freezeFileWatcher;
     
     /** @return A read-only list of all config files this manages. */
@@ -136,6 +143,12 @@ public final class ConfigManager {
     
     
     // ---- Internal Methods ---- //
+    
+    /**
+     * Global toggle for file watching. Generally, you should not mess with this.
+     * Crust automatically freezes file watchers until mod loading is complete.
+     */
+    public static boolean GLOBAL_FREEZE_FILE_WATCHERS = ModList.get().isLoaded( ICrustApi.MOD_ID );
     
     /** Mapping of each mod id to its config manager. */
     private static final HashMap<String, ConfigManager> MOD_ID_TO_CM_MAP = new HashMap<>();

@@ -56,7 +56,7 @@ public class CrustConfigSpec {
     public void initialize() {
         ConfigUtil.LOG.info( "First-time loading config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
         boolean hasErrors = false;
-
+        
         try {
             NIGHT_CONFIG_FILE.load();
         }
@@ -226,14 +226,14 @@ public class CrustConfigSpec {
      * This is NOT shown in the GUI; it is recommended to use {@link #fileOnlyNewLine()} to space around it.
      */
     public void describeRegistryEntryList() { fileOnlyComment( RegistryEntryListField.verboseDescription() ); }
-
+    
     /**
      * Inserts a detailed description of how to use the registry entry value list field.
      * Recommended to include either in a README or at the start of each config that contains any registry entry value list fields.
      * This is NOT shown in the GUI; it is recommended to use {@link #fileOnlyNewLine()} to space around it.
      */
     public void describeRegistryEntryValueList() { fileOnlyComment( RegistryEntryValueListField.verboseDescription() ); }
-
+    
     /**
      * Inserts a detailed description of how to use the entity list field.
      * Recommended to include either in a README or at the start of each config that contains any entity list fields.
@@ -353,9 +353,9 @@ public class CrustConfigSpec {
             ConfigUtil.LOG.debug( "Skipping config file reload (it is currently saving) {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
         }
         else if( MANAGER.freezeFileWatcher ) {
-            ConfigUtil.LOG.debug( "Skipping config file reload (file watcher paused) {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+            ConfigUtil.LOG.debug( "Skipping config file reload (mod's file watcher paused) {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
         }
-        else {
+        else if( !ConfigManager.GLOBAL_FREEZE_FILE_WATCHERS ) {
             ConfigUtil.LOG.info( "Reloading config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
             try {
                 NIGHT_CONFIG_FILE.load();
