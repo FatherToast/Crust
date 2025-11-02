@@ -5,6 +5,7 @@ import fathertoast.crust.common.mode.CrustModeEvents;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ViewportEvent;
@@ -33,8 +34,9 @@ public class CrustModeClientEvents {
     @SubscribeEvent
     static void onClientTick( TickEvent.ClientTickEvent event ) {
         if( event.phase == TickEvent.Phase.START ) {
-            if( Minecraft.getInstance().level != null ) {
-                CrustModeEvents.onWorldTickStart( Minecraft.getInstance().level );
+            ClientLevel level = Minecraft.getInstance().level;
+            if( level != null ) {
+                CrustModeEvents.tickMagnetMode( level, level::entitiesForRendering );
             }
         }
     }

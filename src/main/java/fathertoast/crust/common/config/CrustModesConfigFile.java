@@ -120,6 +120,7 @@ public class CrustModesConfigFile extends AbstractConfigFile {
         public final DoubleField maxRangeLimit;
         public final DoubleField maxSpeed;
         public final IntField delay;
+        public final BooleanField smooth;
         
         Magnet( CrustModesConfigFile parent ) {
             super( parent, "magnet_mode",
@@ -134,6 +135,9 @@ public class CrustModesConfigFile extends AbstractConfigFile {
                     "The time delay (ticks) before freshly dropped items are pulled by magnet mode.",
                     "Setting this to a low value will cause items to fly around your face until their pickup delay expires. " +
                             "The default prevents face-flying for all vanilla drops, but many drops only have a pickup delay of 10." ) );
+            smooth = SPEC.define( new BooleanField( "smooth", true,
+                    "When true, makes magnet mode visually smoother by running its logic every tick. " +
+                            "Otherwise, it runs every other tick for a slight performance gain." ) );
         }
     }
     

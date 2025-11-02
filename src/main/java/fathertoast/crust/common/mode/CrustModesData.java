@@ -18,6 +18,7 @@ public class CrustModesData {
     // We can cache by player UUID here, if needed - might be a little messy
     public static CrustModesData of( Player player ) { return new CrustModesData( player ); }
     
+    
     /** The player. */
     private final Player PLAYER;
     /** The NBT compound that stores all mode save data. */
@@ -70,6 +71,9 @@ public class CrustModesData {
         }
     }
     
+    
+    /** The player this data belongs to. */
+    public Player getOwner() { return PLAYER; }
     
     /** The NBT compound that stores all mode save data. Do NOT modify this directly if you don't need to. */
     public CompoundTag getSaveTag() { return SAVE_TAG; }
