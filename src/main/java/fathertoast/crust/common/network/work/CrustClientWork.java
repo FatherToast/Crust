@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 @OnClient
 public class CrustClientWork {
     
-    public static void handleDestroyItemOnPointer( @SuppressWarnings( "unused" ) S2CDestroyItemOnPointer message ) {
+    public static void handleDestroyItemOnPointer() {
         Minecraft mc = Minecraft.getInstance();
         if( mc.player != null ) mc.player.inventoryMenu.setCarried( ItemStack.EMPTY );
     }

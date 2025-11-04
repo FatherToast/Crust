@@ -28,7 +28,7 @@ public class CrustPacketHandler {
     
     /** Sends Crust modes data to its owner's client. */
     public static void sendDestroyItemOnPointerUpdate( ServerPlayer player ) {
-        sendToClient( player, new S2CDestroyItemOnPointer() );
+        sendToClient( player, S2CDestroyItemOnPointer.INSTANCE );
     }
     
     /** Sends Crust modes data to its owner's client. */
