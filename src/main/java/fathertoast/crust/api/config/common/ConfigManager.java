@@ -96,7 +96,17 @@ public final class ConfigManager {
     @Nullable
     public static AbstractConfigFile getConfig( String modId, String name ) {
         ConfigManager cfgManager = get( modId );
-        return cfgManager == null ? null : cfgManager.nameToConfigMap.get( name );
+        return cfgManager == null ? null : cfgManager.getConfig( name );
+    }
+    
+    /**
+     * @param modId The id of the mod we want the config for.
+     * @param name  The spec name of the config file we want.
+     * @return The config file identified.
+     * @throws IllegalStateException If the mod doesn't have a config manager or the file does not exist.
+     */
+    public static AbstractConfigFile getRequiredConfig( String modId, String name ) {
+        return getRequired( modId ).getRequiredConfig( name );
     }
     
     // ---- Instance Methods ---- //
@@ -128,7 +138,7 @@ public final class ConfigManager {
     /**
      * @param name The spec name of the config file we want.
      * @return The config file identified.
-     * @throws IllegalStateException If the mod doesn't have a config manager.
+     * @throws IllegalStateException If the mod doesn't have a config manager or the file does not exist.
      */
     public AbstractConfigFile getRequiredConfig( String name ) {
         AbstractConfigFile config = nameToConfigMap.get( name );
