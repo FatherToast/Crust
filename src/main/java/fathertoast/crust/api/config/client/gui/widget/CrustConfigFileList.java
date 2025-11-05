@@ -17,6 +17,7 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -119,16 +120,20 @@ public class CrustConfigFileList extends ContainerObjectSelectionList<CrustConfi
             PARENT = parent;
             SPEC = spec;
             NAME = name;
+            
+            final MutableComponent specError = Component.translatable( "menu.crust.config.select.button.spec_error" )
+                    .withStyle( ChatFormatting.RED );
+            
             //noinspection ConstantConditions
             OPEN_BUTTON = new Button( 0, 0, 20, 20,
                     Component.literal( ">" ),
                     ( button ) -> PARENT.minecraft.setScreen(
-                            new CrustConfigFileScreen( PARENT.minecraft.screen, SPEC ) ), Supplier::get );
+                            new CrustConfigFileScreen( PARENT.minecraft.screen, SPEC ) ),
+                    SPEC.isInitialized() ? Supplier::get : ( supplier ) -> specError );
 
             if ( !SPEC.isInitialized() ) {
                 OPEN_BUTTON.active = false;
-                OPEN_BUTTON.setTooltip( Tooltip.create( Component.literal( "Config failed to load, check logs for details" )
-                        .withStyle( ChatFormatting.RED ) ) );
+                OPEN_BUTTON.setTooltip( Tooltip.create( specError ) );
             }
         }
         

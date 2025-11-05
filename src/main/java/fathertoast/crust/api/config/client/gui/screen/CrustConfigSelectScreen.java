@@ -2,8 +2,11 @@ package fathertoast.crust.api.config.client.gui.screen;
 
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFileList;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigModList;
+import fathertoast.crust.api.config.client.gui.widget.field.SearchBar;
+import fathertoast.crust.api.config.client.gui.widget.field.TextWithSubtitle;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.ConfigUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSelectionList;
@@ -45,13 +48,17 @@ public class CrustConfigSelectScreen extends Screen {
     private final ConfigManager CFG_MANAGER;
     
     /** The text to render below the title. */
+    private final Component TITLE;
     private final Component SUBTITLE;
+    
+    private final boolean createSearchBar;
+    private SearchBar searchBar;
     
     private AbstractSelectionList<?> selectionList;
     
     /** Creates a new config selection screen, opened to the mod select page. */
     public CrustConfigSelectScreen( @Nullable Screen parent ) {
-        this( parent, null, Component.translatable( "menu.crust.config.select.mod.title" ), null );
+        this( parent, null, Component.translatable( "menu.crust.config.select.mod.title" ), null, false );
     }
     
     /** Creates a new config selection screen, opened directly to mod's file select page. */
@@ -60,28 +67,37 @@ public class CrustConfigSelectScreen extends Screen {
                 Component.translatable( "menu.crust.config.select.file.title",
                         getModName( cfgManager.MOD_ID ) ),
                 Component.translatable( "menu.crust.config.select.file.subtitle",
-                        ConfigUtil.toRelativePath( cfgManager.DIR ) ) );
+                        ConfigUtil.toRelativePath( cfgManager.DIR ) ).withStyle( ChatFormatting.DARK_GRAY ),
+                true );
     }
     
     /** Creates a new config selection screen, optionally opened directly to a specific mod's page. */
-    private CrustConfigSelectScreen( @Nullable Screen parent, @Nullable ConfigManager cfgManager, Component title, @Nullable Component subtitle ) {
+    private CrustConfigSelectScreen( @Nullable Screen parent, @Nullable ConfigManager cfgManager, Component title,
+                                     @Nullable Component subtitle, boolean searchBar ) {
+        // Note: the title passed in super here does not
+        // get drawn on screen, a separate widget is used instead.
         super( title );
         LAST_SCREEN = parent;
         CFG_MANAGER = cfgManager;
+        TITLE = title;
         SUBTITLE = subtitle;
+        createSearchBar = searchBar;
     }
     
     /** Called to close the screen. */
     @Override
     public void onClose() { if( minecraft != null ) minecraft.setScreen( LAST_SCREEN ); }
     
-    /** Called to setup the screen before displaying it. */
+    /** Called to set up the screen before displaying it. */
     @Override
     protected void init() {
         if( minecraft == null ) return;
         
         // Header content
-        // Nothing to init
+        addRenderableWidget( TextWithSubtitle.create( font, width / 2, 8, true, TITLE, SUBTITLE ) );
+        
+        if( createSearchBar )
+            searchBar = addWidget( new SearchBar( font, 8, 20, 100, 16 ) );
         
         // Primary screen content
         if( CFG_MANAGER == null ) {
@@ -90,7 +106,7 @@ public class CrustConfigSelectScreen extends Screen {
         else {
             selectionList = new CrustConfigFileList( this, minecraft, CFG_MANAGER );
         }
-        addRenderableWidget( selectionList );
+        addWidget( selectionList );
         
         // Footer content
         addRenderableWidget( new Button( width / 2 - 155, height - 29,
@@ -99,10 +115,16 @@ public class CrustConfigSelectScreen extends Screen {
                     if( CFG_MANAGER == null ) Util.getPlatform().openFile( FMLPaths.CONFIGDIR.get().toFile() );
                     else Util.getPlatform().openFile( CFG_MANAGER.DIR );
                 },
-                Supplier::get) );
+                Supplier::get ) );
         addRenderableWidget( new Button( width / 2 - 155 + 160, height - 29,
                 150, 20, CommonComponents.GUI_DONE,
                 ( button ) -> minecraft.setScreen( LAST_SCREEN ), Supplier::get ) );
+    }
+    
+    @Override
+    public void tick() {
+        if( searchBar != null )
+            searchBar.tick();
     }
     
     /** Called to render the screen. */
@@ -112,12 +134,8 @@ public class CrustConfigSelectScreen extends Screen {
         
         selectionList.render( graphics, mouseX, mouseY, partialTicks );
         
-        if( SUBTITLE != null ) {
-            graphics.drawCenteredString( font, SUBTITLE, width / 2,
-                    24, 0x777777 );
-        }
-        graphics.drawCenteredString( font, title, width / 2,
-                8, 0xFFFFFF );
+        if( searchBar != null )
+            searchBar.render( graphics, mouseX, mouseY, partialTicks );
         
         super.render( graphics, mouseX, mouseY, partialTicks );
     }
