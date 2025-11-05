@@ -1,14 +1,32 @@
 package fathertoast.crust.api.lib;
 
-
+import net.minecraft.core.HolderGetter;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.StateHolder;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.Optional;
 
 import static net.minecraft.nbt.Tag.*;
 
 @SuppressWarnings( "unused" )
 public final class NBTHelper {
+    
+    /** Logger instance for the Crust NBT helper. */
+    public static final Logger LOG = LogManager.getLogger( "crust/nbt" );
+    
     /**
      * @param tag  The compound tag to read from.
      * @param name The name of the tag to check.
@@ -151,5 +169,84 @@ public final class NBTHelper {
      */
     public static CompoundTag getPlayerData( Player player, String name, String subName ) {
         return getOrCreateCompound( getPlayerData( player, name ), subName );
+    }
+    
+    /**
+     * Convenience method for writing a block state to NBT.
+     *
+     * @param tag        The compound tag to write to.
+     * @param name       The name of the desired block state's compound tag.
+     * @param blockState The block state to write.
+     */
+    public static void putBlockState( CompoundTag tag, String name, BlockState blockState ) {
+        tag.put( name, writeBlockState( blockState ) );
+    }
+    
+    /**
+     * Convenience method for loading a block state from NBT.
+     *
+     * @param tag  The compound tag to read from.
+     * @param name The name of the desired block state's compound tag.
+     * @return The loaded block state, or air if the block state tag does not exist or encounters a problem.
+     */
+    public static BlockState getBlockState( CompoundTag tag, String name ) {
+        return readBlockState( tag.getCompound( name ) );
+    }
+    
+    /**
+     * @param blockState The state to save.
+     * @return A new compound tag containing the block state's data.
+     */
+    public static CompoundTag writeBlockState( BlockState blockState ) {
+        return NbtUtils.writeBlockState( blockState );
+    }
+    
+    /**
+     * Modified copy-paste of {@link net.minecraft.nbt.NbtUtils#readBlockState(HolderGetter, CompoundTag)}.<br>
+     * Original implementation is not as friendly. This one checks the forge registry for blocks.
+     *
+     * @param blockTag The compound tag containing the block state data, such as the one returned by writeBlockState.
+     * @return The block state as described by the block tag, or air if anything goes wrong.
+     */
+    public static BlockState readBlockState( CompoundTag blockTag ) {
+        if( !blockTag.contains( "Name", Tag.TAG_STRING ) ) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        else {
+            ResourceLocation blockId = ResourceLocation.parse( blockTag.getString( "Name" ) );
+            Block block = ForgeRegistries.BLOCKS.getValue( blockId );
+            
+            if( block == null ) {
+                return Blocks.AIR.defaultBlockState();
+            }
+            else {
+                BlockState blockState = block.defaultBlockState();
+                if( blockTag.contains( "Properties", Tag.TAG_COMPOUND ) ) {
+                    CompoundTag propertiesTag = blockTag.getCompound( "Properties" );
+                    StateDefinition<Block, BlockState> statedefinition = block.getStateDefinition();
+                    
+                    for( String key : propertiesTag.getAllKeys() ) {
+                        Property<?> property = statedefinition.getProperty( key );
+                        
+                        if( property != null ) {
+                            blockState = setValueHelper( blockState, property, key, propertiesTag, blockTag );
+                        }
+                    }
+                }
+                return blockState;
+            }
+        }
+    }
+    
+    private static <S extends StateHolder<?, S>, T extends Comparable<T>> S setValueHelper( S state, Property<T> property, String key,
+                                                                                            CompoundTag propertiesTag, CompoundTag blockTag ) {
+        Optional<T> optional = property.getValue( propertiesTag.getString( key ) );
+        if( optional.isPresent() ) {
+            return state.setValue( property, optional.get() );
+        }
+        else {
+            LOG.warn( "Unable to read property: {} with value: {} for blockstate: {}", key, propertiesTag.getString( key ), blockTag.toString() );
+            return state;
+        }
     }
 }
