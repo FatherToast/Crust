@@ -94,7 +94,7 @@ public class CrustConfigSelectScreen extends Screen {
         if( minecraft == null ) return;
         
         // Header content
-        addRenderableWidget( TextWithSubtitle.create( font, width / 2, 8, true, TITLE, SUBTITLE ) );
+        addRenderableWidget( TextWithSubtitle.create( this, font, width / 2, 8, true, TITLE, SUBTITLE ) );
         
         if( createSearchBar )
             searchBar = addWidget( new SearchBar( font, 8, 20, 100, 16 ) );
