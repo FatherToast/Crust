@@ -3,6 +3,7 @@ package fathertoast.crust.api.config.client.gui.widget;
 import com.google.common.collect.ImmutableList;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
 import fathertoast.crust.api.config.common.ConfigManager;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -34,7 +35,7 @@ public class CrustConfigModList extends ContainerObjectSelectionList<CrustConfig
         // Populate the list contents
         for( ConfigManager cfgManager : cfgManagers ) {
             Component name = Component.literal( CrustConfigSelectScreen.getModName( cfgManager.MOD_ID ) +
-                    " (modid:" + cfgManager.MOD_ID + ")" );
+                    ChatFormatting.DARK_GRAY + " (modid:" + cfgManager.MOD_ID + ")" );
             int nameWidth = game.font.width( name );
             if( nameWidth > maxNameWidth ) maxNameWidth = nameWidth;
             
