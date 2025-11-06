@@ -50,11 +50,13 @@ public class CrustConfigSelectScreen extends Screen {
     /** The subtitle to in a tooltip for the title. */
     private final Component SUBTITLE;
     
+    /** A list containing entries for every mod's config manager. */
+    private SearchableSelectionList<? extends SearchBar.Searchable> selectionList;
+    
     private final boolean createSearchBar;
-    /** The search bar for looking up entries in selectionList. */
+    /** The search bar for looking up entries in {@link CrustConfigSelectScreen#selectionList}. */
     private SearchBar searchBar;
     
-    private SearchableSelectionList<? extends SearchBar.Searchable> selectionList;
     
     /** Creates a new config selection screen, opened to the mod select page. */
     public CrustConfigSelectScreen( @Nullable Screen parent ) {
@@ -107,7 +109,7 @@ public class CrustConfigSelectScreen extends Screen {
         addWidget( selectionList );
         
         if( createSearchBar )
-            searchBar = addRenderableWidget( new SearchBar( selectionList, font, 8, 20, 100, 16 ) );
+            searchBar = SearchBar.create( this, selectionList, font, 8, 20, 100, SearchBar.DEFAULT_MATCHER );
         
         // Footer content
         addRenderableWidget( new Button( width / 2 - 155, height - 29,

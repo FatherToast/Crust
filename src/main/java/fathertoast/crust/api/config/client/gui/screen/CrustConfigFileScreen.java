@@ -65,11 +65,10 @@ public class CrustConfigFileScreen extends Screen {
     /** The "done" or "save changes" button. */
     private Button bottomRightButton;
     
-    /** The search bar for looking up entries in fieldList. */
-    private SearchBar searchBar;
-    
     /** The currently focused text box, if any. */
     private EditBox focusedTextBox;
+    /** The search bar for looking up entries in {@link CrustConfigFileScreen#fieldList}. */
+    private SearchBar searchBar;
     
     /** The currently open popup widget, if any. */
     private AbstractWidget popupWidget;
@@ -125,7 +124,7 @@ public class CrustConfigFileScreen extends Screen {
         fieldList = new CrustConfigFieldList( this, minecraft, SPEC, offsets );
         addRenderableWidget( fieldList );
         
-        searchBar = addRenderableWidget( new SearchBar( fieldList, font, 8, 20, 100, 16 ) );
+        searchBar = SearchBar.create( this, fieldList, font, 8, 20, 100, SearchBar.DEFAULT_MATCHER );
         
         // Footer content
         addRenderableWidget( bottomLeftButton = new Button( width / 2 - 155, height - 29,
@@ -309,6 +308,7 @@ public class CrustConfigFileScreen extends Screen {
     @Override
     public void tick() {
         if( focusedTextBox != null ) focusedTextBox.tick();
+        if( searchBar != null ) searchBar.tick();
         if( popupWidget instanceof IPopupWidget ) ((IPopupWidget) popupWidget).tick();
     }
     
