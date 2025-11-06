@@ -2,6 +2,7 @@ package fathertoast.crust.api.config.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
+import fathertoast.crust.api.config.client.gui.widget.field.SearchBar;
 import fathertoast.crust.api.config.common.ConfigManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -21,13 +23,13 @@ import java.util.function.Supplier;
 /**
  * Widget that displays a sorted, scrollable list of all mods that use Crust configs.
  */
-public class CrustConfigModList extends ContainerObjectSelectionList<CrustConfigModList.Entry> {
+public class CrustConfigModList extends SearchableSelectionList<CrustConfigModList.Entry> {
     
     private int maxNameWidth;
     
-    public CrustConfigModList( Screen parent, Minecraft game ) {
+    public CrustConfigModList( Screen parent, Minecraft game, HighlightOffsets highlightOffsets ) {
         super( game, parent.width + 45, parent.height,
-                43, parent.height - 32, 20 );
+                43, parent.height - 32, 20, highlightOffsets );
         // Gather all mod config managers and sort
         ArrayList<ConfigManager> cfgManagers = new ArrayList<>( ConfigManager.getAll() );
         cfgManagers.sort( Comparator.comparing( ( cfgManager ) -> cfgManager.MOD_ID ) );
@@ -44,7 +46,7 @@ public class CrustConfigModList extends ContainerObjectSelectionList<CrustConfig
     }
     
     /** A mod display row for mod selection lists. */
-    public static class Entry extends ContainerObjectSelectionList.Entry<CrustConfigModList.Entry> {
+    public static class Entry extends ContainerObjectSelectionList.Entry<CrustConfigModList.Entry> implements SearchBar.Searchable {
         
         private final CrustConfigModList PARENT;
         private final ConfigManager CFG_MANAGER;
@@ -90,6 +92,12 @@ public class CrustConfigModList extends ContainerObjectSelectionList<CrustConfig
         @Override
         public List<? extends NarratableEntry> narratables() {
             return List.of();
+        }
+        
+        @Override
+        @Nullable
+        public String getLookupName() {
+            return NAME.getString();
         }
     }
 }

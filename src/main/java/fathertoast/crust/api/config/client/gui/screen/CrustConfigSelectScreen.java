@@ -2,6 +2,7 @@ package fathertoast.crust.api.config.client.gui.screen;
 
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFileList;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigModList;
+import fathertoast.crust.api.config.client.gui.widget.SearchableSelectionList;
 import fathertoast.crust.api.config.client.gui.widget.field.SearchBar;
 import fathertoast.crust.api.config.client.gui.widget.field.TextWithSubtitle;
 import fathertoast.crust.api.config.common.ConfigManager;
@@ -9,7 +10,6 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
@@ -47,14 +47,14 @@ public class CrustConfigSelectScreen extends Screen {
     /** The config manager for the selected mod, or null if none is selected. */
     private final ConfigManager CFG_MANAGER;
     
-    /** The text to render below the title. */
-    private final Component TITLE;
+    /** The subtitle to in a tooltip for the title. */
     private final Component SUBTITLE;
     
     private final boolean createSearchBar;
+    /** The search bar for looking up entries in selectionList. */
     private SearchBar searchBar;
     
-    private AbstractSelectionList<?> selectionList;
+    private SearchableSelectionList<? extends SearchBar.Searchable> selectionList;
     
     /** Creates a new config selection screen, opened to the mod select page. */
     public CrustConfigSelectScreen( @Nullable Screen parent ) {
@@ -79,7 +79,6 @@ public class CrustConfigSelectScreen extends Screen {
         super( title );
         LAST_SCREEN = parent;
         CFG_MANAGER = cfgManager;
-        TITLE = title;
         SUBTITLE = subtitle;
         createSearchBar = searchBar;
     }
@@ -94,19 +93,21 @@ public class CrustConfigSelectScreen extends Screen {
         if( minecraft == null ) return;
         
         // Header content
-        addRenderableWidget( TextWithSubtitle.create( this, font, width / 2, 8, true, TITLE, SUBTITLE ) );
-        
-        if( createSearchBar )
-            searchBar = addWidget( new SearchBar( font, 8, 20, 100, 16 ) );
+        addRenderableWidget( TextWithSubtitle.create( this, font, width / 2, 8, true, getTitle(), SUBTITLE ) );
         
         // Primary screen content
+        SearchableSelectionList.HighlightOffsets offsets = new SearchableSelectionList.HighlightOffsets( 0, 0, 15, 0 );
+        
         if( CFG_MANAGER == null ) {
-            selectionList = new CrustConfigModList( this, minecraft );
+            selectionList = new CrustConfigModList( this, minecraft, offsets );
         }
         else {
-            selectionList = new CrustConfigFileList( this, minecraft, CFG_MANAGER );
+            selectionList = new CrustConfigFileList( this, minecraft, CFG_MANAGER, offsets );
         }
         addWidget( selectionList );
+        
+        if( createSearchBar )
+            searchBar = addRenderableWidget( new SearchBar( selectionList, font, 8, 20, 100, 16 ) );
         
         // Footer content
         addRenderableWidget( new Button( width / 2 - 155, height - 29,
@@ -133,9 +134,6 @@ public class CrustConfigSelectScreen extends Screen {
         renderBackground( graphics );
         
         selectionList.render( graphics, mouseX, mouseY, partialTicks );
-        
-        if( searchBar != null )
-            searchBar.render( graphics, mouseX, mouseY, partialTicks );
         
         super.render( graphics, mouseX, mouseY, partialTicks );
     }

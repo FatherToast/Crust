@@ -2,7 +2,10 @@ package fathertoast.crust.api.config.client.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
+import fathertoast.crust.api.config.client.gui.widget.SearchableSelectionList;
 import fathertoast.crust.api.config.client.gui.widget.field.IPopupWidget;
+import fathertoast.crust.api.config.client.gui.widget.field.SearchBar;
+import fathertoast.crust.api.config.client.gui.widget.field.TextWithSubtitle;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustConfigFormat;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
@@ -62,6 +65,9 @@ public class CrustConfigFileScreen extends Screen {
     /** The "done" or "save changes" button. */
     private Button bottomRightButton;
     
+    /** The search bar for looking up entries in fieldList. */
+    private SearchBar searchBar;
+    
     /** The currently focused text box, if any. */
     private EditBox focusedTextBox;
     
@@ -75,7 +81,7 @@ public class CrustConfigFileScreen extends Screen {
         LAST_SCREEN = parent;
         SPEC = spec;
         SUBTITLE = Component.translatable( "menu.crust.config.file.subtitle",
-                ConfigUtil.toRelativePath( spec.getFile() ) );
+                ConfigUtil.toRelativePath( spec.getFile() ) ).withStyle( ChatFormatting.DARK_GRAY );
     }
     
     /** Called to set the currently focused text box. */
@@ -106,17 +112,20 @@ public class CrustConfigFileScreen extends Screen {
     @Override
     public void onClose() { if( minecraft != null ) minecraft.setScreen( LAST_SCREEN ); }
     
-    /** Called to setup the screen before displaying it. */
+    /** Called to set up the screen before displaying it. */
     @Override
     protected void init() {
         if( minecraft == null ) return;
         
         // Header content
-        // Nothing to init
+        addRenderableWidget( TextWithSubtitle.create( this, font, width / 2, 8, true, getTitle(), SUBTITLE ) );
         
         // Primary screen content
-        fieldList = new CrustConfigFieldList( this, minecraft, SPEC );
+        SearchableSelectionList.HighlightOffsets offsets = new SearchableSelectionList.HighlightOffsets( 0, 0, 0, 0 );
+        fieldList = new CrustConfigFieldList( this, minecraft, SPEC, offsets );
         addRenderableWidget( fieldList );
+        
+        searchBar = addRenderableWidget( new SearchBar( fieldList, font, 8, 20, 100, 16 ) );
         
         // Footer content
         addRenderableWidget( bottomLeftButton = new Button( width / 2 - 155, height - 29,
@@ -325,11 +334,6 @@ public class CrustConfigFileScreen extends Screen {
         
         setTooltip( null );
         fieldList.render( graphics, mouseX, mouseY, partialTicks );
-        
-        graphics.drawCenteredString( font, SUBTITLE, width / 2,
-                24, 0x777777 );
-        graphics.drawCenteredString( font, title, width / 2,
-                8, 0xFFFFFF );
         
         super.render( graphics, mouseX, mouseY, partialTicks );
     }

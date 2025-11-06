@@ -2,13 +2,12 @@ package fathertoast.crust.api.config.client.gui.widget;
 
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigFileScreen;
 import fathertoast.crust.api.config.client.gui.widget.field.ResetButton;
+import fathertoast.crust.api.config.client.gui.widget.field.SearchBar;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.RestartNote;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
-import fathertoast.crust.api.config.common.file.CrustTomlParser;
-import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -35,7 +34,7 @@ import java.util.List;
  * The layout of this screen is largely driven by the spec itself, while
  * each field decides how it displays its own info.
  */
-public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConfigFieldList.Entry> {
+public class CrustConfigFieldList extends SearchableSelectionList<CrustConfigFieldList.Entry> {
     
     /** The maximum width for text lines in tooltips. */
     public static final int TOOLTIP_WIDTH = 150;
@@ -58,9 +57,9 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
     /** True if any fields have been changed since opening. */
     private boolean changed;
     
-    public CrustConfigFieldList( CrustConfigFileScreen parent, Minecraft game, CrustConfigSpec spec ) {
+    public CrustConfigFieldList( CrustConfigFileScreen parent, Minecraft game, CrustConfigSpec spec, HighlightOffsets highlightOffsets ) {
         super( game, parent.width, parent.height,
-                43, parent.height - 32, IConfigFieldWidgetProvider.VALUE_HEIGHT + 1 );
+                43, parent.height - 32, IConfigFieldWidgetProvider.VALUE_HEIGHT + 1, highlightOffsets );
         PARENT = parent;
         SPEC = spec;
         
@@ -173,7 +172,7 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
     }
     
     
-    public static abstract class Entry extends ContainerObjectSelectionList.Entry<Entry> {
+    public static abstract class Entry extends ContainerObjectSelectionList.Entry<Entry> implements SearchBar.Searchable {
         
         public Minecraft minecraft() { return Minecraft.getInstance(); }
         
@@ -183,6 +182,12 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
         @Override
         public List<? extends NarratableEntry> narratables() {
             return List.of();
+        }
+        
+        @Override
+        @Nullable
+        public String getLookupName() {
+            return null;
         }
     }
     
@@ -202,6 +207,7 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
         public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
     }
     
+    @SuppressWarnings( "resource" )
     public static class LeftAlignedStringEntry extends Entry {
         
         private final FormattedCharSequence TEXT;
@@ -229,6 +235,7 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
         public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
     }
     
+    @SuppressWarnings( "resource" )
     public static class TitledCommentEntry extends Entry {
         
         private final Component TEXT;
@@ -273,9 +280,10 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
         public List<FormattedCharSequence> getTooltip() { return TOOLTIP; }
     }
     
+    @SuppressWarnings( "resource" )
     public static class CenteredStringEntry extends Entry {
         
-        private final Component TEXT;
+        protected final Component TEXT;
         private final int COLOR;
         
         public final int WIDTH;
@@ -304,6 +312,7 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
         public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
     }
     
+    @SuppressWarnings( "resource" )
     public static class HeaderEntry extends CenteredStringEntry {
         
         private final List<FormattedCharSequence> TOOLTIP;
@@ -326,13 +335,21 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
         @Override
         @Nullable
         public List<FormattedCharSequence> getTooltip() { return TOOLTIP; }
+        
+        @Override
+        @Nullable
+        public String getLookupName() {
+            return TEXT.getString();
+        }
     }
     
+    @SuppressWarnings( "resource" )
     public static class FieldEntry extends Entry {
         
         public final CrustConfigFieldList PARENT;
         public final AbstractConfigField FIELD;
         
+        private final String LOOKUP_NAME;
         private final List<FormattedCharSequence> NAME;
         private final List<FormattedCharSequence> TOOLTIP;
         
@@ -349,9 +366,9 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
                            @Nullable RestartNote restartNote, List<String> addedComment ) {
             PARENT = parent;
             FIELD = field;
+            LOOKUP_NAME = name;
             NAME = minecraft().font.split( Component.literal( name ),
                     MAX_WIDTH - 2 - IConfigFieldWidgetProvider.VALUE_WIDTH - RESET_BUTTON_WIDTH );
-            
             TOOLTIP = new ArrayList<>();
             buildTooltip( TOOLTIP_WIDTH, restartNote, addedComment );
             if( TOOLTIP.size() > 20 ) { // Just brute force it a little
@@ -387,6 +404,12 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
         
         /** @return The field's pending "new" value. */
         public Object getValue() { return pendingValue; }
+        
+        @Override
+        @Nullable
+        public String getLookupName() {
+            return LOOKUP_NAME;
+        }
         
         /** Call this to change the field's pending "new" value. */
         public void updateValue( Object value ) {
@@ -426,24 +449,24 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
             if( !addedComment.isEmpty() ) {
                 final int maxChars = 150;
                 int charCount = 0;
-
+                
                 for( String line : addedComment ) {
                     charCount += line.length();
-
+                    
                     // Prevent large tooltips from being
                     // obnoxious and taking up the whole screen.
-                    if ( charCount > maxChars ) {
+                    if( charCount > maxChars ) {
                         int diff = charCount - maxChars;
                         line = line.substring( 0, line.length() - diff );
                         line = line + "...";
-
+                        
                         TOOLTIP.addAll( minecraft().font.split( Component.literal(
                                 line ).withStyle( ChatFormatting.GRAY ), width ) );
                         break;
                     }
                     else {
-                        TOOLTIP.addAll(minecraft().font.split(Component.literal(
-                                line).withStyle(ChatFormatting.GRAY), width));
+                        TOOLTIP.addAll( minecraft().font.split( Component.literal(
+                                line ).withStyle( ChatFormatting.GRAY ), width ) );
                     }
                 }
             }
@@ -485,11 +508,6 @@ public class CrustConfigFieldList extends ContainerObjectSelectionList<CrustConf
         public void setFocused( @Nullable GuiEventListener component ) {
             if( component instanceof EditBox editBox ) PARENT.PARENT.setFocusedTextBox( editBox );
             super.setFocused( component );
-        }
-        
-        @Override
-        public List<? extends NarratableEntry> narratables() {
-            return List.of();
         }
         
         /** Simple wrapper used to save the offsets of provided field gui components. */

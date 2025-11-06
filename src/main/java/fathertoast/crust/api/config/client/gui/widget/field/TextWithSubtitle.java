@@ -118,6 +118,7 @@ public class TextWithSubtitle extends AbstractWidget {
     }
     
     public record TooltipPositioner(boolean centered) implements ClientTooltipPositioner {
+        
         /**
          * Positions tooltip same as {@link net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner},
          * except measures are taken to prevent tooltips from going off-screen on the Y-axis by
@@ -126,6 +127,7 @@ public class TextWithSubtitle extends AbstractWidget {
         public static final TooltipPositioner STANDARD = new TooltipPositioner( false );
         /** Similar to {@link TooltipPositioner#STANDARD}, except tooltip gets centered on the X-axis. */
         public static final TooltipPositioner CENTERED = new TooltipPositioner( true );
+        
         
         /**
          * @param guiWidth      The width of the GUI
@@ -139,11 +141,11 @@ public class TextWithSubtitle extends AbstractWidget {
         @Override
         public Vector2ic positionTooltip( int guiWidth, int guiHeight, int x, int y, int tooltipWidth, int tooltipHeight ) {
             Vector2i tooltipPos = (new Vector2i( x, y )).add( centered ? 0 : 12, -14 );
-            positionTooltip( guiWidth, guiHeight, tooltipPos, tooltipWidth, tooltipHeight );
+            positionTooltip( guiWidth, tooltipPos, tooltipWidth );
             return tooltipPos;
         }
         
-        private void positionTooltip( int guiWidth, int guiHeight, Vector2i tooltipPos, int tooltipWidth, int tooltipHeight ) {
+        private void positionTooltip( int guiWidth, Vector2i tooltipPos, int tooltipWidth ) {
             if( centered ) {
                 tooltipPos.x = tooltipPos.x - tooltipWidth / 2;
                 
