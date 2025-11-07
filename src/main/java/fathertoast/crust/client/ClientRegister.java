@@ -22,8 +22,8 @@ public class ClientRegister {
     public static ExtraInvButtonsCrustConfigFile EXTRA_INV_BUTTONS;
     /** File for misc rendering settings. */
     public static RenderSettingsCrustConfigFile RENDER_SETTINGS;
-
-
+    
+    
     /** Called after common setup to perform client-side-only setup. */
     @SubscribeEvent
     static void onClientSetup( FMLClientSetupEvent event ) {
@@ -32,16 +32,16 @@ public class ClientRegister {
         CONFIG_EDITOR = new CfgEditorCrustConfigFile(
                 ConfigManager.getRequired( ICrustApi.MOD_ID ), "client_config_editor" );
         RENDER_SETTINGS = new RenderSettingsCrustConfigFile(
-                ConfigManager.getRequired( ICrustApi.MOD_ID ), "render_settings");
-
+                ConfigManager.getRequired( ICrustApi.MOD_ID ), "client_render_settings" );
+        
         CONFIG_EDITOR.SPEC.initialize();
         EXTRA_INV_BUTTONS.SPEC.initialize();
         RENDER_SETTINGS.SPEC.initialize();
         
         // Tell Forge to open the config editor when our mod's "Config" button is clicked in the Mods screen
         ClientConfigUtil.registerConfigButtonAsEditScreen();
-
-        MinecraftForge.EVENT_BUS.register(new RenderEvents());
+        
+        MinecraftForge.EVENT_BUS.register( new RenderEvents() );
         
         //IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
     }

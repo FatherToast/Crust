@@ -1,7 +1,9 @@
 package fathertoast.crust.api.config.common;
 
+import fathertoast.crust.api.ICrustApi;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 
@@ -86,6 +88,17 @@ public final class ConfigManager {
         return cfgManager;
     }
     
+    /**
+     * @param modId The id of the mod we want the config for.
+     * @param name  The spec name of the config file we want.
+     * @return The config file identified, or null if it does not exist.
+     */
+    @Nullable
+    public static AbstractConfigFile getConfig( String modId, String name ) {
+        ConfigManager cfgManager = get( modId );
+        return cfgManager == null ? null : cfgManager.nameToConfigMap.get( name );
+    }
+    
     // ---- Instance Methods ---- //
     
     /** The id of the mod that owns this config manager. */
@@ -94,17 +107,48 @@ public final class ConfigManager {
     /** The root folder for managed config files. */
     public final File DIR;
     
-    /** It's a good idea to freeze the file watcher while initializing a large number of files; can prevent a few unneeded reloads. */
+    /**
+     * It's a good idea to freeze the file watcher while initializing a large number of files;
+     * can prevent a few unneeded reloads.
+     * During mod loading, the file watcher is typically already frozen, so this only helps if
+     * you initialize your files after mod loading has completed for some reason.
+     */
     public volatile boolean freezeFileWatcher;
     
     /** @return A read-only list of all config files this manages. */
     public List<AbstractConfigFile> getConfigs() { return Collections.unmodifiableList( configs ); }
+    
+    /**
+     * @param name The spec name of the config file we want.
+     * @return The config file identified, or null if it does not exist.
+     */
+    @Nullable
+    public AbstractConfigFile getConfig( String name ) { return nameToConfigMap.get( name ); }
+    
+    /**
+     * @param name The spec name of the config file we want.
+     * @return The config file identified.
+     * @throws IllegalStateException If the mod doesn't have a config manager.
+     */
+    public AbstractConfigFile getRequiredConfig( String name ) {
+        AbstractConfigFile config = nameToConfigMap.get( name );
+        if( config == null ) {
+            throw new IllegalStateException( "Required config file '" + MOD_ID + ":" + name + "' is not present!" );
+        }
+        return config;
+    }
     
     /** @return The current "version" of the dynamic registries. This is incremented each time resources are loaded. */
     public byte getDynamicRegVersion() { return dynamicRegVersion; }
     
     
     // ---- Internal Methods ---- //
+    
+    /**
+     * Global toggle for file watching. Generally, you should not mess with this.
+     * Crust automatically freezes file watchers until mod loading is complete.
+     */
+    public static boolean GLOBAL_FREEZE_FILE_WATCHERS = ModList.get().isLoaded( ICrustApi.MOD_ID );
     
     /** Mapping of each mod id to its config manager. */
     private static final HashMap<String, ConfigManager> MOD_ID_TO_CM_MAP = new HashMap<>();
@@ -127,6 +171,8 @@ public final class ConfigManager {
     
     /** The config files this manages. */
     private final List<AbstractConfigFile> configs = new ArrayList<>();
+    /** Mapping of each managed spec name to its config file. */
+    private final HashMap<String, AbstractConfigFile> nameToConfigMap = new HashMap<>();
     
     /** The current "version" of the dynamic registries. */
     private byte dynamicRegVersion;
@@ -149,7 +195,10 @@ public final class ConfigManager {
     }
     
     /** Called by config files on creation to keep track of them. */
-    void register( AbstractConfigFile cfg ) { configs.add( cfg ); }
+    void register( AbstractConfigFile cfg ) {
+        configs.add( cfg );
+        nameToConfigMap.put( cfg.SPEC.NAME, cfg );
+    }
     
     /** Called each time resources are loaded. */
     private void onResourceReload( AddReloadListenerEvent event ) { dynamicRegVersion++; }
