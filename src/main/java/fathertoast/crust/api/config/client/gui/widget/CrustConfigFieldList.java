@@ -2,7 +2,7 @@ package fathertoast.crust.api.config.client.gui.widget;
 
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigFileScreen;
 import fathertoast.crust.api.config.client.gui.widget.field.ResetButton;
-import fathertoast.crust.api.config.client.gui.widget.field.SearchBar;
+import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
@@ -172,7 +172,7 @@ public class CrustConfigFieldList extends SearchableSelectionList<CrustConfigFie
     }
     
     
-    public static abstract class Entry extends ContainerObjectSelectionList.Entry<Entry> implements SearchBar.Searchable {
+    public static abstract class Entry extends ContainerObjectSelectionList.Entry<Entry> implements Searchbar.Searchable {
         
         public Minecraft minecraft() { return Minecraft.getInstance(); }
         

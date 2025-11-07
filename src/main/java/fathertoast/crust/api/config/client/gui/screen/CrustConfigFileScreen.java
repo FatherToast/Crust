@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import fathertoast.crust.api.config.client.gui.widget.SearchableSelectionList;
 import fathertoast.crust.api.config.client.gui.widget.field.IPopupWidget;
-import fathertoast.crust.api.config.client.gui.widget.field.SearchBar;
+import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
 import fathertoast.crust.api.config.client.gui.widget.field.TextWithSubtitle;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustConfigFormat;
@@ -68,7 +68,7 @@ public class CrustConfigFileScreen extends Screen {
     /** The currently focused text box, if any. */
     private EditBox focusedTextBox;
     /** The search bar for looking up entries in {@link CrustConfigFileScreen#fieldList}. */
-    private SearchBar searchBar;
+    private Searchbar searchBar;
     
     /** The currently open popup widget, if any. */
     private AbstractWidget popupWidget;
@@ -124,7 +124,7 @@ public class CrustConfigFileScreen extends Screen {
         fieldList = new CrustConfigFieldList( this, minecraft, SPEC, offsets );
         addRenderableWidget( fieldList );
         
-        searchBar = SearchBar.create( this, fieldList, font, 8, 20, 100, SearchBar.DEFAULT_MATCHER );
+        searchBar = Searchbar.create( this, fieldList, font, 8, 20, 100, Searchbar.DEFAULT_MATCHER );
         
         // Footer content
         addRenderableWidget( bottomLeftButton = new Button( width / 2 - 155, height - 29,

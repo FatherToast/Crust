@@ -3,7 +3,7 @@ package fathertoast.crust.api.config.client.gui.screen;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFileList;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigModList;
 import fathertoast.crust.api.config.client.gui.widget.SearchableSelectionList;
-import fathertoast.crust.api.config.client.gui.widget.field.SearchBar;
+import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
 import fathertoast.crust.api.config.client.gui.widget.field.TextWithSubtitle;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.ConfigUtil;
@@ -51,11 +51,11 @@ public class CrustConfigSelectScreen extends Screen {
     private final Component SUBTITLE;
     
     /** A list containing entries for every mod's config manager. */
-    private SearchableSelectionList<? extends SearchBar.Searchable> selectionList;
+    private SearchableSelectionList<? extends Searchbar.Searchable> selectionList;
     
     private final boolean createSearchBar;
     /** The search bar for looking up entries in {@link CrustConfigSelectScreen#selectionList}. */
-    private SearchBar searchBar;
+    private Searchbar searchBar;
     
     
     /** Creates a new config selection screen, opened to the mod select page. */
@@ -109,7 +109,7 @@ public class CrustConfigSelectScreen extends Screen {
         addWidget( selectionList );
         
         if( createSearchBar )
-            searchBar = SearchBar.create( this, selectionList, font, 8, 20, 100, SearchBar.DEFAULT_MATCHER );
+            searchBar = Searchbar.create( this, selectionList, font, 8, 20, 100, Searchbar.DEFAULT_MATCHER );
         
         // Footer content
         addRenderableWidget( new Button( width / 2 - 155, height - 29,

@@ -28,15 +28,15 @@ import java.util.function.BiPredicate;
  * entries in a {@link SearchableSelectionList} and provides
  * navigation buttons to jump between search candidates.
  */
-public class SearchBar extends EditBox {
+public class Searchbar extends EditBox {
     
     public static final ResourceLocation SEARCH_BAR_ICONS = Crust.resLoc( "textures/search_bar_items.png" );
     /** The default search matcher predicate. */
     public static final BiPredicate<String, String> DEFAULT_MATCHER = StringUtils::containsIgnoreCase;
     
-    /** The selection list tied to this search bar. */
+    /** The selection list tied to this searchbar. */
     private final SearchableSelectionList<? extends Searchable> selectionList;
-    /** The search matcher predicate used by this search bar. */
+    /** The search matcher predicate used by this searchbar. */
     private final BiPredicate<String, String> matchPredicate;
     /** A bidirectional map that maps search candidate indexes to selection list element indexes. */
     private final BiMap<Integer, Integer> elementByCandidateIndexes = HashBiMap.create();
@@ -49,18 +49,18 @@ public class SearchBar extends EditBox {
     /** The current map of search candidates and element indexes. Refreshed on search. */
     private ImmutableMap<Integer, Searchable> searchCandidates = ImmutableMap.of();
     /** The index of the currently "focused" search candidate. */
-    private int currentIndex = -1;
+    private int focusedIndex = -1;
     /** The last String that was searched. */
     private String lastSearch = "";
     
     /**
-     * Creates a new search bar with a custom search matcher predicate
+     * Creates a new searchbar with a custom search matcher predicate
      * and adds it to the parent screen's widget list,
-     * including the search bar's child components.
+     * including the searchbar's child components.
      */
-    public static SearchBar create( Screen parentScreen, SearchableSelectionList<? extends Searchable> selectionList, Font font, int x, int y,
+    public static Searchbar create( Screen parentScreen, SearchableSelectionList<? extends Searchable> selectionList, Font font, int x, int y,
                                     int width, BiPredicate<String, String> matchPredicate ) {
-        SearchBar searchBar = new SearchBar( selectionList, font, x, y, width, 16, matchPredicate );
+        Searchbar searchBar = new Searchbar( selectionList, font, x, y, width, 16, matchPredicate );
         
         addWidgetToScreen( parentScreen, searchBar );
         addWidgetToScreen( parentScreen, searchBar.previousCandidate );
@@ -75,7 +75,7 @@ public class SearchBar extends EditBox {
         screen.narratables.add( widget );
     }
     
-    private SearchBar( SearchableSelectionList<? extends Searchable> selectionList, Font font, int x, int y,
+    private Searchbar( SearchableSelectionList<? extends Searchable> selectionList, Font font, int x, int y,
                        int width, int height, BiPredicate<String, String> matchPredicate ) {
         super( font, x, y, width, height, Component.literal( "" ) );
         this.selectionList = selectionList;
@@ -96,9 +96,9 @@ public class SearchBar extends EditBox {
                 7,
                 SEARCH_BAR_ICONS,
                 ( button ) -> {
-                    setCurrentIndex( --currentIndex );
+                    setFocusedIndex( --focusedIndex );
                     // noinspection ConstantConditions
-                    scrollToIndex( elementByCandidateIndexes.get( currentIndex ) );
+                    scrollToIndex( elementByCandidateIndexes.get( focusedIndex ) );
                     button.setFocused( false );
                     updateButtons();
                 } );
@@ -112,9 +112,9 @@ public class SearchBar extends EditBox {
                 7,
                 SEARCH_BAR_ICONS,
                 ( button ) -> {
-                    setCurrentIndex( ++currentIndex );
+                    setFocusedIndex( ++focusedIndex );
                     // noinspection ConstantConditions
-                    scrollToIndex( elementByCandidateIndexes.get( currentIndex ) );
+                    scrollToIndex( elementByCandidateIndexes.get( focusedIndex ) );
                     button.setFocused( false );
                     updateButtons();
                 } );
@@ -126,14 +126,14 @@ public class SearchBar extends EditBox {
     }
     
     private void updateButtons() {
-        previousCandidate.active = currentIndex > 0;
-        nextCandidate.active = currentIndex < searchCandidates.size() - 1;
+        previousCandidate.active = focusedIndex > 0;
+        nextCandidate.active = focusedIndex < searchCandidates.size() - 1;
     }
     
     /**
      * Performs a name-comparison search on all the elements
-     * in the search bar's underlying selection list.<br>
-     * Valid candidates are added to {@link SearchBar#searchCandidates}
+     * in the searchbar's underlying selection list.<br>
+     * Valid candidates are added to {@link Searchbar#searchCandidates}
      * for easy scroll navigation later.<br><br>
      * Scrolls to the first found candidate, if any.
      */
@@ -154,7 +154,7 @@ public class SearchBar extends EditBox {
             scrollToIndex( -1 );
         }
         else {
-            Map<Integer, Searchable> candidates = new HashMap<>();
+            final Map<Integer, Searchable> candidates = new HashMap<>();
             boolean foundFirst = false;
             int mapKey = 0;
             
@@ -168,7 +168,7 @@ public class SearchBar extends EditBox {
                     // Scroll to the first candidate, if any.
                     if( !foundFirst ) {
                         foundFirst = true;
-                        setCurrentIndex( mapKey );
+                        setFocusedIndex( mapKey );
                         scrollToIndex( elementIndex );
                     }
                     candidates.put( mapKey, searchable );
@@ -193,12 +193,12 @@ public class SearchBar extends EditBox {
         selectionList.setIndexes( elementByCandidateIndexes );
     }
     
-    /** Tells this search bar's selection list to scroll to the element at the given index. */
+    /** Tells this searchbar's selection list to scroll to the element at the given index. */
     private void scrollToIndex( int index ) {
         final int listSize = selectionList.children().size();
         
         // Negative index, assume it is intentional
-        // for defocusing the current search candidate.
+        // for defocusing the focused search candidate.
         if( index < 0 ) {
             selectionList.setScrollAmount( 0.0 );
         }
@@ -212,13 +212,13 @@ public class SearchBar extends EditBox {
         selectionList.setScrollAmount( index * itemHeight + (double) (itemHeight / 2) - (double) ((bottom - top) / 2) );
     }
     
-    /** Sets current map index for self and the underlying selection list. */
-    private void setCurrentIndex( int index ) {
-        currentIndex = index;
-        selectionList.setCurrentIndex( index );
+    /** Sets focused search match index for self and the underlying selection list. */
+    private void setFocusedIndex( int index ) {
+        focusedIndex = index;
+        selectionList.setFocusedIndex( index );
     }
     
-    /** @return An unmodifiable view of the search bar's current search candidates. */
+    /** @return An unmodifiable view of the searchbar's current search candidates. */
     public ImmutableMap<Integer, Searchable> getSearchCandidates() {
         return searchCandidates;
     }
@@ -227,10 +227,10 @@ public class SearchBar extends EditBox {
     public void render( GuiGraphics graphics, int mouseX, int mouseY, float partialTick ) {
         super.render( graphics, mouseX, mouseY, partialTick );
         
-        // Draws a string above the search bar displaying
+        // Draws a string above the searchbar displaying
         // current index over total matches
         if( !searchCandidates.isEmpty() ) {
-            Component indexOverMatches = Component.literal( (currentIndex + 1) + " / " + searchCandidates.size() )
+            Component indexOverMatches = Component.literal( (focusedIndex + 1) + " / " + searchCandidates.size() )
                     .withStyle( ChatFormatting.GRAY );
             graphics.drawString( font, indexOverMatches, getX(), getY() - getHeight() + 5, 0xFFFFFF );
         }
@@ -239,7 +239,7 @@ public class SearchBar extends EditBox {
     /** Represents an element that can be looked up by name. */
     public interface Searchable {
         
-        /** @return An identifying String to be looked up by a {@link SearchBar} */
+        /** @return An identifying String to be looked up by a {@link Searchbar} */
         @Nullable
         String getLookupName();
     }

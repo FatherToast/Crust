@@ -2,7 +2,7 @@ package fathertoast.crust.api.config.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
-import fathertoast.crust.api.config.client.gui.widget.field.SearchBar;
+import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
 import fathertoast.crust.api.config.common.ConfigManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -46,7 +46,7 @@ public class CrustConfigModList extends SearchableSelectionList<CrustConfigModLi
     }
     
     /** A mod display row for mod selection lists. */
-    public static class Entry extends ContainerObjectSelectionList.Entry<CrustConfigModList.Entry> implements SearchBar.Searchable {
+    public static class Entry extends ContainerObjectSelectionList.Entry<CrustConfigModList.Entry> implements Searchbar.Searchable {
         
         private final CrustConfigModList PARENT;
         private final ConfigManager CFG_MANAGER;

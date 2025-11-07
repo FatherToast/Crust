@@ -2,7 +2,7 @@ package fathertoast.crust.api.config.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigFileScreen;
-import fathertoast.crust.api.config.client.gui.widget.field.SearchBar;
+import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
@@ -71,7 +71,7 @@ public class CrustConfigFileList extends SearchableSelectionList<CrustConfigFile
     
     /** The base entry for config file selection lists. */
     public abstract static class Entry extends ContainerObjectSelectionList.Entry<CrustConfigFileList.Entry>
-            implements SearchBar.Searchable { }
+            implements Searchbar.Searchable { }
     
     /** A file directory header for config file selection lists. */
     public static class CategoryEntry extends Entry {
