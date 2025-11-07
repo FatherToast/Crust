@@ -166,6 +166,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             (String[]) null ), General::testCallback ) ).field();
             stringField = SPEC.define( new InjectionWrapperField<>(
                     new StringField( "string", "Test!",
+                            ( value ) -> value.length() <= 5,
                             (String[]) null ), General::testCallback ) ).field();
             stringListField = SPEC.define( new InjectionWrapperField<>(
                     new StringListField( "string_list", Arrays.asList( "test0", "test1", "test2" ),
