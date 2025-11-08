@@ -15,7 +15,7 @@ public class CrustEffects {
     
     private static final DeferredRegister<MobEffect> REGISTRY = DeferredRegister.create( ForgeRegistries.MOB_EFFECTS, ICrustApi.MOD_ID );
 
-    public static final RegistryObject<MobEffect> VULNEARABILITY = register( CrustObjects.ID.VULNERABILITY_EFFECT.getPath(), MobEffectCategory.HARMFUL, 0x96848D );
+    public static final RegistryObject<MobEffect> VULNERABILITY = register( CrustObjects.ID.VULNERABILITY_EFFECT.getPath(), MobEffectCategory.HARMFUL, 0x96848D );
     public static final RegistryObject<MobEffect> WEIGHT = register( CrustObjects.ID.WEIGHT_EFFECT.getPath(), () -> new WeightEffect( MobEffectCategory.HARMFUL, 0x353A6B ) );
 
     

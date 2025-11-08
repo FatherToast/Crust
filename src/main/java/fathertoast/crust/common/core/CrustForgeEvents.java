@@ -1,7 +1,6 @@
 package fathertoast.crust.common.core;
 
 import fathertoast.crust.api.ICrustApi;
-import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.common.network.CrustPacketHandler;
 import fathertoast.crust.common.potion.CrustEffects;
 import net.minecraft.server.level.ServerPlayer;
@@ -64,9 +63,9 @@ public class CrustForgeEvents {
         Level level = event.getEntity().level();
         
         if( event.getEntity() != null && event.getSource().type() != level.damageSources().fellOutOfWorld().type() && !event.getSource().is( DamageTypeTags.BYPASSES_ENCHANTMENTS ) &&
-                event.getEntity().hasEffect( CrustEffects.VULNEARABILITY.get() ) ) {
+                event.getEntity().hasEffect( CrustEffects.VULNERABILITY.get() ) ) {
             
-            final MobEffectInstance vulnerability = event.getEntity().getEffect( CrustEffects.VULNEARABILITY.get() );
+            final MobEffectInstance vulnerability = event.getEntity().getEffect( CrustEffects.VULNERABILITY.get() );
             if( vulnerability == null ) return;
             
             // Take 25% more damage per effect level (vs. Damage Resistance's 20% less per level)
