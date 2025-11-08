@@ -24,7 +24,7 @@ public class BlockListField extends GenericField<BlockList> {
         comment.add( "  An asterisk '*' can be used to match all blocks belonging to X namespace. For example, 'minecraft:*' will " +
                 "match all vanilla blocks." );
         comment.add( "  Block tags can also be used here. To declare a tag, start with a '#' followed by the rest of the tag path." );
-        comment.add( "  Tag example: '#minecraft:beehive_inhabitors'");
+        comment.add( "  Tag example: '#minecraft:beehive_inhabitors'" );
         comment.add( "  List entries by default match any block state. The block states to match can be narrowed down " +
                 "by specifying properties. The syntax for block state properties is the same as for commands. Any " +
                 "properties not specified will match any value. For example, 'minecraft:beehive[honey_level=5]' will " +
@@ -71,8 +71,8 @@ public class BlockListField extends GenericField<BlockList> {
     // Convenience methods
     
     /**
-     *  @return Returns true if there are no entries in this block list,
-     *          including tag and namespace entries.
+     * @return Returns true if there are no entries in this block list,
+     * including tag and namespace entries.
      */
     public boolean isEmpty() { return get().isEmpty(); }
     
