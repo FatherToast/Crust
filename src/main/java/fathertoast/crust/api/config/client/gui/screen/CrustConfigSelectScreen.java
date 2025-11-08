@@ -2,11 +2,14 @@ package fathertoast.crust.api.config.client.gui.screen;
 
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFileList;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigModList;
+import fathertoast.crust.api.config.client.gui.widget.SearchableSelectionList;
+import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
+import fathertoast.crust.api.config.client.gui.widget.field.TextWithSubtitle;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.ConfigUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
@@ -44,14 +47,20 @@ public class CrustConfigSelectScreen extends Screen {
     /** The config manager for the selected mod, or null if none is selected. */
     private final ConfigManager CFG_MANAGER;
     
-    /** The text to render below the title. */
+    /** The subtitle to in a tooltip for the title. */
     private final Component SUBTITLE;
     
-    private AbstractSelectionList<?> selectionList;
+    /** A list containing entries for every mod's config manager. */
+    private SearchableSelectionList<? extends Searchbar.Searchable> selectionList;
+    
+    private final boolean createSearchBar;
+    /** The search bar for looking up entries in {@link CrustConfigSelectScreen#selectionList}. */
+    private Searchbar searchBar;
+    
     
     /** Creates a new config selection screen, opened to the mod select page. */
     public CrustConfigSelectScreen( @Nullable Screen parent ) {
-        this( parent, null, Component.translatable( "menu.crust.config.select.mod.title" ), null );
+        this( parent, null, Component.translatable( "menu.crust.config.select.mod.title" ), null, false );
     }
     
     /** Creates a new config selection screen, opened directly to mod's file select page. */
@@ -60,37 +69,47 @@ public class CrustConfigSelectScreen extends Screen {
                 Component.translatable( "menu.crust.config.select.file.title",
                         getModName( cfgManager.MOD_ID ) ),
                 Component.translatable( "menu.crust.config.select.file.subtitle",
-                        ConfigUtil.toRelativePath( cfgManager.DIR ) ) );
+                        ConfigUtil.toRelativePath( cfgManager.DIR ) ).withStyle( ChatFormatting.DARK_GRAY ),
+                true );
     }
     
     /** Creates a new config selection screen, optionally opened directly to a specific mod's page. */
-    private CrustConfigSelectScreen( @Nullable Screen parent, @Nullable ConfigManager cfgManager, Component title, @Nullable Component subtitle ) {
+    private CrustConfigSelectScreen( @Nullable Screen parent, @Nullable ConfigManager cfgManager, Component title,
+                                     @Nullable Component subtitle, boolean searchBar ) {
+        // Note: the title passed in super here does not
+        // get drawn on screen, a separate widget is used instead.
         super( title );
         LAST_SCREEN = parent;
         CFG_MANAGER = cfgManager;
         SUBTITLE = subtitle;
+        createSearchBar = searchBar;
     }
     
     /** Called to close the screen. */
     @Override
     public void onClose() { if( minecraft != null ) minecraft.setScreen( LAST_SCREEN ); }
     
-    /** Called to setup the screen before displaying it. */
+    /** Called to set up the screen before displaying it. */
     @Override
     protected void init() {
         if( minecraft == null ) return;
         
         // Header content
-        // Nothing to init
+        addRenderableWidget( TextWithSubtitle.create( this, font, width / 2, 8, true, getTitle(), SUBTITLE ) );
         
         // Primary screen content
+        SearchableSelectionList.HighlightOffsets offsets = new SearchableSelectionList.HighlightOffsets( 0, 0, 15, 0 );
+        
         if( CFG_MANAGER == null ) {
-            selectionList = new CrustConfigModList( this, minecraft );
+            selectionList = new CrustConfigModList( this, minecraft, offsets );
         }
         else {
-            selectionList = new CrustConfigFileList( this, minecraft, CFG_MANAGER );
+            selectionList = new CrustConfigFileList( this, minecraft, CFG_MANAGER, offsets );
         }
-        addRenderableWidget( selectionList );
+        addWidget( selectionList );
+        
+        if( createSearchBar )
+            searchBar = Searchbar.create( this, selectionList, font, 8, 20, 100, Searchbar.DEFAULT_MATCHER );
         
         // Footer content
         addRenderableWidget( new Button( width / 2 - 155, height - 29,
@@ -99,10 +118,16 @@ public class CrustConfigSelectScreen extends Screen {
                     if( CFG_MANAGER == null ) Util.getPlatform().openFile( FMLPaths.CONFIGDIR.get().toFile() );
                     else Util.getPlatform().openFile( CFG_MANAGER.DIR );
                 },
-                Supplier::get) );
+                Supplier::get ) );
         addRenderableWidget( new Button( width / 2 - 155 + 160, height - 29,
                 150, 20, CommonComponents.GUI_DONE,
                 ( button ) -> minecraft.setScreen( LAST_SCREEN ), Supplier::get ) );
+    }
+    
+    @Override
+    public void tick() {
+        if( searchBar != null )
+            searchBar.tick();
     }
     
     /** Called to render the screen. */
@@ -111,13 +136,6 @@ public class CrustConfigSelectScreen extends Screen {
         renderBackground( graphics );
         
         selectionList.render( graphics, mouseX, mouseY, partialTicks );
-        
-        if( SUBTITLE != null ) {
-            graphics.drawCenteredString( font, SUBTITLE, width / 2,
-                    24, 0x777777 );
-        }
-        graphics.drawCenteredString( font, title, width / 2,
-                8, 0xFFFFFF );
         
         super.render( graphics, mouseX, mouseY, partialTicks );
     }

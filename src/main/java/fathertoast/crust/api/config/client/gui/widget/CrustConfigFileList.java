@@ -2,6 +2,7 @@ package fathertoast.crust.api.config.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigFileScreen;
+import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
@@ -17,6 +18,7 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -32,13 +34,13 @@ import java.util.function.Supplier;
  * Note that this will ONLY show files that have been defined. Files defined, but not
  * initialized, will be visible only as inactive buttons (cannot be opened).
  */
-public class CrustConfigFileList extends ContainerObjectSelectionList<CrustConfigFileList.Entry> {
+public class CrustConfigFileList extends SearchableSelectionList<CrustConfigFileList.Entry> {
     
     private int maxNameWidth;
     
-    public CrustConfigFileList( Screen parent, Minecraft game, ConfigManager cfgManager ) {
+    public CrustConfigFileList( Screen parent, Minecraft game, ConfigManager cfgManager, HighlightOffsets highlightOffsets ) {
         super( game, parent.width + 45, parent.height,
-                43, parent.height - 32, 20 );
+                43, parent.height - 32, 20, highlightOffsets );
         // Gather all managed config files and sort
         Path rootPath = cfgManager.DIR.toPath();
         ArrayList<SortableFile> cfgFiles = new ArrayList<>();
@@ -68,7 +70,8 @@ public class CrustConfigFileList extends ContainerObjectSelectionList<CrustConfi
     }
     
     /** The base entry for config file selection lists. */
-    public abstract static class Entry extends ContainerObjectSelectionList.Entry<CrustConfigFileList.Entry> { }
+    public abstract static class Entry extends ContainerObjectSelectionList.Entry<CrustConfigFileList.Entry>
+            implements Searchbar.Searchable { }
     
     /** A file directory header for config file selection lists. */
     public static class CategoryEntry extends Entry {
@@ -85,25 +88,30 @@ public class CrustConfigFileList extends ContainerObjectSelectionList<CrustConfi
         
         @Override
         public void render( GuiGraphics graphics, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
-                           int mouseX, int mouseY, boolean mouseOver, float partialTicks ) {
+                            int mouseX, int mouseY, boolean mouseOver, float partialTicks ) {
             //noinspection ConstantConditions
             graphics.drawString( PARENT.minecraft.font, NAME,
                     PARENT.minecraft.screen.width - WIDTH >> 1,
                     rowTop + rowHeight - 9 - 1, 0xFFFFFF );
         }
-
+        
         @Nullable
         @Override
         public ComponentPath nextFocusPath( FocusNavigationEvent event ) {
             return null;
         }
-
+        
         @Override
         public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
-
+        
         @Override
         public List<? extends NarratableEntry> narratables() {
             return List.of();
+        }
+        
+        @Override
+        public String getLookupName() {
+            return NAME.getString();
         }
     }
     
@@ -119,16 +127,20 @@ public class CrustConfigFileList extends ContainerObjectSelectionList<CrustConfi
             PARENT = parent;
             SPEC = spec;
             NAME = name;
+            
+            final MutableComponent specError = Component.translatable( "menu.crust.config.select.button.spec_error" )
+                    .withStyle( ChatFormatting.RED );
+            
             //noinspection ConstantConditions
             OPEN_BUTTON = new Button( 0, 0, 20, 20,
                     Component.literal( ">" ),
                     ( button ) -> PARENT.minecraft.setScreen(
-                            new CrustConfigFileScreen( PARENT.minecraft.screen, SPEC ) ), Supplier::get );
-
-            if ( !SPEC.isInitialized() ) {
+                            new CrustConfigFileScreen( PARENT.minecraft.screen, SPEC ) ),
+                    SPEC.isInitialized() ? Supplier::get : ( supplier ) -> specError );
+            
+            if( !SPEC.isInitialized() ) {
                 OPEN_BUTTON.active = false;
-                OPEN_BUTTON.setTooltip( Tooltip.create( Component.literal( "Config failed to load, check logs for details" )
-                        .withStyle( ChatFormatting.RED ) ) );
+                OPEN_BUTTON.setTooltip( Tooltip.create( specError ) );
             }
         }
         
@@ -138,9 +150,9 @@ public class CrustConfigFileList extends ContainerObjectSelectionList<CrustConfi
             //noinspection ConstantConditions
             graphics.drawString( PARENT.minecraft.font, NAME,
                     PARENT.minecraft.screen.width - PARENT.maxNameWidth - 30 >> 1,
-                    rowTop + (rowHeight - 9 >> 1), 0xFFFFFF );
+                    rowTop + (rowHeight - 5 >> 1), 0xFFFFFF );
             
-            OPEN_BUTTON.setX( (PARENT.minecraft.screen.width + PARENT.maxNameWidth + 30 >> 1) - 20);
+            OPEN_BUTTON.setX( (PARENT.minecraft.screen.width + PARENT.maxNameWidth + 30 >> 1) - 20 );
             OPEN_BUTTON.setY( rowTop );
             OPEN_BUTTON.render( graphics, mouseX, mouseY, partialTicks );
         }
@@ -152,15 +164,20 @@ public class CrustConfigFileList extends ContainerObjectSelectionList<CrustConfi
         public boolean mouseClicked( double x, double y, int mouseKey ) {
             return OPEN_BUTTON.mouseClicked( x, y, mouseKey );
         }
-
+        
         @Override
         public boolean mouseReleased( double x, double y, int mouseKey ) {
             return OPEN_BUTTON.mouseReleased( x, y, mouseKey );
         }
-
+        
         @Override
         public List<? extends NarratableEntry> narratables() {
             return List.of();
+        }
+        
+        @Override
+        public String getLookupName() {
+            return NAME.getString();
         }
     }
     

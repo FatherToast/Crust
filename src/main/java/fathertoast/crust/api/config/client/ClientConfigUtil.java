@@ -27,6 +27,7 @@ public final class ClientConfigUtil {
         String modId = ctx.getActiveNamespace();
         ConfigManager cfgManager = ConfigManager.get( modId );
         
+        //noinspection LoggingSimilarMessage
         if( cfgManager == null ) {
             ConfigUtil.LOG.warn( "Mod '{}' attempted to assign a config button action, but has no config!", modId );
         }
@@ -49,6 +50,7 @@ public final class ClientConfigUtil {
         ConfigManager cfgManager = ConfigManager.get( modId );
         
         if( cfgManager == null ) {
+            //noinspection LoggingSimilarMessage
             ConfigUtil.LOG.warn( "Mod '{}' attempted to assign a config button action, but has no config!", modId );
         }
         else {

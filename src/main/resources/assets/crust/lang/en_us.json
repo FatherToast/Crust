@@ -9,9 +9,12 @@
   "menu.crust.config.select.mod.title": "Mod Configs...",
   "menu.crust.config.select.file.title": "%s Configs...",
   "menu.crust.config.select.file.subtitle": "Folder: %s",
+  "menu.crust.config.select.button.spec_error": "Config failed to load, check logs for details",
 
   "menu.crust.config.file.title": "%s Config: %s",
   "menu.crust.config.file.subtitle": "File: %s",
+
+  "menu.crust.config.search_bar.hint": "Search...",
 
   "inventory.buttons.fullheal.tooltip": "Full recover",
   "inventory.buttons.cleareffects.tooltip": "Clear all potion effects",
