@@ -1,4 +1,4 @@
-package fathertoast.crust.api.config.common.value;
+package fathertoast.crust.api.config.common.value.weighted;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.IntField;
