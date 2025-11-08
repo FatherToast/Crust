@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings( { "unused" } )
 public final class CrustObjects {
-
+    
     /**
      * The Forge registry for Crust portal builders.<br>
      * Populated during {@link net.minecraftforge.registries.NewRegistryEvent}.
@@ -22,9 +22,11 @@ public final class CrustObjects {
     
     /** The registry IDs of misc game objects added by Crust. */
     public interface ID {
+        // Mob effects
         ResourceLocation VULNERABILITY_EFFECT = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "vulnerability" );
         ResourceLocation WEIGHT_EFFECT = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "weight" );
-
+        
+        // Portal builders
         ResourceLocation NETHER_PORTAL = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "nether_portal" );
         ResourceLocation END_PORTAL = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "end_portal" );
     }
