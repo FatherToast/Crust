@@ -35,10 +35,25 @@ public class StringFieldWidgetProvider implements IConfigFieldWidgetProvider {
                 1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for ~1px frame
                 Component.literal( FIELD.getKey() ) );
         editBox.setMaxLength( Integer.MAX_VALUE );
-
+        
         editBox.setValue( displayValue.toString() );
         editBox.setResponder( listEntry::updateValue );
         
+        if( FIELD.getValidator() != null ) {
+            editBox.setResponder( ( value ) -> {
+                if( value == null || !FIELD.getValidator().test( value ) ) {
+                    editBox.setTextColor( INVALID_COLOR );
+                    listEntry.clearValue();
+                }
+                else {
+                    editBox.setTextColor( DEFAULT_COLOR );
+                    listEntry.updateValue( value );
+                }
+            } );
+        }
+        else {
+            editBox.setResponder( listEntry::updateValue );
+        }
         components.add( editBox );
     }
 }

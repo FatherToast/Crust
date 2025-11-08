@@ -6,6 +6,7 @@ import fathertoast.crust.api.config.common.file.TomlHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Represents a config field with a string value.
@@ -13,9 +14,19 @@ import java.util.List;
 @SuppressWarnings( "unused" )
 public class StringField extends GenericField<String> {
     
-    /** Creates a new field. */
+    /** This string field's value validator. */
+    @Nullable
+    private final Predicate<String> validator;
+    
+    /** Creates a new field, optionally with a value validator. */
     public StringField( String key, String defaultValue, @Nullable String... description ) {
+        this( key, defaultValue, null, description );
+    }
+    
+    /** Creates a new field with no value validator. */
+    public StringField( String key, String defaultValue, @Nullable Predicate<String> validator, @Nullable String... description ) {
         super( key, defaultValue, description );
+        this.validator = validator;
     }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
@@ -36,7 +47,20 @@ public class StringField extends GenericField<String> {
             value = valueDefault;
             return;
         }
-        value = raw.toString();
+        final String val = raw.toString();
+        
+        if( validator != null ) {
+            value = validator.test( val ) ? val : valueDefault;
+        }
+        else {
+            value = val;
+        }
+    }
+    
+    /** @return This string field's value validator. Can be null. */
+    @Nullable
+    public Predicate<String> getValidator() {
+        return validator;
     }
     
     /** @return This field's gui component provider. */
