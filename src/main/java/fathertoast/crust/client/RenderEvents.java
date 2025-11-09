@@ -2,6 +2,7 @@ package fathertoast.crust.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.util.IBlockEntityBBProvider;
 import fathertoast.crust.api.util.IBlockEntityDebugShapeProvider;
 import fathertoast.crust.api.util.IDebugShape;
@@ -13,16 +14,19 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
 
-public class RenderEvents {
+@Mod.EventBusSubscriber( value = Dist.CLIENT, modid = ICrustApi.MOD_ID )
+public final class RenderEvents {
     
     @SubscribeEvent
     @SuppressWarnings( "ConstantConditions" )
-    public void onRenderLevelStage( RenderLevelStageEvent event ) {
+    static void onRenderLevelStage( RenderLevelStageEvent event ) {
         // Iterate through all block entities in proximity to the player
         // and check if they should render special bounding boxes
         if( ClientRegister.RENDER_SETTINGS.BLOCK_ENTITY_BB_RENDERING.enabled.get() && event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES ) {
@@ -65,7 +69,7 @@ public class RenderEvents {
      * Checks if the given BlockEntity is an instance of {@link IBlockEntityDebugShapeProvider}
      * or {@link IBlockEntityBBProvider} and attempts to draw the objects it provides.
      */
-    private void renderBoundingBoxes( BlockEntity blockEntity, PoseStack poseStack, Vec3 cameraPos, VertexConsumer buffer ) {
+    static void renderBoundingBoxes( BlockEntity blockEntity, PoseStack poseStack, Vec3 cameraPos, VertexConsumer buffer ) {
         if( blockEntity instanceof IBlockEntityDebugShapeProvider shapeProvider ) {
             List<IDebugShape> shapes = shapeProvider.getDebugShapes();
             if( shapes == null || shapes.isEmpty() ) return;
@@ -96,4 +100,8 @@ public class RenderEvents {
                 poseStack.popPose();
             }
     }
+    
+    
+    // Static listener, no instantiation
+    private RenderEvents() { }
 }

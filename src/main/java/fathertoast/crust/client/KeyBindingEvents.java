@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Mod.EventBusSubscriber( value = Dist.CLIENT, modid = ICrustApi.MOD_ID )
-public class KeyBindingEvents {
+public final class KeyBindingEvents {
     
     private static final String KEY_CAT = "key.categories." + ICrustApi.MOD_ID;
     private static final String KEY_CAT_BUTTONS = KEY_CAT + ".buttons";
@@ -133,4 +133,8 @@ public class KeyBindingEvents {
     //            KEY_CODE = keyCode;
     //        }
     //    }
+    
+    
+    // Static listener, no instantiation
+    private KeyBindingEvents() { }
 }

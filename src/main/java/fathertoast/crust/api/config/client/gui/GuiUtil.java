@@ -6,7 +6,7 @@ import org.joml.Vector2ic;
 
 import javax.annotation.Nonnull;
 
-public class GuiUtil {
+public final class GuiUtil {
     
     
     public record TooltipPositioner(boolean centered) implements ClientTooltipPositioner {
@@ -57,4 +57,7 @@ public class GuiUtil {
             return pos;
         }
     }
+    
+    // Utility class
+    private GuiUtil() { }
 }

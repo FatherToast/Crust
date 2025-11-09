@@ -63,4 +63,7 @@ public final class DeferredAction {
             return false;
         }
     }
+    
+    // Utility class
+    private DeferredAction() { }
 }

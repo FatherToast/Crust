@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Mod.EventBusSubscriber( modid = ICrustApi.MOD_ID )
-public class CrustForgeEvents {
+public final class CrustForgeEvents {
     
     /** Set of all players that have had their Crust modes changed recently. */
     private static final Set<ServerPlayer> NEED_CRUST_MODE_UPDATE = new HashSet<>();
@@ -85,4 +85,8 @@ public class CrustForgeEvents {
             event.setDamageMultiplier( event.getDamageMultiplier() * (1.0F + 0.3334F * (weight.getAmplifier() + 1)) );
         }
     }
+    
+    
+    // Static listener, no instantiation
+    private CrustForgeEvents() { }
 }

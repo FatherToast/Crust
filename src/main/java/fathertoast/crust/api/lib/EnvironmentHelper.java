@@ -17,4 +17,7 @@ public final class EnvironmentHelper {
     public static boolean isChunkPosLoaded( LevelAccessor world, int chunkX, int chunkZ ) {
         return world.hasChunk( chunkX, chunkZ );
     }
+    
+    // Utility class
+    private EnvironmentHelper() { }
 }

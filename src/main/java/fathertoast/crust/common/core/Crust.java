@@ -83,7 +83,7 @@ public class Crust {
      *      - uneating - restore food level when it drops below a threshold
      *      - destroy-on-pickup - items are not added to inventory when picked up
      *      - super vision - continuous night vision, removes fog/blindness
-     *          ? make all entities glow
+     *          ? make all entities glow (maybe enable fullbright texture somehow? The glow shader will kill performance)
      *      - super speed - move very fast
      *          ? grant instant (or very fast) mining
      */

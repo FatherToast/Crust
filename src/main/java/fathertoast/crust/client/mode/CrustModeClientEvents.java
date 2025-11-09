@@ -14,7 +14,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber( value = Dist.CLIENT, modid = ICrustApi.MOD_ID )
-public class CrustModeClientEvents {
+public final class CrustModeClientEvents {
     
     private static Float originalStepHeight;
     private static Float originalFlySpeed;
@@ -80,4 +80,8 @@ public class CrustModeClientEvents {
             }
         }
     }
+    
+    
+    // Static listener, no instantiation
+    private CrustModeClientEvents() { }
 }

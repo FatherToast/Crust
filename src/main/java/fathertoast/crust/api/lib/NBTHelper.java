@@ -249,4 +249,7 @@ public final class NBTHelper {
             return state;
         }
     }
+    
+    // Utility class
+    private NBTHelper() { }
 }

@@ -49,4 +49,8 @@ public final class CrustMath {
     
     /** @return The alpha (opacity) portion of an ARGB color int. Returned value will be in the range 0.0 - 1.0. */
     public static float getAlpha( int color ) { return (float) getAlphaBits( color ) / 0xFF; }
+    
+    
+    // Utility class
+    private CrustMath() { }
 }

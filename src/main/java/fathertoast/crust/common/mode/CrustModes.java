@@ -71,4 +71,8 @@ public final class CrustModes {
                     Math.min( value, CrustConfig.MODES.SPEED.speedLimit.getFloat() ) );
     /** Prevents picked-up items from being added to your inventory (like creative mode arrows). */
     public static final CrustMode<Byte> DESTROY_ON_PICKUP = new CrustByteMode( "noPickup", CrustConfig.MODES.GENERAL.noPickupOpLevel::get );
+    
+    
+    // Static members only, no instantiation
+    private CrustModes() { }
 }

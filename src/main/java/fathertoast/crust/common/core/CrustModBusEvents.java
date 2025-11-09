@@ -7,11 +7,15 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 
 @Mod.EventBusSubscriber( modid = ICrustApi.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
-public class CrustModBusEvents {
+public final class CrustModBusEvents {
     
     /** Called when mod loading is completed. */
     @SubscribeEvent
     static void onLoadComplete( FMLLoadCompleteEvent event ) {
         ConfigManager.GLOBAL_FREEZE_FILE_WATCHERS = false;
     }
+    
+    
+    // Static listener, no instantiation
+    private CrustModBusEvents() { }
 }

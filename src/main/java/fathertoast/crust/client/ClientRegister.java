@@ -8,13 +8,12 @@ import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
 import fathertoast.crust.client.config.RenderSettingsCrustConfig;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @Mod.EventBusSubscriber( value = Dist.CLIENT, modid = ICrustApi.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
-public class ClientRegister {
+public final class ClientRegister {
     
     /** File for configuring in-game config edit button client preferences. */
     public static CfgEditorCrustConfig CONFIG_EDITOR;
@@ -41,8 +40,6 @@ public class ClientRegister {
         // Tell Forge to open the config editor when our mod's "Config" button is clicked in the Mods screen
         ClientConfigUtil.registerConfigButtonAsEditScreen();
         
-        MinecraftForge.EVENT_BUS.register( new RenderEvents() );
-        
         //IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
     }
     
@@ -51,4 +48,8 @@ public class ClientRegister {
     static void onRegisterKeyMappings( RegisterKeyMappingsEvent event ) {
         KeyBindingEvents.register( event );
     }
+    
+    
+    // Static listener, no instantiation
+    private ClientRegister() { }
 }

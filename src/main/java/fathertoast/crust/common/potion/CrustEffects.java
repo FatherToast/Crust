@@ -11,13 +11,13 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
-public class CrustEffects {
+public final class CrustEffects {
     
     private static final DeferredRegister<MobEffect> REGISTRY = DeferredRegister.create( ForgeRegistries.MOB_EFFECTS, ICrustApi.MOD_ID );
-
+    
     public static final RegistryObject<MobEffect> VULNERABILITY = register( CrustObjects.ID.VULNERABILITY_EFFECT.getPath(), MobEffectCategory.HARMFUL, 0x96848D );
     public static final RegistryObject<MobEffect> WEIGHT = register( CrustObjects.ID.WEIGHT_EFFECT.getPath(), () -> new WeightEffect( MobEffectCategory.HARMFUL, 0x353A6B ) );
-
+    
     
     /** Called to register this class. */
     public static void register( IEventBus bus ) { REGISTRY.register( bus ); }
@@ -36,4 +36,8 @@ public class CrustEffects {
     private static class SimpleEffect extends MobEffect {
         SimpleEffect( MobEffectCategory type, int color ) { super( type, color ); }
     }
+    
+    
+    // Utility class
+    private CrustEffects() { }
 }

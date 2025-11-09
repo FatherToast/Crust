@@ -32,7 +32,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber( modid = ICrustApi.MOD_ID )
-public class CrustModeEvents {
+public final class CrustModeEvents {
     
     public static final UUID SUPER_SPEED_UUID = UUID.fromString( "B9766B69-9569-4202-BC1F-2EE2A276D836" );
     
@@ -175,7 +175,7 @@ public class CrustModeEvents {
                         closestDistSq = distSq;
                     }
                 }
-                // If a player is found, pull t
+                // If a player is found, pull the item
                 if( closest != null ) {
                     magnetPullItem( item, closest.getOwner(),
                             (closestRangeSq - closestDistSq) / closestRangeSq );
@@ -194,4 +194,8 @@ public class CrustModeEvents {
         item.setDeltaMovement( player.getEyePosition( 1.0F ).subtract( item.position() ).normalize()
                 .scale( power * CrustConfig.MODES.MAGNET.maxSpeed.get() ).add( 0.0, 0.04, 0.0 ) );
     }
+    
+    
+    // Static listener, no instantiation
+    private CrustModeEvents() { }
 }

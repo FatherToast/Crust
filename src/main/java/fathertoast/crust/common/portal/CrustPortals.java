@@ -5,16 +5,18 @@ import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.api.portal.PortalBuilder;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.*;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.NewRegistryEvent;
+import net.minecraftforge.registries.RegistryBuilder;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
-public class CrustPortals {
+public final class CrustPortals {
     
     /** Deferred register used to initialize the portal registry and populate vanilla portals. */
-    private static final DeferredRegister<PortalBuilder> PORTAL_REGISTER = DeferredRegister.create( ResourceKey.createRegistryKey(Crust.resLoc("portal_builder")), ICrustApi.MOD_ID );
+    private static final DeferredRegister<PortalBuilder> PORTAL_REGISTER = DeferredRegister.create( ResourceKey.createRegistryKey( Crust.resLoc( "portal_builder" ) ), ICrustApi.MOD_ID );
     
     
     public static final RegistryObject<PortalBuilder> NETHER_PORTAL = register( CrustObjects.ID.NETHER_PORTAL.getPath(), NetherPortalBuilder::new );
@@ -29,10 +31,14 @@ public class CrustPortals {
         // noinspection ConstantConditions
         return PORTAL_REGISTER.register( name, factory );
     }
-
+    
     public static void onRegistryCreate( NewRegistryEvent event ) {
         RegistryBuilder<PortalBuilder> builder = new RegistryBuilder<>();
-        builder.setName( Crust.resLoc( "portal_builder" ));
+        builder.setName( Crust.resLoc( "portal_builder" ) );
         CrustObjects.PORTAL_REGISTRY = event.create( builder );
     }
+    
+    
+    // Utility class
+    private CrustPortals() { }
 }

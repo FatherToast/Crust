@@ -30,4 +30,7 @@ public final class CrustObjects {
         ResourceLocation NETHER_PORTAL = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "nether_portal" );
         ResourceLocation END_PORTAL = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "end_portal" );
     }
+    
+    // Utility class
+    private CrustObjects() { }
 }

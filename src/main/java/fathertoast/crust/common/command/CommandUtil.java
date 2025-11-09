@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Locale;
 
 @Mod.EventBusSubscriber( modid = ICrustApi.MOD_ID )
-public class CommandUtil {
+public final class CommandUtil {
     
     /** Called each time commands are loaded. */
     @SubscribeEvent
@@ -153,4 +153,8 @@ public class CommandUtil {
     public static Collection<ServerPlayer> players( CommandContext<CommandSourceStack> context, String arg ) throws CommandSyntaxException {
         return EntityArgument.getPlayers( context, arg );
     }
+    
+    
+    // Utility class
+    private CommandUtil() { }
 }

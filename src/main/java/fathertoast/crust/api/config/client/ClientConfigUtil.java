@@ -92,4 +92,7 @@ public final class ClientConfigUtil {
             CFG_MANAGER = cfgManager;
         }
     }
+    
+    // Utility class
+    private ClientConfigUtil() { }
 }

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber( value = Dist.CLIENT, modid = ICrustApi.MOD_ID )
-public class ScreenEvents {
+public final class ScreenEvents {
     
     /** Called when a GUI is initialized. */
     @SubscribeEvent
@@ -129,4 +129,8 @@ public class ScreenEvents {
         event.addListener( new ExtraMenuButton( posX, posY,
                 button -> mc.setScreen( new CrustConfigSelectScreen( screen ) ) ) );
     }
+    
+    
+    // Static listener, no instantiation
+    private ScreenEvents() { }
 }
