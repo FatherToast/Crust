@@ -107,11 +107,15 @@ public class Searchbar extends EditBox {
                 7,
                 SEARCH_BAR_ICONS,
                 ( button ) -> {
-                    setFocusedIndex( --focusedIndex );
+                    if( focusedIndex == 0 ) {
+                        setFocusedIndex( searchCandidates.size() - 1 );
+                    }
+                    else {
+                        setFocusedIndex( --focusedIndex );
+                    }
                     // noinspection ConstantConditions
                     scrollToIndex( elementByCandidateIndexes.get( focusedIndex ) );
                     button.setFocused( false );
-                    updateButtons();
                 } );
         nextCandidate = new ImageButton(
                 buttonX,
@@ -123,22 +127,21 @@ public class Searchbar extends EditBox {
                 7,
                 SEARCH_BAR_ICONS,
                 ( button ) -> {
-                    setFocusedIndex( ++focusedIndex );
+                    if( focusedIndex == searchCandidates.size() - 1 ) {
+                        setFocusedIndex( 0 );
+                    }
+                    else {
+                        setFocusedIndex( ++focusedIndex );
+                    }
                     // noinspection ConstantConditions
                     scrollToIndex( elementByCandidateIndexes.get( focusedIndex ) );
                     button.setFocused( false );
-                    updateButtons();
                 } );
         
         previousCandidate.active = false;
         previousCandidate.visible = false;
         nextCandidate.active = false;
         nextCandidate.visible = false;
-    }
-    
-    private void updateButtons() {
-        previousCandidate.active = focusedIndex > 0;
-        nextCandidate.active = focusedIndex < searchCandidates.size() - 1;
     }
     
     /**
@@ -199,8 +202,9 @@ public class Searchbar extends EditBox {
             // Update navigation buttons.
             if( !searchCandidates.isEmpty() ) {
                 nextCandidate.active = searchCandidates.size() > 1;
-                previousCandidate.visible = true;
-                nextCandidate.visible = true;
+                nextCandidate.visible = nextCandidate.active;
+                previousCandidate.active = nextCandidate.active;
+                previousCandidate.visible = nextCandidate.active;
                 setTextColor( IConfigFieldWidgetProvider.DEFAULT_COLOR );
             }
             else {
