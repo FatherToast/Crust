@@ -9,6 +9,7 @@ import fathertoast.crust.api.config.client.gui.widget.field.TextWithSubtitle;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustConfigFormat;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
+import fathertoast.crust.client.ClientRegister;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.gui.ComponentPath;
@@ -124,7 +125,9 @@ public class CrustConfigFileScreen extends Screen {
         fieldList = new CrustConfigFieldList( this, minecraft, SPEC, offsets );
         addRenderableWidget( fieldList );
         
-        searchBar = Searchbar.create( this, fieldList, font, 8, 20, 100, Searchbar.DEFAULT_MATCHER );
+        Searchbar.Orientation orientation = ClientRegister.CONFIG_EDITOR.SEARCHBAR.orientation.get();
+        int searchbarX = orientation == Searchbar.Orientation.LEFT ? 8 : width - 108;
+        searchBar = Searchbar.create( this, fieldList, orientation.getOpposite(), font, searchbarX, 20, 100, Searchbar.DEFAULT_MATCHER );
         
         // Footer content
         addRenderableWidget( bottomLeftButton = new Button( width / 2 - 155, height - 29,

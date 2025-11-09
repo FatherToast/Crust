@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * File for configuring the extra inventory buttons.
  */
-public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
+public class ExtraInvButtonsCrustConfig extends AbstractConfigFile {
     
     public final General GENERAL;
     
@@ -32,7 +32,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
      * @param cfgManager The mod's config manager.
      * @param cfgName    Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
      */
-    public ExtraInvButtonsCrustConfigFile( ConfigManager cfgManager, String cfgName ) {
+    public ExtraInvButtonsCrustConfig( ConfigManager cfgManager, String cfgName ) {
         super( cfgManager, cfgName,
                 "Options to modify the extra inventory buttons displayed. Extra inventory buttons are essentially " +
                         "macros that send commands for you. You still need adequate permission to run the commands.",
@@ -49,7 +49,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
     /**
      * Category for extra button display.
      */
-    public static class General extends AbstractConfigCategory<ExtraInvButtonsCrustConfigFile> {
+    public static class General extends AbstractConfigCategory<ExtraInvButtonsCrustConfig> {
         
         public final BooleanField enabled;
         public final BooleanField disableInvalid;
@@ -65,7 +65,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
         public final IntField offsetY;
         public final IntField offsetX;
         
-        General( ExtraInvButtonsCrustConfigFile parent ) {
+        General( ExtraInvButtonsCrustConfig parent ) {
             super( parent, "general",
                     "Options to modify the extra inventory buttons displayed. Extra inventory buttons " +
                             "are essentially macros that send commands for you.",
@@ -122,7 +122,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
     /**
      * Category for built-in buttons.
      */
-    public static class BuiltInButtons extends AbstractConfigCategory<ExtraInvButtonsCrustConfigFile> {
+    public static class BuiltInButtons extends AbstractConfigCategory<ExtraInvButtonsCrustConfig> {
         
         public final IntField weatherDuration;
         
@@ -134,7 +134,7 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
         
         public final DoubleField superSpeedMulti;
         
-        BuiltInButtons( ExtraInvButtonsCrustConfigFile parent ) {
+        BuiltInButtons( ExtraInvButtonsCrustConfig parent ) {
             super( parent, "built_in_buttons",
                     "Options for built-in buttons." );
             
@@ -173,14 +173,14 @@ public class ExtraInvButtonsCrustConfigFile extends AbstractConfigFile {
     /**
      * Category for a single user-defined button.
      */
-    public static class CustomButton extends AbstractConfigCategory<ExtraInvButtonsCrustConfigFile> {
+    public static class CustomButton extends AbstractConfigCategory<ExtraInvButtonsCrustConfig> {
         
         public final StringField tooltip;
         public final StringField icon;
         public final ColorIntField iconColor;
         public final StringListField commands;
         
-        CustomButton( ExtraInvButtonsCrustConfigFile parent, int index ) {
+        CustomButton( ExtraInvButtonsCrustConfig parent, int index ) {
             super( parent, ButtonInfo.customId( index ),
                     "Options defining the look and function of custom button #" + (index + 1) + "." );
             

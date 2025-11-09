@@ -3,10 +3,10 @@ package fathertoast.crust.client;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
 import fathertoast.crust.client.button.ButtonInfo;
-import fathertoast.crust.client.button.ExtraMenuButton;
 import fathertoast.crust.client.button.ExtraInventoryButton;
-import fathertoast.crust.client.config.CfgEditorCrustConfigFile;
-import fathertoast.crust.client.config.ExtraInvButtonsCrustConfigFile;
+import fathertoast.crust.client.button.ExtraMenuButton;
+import fathertoast.crust.client.config.CfgEditorCrustConfig;
+import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.PauseScreen;
@@ -48,7 +48,7 @@ public class ScreenEvents {
     /** Adds the extra buttons to the player's (creative) inventory, if enabled. */
     private static void addExtraInventoryButtons( ScreenEvent.Init event, AbstractContainerScreen<?> screen ) {
         Minecraft mc = screen.getMinecraft();
-        ExtraInvButtonsCrustConfigFile.General config = ClientRegister.EXTRA_INV_BUTTONS.GENERAL;
+        ExtraInvButtonsCrustConfig.General config = ClientRegister.EXTRA_INV_BUTTONS.GENERAL;
         
         List<ButtonInfo> buttons = new ArrayList<>();
         for( String buttonId : config.buttons.get() ) {
@@ -90,7 +90,7 @@ public class ScreenEvents {
     /** Adds the extra buttons to the pause menu, if enabled. */
     private static void addExtraPauseMenuButtons( ScreenEvent.Init event, PauseScreen screen ) {
         Minecraft mc = screen.getMinecraft();
-        CfgEditorCrustConfigFile.Button config = ClientRegister.CONFIG_EDITOR.PAUSE_BUTTON;
+        CfgEditorCrustConfig.Button config = ClientRegister.CONFIG_EDITOR.PAUSE_BUTTON;
         
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
@@ -114,7 +114,7 @@ public class ScreenEvents {
     /** Adds the extra buttons to the main menu, if enabled. */
     private static void addExtraMainMenuButtons( ScreenEvent.Init event, TitleScreen screen ) {
         Minecraft mc = screen.getMinecraft();
-        CfgEditorCrustConfigFile.Button config = ClientRegister.CONFIG_EDITOR.MAIN_BUTTON;
+        CfgEditorCrustConfig.Button config = ClientRegister.CONFIG_EDITOR.MAIN_BUTTON;
         
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();

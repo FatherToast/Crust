@@ -27,6 +27,7 @@ public abstract class AbstractConfigCategory<T extends AbstractConfigFile> {
     /**
      * @param parent              The config file containing this category.
      * @param categoryName        Name for the new category. Will be prefixed before all field keys defined within.
+     *                            Take care to not use spaces for spacing, preferably use underscores instead.
      * @param categoryDescription Comment to describe/summarize the contents of the category.
      *                            Each string is printed as a separate line.
      */

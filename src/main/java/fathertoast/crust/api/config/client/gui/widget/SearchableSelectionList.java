@@ -3,6 +3,7 @@ package fathertoast.crust.api.config.client.gui.widget;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
+import fathertoast.crust.client.ClientRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
@@ -60,18 +61,22 @@ public abstract class SearchableSelectionList<T extends ContainerObjectSelection
     @Override
     protected void renderItem( GuiGraphics graphics, int mouseX, int mouseY, float partialTick,
                                int itemIndex, int rowLeft, int rowTop, int rowWidth, int itemHeight ) {
-        if( elementByCandidateIndexes.inverse().containsKey( itemIndex ) ) {
-            int x = (getLeft() + ((getWidth() - rowWidth) / 2)) + highlightOffsets.xOffset;
-            int y = rowTop + highlightOffsets.yOffset;
-            int width = (getLeft() + ((getWidth() + rowWidth) / 2) - 3) + highlightOffsets.widthOffset;
-            int height = (rowTop + itemHeight + 3) + highlightOffsets.heightOffset;
-            
-            // noinspection ConstantConditions
-            if( elementByCandidateIndexes.inverse().get( itemIndex ) == focusedIndex ) {
-                graphics.fillGradient( x, y, width, height, 0x70_EDDB38, 0x90_EDDB38 );
-            }
-            else {
-                graphics.fillGradient( x, y, width, height, 0x40_878787, 0x50_878787 );
+        // Check if highlights are enabled in the config.
+        if( ClientRegister.CONFIG_EDITOR.SEARCHBAR.showSearchHighlights.get() ) {
+            if( elementByCandidateIndexes.inverse().containsKey( itemIndex ) ) {
+                int x = (getLeft() + ((getWidth() - rowWidth) / 2)) + highlightOffsets.xOffset;
+                int y = rowTop + highlightOffsets.yOffset;
+                int width = (getLeft() + ((getWidth() + rowWidth) / 2) - 3) + highlightOffsets.widthOffset;
+                int height = (rowTop + itemHeight + 3) + highlightOffsets.heightOffset;
+                
+                // TODO - Maybe make highlight color configurable
+                // noinspection ConstantConditions
+                if( elementByCandidateIndexes.inverse().get( itemIndex ) == focusedIndex ) {
+                    graphics.fillGradient( x, y, width, height, 0x70_EDDB38, 0x90_EDDB38 );
+                }
+                else {
+                    graphics.fillGradient( x, y, width, height, 0x40_878787, 0x50_878787 );
+                }
             }
         }
         super.renderItem( graphics, mouseX, mouseY, partialTick, itemIndex, rowLeft, rowTop, rowWidth, itemHeight );

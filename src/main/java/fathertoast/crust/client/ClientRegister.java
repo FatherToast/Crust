@@ -3,9 +3,9 @@ package fathertoast.crust.client;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.client.ClientConfigUtil;
 import fathertoast.crust.api.config.common.ConfigManager;
-import fathertoast.crust.client.config.CfgEditorCrustConfigFile;
-import fathertoast.crust.client.config.ExtraInvButtonsCrustConfigFile;
-import fathertoast.crust.client.config.RenderSettingsCrustConfigFile;
+import fathertoast.crust.client.config.CfgEditorCrustConfig;
+import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
+import fathertoast.crust.client.config.RenderSettingsCrustConfig;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -17,11 +17,11 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 public class ClientRegister {
     
     /** File for configuring in-game config edit button client preferences. */
-    public static CfgEditorCrustConfigFile CONFIG_EDITOR;
+    public static CfgEditorCrustConfig CONFIG_EDITOR;
     /** File for configuring extra inventory button client preferences. */
-    public static ExtraInvButtonsCrustConfigFile EXTRA_INV_BUTTONS;
+    public static ExtraInvButtonsCrustConfig EXTRA_INV_BUTTONS;
     /** File for misc rendering settings. */
-    public static RenderSettingsCrustConfigFile RENDER_SETTINGS;
+    public static RenderSettingsCrustConfig RENDER_SETTINGS;
     
     
     /** Called after common setup to perform client-side-only setup. */
@@ -29,9 +29,9 @@ public class ClientRegister {
     static void onClientSetup( FMLClientSetupEvent event ) {
         // Perform first-time loading of the client-only configs
         // EXTRA_INV_BUTTONS is loaded in KeyBindingEvents
-        CONFIG_EDITOR = new CfgEditorCrustConfigFile(
+        CONFIG_EDITOR = new CfgEditorCrustConfig(
                 ConfigManager.getRequired( ICrustApi.MOD_ID ), "client_config_editor" );
-        RENDER_SETTINGS = new RenderSettingsCrustConfigFile(
+        RENDER_SETTINGS = new RenderSettingsCrustConfig(
                 ConfigManager.getRequired( ICrustApi.MOD_ID ), "client_render_settings" );
         
         CONFIG_EDITOR.SPEC.initialize();

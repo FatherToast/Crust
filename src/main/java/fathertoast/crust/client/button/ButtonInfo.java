@@ -1,12 +1,10 @@
-
 package fathertoast.crust.client.button;
 
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import fathertoast.crust.api.ICrustApi;
-import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.client.ClientRegister;
-import fathertoast.crust.client.config.ExtraInvButtonsCrustConfigFile;
+import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
 import fathertoast.crust.common.mode.type.CrustMode;
@@ -54,13 +52,13 @@ public class ButtonInfo {
     // ---- Config Hooks ---- //
     
     /** Called each time a custom button config category is loaded. */
-    public static void loadCustomButton( String id, ExtraInvButtonsCrustConfigFile.CustomButton buttonCfg ) {
+    public static void loadCustomButton( String id, ExtraInvButtonsCrustConfig.CustomButton buttonCfg ) {
         BUTTON_REGISTRY.put( id, new ButtonInfo( id, buttonCfg.tooltip.get(), buttonCfg.icon.get(),
                 buttonCfg.iconColor.get(), buttonCfg.commands.get() ) );
     }
     
     /** Called to update the 'commands used' list each time the button config is loaded. */
-    public static void updateGodModePerms( ExtraInvButtonsCrustConfigFile.BuiltInButtons buttonCfg ) {
+    public static void updateGodModePerms( ExtraInvButtonsCrustConfig.BuiltInButtons buttonCfg ) {
         ButtonInfo godModeButton = ButtonInfo.get( "godMode" );
         if( godModeButton == null ) return;
         godModeButton.COMMANDS.clear();
@@ -140,7 +138,7 @@ public class ButtonInfo {
     public static final ButtonInfo GOD_MODE = builtIn( new ButtonInfo( "godMode", "undying.png",
             ButtonInfo::godMode )
             .toggle( () -> {
-                ExtraInvButtonsCrustConfigFile.BuiltInButtons buttonCfg = ClientRegister.EXTRA_INV_BUTTONS.BUILT_IN_BUTTONS;
+                ExtraInvButtonsCrustConfig.BuiltInButtons buttonCfg = ClientRegister.EXTRA_INV_BUTTONS.BUILT_IN_BUTTONS;
                 CrustModesData playerModes = CrustModesData.of( player() );
                 return !(buttonCfg.godModeUndying.get() && !playerModes.enabled( CrustModes.UNDYING ) ||
                         buttonCfg.godModeUnbreaking.get() && !playerModes.enabled( CrustModes.UNBREAKING ) ||
@@ -334,7 +332,7 @@ public class ButtonInfo {
     //}
     
     private static void godMode( @Nullable Button button ) {
-        ExtraInvButtonsCrustConfigFile.BuiltInButtons buttonCfg = ClientRegister.EXTRA_INV_BUTTONS.BUILT_IN_BUTTONS;
+        ExtraInvButtonsCrustConfig.BuiltInButtons buttonCfg = ClientRegister.EXTRA_INV_BUTTONS.BUILT_IN_BUTTONS;
         boolean toggleOff = ButtonInfo.GOD_MODE.isToggledOn();
         
         if( buttonCfg.godModeUndying.get() )

@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
 /**
@@ -45,6 +46,8 @@ public class Searchbar extends EditBox {
     private final Button previousCandidate;
     /** Navigation button for going to the previous search candidate. */
     private final Button nextCandidate;
+    /** The orientation of this searchbar's subcomponents. */
+    private final Orientation orientation;
     
     /** The current map of search candidates and element indexes. Refreshed on search. */
     private ImmutableMap<Integer, Searchable> searchCandidates = ImmutableMap.of();
@@ -58,9 +61,10 @@ public class Searchbar extends EditBox {
      * and adds it to the parent screen's widget list,
      * including the searchbar's child components.
      */
-    public static Searchbar create( Screen parentScreen, SearchableSelectionList<? extends Searchable> selectionList, Font font, int x, int y,
-                                    int width, BiPredicate<String, String> matchPredicate ) {
-        Searchbar searchBar = new Searchbar( selectionList, font, x, y, width, 16, matchPredicate );
+    public static Searchbar create( Screen parentScreen, SearchableSelectionList<? extends Searchable> selectionList, Orientation orientation,
+                                    Font font, int x, int y, int width, BiPredicate<String, String> matchPredicate ) {
+        Objects.requireNonNull( parentScreen );
+        Searchbar searchBar = new Searchbar( selectionList, orientation, font, x, y, width, 16, matchPredicate );
         
         addWidgetToScreen( parentScreen, searchBar );
         addWidgetToScreen( parentScreen, searchBar.previousCandidate );
@@ -75,17 +79,24 @@ public class Searchbar extends EditBox {
         screen.narratables.add( widget );
     }
     
-    private Searchbar( SearchableSelectionList<? extends Searchable> selectionList, Font font, int x, int y,
+    private Searchbar( SearchableSelectionList<? extends Searchable> selectionList, Orientation orientation, Font font, int x, int y,
                        int width, int height, BiPredicate<String, String> matchPredicate ) {
         super( font, x, y, width, height, Component.literal( "" ) );
+        // Make sure these things are present
+        Objects.requireNonNull( selectionList );
+        Objects.requireNonNull( orientation );
+        Objects.requireNonNull( matchPredicate );
         this.selectionList = selectionList;
         this.matchPredicate = matchPredicate;
+        this.orientation = orientation;
         setHint( Component.translatable( "menu.crust.config.search_bar.hint" )
                 .withStyle( ChatFormatting.ITALIC, ChatFormatting.GRAY ) );
         setResponder( this::search );
         
         // Create navigation buttons
-        final int buttonX = x + width + 4;
+        final int buttonX = orientation == Orientation.RIGHT
+                ? x + width + 4
+                : x - 15;
         previousCandidate = new ImageButton(
                 buttonX,
                 y,
@@ -138,18 +149,25 @@ public class Searchbar extends EditBox {
      * Scrolls to the first found candidate, if any.
      */
     public void search( String value ) {
+        // No point in doing anything if the
+        // search value didn't change.
         if( value.equals( lastSearch ) )
             return;
         
+        // Update last search.
         lastSearch = value;
+        
+        
         previousCandidate.active = false;
         previousCandidate.visible = false;
         nextCandidate.active = false;
         nextCandidate.visible = false;
+        
+        // Clear indexes and search candidates.
         searchCandidates = ImmutableMap.of();
         elementByCandidateIndexes.clear();
         
-        // Reset scroll if empty
+        // Reset scroll if empty.
         if( value.isEmpty() ) {
             scrollToIndex( -1 );
         }
@@ -178,7 +196,7 @@ public class Searchbar extends EditBox {
             }
             searchCandidates = ImmutableMap.copyOf( candidates );
             
-            // Update navigation buttons
+            // Update navigation buttons.
             if( !searchCandidates.isEmpty() ) {
                 nextCandidate.active = searchCandidates.size() > 1;
                 previousCandidate.visible = true;
@@ -232,7 +250,7 @@ public class Searchbar extends EditBox {
         if( !searchCandidates.isEmpty() ) {
             Component indexOverMatches = Component.literal( (focusedIndex + 1) + " / " + searchCandidates.size() )
                     .withStyle( ChatFormatting.GRAY );
-            graphics.drawString( font, indexOverMatches, getX(), getY() - getHeight() + 5, 0xFFFFFF );
+            graphics.drawCenteredString( font, indexOverMatches, getX() + width / 2, getY() - getHeight() + 5, 0xFFFFFF );
         }
     }
     
@@ -242,5 +260,19 @@ public class Searchbar extends EditBox {
         /** @return An identifying String to be looked up by a {@link Searchbar} */
         @Nullable
         String getLookupName();
+    }
+    
+    /**
+     * Used to determine where a searchbar's subcomponents should be placed
+     * relative to the searchbar itself; either to the right or to the left
+     * of the search bar.
+     */
+    public enum Orientation {
+        RIGHT,
+        LEFT;
+        
+        public Orientation getOpposite() {
+            return this == LEFT ? RIGHT : LEFT;
+        }
     }
 }

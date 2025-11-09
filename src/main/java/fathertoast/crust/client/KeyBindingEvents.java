@@ -5,15 +5,13 @@ import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.client.button.ButtonInfo;
-import fathertoast.crust.client.config.ExtraInvButtonsCrustConfigFile;
+import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-//import net.minecraftforge.client.settings.KeyConflictContext;
-//import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
@@ -33,14 +31,14 @@ public class KeyBindingEvents {
     //    private static final KeyBinding EQUIP = new SortedKeyBinding( 1, KEY + "equip", KEY_CAT );
     
     private static KeyMapping[] BUTTONS;
-
-
+    
+    
     /** Registers this mod's additional key bindings. */
     static void register( RegisterKeyMappingsEvent event ) {
-        ClientRegister.EXTRA_INV_BUTTONS = new ExtraInvButtonsCrustConfigFile(
+        ClientRegister.EXTRA_INV_BUTTONS = new ExtraInvButtonsCrustConfig(
                 ConfigManager.getRequired( ICrustApi.MOD_ID ), "client_extra_inv_buttons" );
         init();
-
+        
         event.register( CONFIG_EDITOR );
         
         //event.register( EQUIP );
