@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
+import fathertoast.crust.api.config.client.gui.ElementOffset;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigFileScreen;
 import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
@@ -38,9 +39,9 @@ public class CrustConfigFileList extends SearchableSelectionList<CrustConfigFile
     
     private int maxNameWidth;
     
-    public CrustConfigFileList( Screen parent, Minecraft game, ConfigManager cfgManager, HighlightOffsets highlightOffsets ) {
+    public CrustConfigFileList( Screen parent, Minecraft game, ConfigManager cfgManager, ElementOffset highlightOffset ) {
         super( game, parent.width + 45, parent.height,
-                43, parent.height - 32, 20, highlightOffsets );
+                43, parent.height - 32, 20, highlightOffset );
         // Gather all managed config files and sort
         Path rootPath = cfgManager.DIR.toPath();
         ArrayList<SortableFile> cfgFiles = new ArrayList<>();

@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
+import fathertoast.crust.api.config.client.gui.ElementOffset;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
 import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
 import fathertoast.crust.api.config.common.ConfigManager;
@@ -27,9 +28,9 @@ public class CrustConfigModList extends SearchableSelectionList<CrustConfigModLi
     
     private int maxNameWidth;
     
-    public CrustConfigModList( Screen parent, Minecraft game, HighlightOffsets highlightOffsets ) {
+    public CrustConfigModList( Screen parent, Minecraft game, ElementOffset highlightOffset ) {
         super( game, parent.width + 45, parent.height,
-                43, parent.height - 32, 20, highlightOffsets );
+                43, parent.height - 32, 20, highlightOffset );
         // Gather all mod config managers and sort
         ArrayList<ConfigManager> cfgManagers = new ArrayList<>( ConfigManager.getAll() );
         cfgManagers.sort( Comparator.comparing( ( cfgManager ) -> cfgManager.MOD_ID ) );

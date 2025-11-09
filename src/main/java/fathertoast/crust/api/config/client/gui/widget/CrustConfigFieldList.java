@@ -1,5 +1,6 @@
 package fathertoast.crust.api.config.client.gui.widget;
 
+import fathertoast.crust.api.config.client.gui.ElementOffset;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigFileScreen;
 import fathertoast.crust.api.config.client.gui.widget.field.ResetButton;
 import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
@@ -57,9 +58,9 @@ public class CrustConfigFieldList extends SearchableSelectionList<CrustConfigFie
     /** True if any fields have been changed since opening. */
     private boolean changed;
     
-    public CrustConfigFieldList( CrustConfigFileScreen parent, Minecraft game, CrustConfigSpec spec, HighlightOffsets highlightOffsets ) {
+    public CrustConfigFieldList( CrustConfigFileScreen parent, Minecraft game, CrustConfigSpec spec, ElementOffset offset ) {
         super( game, parent.width, parent.height,
-                43, parent.height - 32, IConfigFieldWidgetProvider.VALUE_HEIGHT + 1, highlightOffsets );
+                43, parent.height - 32, IConfigFieldWidgetProvider.VALUE_HEIGHT + 1, offset );
         PARENT = parent;
         SPEC = spec;
         

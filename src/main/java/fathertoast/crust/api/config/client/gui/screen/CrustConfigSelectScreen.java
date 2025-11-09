@@ -1,5 +1,6 @@
 package fathertoast.crust.api.config.client.gui.screen;
 
+import fathertoast.crust.api.config.client.gui.ElementOffset;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFileList;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigModList;
 import fathertoast.crust.api.config.client.gui.widget.SearchableSelectionList;
@@ -99,13 +100,13 @@ public class CrustConfigSelectScreen extends Screen {
         addRenderableWidget( TextWithSubtitle.create( this, font, width / 2, 8, true, getTitle(), SUBTITLE ) );
         
         // Primary screen content
-        SearchableSelectionList.HighlightOffsets offsets = new SearchableSelectionList.HighlightOffsets( 0, 0, 15, 0 );
+        ElementOffset offset = new ElementOffset( 0, 0, 15, 0 );
         
         if( CFG_MANAGER == null ) {
-            selectionList = new CrustConfigModList( this, minecraft, offsets );
+            selectionList = new CrustConfigModList( this, minecraft, offset );
         }
         else {
-            selectionList = new CrustConfigFileList( this, minecraft, CFG_MANAGER, offsets );
+            selectionList = new CrustConfigFileList( this, minecraft, CFG_MANAGER, offset );
         }
         addWidget( selectionList );
         

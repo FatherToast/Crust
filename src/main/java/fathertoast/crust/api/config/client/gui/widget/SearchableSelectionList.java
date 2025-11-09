@@ -2,6 +2,7 @@ package fathertoast.crust.api.config.client.gui.widget;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import fathertoast.crust.api.config.client.gui.ElementOffset;
 import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
 import fathertoast.crust.client.ClientRegister;
 import net.minecraft.client.Minecraft;
@@ -14,19 +15,16 @@ import net.minecraft.client.gui.components.ContainerObjectSelectionList;
  */
 public abstract class SearchableSelectionList<T extends ContainerObjectSelectionList.Entry<T>> extends ContainerObjectSelectionList<T> {
     
-    /** Default highlight offsets instance with no offsets. */
-    public static final HighlightOffsets NONE = new HighlightOffsets( 0, 0, 0, 0 );
-    
     /** Offsets to be applied to element highlights. */
-    private final HighlightOffsets highlightOffsets;
+    private final ElementOffset highlightOffset;
     /** A bidirectional map that maps search candidate indexes to selection list element indexes. */
     private BiMap<Integer, Integer> elementByCandidateIndexes = HashBiMap.create();
     /** The focused search candidate index, typically specified by a searchbar. */
     private int focusedIndex;
     
-    public SearchableSelectionList( Minecraft minecraft, int width, int height, int topY, int bottomY, int itemHeight, HighlightOffsets highlightOffsets ) {
+    public SearchableSelectionList( Minecraft minecraft, int width, int height, int topY, int bottomY, int itemHeight, ElementOffset highlightOffset ) {
         super( minecraft, width, height, topY, bottomY, itemHeight );
-        this.highlightOffsets = highlightOffsets;
+        this.highlightOffset = highlightOffset;
     }
     
     /**
@@ -64,10 +62,10 @@ public abstract class SearchableSelectionList<T extends ContainerObjectSelection
         // Check if highlights are enabled in the config.
         if( ClientRegister.CONFIG_EDITOR.SEARCHBAR.showSearchHighlights.get() ) {
             if( elementByCandidateIndexes.inverse().containsKey( itemIndex ) ) {
-                int x = (getLeft() + ((getWidth() - rowWidth) / 2)) + highlightOffsets.xOffset;
-                int y = rowTop + highlightOffsets.yOffset;
-                int width = (getLeft() + ((getWidth() + rowWidth) / 2) - 3) + highlightOffsets.widthOffset;
-                int height = (rowTop + itemHeight + 3) + highlightOffsets.heightOffset;
+                int x = (getLeft() + ((getWidth() - rowWidth) / 2)) + highlightOffset.getX();
+                int y = rowTop + highlightOffset.getY();
+                int width = (getLeft() + ((getWidth() + rowWidth) / 2) - 3) + highlightOffset.getWidth();
+                int height = (rowTop + itemHeight + 3) + highlightOffset.getHeight();
                 
                 // TODO - Maybe make highlight color configurable
                 // noinspection ConstantConditions
@@ -81,10 +79,4 @@ public abstract class SearchableSelectionList<T extends ContainerObjectSelection
         }
         super.renderItem( graphics, mouseX, mouseY, partialTick, itemIndex, rowLeft, rowTop, rowWidth, itemHeight );
     }
-    
-    /**
-     * Contains optional x, y, width and height offsets to be applied
-     * when drawing highlights behind search result items in a search list.
-     */
-    public record HighlightOffsets(int xOffset, int yOffset, int widthOffset, int heightOffset) { }
 }
