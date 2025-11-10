@@ -1,7 +1,8 @@
-package fathertoast.crust.common.potion;
+package fathertoast.crust.common.core.registry;
 
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.lib.CrustObjects;
+import fathertoast.crust.common.potion.WeightEffect;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -9,27 +10,29 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public final class CrustEffects {
     
     private static final DeferredRegister<MobEffect> REGISTRY = DeferredRegister.create( ForgeRegistries.MOB_EFFECTS, ICrustApi.MOD_ID );
     
-    public static final RegistryObject<MobEffect> VULNERABILITY = register( CrustObjects.ID.VULNERABILITY_EFFECT.getPath(), MobEffectCategory.HARMFUL, 0x96848D );
-    public static final RegistryObject<MobEffect> WEIGHT = register( CrustObjects.ID.WEIGHT_EFFECT.getPath(), () -> new WeightEffect( MobEffectCategory.HARMFUL, 0x353A6B ) );
-    
+    static {
+        register( CrustObjects.Effects.VULNERABILITY, MobEffectCategory.HARMFUL, 0x96848D );
+        register( CrustObjects.Effects.WEIGHT, () -> new WeightEffect( MobEffectCategory.HARMFUL, 0x353A6B ) );
+    }
     
     /** Called to register this class. */
     public static void register( IEventBus bus ) { REGISTRY.register( bus ); }
     
     /** Registers a simple effect to the deferred register. */
-    private static RegistryObject<MobEffect> register( String name, MobEffectCategory category, int color ) {
-        return register( name, () -> new SimpleEffect( category, color ) );
+    private static void register( RegistryObject<MobEffect> regObj, MobEffectCategory category, int color ) {
+        register( regObj, () -> new SimpleEffect( category, color ) );
     }
     
     /** Registers a custom effect to the deferred register. */
-    private static <T extends MobEffect> RegistryObject<T> register( String name, Supplier<T> effect ) {
-        return REGISTRY.register( name, effect );
+    private static void register( RegistryObject<MobEffect> regObj, Supplier<? extends MobEffect> effect ) {
+        REGISTRY.register( Objects.requireNonNull( regObj.getId() ).getPath(), effect );
     }
     
     /** Really just here to allow access to the Effect::new. */

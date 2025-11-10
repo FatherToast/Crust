@@ -42,6 +42,9 @@ public class CrustConfigSpec {
     /** @return The file this config spec loads to/from. */
     public File getFile() { return NIGHT_CONFIG_FILE.getFile(); }
     
+    /** @return The file path, relative to the game directory, that this config spec loads to/from. */
+    public String getFilePath() { return ConfigUtil.toRelativePath( getFile() ); }
+    
     /** @return A read-only map of all keys defined in this spec to their config fields. */
     public Map<String, AbstractConfigField> getFields() { return Collections.unmodifiableMap( FIELD_MAP ); }
     

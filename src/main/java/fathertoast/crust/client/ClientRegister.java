@@ -1,12 +1,18 @@
 package fathertoast.crust.client;
 
 import fathertoast.crust.api.ICrustApi;
+import fathertoast.crust.api.client.renderer.CrustFishingHookRenderer;
 import fathertoast.crust.api.config.client.ClientConfigUtil;
 import fathertoast.crust.api.config.common.ConfigManager;
+import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.client.config.CfgEditorCrustConfig;
 import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
 import fathertoast.crust.client.config.RenderSettingsCrustConfig;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -37,6 +43,12 @@ public final class ClientRegister {
         EXTRA_INV_BUTTONS.SPEC.initialize();
         RENDER_SETTINGS.SPEC.initialize();
         
+        // Inject our own fishing rod animation
+        if( RENDER_SETTINGS.MISC.fancyFishing.get() ) {
+            event.enqueueWork( () -> ItemProperties.register( Items.FISHING_ROD,
+                    ResourceLocation.withDefaultNamespace( "cast" ), new FishingRodItemPropertyGetter() ) );
+        }
+        
         // Tell Forge to open the config editor when our mod's "Config" button is clicked in the Mods screen
         ClientConfigUtil.registerConfigButtonAsEditScreen();
         
@@ -47,6 +59,12 @@ public final class ClientRegister {
     @SubscribeEvent
     static void onRegisterKeyMappings( RegisterKeyMappingsEvent event ) {
         KeyBindingEvents.register( event );
+    }
+    
+    /** Registers this mod's entity renderers. */
+    @SubscribeEvent
+    public static void registerEntityRenderers( EntityRenderersEvent.RegisterRenderers event ) {
+        event.registerEntityRenderer( CrustObjects.Entities.FISH_HOOK.get(), CrustFishingHookRenderer::new );
     }
     
     

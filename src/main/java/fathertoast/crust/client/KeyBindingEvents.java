@@ -2,6 +2,7 @@ package fathertoast.crust.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import fathertoast.crust.api.ICrustApi;
+import fathertoast.crust.api.client.SortedKeyMapping;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.client.button.ButtonInfo;
@@ -27,7 +28,7 @@ public final class KeyBindingEvents {
     
     private static final String KEY = "key." + ICrustApi.MOD_ID + ".";
     
-    private static final KeyMapping CONFIG_EDITOR = new SortedKeyBinding( 0, KEY + "configs", KEY_CAT );
+    private static final KeyMapping CONFIG_EDITOR = new SortedKeyMapping( 0, KEY + "configs", KEY_CAT );
     //    private static final KeyBinding EQUIP = new SortedKeyBinding( 1, KEY + "equip", KEY_CAT );
     
     private static KeyMapping[] BUTTONS;
@@ -103,14 +104,14 @@ public final class KeyBindingEvents {
                 //                else {
                 //                    // Do the below here
                 //                }
-                BUTTONS[index] = new SortedKeyBinding( index,
+                BUTTONS[index] = new SortedKeyMapping( index,
                         key + button.ID.toLowerCase( Locale.ROOT ), KEY_CAT_BUTTONS );
             }
         }
         
         // User-defined buttons
         for( int i = 0; i < ClientRegister.EXTRA_INV_BUTTONS.CUSTOM_BUTTONS.length; i++ ) {
-            BUTTONS[index + i] = new SortedKeyBinding( index + i, key + "custom" + (i + 1), KEY_CAT_BUTTONS );
+            BUTTONS[index + i] = new SortedKeyMapping( index + i, key + "custom" + (i + 1), KEY_CAT_BUTTONS );
         }
     }
     

@@ -8,20 +8,17 @@ import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDi
 import fathertoast.crust.common.api.impl.CrustApi;
 import fathertoast.crust.common.command.impl.CrustArgumentTypes;
 import fathertoast.crust.common.config.CrustConfig;
+import fathertoast.crust.common.core.registry.CrustEntities;
 import fathertoast.crust.common.network.CrustPacketHandler;
-import fathertoast.crust.common.portal.CrustPortals;
-import fathertoast.crust.common.potion.CrustEffects;
+import fathertoast.crust.common.core.registry.CrustPortals;
+import fathertoast.crust.common.core.registry.CrustEffects;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -95,17 +92,14 @@ public class Crust {
     public static Crust INSTANCE;
     
     /** API instance. */
+    public final FMLModContainer container;
+    /** API instance. */
     public final CrustApi apiInstance;
-    
-    
-    // Registries
-    public static final DeferredRegister<Block> BLOCK_REGISTRY = DeferredRegister.create( ForgeRegistries.BLOCKS, ICrustApi.MOD_ID );
-    public static final DeferredRegister<Item> ITEM_REGISTRY = DeferredRegister.create( ForgeRegistries.ITEMS, ICrustApi.MOD_ID );
-    public static final DeferredRegister<BlockEntityType<?>> BE_REGISTRY = DeferredRegister.create( ForgeRegistries.BLOCK_ENTITY_TYPES, ICrustApi.MOD_ID );
     
     
     public Crust( FMLJavaModLoadingContext context ) {
         INSTANCE = this;
+        container = context.getContainer();
         apiInstance = new CrustApi();
         ApocalypseDifficultyEnvironment.register( apiInstance );
         CrustPacketHandler.registerMessages();
@@ -116,13 +110,10 @@ public class Crust {
         IEventBus modBus = context.getModEventBus();
         
         modBus.addListener( CrustPortals::onRegistryCreate );
-        CrustEffects.register( modBus );
         CrustPortals.register( modBus );
+        CrustEffects.register( modBus );
+        CrustEntities.register( modBus );
         CrustArgumentTypes.register( modBus );
-        
-        BE_REGISTRY.register( modBus );
-        BLOCK_REGISTRY.register( modBus );
-        ITEM_REGISTRY.register( modBus );
         
         modBus.addListener( this::onCommonSetup );
     }
@@ -161,5 +152,5 @@ public class Crust {
                 } ) );
     }
     
-    public static ResourceLocation resLoc( String path ) { return ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, path ); }
+    public static ResourceLocation rl( String path ) { return ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, path ); }
 }

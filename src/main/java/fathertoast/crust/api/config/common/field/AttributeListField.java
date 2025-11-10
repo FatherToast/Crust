@@ -85,7 +85,7 @@ public class AttributeListField extends GenericField<AttributeList> {
         // Parse the attribute-operation-value array
         final String[] args = line.split( " ", 4 );
         if( args.length > 3 ) {
-            ConfigUtil.LOG.warn( "Entry has for {} \"{}\" is too long! Deleting excess. Invalid entry: {}",
+            ConfigUtil.LOG.warn( "Entry for {} \"{}\" has too many arguments! Deleting excess. Invalid entry: {}",
                     getClass(), getKey(), line );
         }
         

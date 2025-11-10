@@ -31,7 +31,7 @@ import java.util.function.BiPredicate;
  */
 public class Searchbar extends EditBox {
     
-    public static final ResourceLocation SEARCH_BAR_ICONS = Crust.resLoc( "textures/search_bar_items.png" );
+    public static final ResourceLocation SEARCH_BAR_ICONS = Crust.rl( "textures/search_bar_items.png" );
     /** The default search matcher predicate. */
     public static final BiPredicate<String, String> DEFAULT_MATCHER = StringUtils::containsIgnoreCase;
     

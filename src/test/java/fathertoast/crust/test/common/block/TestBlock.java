@@ -1,4 +1,4 @@
-package fathertoast.crust.test.common.game_objects;
+package fathertoast.crust.test.common.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
@@ -9,15 +9,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 
 public class TestBlock extends Block implements EntityBlock {
-
+    
     public TestBlock() {
-        super(Properties.of().strength(0.5F)
-                .jumpFactor(3.0F));
+        super( Properties.of().strength( 0.5F )
+                .jumpFactor( 3.0F ) );
     }
-
+    
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TestBlockEntity(pos, state);
+    public BlockEntity newBlockEntity( BlockPos pos, BlockState state ) {
+        return new TestBlockEntity( pos, state );
     }
 }

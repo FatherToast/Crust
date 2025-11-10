@@ -17,8 +17,7 @@ public class TestCrust implements ICrustPlugin {
     
     /** API instance */
     public static ICrustApi API;
-
-
+    
     
     /** File for testing the config api. */
     public static final TestConfigFile CONFIG = new TestConfigFile(
@@ -29,5 +28,5 @@ public class TestCrust implements ICrustPlugin {
     public void onLoad( ICrustApi apiInstance ) { API = apiInstance; }
     
     /** @return A ResourceLocation representing the ID of this plugin. */
-    public ResourceLocation getId() { return Crust.resLoc( "test_plugin" ); }
+    public ResourceLocation getId() { return Crust.rl( "test_plugin" ); }
 }

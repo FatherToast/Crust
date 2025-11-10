@@ -3,12 +3,12 @@ package fathertoast.crust.client.button;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import fathertoast.crust.api.ICrustApi;
+import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.client.ClientRegister;
 import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
 import fathertoast.crust.common.mode.CrustModes;
 import fathertoast.crust.common.mode.CrustModesData;
 import fathertoast.crust.common.mode.type.CrustMode;
-import fathertoast.crust.common.portal.CrustPortals;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -96,12 +96,12 @@ public class ButtonInfo {
             "kill @e[type=!player]" ) );
     @SuppressWarnings( "unused" )
     public static final ButtonInfo NETHER_PORTAL = builtIn( new ButtonInfo( "netherPortal", "portal_nether.png",
-            "crustportal " + CrustPortals.NETHER_PORTAL )
-            .condition( () -> CrustPortals.NETHER_PORTAL.get().isValidDimension( world() ) ) );
+            "crustportal " + CrustObjects.Portals.NETHER.getId() )
+            .condition( () -> CrustObjects.Portals.NETHER.get().isValidDimension( world() ) ) );
     @SuppressWarnings( "unused" )
     public static final ButtonInfo END_PORTAL = builtIn( new ButtonInfo( "endPortal", "portal_end.png",
-            "crustportal " + CrustPortals.END_PORTAL )
-            .condition( () -> CrustPortals.END_PORTAL.get().isValidDimension( world() ) ) );
+            "crustportal " + CrustObjects.Portals.END.getId() )
+            .condition( () -> CrustObjects.Portals.END.get().isValidDimension( world() ) ) );
     
     // Time control
     public static final ButtonInfo DAY = builtIn( new ButtonInfo( "day", "day.png",
@@ -405,6 +405,7 @@ public class ButtonInfo {
         
         static final String MODE_SURVIVAL = "gamemode survival";
         static final String MODE_CREATIVE = "gamemode creative";
+        static final String MODE_SPECTATOR = "gamemode spectator";
         
         static final String CLEAN_POINTER = "crustclean pointer";
         

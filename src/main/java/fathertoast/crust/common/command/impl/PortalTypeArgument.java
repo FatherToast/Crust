@@ -9,7 +9,6 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.api.portal.PortalBuilder;
-import fathertoast.crust.common.portal.CrustPortals;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

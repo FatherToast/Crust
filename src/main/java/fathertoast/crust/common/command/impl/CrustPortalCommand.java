@@ -5,7 +5,6 @@ import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.api.portal.PortalBuilder;
 import fathertoast.crust.common.command.CommandUtil;
-import fathertoast.crust.common.portal.CrustPortals;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;

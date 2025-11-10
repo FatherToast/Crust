@@ -63,8 +63,8 @@ public class AttributeEntry {
         if( attribute != null ) return true;
         
         if( !ForgeRegistries.ATTRIBUTES.containsKey( ATTRIBUTE_KEY ) ) {
-            ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Invalid entry: {}",
-                    FIELD.getClass(), FIELD.getKey(), ATTRIBUTE_KEY.toString() );
+            ConfigUtil.LOG.warn( "Warning for {}:", FIELD.describeLocation() );
+            ConfigUtil.LOG.warn( "Ignoring invalid attribute \"{}\"", ATTRIBUTE_KEY );
             return false;
         }
         attribute = ForgeRegistries.ATTRIBUTES.getValue( ATTRIBUTE_KEY );
@@ -89,19 +89,36 @@ public class AttributeEntry {
     
     /** Applies this attribute change to the entity attribute builder. */
     public void apply( AttributeSupplier.Builder builder ) {
-        if( validate() ) apply( builder.builder.get( attribute ) );
+        if( validate() ) {
+            AttributeInstance attributeInstance = builder.builder.get( attribute );
+            if( attributeInstance == null ) {
+                ConfigUtil.LOG.warn( "Warning for {}:", FIELD.describeLocation() );
+                ConfigUtil.LOG.warn( "Attempted to apply attribute \"{}\" to field that does not support it",
+                        ATTRIBUTE_KEY );
+            }
+            else {
+                apply( attributeInstance );
+            }
+        }
     }
     
     /** Applies this attribute change to the entity. */
     public void apply( LivingEntity entity ) {
-        if( validate() ) apply( entity.getAttribute( attribute ) );
+        if( validate() ) {
+            AttributeInstance attributeInstance = entity.getAttribute( attribute );
+            if( attributeInstance == null ) {
+                ConfigUtil.LOG.warn( "Warning for {}:", FIELD.describeLocation() );
+                ConfigUtil.LOG.warn( "Attempted to apply attribute \"{}\" on entity type \"{}\" that does not support it",
+                        ATTRIBUTE_KEY, ForgeRegistries.ENTITY_TYPES.getKey( entity.getType() ) );
+            }
+            else {
+                apply( attributeInstance );
+            }
+        }
     }
     
     /** Applies this attribute change to the attribute instance. Assumes that the instance is for this entry's target attribute. */
-    private void apply( @Nullable AttributeInstance attributeInstance ) {
-        if( attributeInstance == null )
-            throw new IllegalStateException( "Attempted to modify non-registered attribute " + ATTRIBUTE_KEY );
-        
+    private void apply( AttributeInstance attributeInstance ) {
         if( MULTIPLY ) attributeInstance.setBaseValue( attributeInstance.getBaseValue() * VALUE );
         else attributeInstance.setBaseValue( attributeInstance.getBaseValue() + VALUE );
     }

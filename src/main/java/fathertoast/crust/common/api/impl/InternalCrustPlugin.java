@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 @CrustPlugin
 public class InternalCrustPlugin implements ICrustPlugin {
     
-    private static final ResourceLocation ID = Crust.resLoc( "builtin_plugin" );
+    private static final ResourceLocation ID = Crust.rl( "builtin_plugin" );
     
     /** Called by Crust after {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}. */
     @Override

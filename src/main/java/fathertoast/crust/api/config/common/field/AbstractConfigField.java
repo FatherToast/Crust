@@ -45,6 +45,9 @@ public abstract class AbstractConfigField {
     /** @return The config spec this field exists in. */
     public final CrustConfigSpec getSpec() { return SPEC; }
     
+    /** @return A description of where to find this field. Primarily used for error reporting/feedback. */
+    public final String describeLocation() { return "\"" + KEY + "\" in " + SPEC.getFilePath(); }
+    
     /** @return The unique config key that maps to this field in the config file. */
     public final String getKey() { return KEY; }
     
