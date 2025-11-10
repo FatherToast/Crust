@@ -22,11 +22,15 @@ public abstract class DynamicRegistryEnvironment<T> extends AbstractEnvironment 
     /** If true, the condition is inverted. */
     protected final boolean INVERT;
     /** The registry key for this environment. */
-    private final ResourceLocation REGISTRY_KEY;
+    protected final ResourceLocation REGISTRY_KEY;
     
     private T registryEntry;
     /** The value of {@link ConfigManager#getDynamicRegVersion()} at the time of last poll. */
     private byte version = -1;
+    
+    public DynamicRegistryEnvironment( ConfigManager cfgManager, ResourceKey<T> regKey, boolean invert ) {
+        this( cfgManager, regKey.location(), invert );
+    }
     
     public DynamicRegistryEnvironment( ConfigManager cfgManager, ResourceLocation regKey, boolean invert ) {
         MANAGER = cfgManager;
@@ -51,7 +55,7 @@ public abstract class DynamicRegistryEnvironment<T> extends AbstractEnvironment 
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override
-    public final boolean matches( Level level, @Nullable BlockPos pos ) {
+    public boolean matches( Level level, @Nullable BlockPos pos ) {
         if( level instanceof ServerLevel serverLevel )
             return matches( serverLevel, pos ); // These don't work on the client :(
         return INVERT;

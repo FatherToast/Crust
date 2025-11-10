@@ -14,7 +14,9 @@ import javax.annotation.Nullable;
 
 public class StructureEnvironment extends DynamicRegistryEnvironment<Structure> {
     
-    public StructureEnvironment( ConfigManager cfgManager, ResourceKey<Structure> structure, boolean invert ) { super( cfgManager, structure.location(), invert ); }
+    public StructureEnvironment( ConfigManager cfgManager, ResourceKey<Structure> structure, boolean invert ) {
+        super( cfgManager, structure, invert );
+    }
     
     public StructureEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
     

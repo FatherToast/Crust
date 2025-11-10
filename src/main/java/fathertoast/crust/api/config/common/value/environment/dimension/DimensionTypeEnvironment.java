@@ -9,15 +9,13 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.dimension.LevelStem;
-
 
 import javax.annotation.Nullable;
 
 public class DimensionTypeEnvironment extends DynamicRegistryEnvironment<Level> {
     
     public DimensionTypeEnvironment( ConfigManager cfgManager, ResourceKey<Level> dimType, boolean invert ) {
-        super( cfgManager, dimType.location(), invert );
+        super( cfgManager, dimType, invert );
     }
     
     public DimensionTypeEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
@@ -28,33 +26,18 @@ public class DimensionTypeEnvironment extends DynamicRegistryEnvironment<Level> 
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override
+    public boolean matches( Level level, @Nullable BlockPos pos ) {
+        try {
+            return REGISTRY_KEY.equals( level.dimension().location() ) != INVERT;
+        }
+        catch( NullPointerException ex ) {
+            return false; // Shouldn't be possible, but who knows man
+        }
+    }
+    
+    // We override the method that calls this, so really it should not get called
+    @Override
     public boolean matches( ServerLevel level, @Nullable BlockPos pos ) {
-        ResourceKey<Level> dimensionKey;
-        Object o = getRegistryEntry( level ); // TODO Something is wonky with this line, should always return a Level
-        
-        if( o == null ) return false;
-        
-        // Still in level creation or something
-        // noinspection ConstantValue
-        if( o instanceof LevelStem levelStem ) { // TODO See above, Level cannot be LevelStem
-            try {
-                dimensionKey = Registries.levelStemToLevel( level.registryAccess().registry(
-                                Registries.LEVEL_STEM ).orElseThrow()
-                        .getResourceKey( levelStem ).orElseThrow()
-                );
-            }
-            catch( Exception ignored ) {
-                return false;
-            }
-        }
-        else {
-            try {
-                dimensionKey = ((Level) o).dimension();
-            }
-            catch( Exception ignored ) {
-                return false;
-            }
-        }
-        return (dimensionKey.equals( level.dimension() )) != INVERT;
+        return matches( (Level) level, pos );
     }
 }
