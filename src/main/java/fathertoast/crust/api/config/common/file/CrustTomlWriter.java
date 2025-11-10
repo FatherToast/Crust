@@ -50,7 +50,7 @@ public class CrustTomlWriter implements ConfigWriter {
     @Override
     public void write( UnmodifiableConfig config, Writer writer ) {
         CONFIG_SPEC.writing = true;
-        ConfigUtil.LOG.debug( "Writing config file! ({}{})", CONFIG_SPEC.NAME, CrustConfigFormat.FILE_EXT );
+        ConfigUtil.LOG.debug( "Writing config file: {}", CONFIG_SPEC.getFilePath() );
         CharacterOutput output = new WriterOutput( writer );
         currentIndentLevel = 0;
         CONFIG_SPEC.write( this, output );

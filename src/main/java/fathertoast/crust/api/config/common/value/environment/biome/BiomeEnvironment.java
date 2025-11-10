@@ -18,7 +18,7 @@ public class BiomeEnvironment extends DynamicRegistryEnvironment<Biome> {
         super( cfgManager, biome, invert );
     }
     
-    public BiomeEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public BiomeEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     /** @return The registry used. */
     @Override

@@ -17,7 +17,7 @@ public class ApocalypseDifficultyOrTimeEnvironment extends ApocalypseDifficultyE
     
     public ApocalypseDifficultyOrTimeEnvironment( ComparisonOperator op, long value ) { super( op, value ); }
     
-    public ApocalypseDifficultyOrTimeEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public ApocalypseDifficultyOrTimeEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Override

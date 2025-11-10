@@ -14,7 +14,7 @@ public class TerrainDepthEnvironment extends CompareFloatEnvironment {
     
     public TerrainDepthEnvironment( ComparisonOperator op, float value ) { super( op, value ); }
     
-    public TerrainDepthEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public TerrainDepthEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     /** @return Returns the actual value to compare, or Float.NaN if there isn't enough information. */
     @Override

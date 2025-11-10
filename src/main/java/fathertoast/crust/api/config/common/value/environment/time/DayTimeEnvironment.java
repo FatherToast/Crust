@@ -29,7 +29,7 @@ public class DayTimeEnvironment extends EnumEnvironment<DayTimeEnvironment.Value
     
     public DayTimeEnvironment( Value value, boolean invert ) { super( value, invert ); }
     
-    public DayTimeEnvironment( AbstractConfigField field, String line ) { super( field, line, Value.values() ); }
+    public DayTimeEnvironment( AbstractConfigField field, String value ) { super( field, value, Value.values() ); }
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override

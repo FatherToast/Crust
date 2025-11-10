@@ -15,11 +15,11 @@ public class BiomeCategoryEnvironment extends EnumEnvironment<BiomeCategory> {
     public BiomeCategoryEnvironment( BiomeCategory value, boolean invert ) { super( value, invert ); }
     
     @Deprecated( forRemoval = true )
-    public BiomeCategoryEnvironment( AbstractConfigField field, String line ) {
-        super( field, line, BiomeCategory.values() );
-        ConfigUtil.LOG.warn( "Deprecated entry for {} \"{}\"! The \"biome_category\" environment condition will " +
-                        "be removed in a future version. Deprecated entry: {}",
-                field.getClass(), field.getKey(), line );
+    public BiomeCategoryEnvironment( AbstractConfigField field, String value ) {
+        super( field, value, BiomeCategory.values() );
+        ConfigUtil.warnFor( field );
+        ConfigUtil.LOG.warn( "Deprecated environment entry! The \"biome_category\" environment condition will be removed in a future version. Deprecated entry: {}",
+                name() + " " + value );
     }
     
     /** @return Returns true if this environment matches the provided environment. */

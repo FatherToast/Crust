@@ -87,8 +87,7 @@ public class WeightedList<T extends WeightedList.Value> {
             if( choice < 0 ) return entry.getValue();
         }
         
-        ConfigUtil.LOG.error( "Weighting error occurred while rolling random item! " +
-                "This may have been caused by configs reloading during random roll (comod). Otherwise, it is very bad. :(" );
+        ConfigUtil.LOG.error( "Weighting error occurred while rolling random item! This may have been caused by configs reloading during random roll (comod). Otherwise, it is very bad. :(" );
         return null;
     }
     

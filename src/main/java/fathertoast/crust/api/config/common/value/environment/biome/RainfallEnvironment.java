@@ -13,7 +13,7 @@ public class RainfallEnvironment extends CompareFloatEnvironment {
     
     public RainfallEnvironment( ComparisonOperator op, float value ) { super( op, value ); }
     
-    public RainfallEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public RainfallEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override

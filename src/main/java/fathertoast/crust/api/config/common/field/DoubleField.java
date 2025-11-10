@@ -91,8 +91,8 @@ public class DoubleField extends AbstractConfigField {
     public void load( @Nullable Object raw ) {
         Number newValue;
         if( raw instanceof String ) {
-            ConfigUtil.LOG.info( "Unboxing string value for {} \"{}\" to a different primitive.",
-                    getClass(), getKey() );
+            ConfigUtil.infoFor( this );
+            ConfigUtil.LOG.info( "Unboxing string value \"{}\" to a different primitive.", raw );
             newValue = TomlHelper.parseNumber( (String) raw );
         }
         else {
@@ -101,21 +101,22 @@ public class DoubleField extends AbstractConfigField {
         
         if( newValue == null ) {
             if( raw != null ) {
-                ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
-                        getClass(), getKey(), raw );
+                ConfigUtil.warnFor( this );
+                ConfigUtil.LOG.warn( "Invalid floating point number! Falling back to default ({}). Invalid value: {}",
+                        valueDefault, raw );
             }
             value = valueDefault;
         }
         else {
             double castValue = newValue.doubleValue();
             if( castValue < valueMin ) {
-                ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
-                        getClass(), getKey(), valueMin, raw );
+                ConfigUtil.warnFor( this );
+                ConfigUtil.LOG.warn( "Value is below the minimum! Adjusting from {} to {}.", raw, valueMin );
                 value = valueMin;
             }
             else if( castValue > valueMax ) {
-                ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
-                        getClass(), getKey(), valueMax, raw );
+                ConfigUtil.warnFor( this );
+                ConfigUtil.LOG.warn( "Value is above the maximum! Adjusting from {} to {}.", raw, valueMax );
                 value = valueMax;
             }
             else {
@@ -214,14 +215,14 @@ public class DoubleField extends AbstractConfigField {
         
         /** @return The maximum value of this range. */
         public double getMax() { return MAXIMUM.get(); }
-
+        
         /** @return The minimum value field. */
         public DoubleField getMinField() { return MINIMUM; }
-
+        
         /** @return The maximum value field. */
         public DoubleField getMaxField() { return MAXIMUM; }
-
-
+        
+        
         /** @return A random value between the minimum (inclusive) and the maximum (exclusive). */
         public double next( Random random ) { return next( random::nextDouble ); }
         
@@ -235,8 +236,9 @@ public class DoubleField extends AbstractConfigField {
                 return getMin() + random.get() * delta;
             }
             if( delta < 0.0 ) {
-                ConfigUtil.LOG.warn( "Value for range \"({},{})\" is invalid ({} > {})! Ignoring maximum value.",
-                        MINIMUM.getKey(), MAXIMUM.getKey(), getMin(), getMax() );
+                ConfigUtil.warnFor( MAXIMUM );
+                ConfigUtil.LOG.warn( "Values for range are invalid; min ({}) is greater than max ({})! Ignoring maximum value.",
+                        getMin(), getMax() );
             }
             return getMin();
         }
@@ -383,6 +385,7 @@ public class DoubleField extends AbstractConfigField {
                 if( targetWeight < 0.0 ) return UNDERLYING_LIST.get( i ).VALUE;
             }
             
+            ConfigUtil.LOG.error( "Error for weighted list including {}:", UNDERLYING_LIST.get( 0 ).WEIGHT.BASE.describeLocation() );
             ConfigUtil.LOG.error( "Environment-sensitive weight list was unable to return a value when it should have! " +
                     "This is probably due to error in floating point calculations, perhaps try changing the scale of weights." );
             return null;

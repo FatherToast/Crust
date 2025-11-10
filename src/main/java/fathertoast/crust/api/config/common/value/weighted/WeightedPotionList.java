@@ -48,7 +48,8 @@ public class WeightedPotionList extends RegistryEntryValueList<MobEffect> {
         double weight = 0;
         for( RegistryValueEntry<MobEffect> entry : entries ) {
             if( entry.REG_KEY == null ) {
-                ConfigUtil.LOG.warn( "Encountered value entry with null registry key. Entry will be discarded." );
+                ConfigUtil.errorFor( null );
+                ConfigUtil.LOG.error( "Encountered value entry with null registry key. Skipping. Entry: {}", entry );
             }
             else weight += entry.VALUES[0];
         }
@@ -109,7 +110,7 @@ public class WeightedPotionList extends RegistryEntryValueList<MobEffect> {
                 }
             }
         }
-        ConfigUtil.LOG.error( "Weighting error occurred while rolling random item! Not good :(" );
+        ConfigUtil.LOG.error( "Weighting error occurred while rolling random potion! Not good :(" );
         return null;
     }
 }

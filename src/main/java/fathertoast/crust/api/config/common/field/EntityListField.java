@@ -114,15 +114,18 @@ public class EntityListField extends GenericField<EntityList> {
                 }
                 // Check for namespace entries
                 if( args[0].endsWith( "*" ) ) {
-                    namespaceEntries.add( parseNamespaceEntry( line ) );
+                    NamespaceRegistryEntry entry = parseNamespaceEntry( line );
+                    if( entry != null ) namespaceEntries.add( entry );
                 }
                 // Check for entity type tags
                 else if( line.startsWith( "#" ) ) {
-                    tagEntries.add( parseTagEntry( line ) );
+                    EntityTagEntry entry = parseTagEntry( line );
+                    if( entry != null ) tagEntries.add( entry );
                 }
                 // Try parse as normal entry
                 else {
-                    entryList.add( parseEntry( line ) );
+                    EntityEntry entry = parseEntry( line );
+                    if( entry != null ) entryList.add( entry );
                 }
             }
             value = new EntityList( defaultEntry, entryList );
@@ -132,6 +135,7 @@ public class EntityListField extends GenericField<EntityList> {
     }
     
     /** Parses a single entry line and returns the result. */
+    @Nullable
     private EntityEntry parseEntry( final String line ) {
         String modifiedLine = line;
         
@@ -147,51 +151,48 @@ public class EntityListField extends GenericField<EntityList> {
         
         // Parse the entity-value array
         final String[] args = modifiedLine.split( " " );
-        final ResourceLocation regKey = ResourceLocation.parse( args[0].trim() );
+        final ResourceLocation regKey = ResourceLocation.tryParse( args[0].trim() );
+        if( regKey == null ) {
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Entity entry has invalid resource location! Skipping. Entry: {}", line );
+            return null;
+        }
         double[] values = parseValues( line, args );
         
         return new EntityEntry( this, regKey, extendable, values );
     }
     
     /** Parses a single entry line as a tag entry and returns it. */
+    @Nullable
     private EntityTagEntry parseTagEntry( String line ) {
         String[] args = line.split( " " );
         String tag = args[0].substring( 1 );
         
-        if( tag.isEmpty() ) {
-            ConfigUtil.LOG.error( "Tried to parse entity tag in EntityList \"{}\", but it was malformed! Expected the format \"#namespace:path\" but got \"{}\"!",
-                    getKey(), line );
-            
-            throw new IllegalArgumentException();
-        }
         ResourceLocation tagLocation = ResourceLocation.tryParse( tag );
-        
         if( tagLocation == null ) {
-            ConfigUtil.LOG.error( "Tried to parse entity tag in EntityList \"{}\", but it could not be read as a ResourceLocation! Expected the format \"#namespace:path\" but got \"{}\"!",
-                    getKey(), line );
-            
-            throw new IllegalArgumentException();
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Entity entry has invalid tag key! Skipping. Entry: {}", line );
+            return null;
         }
         double[] values = parseValues( line, args );
         
-        return new EntityTagEntry( this, new TagKey<>( Registries.ENTITY_TYPE, tagLocation ), values );
+        return new EntityTagEntry( this, TagKey.create( Registries.ENTITY_TYPE, tagLocation ), values );
     }
     
     /**
      * Attempts to fetch every entity type from the registry belonging to
      * a specific namespace and adds new entries for them to the given entry list.
-     *
-     * @throws IllegalArgumentException if the first argument of the line doesn't contain a namespace
      */
+    @Nullable
     private NamespaceRegistryEntry parseNamespaceEntry( String line ) {
         String[] args = line.split( " " );
         String namespace = args[0].split( ":" )[0];
         
         if( namespace == null || namespace.isEmpty() ) {
-            ConfigUtil.LOG.error( "Tried to parse namespace entry in EntityList \"{}\", but it was malformed! Expected the format \"namespace:*\" but got \"{}\"!",
-                    getKey(), line );
-            
-            throw new IllegalArgumentException();
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Entity entry has invalid namespace key! Must follow pattern \"namespace:*\". Skipping. Entry: {}",
+                    line );
+            return null;
         }
         double[] values = parseValues( line, args );
         return new NamespaceRegistryEntry( this, namespace, values );
@@ -208,9 +209,9 @@ public class EntityListField extends GenericField<EntityList> {
         // Variable-value; just needs at least one value
         if( reqValues < 0 ) {
             if( actualValues < 1 ) {
-                ConfigUtil.LOG.warn( "Entry has too few values for {} \"{}\"! Expected at least one value. " +
-                                "Replacing missing value with 0. Invalid entry: {}",
-                        getClass(), getKey(), line );
+                ConfigUtil.warnFor( this );
+                ConfigUtil.LOG.warn( "Entity entry has too few values! Must have at least one value. Replacing missing value with 0. Entry: {}",
+                        line );
                 valuesList.add( 0.0 );
             }
             else {
@@ -223,14 +224,14 @@ public class EntityListField extends GenericField<EntityList> {
         // Specified value; must have the exact number of values
         else {
             if( reqValues > actualValues ) {
-                ConfigUtil.LOG.warn( "Entry has too few values for {} \"{}\"! " +
-                                "Expected {} values, but detected {}. Replacing missing values with 0. Invalid entry: {}",
-                        getClass(), getKey(), reqValues, actualValues, line );
+                ConfigUtil.warnFor( this );
+                ConfigUtil.LOG.warn( "Entity entry has too few values! Expected {} values, but found {}. Replacing missing values with 0. Entry: {}",
+                        reqValues, actualValues, line );
             }
             else if( reqValues < actualValues ) {
-                ConfigUtil.LOG.warn( "Entry has too many values for {} \"{}\"! " +
-                                "Expected {} values, but detected {}. Deleting additional values. Invalid entry: {}",
-                        getClass(), getKey(), reqValues, actualValues, line );
+                ConfigUtil.warnFor( this );
+                ConfigUtil.LOG.warn( "Entity entry has too many values! Expected {} values, but found {}. Deleting excess values. Entry: {}",
+                        reqValues, actualValues, line );
             }
             
             // Parse all values
@@ -261,19 +262,22 @@ public class EntityListField extends GenericField<EntityList> {
         }
         catch( NumberFormatException ex ) {
             // This is thrown if the string is not a parsable number
-            ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to 0. Invalid entry: {}",
-                    getClass(), getKey(), line );
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Entity entry has invalid value ({})! Falling back to 0. Entry: {}",
+                    arg, line );
             value = 0.0;
         }
         // Verify value is within range
         if( value < valueDefault.getMinValue() ) {
-            ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
-                    getClass(), getKey(), valueDefault.getMinValue(), value );
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Entity entry value is below the minimum! Adjusting from {} to {}. Entry: {}",
+                    value, valueDefault.getMinValue(), line );
             value = valueDefault.getMinValue();
         }
         else if( value > valueDefault.getMaxValue() ) {
-            ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
-                    getClass(), getKey(), valueDefault.getMaxValue(), value );
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Entity entry value is above the maximum! Adjusting from {} to {}. Entry: {}",
+                    value, valueDefault.getMaxValue(), line );
             value = valueDefault.getMaxValue();
         }
         return value;

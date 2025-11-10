@@ -14,7 +14,7 @@ public class TerrainScaleEnvironment extends CompareFloatEnvironment {
     
     public TerrainScaleEnvironment( ComparisonOperator op, float value ) { super( op, value ); }
     
-    public TerrainScaleEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public TerrainScaleEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     /** @return Returns the actual value to compare, or Float.NaN if there isn't enough information. */
     @Override

@@ -8,7 +8,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
@@ -45,18 +44,18 @@ public class EntityEntry {
     }
     
     /** Creates an extendable entry with the specified values. Used for creating default configs. */
-    public EntityEntry( @Nonnull EntityType<? extends Entity> type, double... values ) {
+    public EntityEntry( EntityType<? extends Entity> type, double... values ) {
         this( type, true, values );
     }
     
     /** Creates an entry with the specified values. Used for creating default configs. */
-    public EntityEntry( @Nonnull EntityType<? extends Entity> type, boolean extend, double... values ) {
+    public EntityEntry( EntityType<? extends Entity> type, boolean extend, double... values ) {
         this( null, Objects.requireNonNull( ForgeRegistries.ENTITY_TYPES.getKey( type ) ), extend, values );
         entityType = type;
     }
     
     /** Creates an entry with the specified values. */
-    public EntityEntry( @Nullable AbstractConfigField field, @Nonnull ResourceLocation regKey, boolean extend, double... values ) {
+    public EntityEntry( @Nullable AbstractConfigField field, ResourceLocation regKey, boolean extend, double... values ) {
         FIELD = field;
         ENTITY_KEY = regKey;
         EXTEND = extend;
@@ -68,8 +67,8 @@ public class EntityEntry {
         if( entityType != null ) return true;
         
         if( !ForgeRegistries.ENTITY_TYPES.containsKey( ENTITY_KEY ) ) {
-            ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Invalid entry: {}",
-                    FIELD.getClass(), FIELD.getKey(), ENTITY_KEY.toString() );
+            ConfigUtil.warnFor( FIELD );
+            ConfigUtil.LOG.warn( "Entity entry has invalid entity key ({})! Ignoring. Entry: {}", ENTITY_KEY, this );
             return false;
         }
         entityType = ForgeRegistries.ENTITY_TYPES.getValue( ENTITY_KEY );
@@ -87,7 +86,8 @@ public class EntityEntry {
                 }
             }
             catch( Exception ex ) {
-                ConfigUtil.LOG.warn( "Failed to load class of entity type {}!", entityType );
+                ConfigUtil.warnFor( FIELD );
+                ConfigUtil.LOG.warn( "Failed to load class of entity type {}! Entry: {}", entityType, this );
                 ex.printStackTrace();
             }
         }
@@ -125,6 +125,7 @@ public class EntityEntry {
             str.insert( 0, '~' );
         }
         // Append values array
+        //noinspection RedundantLengthCheck
         if( VALUES != null && VALUES.length > 0 ) {
             for( double value : VALUES ) {
                 str.append( ' ' ).append( value );

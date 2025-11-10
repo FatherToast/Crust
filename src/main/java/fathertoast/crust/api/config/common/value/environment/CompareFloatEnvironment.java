@@ -20,22 +20,25 @@ public abstract class CompareFloatEnvironment extends AbstractEnvironment {
         VALUE = value;
     }
     
-    public CompareFloatEnvironment( AbstractConfigField field, String line ) {
-        if( line.isEmpty() ) {
+    public CompareFloatEnvironment( AbstractConfigField field, String value ) {
+        final String line = name() + " " + value;
+        if( value.isEmpty() ) {
             COMPARATOR = ComparisonOperator.LESS_THAN;
             VALUE = 0.0F;
-            ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Not defined. Defaulting to \"{}\". Invalid entry: {}",
-                    field.getClass(), field.getKey(), value(), line );
+            ConfigUtil.warnFor( field );
+            ConfigUtil.LOG.warn( "Environment entry missing operator and value! Defaulting to \"{}\". Entry: {}",
+                    value(), line );
         }
         else {
-            final ComparisonOperator op = ComparisonOperator.parse( line );
+            final ComparisonOperator op = ComparisonOperator.parse( value );
             if( op == null ) {
                 COMPARATOR = ComparisonOperator.LESS_THAN;
-                ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Comparison not defined (must be in the set [ {} ]). Defaulting to \"{}\". Invalid entry: {}",
-                        field.getClass(), field.getKey(), TomlHelper.toLiteralList( (Object[]) ComparisonOperator.values() ), COMPARATOR, line );
+                ConfigUtil.warnFor( field );
+                ConfigUtil.LOG.warn( "Environment entry has missing or invalid operator! Must be in the set [ {} ]. Defaulting to \"{}\". Entry: {}",
+                        TomlHelper.toLiteralList( (Object[]) ComparisonOperator.values() ), COMPARATOR, line );
             }
             else COMPARATOR = op;
-            VALUE = parseValue( field, line, line.substring( COMPARATOR.toString().length() ).trim() );
+            VALUE = parseValue( field, line, value.substring( COMPARATOR.toString().length() ).trim() );
         }
     }
     
@@ -47,19 +50,22 @@ public abstract class CompareFloatEnvironment extends AbstractEnvironment {
             value = Float.parseFloat( arg );
         }
         catch( NumberFormatException ex ) {
-            ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Value not defined (must be a float). Defaulting to '0'. Invalid entry: {}",
-                    field.getClass(), field.getKey(), line );
+            ConfigUtil.warnFor( field );
+            ConfigUtil.LOG.warn( "Environment entry has invalid floating point value {}! Falling back to 0. Entry: {}",
+                    arg, line );
             value = 0.0F;
         }
         // Verify value is within range
         if( value < getMinValue() ) {
-            ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
-                    field.getClass(), field.getKey(), getMinValue(), value );
+            ConfigUtil.warnFor( field );
+            ConfigUtil.LOG.warn( "Environment entry value is below the minimum! Adjusting from {} to {}. Entry: {}",
+                    value, getMinValue(), line );
             value = getMinValue();
         }
         else if( value > getMaxValue() ) {
-            ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
-                    field.getClass(), field.getKey(), getMaxValue(), value );
+            ConfigUtil.warnFor( field );
+            ConfigUtil.LOG.warn( "Entity entry value is above the maximum! Adjusting from {} to {}. Entry: {}",
+                    value, getMaxValue(), line );
             value = getMaxValue();
         }
         return value;

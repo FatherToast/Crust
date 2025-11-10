@@ -40,8 +40,9 @@ public class LazyRegistryEntryListField<T> extends RegistryEntryListField<T> {
                 value = (LazyRegistryEntryList<T>) raw;
             }
             catch( ClassCastException ex ) {
-                ConfigUtil.LOG.warn( "Invalid value for {} \"{}\" (wrong registry)! Falling back to default. Invalid value: {}",
-                        getClass(), getKey(), raw );
+                ConfigUtil.errorFor( this );
+                ConfigUtil.LOG.error( "Attempted to assign registry list of the wrong registry! Falling back to default. Invalid value: {}",
+                        raw );
                 value = valueDefault;
             }
         }

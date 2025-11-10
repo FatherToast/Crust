@@ -15,7 +15,7 @@ public class BiomeTemperatureEnvironment extends TemperatureEnvironment {
     @SuppressWarnings( "unused" )
     public BiomeTemperatureEnvironment( ComparisonOperator op, float value ) { super( op, value ); }
     
-    public BiomeTemperatureEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public BiomeTemperatureEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     /** @return Returns the actual value to compare, or Float.NaN if there isn't enough information. */
     @Override

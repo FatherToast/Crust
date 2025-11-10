@@ -18,8 +18,7 @@ public class WeightedPotionListField extends RegistryEntryValueListField<MobEffe
         // noinspection unchecked
         RegistryValueEntry<MobEffect>[] entries = new RegistryValueEntry[tag.size()];
         for( int i = 0; i < entries.length; i++ ) {
-            RegistryValueEntry<MobEffect> entry = parseEntry( tag.getString( i ), null, reqValues, minVal, maxVal,
-                    WeightedPotionListField.class, "<nbt>" );
+            RegistryValueEntry<MobEffect> entry = parseEntry( tag.getString( i ), null, reqValues, minVal, maxVal );
             
             if( entry != null )
                 entries[i] = entry;
@@ -65,7 +64,7 @@ public class WeightedPotionListField extends RegistryEntryValueListField<MobEffe
             List<RegistryValueEntry<MobEffect>> entryList = new ArrayList<>();
             for( String line : list ) {
                 RegistryValueEntry<MobEffect> entry = parseEntry( line, this, valueDefault.getRequiredValues(),
-                        valueDefault.getMinValue(), valueDefault.getMaxValue(), getClass(), getKey() );
+                        valueDefault.getMinValue(), valueDefault.getMaxValue() );
                 
                 if( entry != null ) entryList.add( entry );
             }
@@ -74,19 +73,21 @@ public class WeightedPotionListField extends RegistryEntryValueListField<MobEffe
     }
     
     /** Parses a single entry line and returns the result. */
-    @Nullable
-    private static RegistryValueEntry<MobEffect> parseEntry( final String line, @Nullable final WeightedPotionListField field, final int reqValues,
-                                                             final double minVal, final double maxVal, final Class<?> type, final String key ) {
+    @Nullable // TODO Use this as the starting point for making value lists generic
+    private static RegistryValueEntry<MobEffect> parseEntry( final String line, @Nullable final WeightedPotionListField field,
+                                                             final int reqValues, final double minVal, final double maxVal ) {
         // Parse the value array
         final String[] args = line.split( " " );
-        final ResourceLocation regKey;
         if( "default".equalsIgnoreCase( args[0].trim() ) ) {
             // Default entry not allowed
             return null;
         }
-        else {
-            // Normal entry
-            regKey = ResourceLocation.parse( args[0].trim() );
+        // Normal entry
+        final ResourceLocation regKey = ResourceLocation.tryParse( args[0].trim() );
+        if( regKey == null ) {
+            ConfigUtil.warnFor( field );
+            ConfigUtil.LOG.warn( "Registry entry has invalid resource location! Deleting. Entry: {}", line );
+            return null;
         }
         final List<Double> valuesList = new ArrayList<>();
         final int actualValues = args.length - 1;
@@ -94,35 +95,35 @@ public class WeightedPotionListField extends RegistryEntryValueListField<MobEffe
         // Variable-value; just needs at least one value
         if( reqValues < 0 ) {
             if( actualValues < 1 ) {
-                ConfigUtil.LOG.warn( "Entry has too few values for {} \"{}\"! Expected at least one value. " +
-                                "Replacing missing value with 0. Invalid entry: {}",
-                        type, key, line );
+                ConfigUtil.warnFor( field );
+                ConfigUtil.LOG.warn( "Registry entry has too few values! Must have at least one value. Replacing missing value with 0. Entry: {}",
+                        line );
                 valuesList.add( 0.0 );
             }
             else {
                 // Parse all values
                 for( int i = 1; i < args.length; i++ ) {
-                    valuesList.add( parseValue( args[i], line, minVal, maxVal, type, key ) );
+                    valuesList.add( parseValue( args[i], line, field, minVal, maxVal ) );
                 }
             }
         }
         // Specified value; must have the exact number of values
         else {
             if( reqValues > actualValues ) {
-                ConfigUtil.LOG.warn( "Entry has too few values for {} \"{}\"! " +
-                                "Expected {} values, but detected {}. Replacing missing values with 0. Invalid entry: {}",
-                        type, key, reqValues, actualValues, line );
+                ConfigUtil.warnFor( field );
+                ConfigUtil.LOG.warn( "Registry entry has too few values! Expected {} values, but found {}. Replacing missing values with 0. Entry: {}",
+                        reqValues, actualValues, line );
             }
             else if( reqValues < actualValues ) {
-                ConfigUtil.LOG.warn( "Entry has too many values for {} \"{}\"! " +
-                                "Expected {} values, but detected {}. Deleting additional values. Invalid entry: {}",
-                        type, key, reqValues, actualValues, line );
+                ConfigUtil.warnFor( field );
+                ConfigUtil.LOG.warn( "Registry entry has too many values! Expected {} values, but found {}. Deleting excess values. Entry: {}",
+                        reqValues, actualValues, line );
             }
             
             // Parse all values
             for( int i = 1; i < reqValues + 1; i++ ) {
                 if( i < args.length ) {
-                    valuesList.add( parseValue( args[i], line, minVal, maxVal, type, key ) );
+                    valuesList.add( parseValue( args[i], line, field, minVal, maxVal ) );
                 }
                 else {
                     valuesList.add( 0.0 );
@@ -139,8 +140,8 @@ public class WeightedPotionListField extends RegistryEntryValueListField<MobEffe
     }
     
     /** Parses a single value argument and returns a valid result. */
-    private static double parseValue( final String arg, final String line,
-                                      final double minVal, final double maxVal, final Class<?> type, final String key ) {
+    private static double parseValue( final String arg, final String line, @Nullable final WeightedPotionListField field,
+                                      final double minVal, final double maxVal ) {
         // Try to parse the value
         double value;
         try {
@@ -148,19 +149,22 @@ public class WeightedPotionListField extends RegistryEntryValueListField<MobEffe
         }
         catch( NumberFormatException ex ) {
             // This is thrown if the string is not a parsable number
-            ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to 0. Invalid entry: {}",
-                    type, key, line );
+            ConfigUtil.warnFor( field );
+            ConfigUtil.LOG.warn( "Registry entry has invalid value ({})! Falling back to 0. Entry: {}",
+                    arg, line );
             value = 0.0;
         }
         // Verify value is within range
         if( value < minVal ) {
-            ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
-                    type, key, minVal, value );
+            ConfigUtil.warnFor( field );
+            ConfigUtil.LOG.warn( "Registry entry value is below the minimum! Adjusting from {} to {}. Entry: {}",
+                    value, minVal, line );
             value = minVal;
         }
         else if( value > maxVal ) {
-            ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
-                    type, key, maxVal, value );
+            ConfigUtil.warnFor( field );
+            ConfigUtil.LOG.warn( "Entity entry value is above the maximum! Adjusting from {} to {}. Entry: {}",
+                    value, maxVal, line );
             value = maxVal;
         }
         return value;

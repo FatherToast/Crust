@@ -21,7 +21,7 @@ public class MoonPhaseEnvironment extends EnumEnvironment<MoonPhaseEnvironment.V
     
     public MoonPhaseEnvironment( Value value, boolean invert ) { super( value, invert ); }
     
-    public MoonPhaseEnvironment( AbstractConfigField field, String line ) { super( field, line, Value.values() ); }
+    public MoonPhaseEnvironment( AbstractConfigField field, String value ) { super( field, value, Value.values() ); }
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override

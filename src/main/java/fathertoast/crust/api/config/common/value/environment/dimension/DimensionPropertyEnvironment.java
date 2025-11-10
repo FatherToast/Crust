@@ -16,7 +16,7 @@ public class DimensionPropertyEnvironment extends EnumEnvironment<DimensionPrope
      *
      * @see <a href="https://minecraft.fandom.com/wiki/Custom_dimension#Syntax">Data pack format (Minecraft Wiki)</a>
      */
-    @SuppressWarnings("SpellCheckingInspection")
+    @SuppressWarnings( "SpellCheckingInspection" )
     public enum Value {
         ULTRAWARM( DimensionType::ultraWarm ),
         NATURAL( DimensionType::natural ),
@@ -37,7 +37,7 @@ public class DimensionPropertyEnvironment extends EnumEnvironment<DimensionPrope
     
     public DimensionPropertyEnvironment( Value value, boolean invert ) { super( value, invert ); }
     
-    public DimensionPropertyEnvironment( AbstractConfigField field, String line ) { super( field, line, Value.values() ); }
+    public DimensionPropertyEnvironment( AbstractConfigField field, String value ) { super( field, value, Value.values() ); }
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override

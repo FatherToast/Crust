@@ -25,7 +25,7 @@ public class ApocalypseDifficultyEnvironment extends CompareLongEnvironment {
     
     public ApocalypseDifficultyEnvironment( ComparisonOperator op, long value ) { super( op, value ); }
     
-    public ApocalypseDifficultyEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public ApocalypseDifficultyEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     // Min and max values should not be specified, since they are dependent on AR configs.
     

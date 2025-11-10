@@ -85,8 +85,8 @@ public class AttributeListField extends GenericField<AttributeList> {
         // Parse the attribute-operation-value array
         final String[] args = line.split( " ", 4 );
         if( args.length > 3 ) {
-            ConfigUtil.LOG.warn( "Entry for {} \"{}\" has too many arguments! Deleting excess. Invalid entry: {}",
-                    getClass(), getKey(), line );
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Attribute entry has too many arguments! Deleting excess. Entry: {}", line );
         }
         
         final ResourceLocation regKey = ResourceLocation.parse( args[0].trim() );
@@ -98,8 +98,8 @@ public class AttributeListField extends GenericField<AttributeList> {
         
         final byte operator;
         if( args.length < 2 ) {
-            ConfigUtil.LOG.warn( "Entry has no operator for {} \"{}\"! Replacing missing operator with +. Invalid entry: {}",
-                    getClass(), getKey(), line );
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Attribute entry has no operator! Replacing missing operator with +. Entry: {}", line );
             operator = OP_ADD;
         }
         else {
@@ -109,8 +109,9 @@ public class AttributeListField extends GenericField<AttributeList> {
                 case "-" -> operator = OP_SUBTRACT;
                 default -> {
                     operator = OP_ADD;
-                    ConfigUtil.LOG.warn( "Entry has invalid operator {} for {} \"{}\"! Replacing operator with +. " +
-                            "Invalid entry: {}", args[1], getClass(), getKey(), line );
+                    ConfigUtil.warnFor( this );
+                    ConfigUtil.LOG.warn( "Attribute entry has invalid operator ({})! Replacing operator with +. Entry: {}",
+                            args[1], line );
                 }
             }
         }
@@ -118,8 +119,9 @@ public class AttributeListField extends GenericField<AttributeList> {
         
         final double value;
         if( args.length < 3 ) {
-            ConfigUtil.LOG.warn( "Entry has no value for {} \"{}\"! Replacing missing value with {}. Invalid entry: {}",
-                    getClass(), getKey(), identityValue, line );
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Attribute entry has no value! Replacing missing value with {}. Entry: {}",
+                    identityValue, line );
             value = identityValue;
         }
         else {
@@ -139,8 +141,9 @@ public class AttributeListField extends GenericField<AttributeList> {
         }
         catch( NumberFormatException ex ) {
             // This is thrown if the string is not a parsable number
-            ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to {}. Invalid entry: {}",
-                    getClass(), getKey(), identity, line );
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Attribute entry has invalid value ({})! Replacing value with {}. Entry: {}",
+                    arg, identity, line );
             value = identity;
         }
         return value;

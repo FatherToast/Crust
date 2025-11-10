@@ -17,7 +17,7 @@ public class BiomeTagEnvironment extends TagEnvironment<Biome> {
     
     public BiomeTagEnvironment( TagKey<Biome> biomeTag, boolean invert ) { super( biomeTag, invert ); }
     
-    public BiomeTagEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public BiomeTagEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     /** @return The registry used. */
     @Override
@@ -25,6 +25,7 @@ public class BiomeTagEnvironment extends TagEnvironment<Biome> {
     
     /** @return Returns the actual environment to compare, or null if there isn't enough information. */
     @Override
+    @Nullable
     public Holder<Biome> getActual( Level level, @Nullable BlockPos pos ) {
         return pos == null ? null : level.getBiome( pos );
     }

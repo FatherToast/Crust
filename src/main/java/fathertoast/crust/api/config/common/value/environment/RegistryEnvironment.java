@@ -28,10 +28,18 @@ public abstract class RegistryEnvironment<T> extends AbstractEnvironment {
         REGISTRY_KEY = registryKey;
     }
     
-    public RegistryEnvironment( AbstractConfigField field, String line ) {
+    public RegistryEnvironment( AbstractConfigField field, String value ) {
         FIELD = field;
-        INVERT = line.startsWith( "!" );
-        REGISTRY_KEY = ResourceLocation.parse( INVERT ? line.substring( 1 ) : line );
+        INVERT = value.startsWith( "!" );
+        ResourceLocation resLoc = ResourceLocation.tryParse( INVERT ? value.substring( 1 ) : value );
+        if( resLoc == null ) {
+            REGISTRY_KEY = ResourceLocation.withDefaultNamespace( "" );
+            ConfigUtil.warnFor( field );
+            ConfigUtil.LOG.warn( "Environment entry has invalid resource location! Ignoring. Entry: {}", name() + " " + value );
+        }
+        else {
+            REGISTRY_KEY = resLoc;
+        }
     }
     
     /** @return The string value of this environment, as it would appear in a config file. */
@@ -46,8 +54,9 @@ public abstract class RegistryEnvironment<T> extends AbstractEnvironment {
     protected final T getRegistryEntry() {
         if( registryEntry == null ) {
             if( !getRegistry().containsKey( REGISTRY_KEY ) ) {
-                ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Not present in registry \"{}\". Invalid entry: {}",
-                        FIELD.getClass(), FIELD.getKey(), getRegistry().getRegistryName(), REGISTRY_KEY );
+                ConfigUtil.warnFor( FIELD );
+                ConfigUtil.LOG.warn( "Environment entry has registry key not present in registry \"{}\". Entry: {}",
+                        getRegistry().getRegistryName(), this );
             }
             registryEntry = getRegistry().getValue( REGISTRY_KEY );
         }

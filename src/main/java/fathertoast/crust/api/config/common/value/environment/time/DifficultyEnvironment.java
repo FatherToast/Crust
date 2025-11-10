@@ -23,7 +23,7 @@ public class DifficultyEnvironment extends CompareFloatEnvironment {
     @SuppressWarnings( "unused" )
     public DifficultyEnvironment( ComparisonOperator op, float value ) { super( op, value ); }
     
-    public DifficultyEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public DifficultyEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     /** @return The minimum value that can be given to the value. */
     @Override

@@ -12,7 +12,7 @@ public class ChunkTimeEnvironment extends CompareLongEnvironment {
     
     public ChunkTimeEnvironment( ComparisonOperator op, long value ) { super( op, value ); }
     
-    public ChunkTimeEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public ChunkTimeEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     /** @return The minimum value that can be given to the value. */
     @Override
@@ -20,6 +20,7 @@ public class ChunkTimeEnvironment extends CompareLongEnvironment {
     
     /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Override
+    @Nullable
     public Long getActual( Level level, @Nullable BlockPos pos ) {
         // Ignore deprecation; this is intentionally the same method used by World#getCurrentDifficultyAt
         //noinspection deprecation

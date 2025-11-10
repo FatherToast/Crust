@@ -39,11 +39,19 @@ public abstract class DynamicRegistryEnvironment<T> extends AbstractEnvironment 
         REGISTRY_KEY = regKey;
     }
     
-    public DynamicRegistryEnvironment( AbstractConfigField field, String line ) {
+    public DynamicRegistryEnvironment( AbstractConfigField field, String value ) {
         MANAGER = field.getSpec().MANAGER;
         FIELD = field;
-        INVERT = line.startsWith( "!" );
-        REGISTRY_KEY = ResourceLocation.parse( INVERT ? line.substring( 1 ) : line );
+        INVERT = value.startsWith( "!" );
+        ResourceLocation resLoc = ResourceLocation.tryParse( INVERT ? value.substring( 1 ) : value );
+        if( resLoc == null ) {
+            REGISTRY_KEY = ResourceLocation.withDefaultNamespace( "" );
+            ConfigUtil.warnFor( field );
+            ConfigUtil.LOG.warn( "Environment entry has invalid resource location! Ignoring. Entry: {}", name() + " " + value );
+        }
+        else {
+            REGISTRY_KEY = resLoc;
+        }
     }
     
     /** @return The string value of this environment, as it would appear in a config file. */
@@ -73,8 +81,9 @@ public abstract class DynamicRegistryEnvironment<T> extends AbstractEnvironment 
             final Registry<T> registry = level.getServer().registryAccess().registryOrThrow( getRegistry() );
             registryEntry = registry.get( REGISTRY_KEY );
             if( registryEntry == null ) {
-                ConfigUtil.LOG.info( "Missing entry for {} \"{}\"! Not present in registry \"{}\". Missing entry: {}",
-                        FIELD.getClass(), FIELD.getKey(), getRegistry().location(), REGISTRY_KEY );
+                ConfigUtil.warnFor( FIELD );
+                ConfigUtil.LOG.warn( "Environment entry has registry key not present in dynamic registry \"{}\". Entry: {}",
+                        getRegistry().location(), this );
             }
         }
         return registryEntry;

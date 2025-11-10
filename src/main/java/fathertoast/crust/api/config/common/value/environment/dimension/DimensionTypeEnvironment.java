@@ -18,7 +18,7 @@ public class DimensionTypeEnvironment extends DynamicRegistryEnvironment<Level> 
         super( cfgManager, dimType, invert );
     }
     
-    public DimensionTypeEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public DimensionTypeEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     /** @return The registry used. */
     @Override
