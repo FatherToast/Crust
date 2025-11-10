@@ -11,6 +11,7 @@ import fathertoast.crust.api.config.common.value.CrustAnchor;
 import fathertoast.crust.client.button.ButtonInfo;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -209,6 +210,8 @@ public class ExtraInvButtonsCrustConfig extends AbstractConfigFile {
             // "Mega super-chill switch statement"
             int i = -1;
             if( ++i == index )
+                return new String[] { "Spectate", "invisibility.png", "gamemode spectator" };
+            if( ++i == index )
                 return new String[] { "+5 levels", "xp_plus.png", "experience add @s 5 levels" };
             if( ++i == index )
                 return new String[] { "-5 levels", "xp_minus.png", "experience add @s -5 levels" };
@@ -220,10 +223,8 @@ public class ExtraInvButtonsCrustConfig extends AbstractConfigFile {
                 return new String[] { "Locate stronghold", "ender_eye.png", "locate stronghold" };
             if( ++i == index )
                 return new String[] { "Locate jungle biome", "world.png", "locatebiome " + ConfigUtil.toString( Biomes.JUNGLE ) };
-            //if( ++i == index ) // TODO Add this in 1.19
-            //    return new String[] { "Generate village structure", "villager.png", "place structure " + ConfigUtil.toString( Structure.VILLAGE ) };
             if( ++i == index )
-                return new String[] { "Reload data packs", "crafting_table_side.png", "reload" };
+                return new String[] { "Generate village structure", "villager.png", "place structure " + ConfigUtil.toString( BuiltinStructures.VILLAGE_PLAINS ) };
             if( ++i == index )
                 return new String[] { "Grant all advancements", "cake.png", "advancement grant @s everything" };
             if( ++i == index )
