@@ -158,7 +158,7 @@ public final class ConfigManager {
      * Global toggle for file watching. Generally, you should not mess with this.
      * Crust automatically freezes file watchers until mod loading is complete.
      */
-    public static boolean GLOBAL_FREEZE_FILE_WATCHERS = ModList.get().isLoaded( ICrustApi.MOD_ID );
+    public static volatile boolean GLOBAL_FREEZE_FILE_WATCHERS = ModList.get().isLoaded( ICrustApi.MOD_ID );
     
     /** Mapping of each mod id to its config manager. */
     private static final HashMap<String, ConfigManager> MOD_ID_TO_CM_MAP = new HashMap<>();
