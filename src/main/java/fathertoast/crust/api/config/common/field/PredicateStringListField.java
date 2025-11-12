@@ -73,4 +73,9 @@ public class PredicateStringListField extends StringListField {
         } );
         return strings;
     }
+    
+    /** @return This field's line validator. */
+    public Predicate<String> getLineValidator() {
+        return lineValidator;
+    }
 }
