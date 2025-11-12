@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * Displays a text box for a string value.
  */
+@SuppressWarnings( "ClassCanBeRecord" )
 public class StringFieldWidgetProvider implements IConfigFieldWidgetProvider {
     
     /** The providing field. */

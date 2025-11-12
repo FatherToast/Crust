@@ -13,6 +13,7 @@ import java.util.function.Supplier;
  * <p>
  * Displays a grayed-out button with customizable text.
  */
+@SuppressWarnings( "ClassCanBeRecord" )
 public class UnsupportedWidgetProvider implements IConfigFieldWidgetProvider {
     
     /** The message to display on the disabled button. */

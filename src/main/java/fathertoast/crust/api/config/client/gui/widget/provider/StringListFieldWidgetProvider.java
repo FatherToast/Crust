@@ -17,6 +17,7 @@ import java.util.List;
  * Provides a button to open a new screen entirely for
  * editing strings in a string list.
  */
+@SuppressWarnings( "ClassCanBeRecord" )
 public class StringListFieldWidgetProvider implements IConfigFieldWidgetProvider {
     
     /** The providing field. */

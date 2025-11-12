@@ -13,6 +13,7 @@ import java.util.List;
 /**
  * Displays a text box for a hexadecimal color value, plus a color preview swatch.
  */
+@SuppressWarnings( "ClassCanBeRecord" )
 public class ColorFieldWidgetProvider implements IConfigFieldWidgetProvider {
     
     /** The providing field. */
@@ -40,13 +41,13 @@ public class ColorFieldWidgetProvider implements IConfigFieldWidgetProvider {
         
         EditBox editBox = new EditBox( listEntry.minecraft().font, 1, 1,
                 VALUE_WIDTH - 3 - ColorPreviewWidget.SIZE, VALUE_HEIGHT - 2, // Account for 1px frame
-                Component.literal(FIELD.getKey()) );
+                Component.literal( FIELD.getKey() ) );
         editBox.setMaxLength( FIELD.getMinDigits() );
         
         TomlHelper.HEX_MODE = FIELD.getMinDigits();
         editBox.setValue( TomlHelper.toLiteral( displayValue ).substring( 2 ) );
         TomlHelper.HEX_MODE = 0;
-
+        
         editBox.setResponder( ( value ) -> {
             Integer newValue = TomlHelper.parseHexInt( value );
             if( newValue == null || !isValid( newValue ) ) {
