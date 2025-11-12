@@ -12,9 +12,10 @@ public class YEnvironment extends CompareIntEnvironment {
     
     public YEnvironment( ComparisonOperator op, int value ) { super( op, value ); }
     
-    public YEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public YEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Override
+    @Nullable
     public Integer getActual( Level level, @Nullable BlockPos pos ) { return pos == null ? null : pos.getY(); }
 }

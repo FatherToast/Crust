@@ -38,11 +38,11 @@ public abstract class DynamicRegistryGroupEnvironment<T> extends AbstractEnviron
         NAMESPACE = regKey.toString();
     }
     
-    public DynamicRegistryGroupEnvironment( AbstractConfigField field, String line ) {
+    public DynamicRegistryGroupEnvironment( AbstractConfigField field, String value ) {
         MANAGER = field.getSpec().MANAGER;
         FIELD = field;
-        INVERT = line.startsWith( "!" );
-        NAMESPACE = line.substring( INVERT ? 1 : 0, line.length() - 1 );
+        INVERT = value.startsWith( "!" );
+        NAMESPACE = value.substring( INVERT ? 1 : 0, value.length() - 1 );
     }
     
     /** @return The string value of this environment, as it would appear in a config file. */
@@ -77,8 +77,9 @@ public abstract class DynamicRegistryGroupEnvironment<T> extends AbstractEnviron
                 }
             }
             if( registryEntries.isEmpty() ) {
-                ConfigUtil.LOG.info( "Namespace entry for {} \"{}\" did not match anything in registry \"{}\"! Questionable entry: {}",
-                        FIELD == null ? "DEFAULT" : FIELD.getClass(), FIELD == null ? "DEFAULT" : FIELD.getKey(), getRegistry().location(), NAMESPACE );
+                ConfigUtil.warnFor( FIELD );
+                ConfigUtil.LOG.warn( "Environment entry did not match any namespaces in dynamic registry \"{}\"! Entry: {}",
+                        getRegistry().location(), this );
             }
             registryEntries = Collections.unmodifiableList( registryEntries );
         }

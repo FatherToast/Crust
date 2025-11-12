@@ -13,12 +13,12 @@ public class TemperatureEnvironment extends CompareFloatEnvironment {
     public static final String FREEZING = "freezing";
     public static final float FREEZING_POINT = 0.15F;
     
-    public static String handleTempInput( String line ) {
-        if( line.equalsIgnoreCase( FREEZING ) )
+    public static String handleTempInput( String value ) {
+        if( value.equalsIgnoreCase( FREEZING ) )
             return ComparisonOperator.LESS_THAN + " " + FREEZING_POINT;
-        if( line.equalsIgnoreCase( "!" + FREEZING ) )
+        if( value.equalsIgnoreCase( "!" + FREEZING ) )
             return ComparisonOperator.LESS_THAN.invert() + " " + FREEZING_POINT;
-        return line;
+        return value;
     }
     
     public TemperatureEnvironment( boolean freezing ) {
@@ -27,7 +27,7 @@ public class TemperatureEnvironment extends CompareFloatEnvironment {
     
     public TemperatureEnvironment( ComparisonOperator op, float value ) { super( op, value ); }
     
-    public TemperatureEnvironment( AbstractConfigField field, String line ) { super( field, handleTempInput( line ) ); }
+    public TemperatureEnvironment( AbstractConfigField field, String value ) { super( field, handleTempInput( value ) ); }
     
     /** @return The string value of this environment, as it would appear in a config file. */
     @Override

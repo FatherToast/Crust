@@ -95,9 +95,10 @@ public final class CrustEnvironmentRegistry {
         if( factory == null ) {
             // The environment name was not recognized; try to provide some good feedback because this field is complicated
             final AbstractEnvironment fallback = new WorldTimeEnvironment( ComparisonOperator.LESS_THAN, 0 );
-            ConfigUtil.LOG.warn( "Invalid environment '{}' for {} \"{}\"! Falling back to \"{}\". Environment name must be in the set [ {} ]. Invalid environment: {}",
-                    name, field.getClass(), field.getKey(), fallback,
-                    TomlHelper.toLiteralList( (Object[]) getNames().toArray( new String[0] ) ), value );
+            ConfigUtil.warnFor( field );
+            ConfigUtil.LOG.warn( "Environment entry has invalid environment type ({})! Falling back to \"{}\". Environment type must be in the set [ {} ]. Entry: {}",
+                    name, fallback, TomlHelper.toLiteralList( (Object[]) getNames().toArray( new String[0] ) ),
+                    name + " " + value );
             return fallback;
         }
         

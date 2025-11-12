@@ -14,7 +14,7 @@ public class WeatherEnvironment extends EnumEnvironment<WeatherEnvironment.Value
     
     public WeatherEnvironment( Value value, boolean invert ) { super( value, invert ); }
     
-    public WeatherEnvironment( AbstractConfigField field, String line ) { super( field, line, Value.values() ); }
+    public WeatherEnvironment( AbstractConfigField field, String value ) { super( field, value, Value.values() ); }
     
     /** @return Returns true if this environment matches the provided environment. */
     @Override

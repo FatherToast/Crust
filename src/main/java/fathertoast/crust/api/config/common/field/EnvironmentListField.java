@@ -99,19 +99,21 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
         }
         catch( NumberFormatException ex ) {
             // This is thrown if the string is not a parsable number
-            ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to 0. Invalid entry: {}",
-                    getClass(), getKey(), line );
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Environment entry has invalid value! Falling back to 0. Entry: {}", line );
             value = 0.0;
         }
         // Verify value is within range
         if( value < valueDefault.getMinValue() ) {
-            ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
-                    getClass(), getKey(), valueDefault.getMinValue(), value );
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Value is below the minimum! Adjusting from {} to {}.",
+                    value, valueDefault.getMinValue() );
             value = valueDefault.getMinValue();
         }
         else if( value > valueDefault.getMaxValue() ) {
-            ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
-                    getClass(), getKey(), valueDefault.getMaxValue(), value );
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Value is above the maximum! Adjusting from {} to {}.",
+                    value, valueDefault.getMaxValue() );
             value = valueDefault.getMaxValue();
         }
         return value;
@@ -197,7 +199,7 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
         if( pos != null && isLoaded( world, pos ) ) return get( world, pos );
         else return get( world );
     }
-
+    
     /** @return True if there are no entries in the environment condition list. */
     public boolean isEmpty() { return get().isEmpty(); }
 }

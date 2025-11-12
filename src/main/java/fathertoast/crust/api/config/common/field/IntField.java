@@ -92,8 +92,8 @@ public class IntField extends AbstractConfigField {
     public void load( @Nullable Object raw ) {
         Number newValue;
         if( raw instanceof String ) {
-            ConfigUtil.LOG.info( "Unboxing string value for {} \"{}\" to a different primitive.",
-                    getClass(), getKey() );
+            ConfigUtil.infoFor( this );
+            ConfigUtil.LOG.info( "Unboxing string value \"{}\" to a different primitive.", raw );
             newValue = TomlHelper.parseNumber( (String) raw );
         }
         else {
@@ -102,27 +102,27 @@ public class IntField extends AbstractConfigField {
         
         if( newValue == null ) {
             if( raw != null ) {
-                ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
-                        getClass(), getKey(), raw );
+                ConfigUtil.warnFor( this );
+                ConfigUtil.LOG.warn( "Invalid integer! Falling back to default ({}). Invalid value: {}", valueDefault, raw );
             }
             value = valueDefault;
         }
         else {
             int castValue = newValue.intValue();
             if( castValue < valueMin ) {
-                ConfigUtil.LOG.warn( "Value for {} \"{}\" is below the minimum ({})! Clamping value. Invalid value: {}",
-                        getClass(), getKey(), valueMin, raw );
+                ConfigUtil.warnFor( this );
+                ConfigUtil.LOG.warn( "Value is below the minimum! Adjusting from {} to {}.", raw, valueMin );
                 value = valueMin;
             }
             else if( castValue > valueMax ) {
-                ConfigUtil.LOG.warn( "Value for {} \"{}\" is above the maximum ({})! Clamping value. Invalid value: {}",
-                        getClass(), getKey(), valueMax, raw );
+                ConfigUtil.warnFor( this );
+                ConfigUtil.LOG.warn( "Value is above the maximum! Adjusting from {} to {}.", raw, valueMax );
                 value = valueMax;
             }
             else {
                 if( (double) castValue != newValue.doubleValue() ) {
-                    ConfigUtil.LOG.warn( "Value for {} \"{}\" is not an integer! Truncating value. Invalid value: {}",
-                            getClass(), getKey(), raw );
+                    ConfigUtil.warnFor( this );
+                    ConfigUtil.LOG.warn( "Floating point value given for integer! Truncating value {} to {}.", raw, castValue );
                 }
                 value = castValue;
             }
@@ -271,14 +271,14 @@ public class IntField extends AbstractConfigField {
         
         /** @return The maximum value of this range. */
         public int getMax() { return MAXIMUM.get(); }
-
+        
         /** @return The minimum value field. */
         public IntField getMinField() { return MINIMUM; }
-
+        
         /** @return The maximum value field. */
         public IntField getMaxField() { return MAXIMUM; }
-
-
+        
+        
         /** @return A random value between the minimum and the maximum (inclusive). */
         public int next( Random random ) { return next( random::nextInt ); }
         
@@ -292,8 +292,9 @@ public class IntField extends AbstractConfigField {
                 return getMin() + random.apply( delta + 1 );
             }
             if( delta < 0 ) {
-                ConfigUtil.LOG.warn( "Value for range \"({},{})\" is invalid ({} > {})! Ignoring maximum value.",
-                        MINIMUM.getKey(), MAXIMUM.getKey(), getMin(), getMax() );
+                ConfigUtil.warnFor( MAXIMUM );
+                ConfigUtil.LOG.warn( "Values for range are invalid; min ({}) is greater than max ({})! Ignoring maximum value.",
+                        getMin(), getMax() );
             }
             return getMin();
         }

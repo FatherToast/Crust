@@ -63,8 +63,8 @@ public class AttributeEntry {
         if( attribute != null ) return true;
         
         if( !ForgeRegistries.ATTRIBUTES.containsKey( ATTRIBUTE_KEY ) ) {
-            ConfigUtil.LOG.warn( "Warning for {}:", FIELD.describeLocation() );
-            ConfigUtil.LOG.warn( "Ignoring invalid attribute \"{}\"", ATTRIBUTE_KEY );
+            ConfigUtil.warnFor( FIELD );
+            ConfigUtil.LOG.warn( "Ignoring invalid attribute \"{}\"! Entry: {}", ATTRIBUTE_KEY, this );
             return false;
         }
         attribute = ForgeRegistries.ATTRIBUTES.getValue( ATTRIBUTE_KEY );
@@ -72,7 +72,7 @@ public class AttributeEntry {
     }
     
     /**
-     * @return The string representation of this entity list entry, as it would appear in a config file.
+     * @return The string representation of this attribute list entry, as it would appear in a config file.
      * <p>
      * Format is "registry_key operation value", operation may be +, -, or *.
      */
@@ -92,9 +92,9 @@ public class AttributeEntry {
         if( validate() ) {
             AttributeInstance attributeInstance = builder.builder.get( attribute );
             if( attributeInstance == null ) {
-                ConfigUtil.LOG.warn( "Warning for {}:", FIELD.describeLocation() );
-                ConfigUtil.LOG.warn( "Attempted to apply attribute \"{}\" to field that does not support it",
-                        ATTRIBUTE_KEY );
+                ConfigUtil.warnFor( FIELD );
+                ConfigUtil.LOG.warn( "Attempted to apply attribute \"{}\" to field that does not support it. Entry: {}",
+                        ATTRIBUTE_KEY, this );
             }
             else {
                 apply( attributeInstance );
@@ -107,9 +107,9 @@ public class AttributeEntry {
         if( validate() ) {
             AttributeInstance attributeInstance = entity.getAttribute( attribute );
             if( attributeInstance == null ) {
-                ConfigUtil.LOG.warn( "Warning for {}:", FIELD.describeLocation() );
-                ConfigUtil.LOG.warn( "Attempted to apply attribute \"{}\" on entity type \"{}\" that does not support it",
-                        ATTRIBUTE_KEY, ForgeRegistries.ENTITY_TYPES.getKey( entity.getType() ) );
+                ConfigUtil.warnFor( FIELD );
+                ConfigUtil.LOG.warn( "Attempted to apply attribute \"{}\" on entity type \"{}\" that does not support it. Entry: {}",
+                        ATTRIBUTE_KEY, ForgeRegistries.ENTITY_TYPES.getKey( entity.getType() ), this );
             }
             else {
                 apply( attributeInstance );

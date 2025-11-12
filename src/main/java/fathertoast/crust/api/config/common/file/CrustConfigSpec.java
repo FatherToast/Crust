@@ -57,7 +57,7 @@ public class CrustConfigSpec {
      * You must call this method when you want the initialization to occur. This method immediately loads, so the config file's values will be immediately ready to use
      */
     public void initialize() {
-        ConfigUtil.LOG.info( "First-time loading config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+        ConfigUtil.LOG.info( "First-time loading config file {}", getFilePath() );
         boolean hasErrors = false;
         
         try {
@@ -65,17 +65,17 @@ public class CrustConfigSpec {
         }
         catch( ParsingException ex ) {
             ConfigUtil.LOG.error( "Failed first-time loading of config file {} - this is bad!",
-                    ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
+                    getFilePath(), ex );
             hasErrors = true;
         }
         
         try {
             FileWatcher.defaultInstance().addWatch( NIGHT_CONFIG_FILE.getFile(), this::onFileChanged );
-            ConfigUtil.LOG.info( "Started watching config file {} for updates", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+            ConfigUtil.LOG.info( "Started watching config file {} for updates", getFilePath() );
         }
         catch( IOException ex ) {
             ConfigUtil.LOG.error( "Failed to watch config file {} - this file will NOT update in-game until restarted!",
-                    ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
+                    getFilePath(), ex );
             hasErrors = true;
         }
         
@@ -336,7 +336,7 @@ public class CrustConfigSpec {
         
         // Make sure the file exists (an empty file is all we need at this point)
         if( !NIGHT_CONFIG_FILE.getFile().exists() ) {
-            ConfigUtil.LOG.info( "Generating default config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+            ConfigUtil.LOG.info( "Generating default config file {}", getFilePath() );
             try {
                 if( !NIGHT_CONFIG_FILE.getFile().createNewFile() ) {
                     ConfigUtil.LOG.error( "Failed to make blank config file! Things will likely explode. " +
@@ -353,18 +353,18 @@ public class CrustConfigSpec {
     /** Called when a change to the config file is detected. */
     private void onFileChanged() {
         if( writing ) {
-            ConfigUtil.LOG.debug( "Skipping config file reload (it is currently saving) {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+            ConfigUtil.LOG.debug( "Skipping config file reload (it is currently saving) {}", getFilePath() );
         }
         else if( MANAGER.freezeFileWatcher ) {
-            ConfigUtil.LOG.debug( "Skipping config file reload (mod's file watcher paused) {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+            ConfigUtil.LOG.debug( "Skipping config file reload (mod's file watcher paused) {}", getFilePath() );
         }
         else if( !ConfigManager.GLOBAL_FREEZE_FILE_WATCHERS ) {
-            ConfigUtil.LOG.info( "Reloading config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ) );
+            ConfigUtil.LOG.info( "Reloading config file {}", getFilePath() );
             try {
                 NIGHT_CONFIG_FILE.load();
             }
             catch( ParsingException ex ) {
-                ConfigUtil.LOG.error( "Failed to reload config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
+                ConfigUtil.LOG.error( "Failed to reload config file {}", getFilePath(), ex );
             }
         }
     }
@@ -375,7 +375,7 @@ public class CrustConfigSpec {
             NIGHT_CONFIG_FILE.save();
         }
         catch( WritingException ex ) {
-            ConfigUtil.LOG.error( "Failed to save config file {}", ConfigUtil.toRelativePath( NIGHT_CONFIG_FILE ), ex );
+            ConfigUtil.LOG.error( "Failed to save config file {}", getFilePath(), ex );
         }
     }
     

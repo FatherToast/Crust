@@ -45,8 +45,8 @@ public class BooleanField extends AbstractConfigField {
     public void load( @Nullable Object raw ) {
         Object newValue;
         if( raw instanceof String ) {
-            ConfigUtil.LOG.info( "Unboxing string value for {} \"{}\" to a different primitive.",
-                    getClass(), getKey() );
+            ConfigUtil.infoFor( this );
+            ConfigUtil.LOG.info( "Unboxing string value \"{}\" to a different primitive.", raw );
             newValue = TomlHelper.parseStringPrimitive( (String) raw );
         }
         else {
@@ -58,14 +58,15 @@ public class BooleanField extends AbstractConfigField {
         }
         else if( newValue instanceof Number ) {
             final double newNumberValue = ((Number) newValue).doubleValue();
-            ConfigUtil.LOG.warn( "Value for {} \"{}\" is numerical! Converting value. Invalid value: {}",
-                    getClass(), getKey(), raw );
             value = newNumberValue != 0.0; // 0 is false, anything else is true
+            
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Numerical value given for boolean! Converting value {} to {}.", raw, value );
         }
         else {
             if( newValue != null ) {
-                ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
-                        getClass(), getKey(), raw );
+                ConfigUtil.warnFor( this );
+                ConfigUtil.LOG.warn( "Invalid boolean! Falling back to default ({}). Invalid value: {}", valueDefault, raw );
             }
             value = valueDefault;
         }

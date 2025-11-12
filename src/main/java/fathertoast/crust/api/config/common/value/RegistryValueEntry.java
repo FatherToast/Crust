@@ -33,8 +33,8 @@ public class RegistryValueEntry<T> {
     /** @return Loads the registry object from registry. Returns true if successful. */
     private boolean validate( IForgeRegistry<T> registry ) {
         if( REG_KEY == null || !registry.containsKey( REG_KEY ) ) {
-            ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Invalid entry: {}",
-                    FIELD.getClass(), FIELD.getKey(), REG_KEY == null ? "null" : REG_KEY.toString() );
+            ConfigUtil.warnFor( FIELD );
+            ConfigUtil.LOG.warn( "Registry entry has invalid registry key ({})! Ignoring. Entry: {}", REG_KEY, this );
             return false;
         }
         return true;
@@ -58,6 +58,7 @@ public class RegistryValueEntry<T> {
         StringBuilder str = new StringBuilder( REG_KEY.toString() );
         
         // Append values array
+        //noinspection RedundantLengthCheck
         if( VALUES != null && VALUES.length > 0 ) {
             for( double value : VALUES ) {
                 str.append( ' ' ).append( value );

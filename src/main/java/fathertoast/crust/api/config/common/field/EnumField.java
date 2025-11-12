@@ -71,8 +71,8 @@ public class EnumField<T extends Enum<T>> extends GenericField<T> {
         else newValue = null;
         if( newValue == null ) {
             // Value cannot be parsed to this field
-            ConfigUtil.LOG.warn( "Invalid value for {} \"{}\"! Falling back to default. Invalid value: {}",
-                    getClass(), getKey(), raw );
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Invalid enum value! Falling back to default ({}). Invalid value: {}", valueDefault, raw );
             value = valueDefault;
         }
         else value = newValue;

@@ -18,9 +18,9 @@ public abstract class EnumEnvironment<T extends Enum<T>> extends AbstractEnviron
         VALUE = value;
     }
     
-    public EnumEnvironment( AbstractConfigField field, String line, T[] validValues ) {
-        INVERT = line.startsWith( "!" );
-        VALUE = parseValue( field, line, validValues, INVERT ? line.substring( 1 ) : line );
+    public EnumEnvironment( AbstractConfigField field, String value, T[] validValues ) {
+        INVERT = value.startsWith( "!" );
+        VALUE = parseValue( field, name() + " " + value, validValues, INVERT ? value.substring( 1 ) : value );
     }
     
     /** @return Attempts to parse the string literal as one of the valid values and returns it, or null if invalid. */
@@ -29,9 +29,9 @@ public abstract class EnumEnvironment<T extends Enum<T>> extends AbstractEnviron
             if( value.name().equalsIgnoreCase( name ) ) return value;
         }
         // Value cannot be parsed
-        ConfigUtil.LOG.warn( "Invalid entry for {} \"{}\"! Value not defined (must be in the set [ {} ]). Defaulting to {}. Invalid entry: {}",
-                field.getClass(), field.getKey(), TomlHelper.toLiteralList( (Object[]) validValues ),
-                TomlHelper.toLiteral( validValues[0] ), line );
+        ConfigUtil.warnFor( field );
+        ConfigUtil.LOG.warn( "Environment entry has undefined value! Must be in the set [ {} ]. Defaulting to {}. Entry: {}",
+                TomlHelper.toLiteralList( (Object[]) validValues ), TomlHelper.toLiteral( validValues[0] ), line );
         return validValues[0];
     }
     

@@ -19,7 +19,7 @@ public class SpecialDifficultyEnvironment extends CompareFloatEnvironment {
     
     public SpecialDifficultyEnvironment( ComparisonOperator op, float value ) { super( op, value ); }
     
-    public SpecialDifficultyEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public SpecialDifficultyEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     /** @return The minimum value that can be given to the value. */
     @Override

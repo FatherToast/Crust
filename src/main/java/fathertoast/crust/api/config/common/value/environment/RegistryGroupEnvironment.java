@@ -23,7 +23,7 @@ public abstract class RegistryGroupEnvironment<T> extends AbstractEnvironment {
     private final String NAMESPACE;
     
     private List<T> registryEntries;
-
+    
     
     public RegistryGroupEnvironment( ResourceLocation regKey, boolean invert ) {
         FIELD = null;
@@ -31,10 +31,10 @@ public abstract class RegistryGroupEnvironment<T> extends AbstractEnvironment {
         NAMESPACE = regKey.toString();
     }
     
-    public RegistryGroupEnvironment( AbstractConfigField field, String line ) {
+    public RegistryGroupEnvironment( AbstractConfigField field, String value ) {
         FIELD = field;
-        INVERT = line.startsWith( "!" );
-        NAMESPACE = line.substring( INVERT ? 1 : 0, line.length() - 1 );
+        INVERT = value.startsWith( "!" );
+        NAMESPACE = value.substring( INVERT ? 1 : 0, value.length() - 1 );
     }
     
     /** @return The string value of this environment, as it would appear in a config file. */
@@ -55,8 +55,9 @@ public abstract class RegistryGroupEnvironment<T> extends AbstractEnvironment {
                 }
             }
             if( registryEntries.isEmpty() ) {
-                ConfigUtil.LOG.warn( "Namespace entry for {} \"{}\" did not match anything in registry \"{}\"! Questionable entry: {}",
-                        FIELD == null ? "DEFAULT" : FIELD.getClass(), FIELD == null ? "DEFAULT" : FIELD.getKey(), getRegistry().getRegistryName(), NAMESPACE );
+                ConfigUtil.warnFor( FIELD );
+                ConfigUtil.LOG.warn( "Environment entry did not match any namespaces in registry \"{}\"! Entry: {}",
+                        getRegistry().getRegistryName(), this );
             }
             registryEntries = Collections.unmodifiableList( registryEntries );
         }

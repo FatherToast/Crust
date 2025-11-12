@@ -2,6 +2,7 @@
     - Added a search bar to the in game config editor.
     - Slightly modified the in game config editor appearance and improved tooltips.
     - Improved config warning/error feedback.
+    - Fixed dimension_type environment.
     - Magnet mode no longer works while spectating, and removed jittering (by default).
     API Changes:
     - Added object holders for Crust's registry objects.

@@ -8,10 +8,10 @@ import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDi
 import fathertoast.crust.common.api.impl.CrustApi;
 import fathertoast.crust.common.command.impl.CrustArgumentTypes;
 import fathertoast.crust.common.config.CrustConfig;
-import fathertoast.crust.common.core.registry.CrustEntities;
-import fathertoast.crust.common.network.CrustPacketHandler;
-import fathertoast.crust.common.core.registry.CrustPortals;
 import fathertoast.crust.common.core.registry.CrustEffects;
+import fathertoast.crust.common.core.registry.CrustEntities;
+import fathertoast.crust.common.core.registry.CrustPortals;
+import fathertoast.crust.common.network.CrustPacketHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;

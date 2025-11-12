@@ -76,6 +76,7 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
         super( registry );
         FIELD = null;
         
+        //noinspection RedundantLengthCheck
         if( entries.length > 0 ) {
             for( Object entry : entries ) {
                 if( registry.containsValue( (T) entry ) ) {
@@ -118,19 +119,20 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
                 
                 // Not a valid resource location, outrageous
                 if( tagLocation == null ) {
-                    ConfigUtil.LOG.warn( "Invalid tag key for {} \"{}\"! Skipping tag. Invalid tag key: {}",
-                            field.getClass(), field.getKey(), line );
+                    ConfigUtil.warnFor( field );
+                    ConfigUtil.LOG.warn( "Registry entry has invalid tag key! Skipping. Entry: {}", line );
                 }
                 else {
-                    tag( new TagKey<>( registry.getRegistryKey(), tagLocation ) );
+                    tag( TagKey.create( registry.getRegistryKey(), tagLocation ) );
                 }
             }
             else if( line.endsWith( "*" ) ) {
                 String[] parts = line.split( ":" );
                 
                 if( parts[0].isEmpty() ) {
-                    ConfigUtil.LOG.warn( "Invalid namespace entry for {} \"{}\"! Skipping. Invalid namespace entry: {}",
-                            field.getClass(), field.getKey(), line );
+                    ConfigUtil.warnFor( field );
+                    ConfigUtil.LOG.warn( "Registry entry has invalid namespace key! Must follow pattern \"namespace:*\". Skipping. Entry: {}",
+                            line );
                 }
                 else {
                     namespace( parts[0] );
@@ -156,8 +158,8 @@ public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
             final ResourceLocation regKey = ResourceLocation.parse( line );
             
             if( !mergeFrom( regKey ) ) {
-                ConfigUtil.LOG.warn( "Invalid or duplicate entry for {} \"{}\"! Invalid entry: {}",
-                        FIELD.getClass(), FIELD.getKey(), line );
+                ConfigUtil.warnFor( FIELD );
+                ConfigUtil.LOG.warn( "Invalid or duplicate lazy registry entry! Ignoring. Entry: {}", line );
             }
         }
     }

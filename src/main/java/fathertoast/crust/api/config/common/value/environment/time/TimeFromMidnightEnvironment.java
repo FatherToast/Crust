@@ -12,7 +12,7 @@ public class TimeFromMidnightEnvironment extends CompareIntEnvironment {
     
     public TimeFromMidnightEnvironment( ComparisonOperator op, int value ) { super( op, value ); }
     
-    public TimeFromMidnightEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public TimeFromMidnightEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     /** @return The minimum value that can be given to the value. */
     @Override

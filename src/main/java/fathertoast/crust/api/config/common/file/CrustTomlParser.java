@@ -37,7 +37,7 @@ public class CrustTomlParser implements ConfigParser<CommentedConfig> {
      */
     @Override
     public CommentedConfig parse( Reader reader ) {
-        ConfigUtil.LOG.error( "Attempting to parse NEW config file! ({})", ConfigUtil.toRelativePath( CONFIG_SPEC.getFile() ) );
+        ConfigUtil.LOG.error( "Attempting to parse NEW config file: {}", CONFIG_SPEC.getFilePath() );
         throw new ParsingException( "Attempted to generate new config! This is not supported." );
     }
     
@@ -50,7 +50,7 @@ public class CrustTomlParser implements ConfigParser<CommentedConfig> {
      */
     @Override
     public void parse( Reader reader, Config destination, ParsingMode parsingMode ) {
-        ConfigUtil.LOG.debug( "Parsing config file! ({}{})", CONFIG_SPEC.NAME, CrustConfigFormat.FILE_EXT );
+        ConfigUtil.LOG.debug( "Parsing config file: {}", CONFIG_SPEC.getFilePath() );
         WRAPPED_PARSER.parse( reader, destination, parsingMode );
         CONFIG_SPEC.onLoad();
     }

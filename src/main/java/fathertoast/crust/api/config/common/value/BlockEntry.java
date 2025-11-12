@@ -57,8 +57,8 @@ public class BlockEntry implements Cloneable {
         // Try to parse block states
         if( !pair[1].endsWith( "]" ) ) {
             // For now, this is okay; if we ever allow values to be added to block lists, this should fail
-            ConfigUtil.LOG.info( "Adding closing bracket on block state properties for {} \"{}\". Invalid entry: {}",
-                    field.getClass(), field.getKey(), line );
+            ConfigUtil.infoFor( field );
+            ConfigUtil.LOG.info( "Block state properties are missing closing bracket. Adding. Entry: {}", line );
             pair[1] = pair[1] + "]";
         }
         State state = BlockEntry.parseState( field, pair[1].substring( 0, pair[1].length() - 1 ), BLOCK );
@@ -145,8 +145,9 @@ public class BlockEntry implements Cloneable {
             // Parse an individual property key-value pair
             String[] pair = combinedEntry.trim().split( "=", 2 );
             if( pair.length != 2 ) {
-                ConfigUtil.LOG.warn( "Invalid block property for {} \"{}\". Format must be 'property=value'. " +
-                        "Deleting property. Invalid property: {}", field.getClass(), field.getKey(), combinedEntry.trim() );
+                ConfigUtil.warnFor( field );
+                ConfigUtil.LOG.warn( "Block state has invalid property! Format must be 'property=value'. Deleting property. Invalid property: {}",
+                        combinedEntry.trim() );
                 continue;
             }
             else if( pair[1].equals( "*" ) ) {
@@ -161,8 +162,8 @@ public class BlockEntry implements Cloneable {
                 for( Property<? extends Comparable<?>> allowed : stateContainer.getProperties() ) {
                     propertyNames.add( allowed.getName() );
                 }
-                ConfigUtil.LOG.warn( "Invalid block property key for {} \"{}\". Valid property keys for '{}' are {}. " +
-                                "Deleting property. Invalid property: {}", field.getClass(), field.getKey(),
+                ConfigUtil.warnFor( field );
+                ConfigUtil.LOG.warn( "Block state has invalid property key! Valid property keys for '{}' are {}. Deleting property. Invalid property: {}",
                         ConfigUtil.toString( ForgeRegistries.BLOCKS.getKey( block ) ), TomlHelper.literalList( propertyNames ), combinedEntry.trim() );
                 continue;
             }
@@ -174,9 +175,9 @@ public class BlockEntry implements Cloneable {
                 for( Comparable<?> allowed : property.getPossibleValues() ) {
                     valueNames.add( property.getName( value( allowed ) ) );
                 }
-                ConfigUtil.LOG.warn( "Invalid block property value for {} \"{}\". Valid values for property '{}' are {}. " +
-                                "Deleting property. Invalid property: {}", field.getClass(), field.getKey(), property.getName(),
-                        TomlHelper.literalList( valueNames ), combinedEntry.trim() );
+                ConfigUtil.warnFor( field );
+                ConfigUtil.LOG.warn( "Block state has invalid property value! Valid values for property key '{}' are {}. Deleting property. Invalid property: {}",
+                        property.getName(), TomlHelper.literalList( valueNames ), combinedEntry.trim() );
                 continue;
             }
             

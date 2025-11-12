@@ -1,5 +1,6 @@
 package fathertoast.crust.api.config.common.value.environment;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -30,9 +31,17 @@ public abstract class TagEnvironment<T> extends AbstractEnvironment {
         TAG_KEY = tagKey;
     }
     
-    public TagEnvironment( AbstractConfigField ignoredField, String line ) {
-        INVERT = line.startsWith( "!" );
-        TAG_KEY = TagKey.create( getRegistry(), ResourceLocation.parse( tagSignFixer( INVERT, line ) ) );
+    public TagEnvironment( AbstractConfigField field, String value ) {
+        INVERT = value.startsWith( "!" );
+        ResourceLocation resLoc = ResourceLocation.tryParse( tagSignFixer( INVERT, value ) );
+        if( resLoc == null ) {
+            TAG_KEY = TagKey.create( getRegistry(), ResourceLocation.withDefaultNamespace( "" ) );
+            ConfigUtil.warnFor( field );
+            ConfigUtil.LOG.warn( "Environment entry has invalid tag! Ignoring. Entry: {}", name() + " " + value );
+        }
+        else {
+            TAG_KEY = TagKey.create( getRegistry(), resLoc );
+        }
     }
     
     /** @return The string value of this environment, as it would appear in a config file. */

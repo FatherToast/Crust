@@ -73,19 +73,20 @@ public class RegistryEntryList<T> implements IStringArray {
                 
                 // Not a valid resource location, outrageous
                 if( tagLocation == null ) {
-                    ConfigUtil.LOG.warn( "Invalid tag key for {} \"{}\"! Skipping tag. Invalid tag key: {}",
-                            field.getClass(), field.getKey(), line );
+                    ConfigUtil.warnFor( field );
+                    ConfigUtil.LOG.warn( "Registry entry has invalid tag key! Skipping. Entry: {}", line );
                 }
                 else {
-                    tag( new TagKey<>( registry.getRegistryKey(), tagLocation ) );
+                    tag( TagKey.create( registry.getRegistryKey(), tagLocation ) );
                 }
             }
             else if( line.endsWith( "*" ) ) {
                 String[] parts = line.split( ":" );
                 
                 if( parts[0].isEmpty() ) {
-                    ConfigUtil.LOG.warn( "Invalid namespace entry for {} \"{}\"! Skipping. Invalid namespace entry: {}",
-                            field.getClass(), field.getKey(), line );
+                    ConfigUtil.warnFor( field );
+                    ConfigUtil.LOG.warn( "Registry entry has invalid namespace key! Must follow pattern \"namespace:*\". Skipping. Entry: {}",
+                            line );
                 }
                 else {
                     namespace( parts[0] );
@@ -98,8 +99,8 @@ public class RegistryEntryList<T> implements IStringArray {
                     PRINT_LIST.add( regKey.toString() );
                 }
                 else {
-                    ConfigUtil.LOG.warn( "Invalid or duplicate entry for {} \"{}\"! Deleting entry. Invalid entry: {}",
-                            field.getClass(), field.getKey(), line );
+                    ConfigUtil.warnFor( field );
+                    ConfigUtil.LOG.warn( "Invalid or duplicate registry entry! Deleting. Entry: {}", line );
                 }
             }
         }

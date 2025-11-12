@@ -13,7 +13,7 @@ public class MoonBrightnessEnvironment extends CompareFloatEnvironment {
     
     public MoonBrightnessEnvironment( ComparisonOperator op, float value ) { super( op, value ); }
     
-    public MoonBrightnessEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public MoonBrightnessEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     /** @return The minimum value that can be given to the value. */
     @Override

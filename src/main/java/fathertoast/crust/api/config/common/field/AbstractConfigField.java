@@ -16,6 +16,12 @@ import java.util.List;
  * Represents a single key-value mapping in a config.
  */
 public abstract class AbstractConfigField {
+    /**
+     * @return A description of where to find the field, if possible. Used for error reporting/feedback.
+     * Note: Null field references should only ever exist for default values. Users should never see the 'null'
+     * message, since it means there is something wrong with a hard coded default value.
+     */
+    public static String describeNullable( @Nullable AbstractConfigField field ) { return field == null ? "<unknown default value>" : field.describeLocation(); }
     
     /** @see #getSpec() */
     private CrustConfigSpec SPEC;

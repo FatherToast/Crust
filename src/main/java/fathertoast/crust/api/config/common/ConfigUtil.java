@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.common;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
+import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -29,6 +30,26 @@ public final class ConfigUtil {
     public static final String LESS_OR_EQUAL = "\u2264";
     /** The greater than or equal to symbol (>=). */
     public static final String GREATER_OR_EQUAL = "\u2265";
+    
+    /** Prints the standard debug header for field validation issues. */
+    public static void debugFor( @Nullable AbstractConfigField field ) {
+        ConfigUtil.LOG.debug( "Debug info for {}:", AbstractConfigField.describeNullable( field ) );
+    }
+    
+    /** Prints the standard info header for field validation issues. */
+    public static void infoFor( @Nullable AbstractConfigField field ) {
+        ConfigUtil.LOG.info( "Info for {}:", AbstractConfigField.describeNullable( field ) );
+    }
+    
+    /** Prints the standard warning header for field validation issues. */
+    public static void warnFor( @Nullable AbstractConfigField field ) {
+        ConfigUtil.LOG.warn( "Warning for {}:", AbstractConfigField.describeNullable( field ) );
+    }
+    
+    /** Prints the standard error header for field validation issues. */
+    public static void errorFor( @Nullable AbstractConfigField field ) {
+        ConfigUtil.LOG.error( "Error for {}:", AbstractConfigField.describeNullable( field ) );
+    }
     
     /** @return The string with all spaces replaced by underscores. Useful for file names. */
     public static String toLowerCaseNoSpaces( String str ) { return noSpaces( str.toLowerCase( Locale.ROOT ) ); }

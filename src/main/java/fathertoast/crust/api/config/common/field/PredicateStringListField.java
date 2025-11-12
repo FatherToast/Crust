@@ -67,8 +67,9 @@ public class PredicateStringListField extends StringListField {
     protected List<String> loadValidated( List<String> strings, Predicate<String> lineValidator ) {
         strings.removeIf( ( line ) -> {
             if( lineValidator.test( line ) ) return false;
-            ConfigUtil.LOG.warn( "Value for {} \"{}\" is invalid! Ignoring value. Invalid value: {}",
-                    getClass(), getKey(), line );
+            
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Invalid string for this list! Deleting. Entry: {}", line );
             return true;
         } );
         return strings;

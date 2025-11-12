@@ -12,7 +12,7 @@ public class WorldTimeEnvironment extends CompareLongEnvironment {
     
     public WorldTimeEnvironment( ComparisonOperator op, long value ) { super( op, value ); }
     
-    public WorldTimeEnvironment( AbstractConfigField field, String line ) { super( field, line ); }
+    public WorldTimeEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
     /** @return The minimum value that can be given to the value. */
     @Override
