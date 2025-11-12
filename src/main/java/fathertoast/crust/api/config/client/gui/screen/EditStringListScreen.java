@@ -107,7 +107,7 @@ public class EditStringListScreen extends Screen {
         
         // Primary screen content
         Predicate<String> validator = FIELD instanceof PredicateStringListField pslf ? pslf.getLineValidator() : null;
-        ElementOffset offset = new ElementOffset( 0, -2, 0, -2 );
+        ElementOffset offset = new ElementOffset( 0, -2, -27, -2 );
         selectionList = new CrustStringFieldList( this, minecraft, FIELD, validator, SPEC, offset );
         addRenderableWidget( selectionList );
         
