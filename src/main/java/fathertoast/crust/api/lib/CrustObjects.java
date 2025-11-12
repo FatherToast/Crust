@@ -76,9 +76,11 @@ public final class CrustObjects {
     private static RegistryObject<MobEffect> effect( String name ) { return ro( name, ForgeRegistries.MOB_EFFECTS ); }
     
     /** @return An object holder for an entity type. */
+    @SuppressWarnings( "SameParameterValue" )
     private static <T extends Entity> RegistryObject<EntityType<T>> entity( String name ) { return ro( name, ForgeRegistries.ENTITY_TYPES ); }
     
     /** @return An object holder for a command argument type. */
+    @SuppressWarnings( "SameParameterValue" )
     private static <T extends ArgumentType<?>> RegistryObject<ArgumentTypeInfo<T, ?>> cmdArg( String name ) { return ro( name, ForgeRegistries.COMMAND_ARGUMENT_TYPES ); }
     
     /** @return An object holder for a Forge registry object. */
@@ -87,6 +89,7 @@ public final class CrustObjects {
     }
     
     /** @return An object holder for a custom registry object. */
+    @SuppressWarnings( "SameParameterValue" )
     private static <T> RegistryObject<T> ro( String name, ResourceKey<? extends Registry<T>> registryKey ) {
         return RegistryObject.createOptional( rl( name ), registryKey, ICrustApi.MOD_ID );
     }

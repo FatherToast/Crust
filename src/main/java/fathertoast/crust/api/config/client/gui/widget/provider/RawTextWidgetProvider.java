@@ -42,6 +42,7 @@ public class RawTextWidgetProvider implements IConfigFieldWidgetProvider {
         
         components.add( editButton );
         
+        // noinspection resource
         EditBox editBox = new EditBox( listEntry.minecraft().font,
                 1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for ~1px frame
                 Component.literal( FIELD.getKey() ) );

@@ -51,6 +51,7 @@ public class CrustFishingHook extends Projectile implements IEntityAdditionalSpa
     
     /** Convenience method for shooting baseline Crust fish hooks. */
     public static <T extends Entity & IAngler> boolean performRangedAttackFor( T angler, LivingEntity target, float power ) {
+        // noinspection resource
         return performRangedAttackFor( angler, target, power, 18 - 4 * angler.level().getDifficulty().getId() );
     }
     
@@ -83,6 +84,7 @@ public class CrustFishingHook extends Projectile implements IEntityAdditionalSpa
                 angler.baseHookSpeed() * power, spread );
         
         // Place the hook in the world
+        // noinspection resource
         if( hook.level().addFreshEntity( hook ) ) {
             hook.playCastSound();
             return true;
@@ -158,9 +160,11 @@ public class CrustFishingHook extends Projectile implements IEntityAdditionalSpa
     }
     
     /** @return True if this fish hook can continue to exist. */
+    @SuppressWarnings( "resource" )
     protected boolean canContinue() {
         IAngler angler = getAngler();
         if( angler == null ) return !requiresAngler();
+        
         else return level().isClientSide || !angler.shouldStopFishing();
     }
     
@@ -168,6 +172,7 @@ public class CrustFishingHook extends Projectile implements IEntityAdditionalSpa
     protected void tickFishing() {
         // Check if we're in water
         BlockPos pos = blockPosition();
+        // noinspection resource
         FluidState fluidState = level().getFluidState( pos );
         float waterLevel = fluidState.is( FluidTags.WATER ) ?
                 fluidState.getHeight( level(), pos ) : 0.0F;
@@ -178,6 +183,7 @@ public class CrustFishingHook extends Projectile implements IEntityAdditionalSpa
             setDeltaMovement( getDeltaMovement().scale( DRAG_FACTOR ) );
         }
         
+        // noinspection resource
         if( !level().isClientSide() ) checkCollision();
         
         // Apply gravity or buoyancy
@@ -285,6 +291,7 @@ public class CrustFishingHook extends Projectile implements IEntityAdditionalSpa
         
         // Deconflict multiple fish hooks for a single angler
         if( newAngler.getHook() != null && !equals( newAngler.getHook() ) ) {
+            // noinspection resource
             if( level().isClientSide() || newAngler.canReplaceHookWith( this ) ) {
                 newAngler.getHook().setAngler( null );
             }
@@ -360,6 +367,7 @@ public class CrustFishingHook extends Projectile implements IEntityAdditionalSpa
      */
     @Override // IEntityAdditionalSpawnData
     public void readSpawnData( FriendlyByteBuf additionalData ) {
+        // noinspection resource
         final Entity entity = level().getEntity( additionalData.readInt() );
         if( entity instanceof IAngler angler ) setAngler( angler );
     }

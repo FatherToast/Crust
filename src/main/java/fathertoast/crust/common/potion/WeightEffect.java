@@ -24,8 +24,10 @@ public class WeightEffect extends MobEffect {
     
     /** Applies this effect to the entity. */
     @Override
+    @SuppressWarnings( "deprecation" )
     public void applyEffectTick( LivingEntity entity, int amplifier ) {
         // We only want to apply this if the entity is at least one block above solid ground
+        // noinspection resource, ConstantConditions
         if( entity.level() == null || entity.onGround() ||
                 entity.level().getBlockState( entity.blockPosition().below() ).blocksMotion() ||
                 entity instanceof Player player && player.getAbilities().flying ) return;

@@ -114,5 +114,8 @@ public enum EntityEventHelper {
     EntityEventHelper( int id ) { ID = (byte) id; }
     
     /** Sends this event from the given server entity to its client-sided counterpart. */
-    public void broadcast( LivingEntity entity ) { entity.level().broadcastEntityEvent( entity, ID ); }
+    public void broadcast( LivingEntity entity ) {
+        // noinspection resource
+        entity.level().broadcastEntityEvent( entity, ID );
+    }
 }

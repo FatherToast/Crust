@@ -36,14 +36,14 @@ public class ApocalypseDifficultyEnvironment extends CompareLongEnvironment {
     @Nullable
     public Long getActual( Level level, @Nullable BlockPos pos ) {
         // Check if Apocalypse Rebooted is installed and any players exist
-        if( apiInstance.getDifficultyAccessor() == null || level.players().size() == 0 ) return null;
+        if( apiInstance.getDifficultyAccessor() == null || level.players().isEmpty() ) return null;
         
         // Get nearest player, if a position is available
         if( pos != null ) {
             return apiInstance.getDifficultyAccessor().getNearestPlayerDifficulty( level, pos );
         }
         
-        // Find player with lowest difficulty, if we don't have a position
+        // Find player with the lowest difficulty, if we don't have a position
         long minDiff = Long.MAX_VALUE;
         for( Player player : level.players() ) {
             long diff = apiInstance.getDifficultyAccessor().getPlayerDifficulty( player );

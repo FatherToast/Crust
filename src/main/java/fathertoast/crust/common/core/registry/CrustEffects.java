@@ -26,6 +26,7 @@ public final class CrustEffects {
     public static void register( IEventBus bus ) { REGISTRY.register( bus ); }
     
     /** Registers a simple effect to the deferred register. */
+    @SuppressWarnings( "SameParameterValue" )
     private static void register( RegistryObject<MobEffect> regObj, MobEffectCategory category, int color ) {
         register( regObj, () -> new SimpleEffect( category, color ) );
     }

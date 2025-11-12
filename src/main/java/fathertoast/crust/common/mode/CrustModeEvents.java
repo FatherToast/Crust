@@ -58,6 +58,7 @@ public final class CrustModeEvents {
         if( CrustModes.DESTROY_ON_PICKUP.enabled( player ) ) {
             event.getItem().setDefaultPickUpDelay();
             event.getItem().discard();
+            // noinspection resource
             player.level().playSound( null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F,
                     (player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 1.4F + 2.0F );

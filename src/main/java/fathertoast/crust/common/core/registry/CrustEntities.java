@@ -25,6 +25,7 @@ public class CrustEntities {
     public static void register( IEventBus bus ) { REGISTRY.register( bus ); }
     
     /** Registers an entity to the deferred register. */
+    @SuppressWarnings( "SameParameterValue" )
     private static <T extends Entity> void register( RegistryObject<EntityType<T>> regObj, EntityType.Builder<T> builder ) {
         final String name = Objects.requireNonNull( regObj.getId() ).getPath();
         REGISTRY.register( name, () -> builder.build( name ) );

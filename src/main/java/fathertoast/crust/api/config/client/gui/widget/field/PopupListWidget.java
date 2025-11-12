@@ -508,6 +508,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     }
     
     /** Draws a box with depth and UV coords with RGBA channels 0x00-0xFF. */
+    @SuppressWarnings( "SameParameterValue" )
     protected static void drawBox( BufferBuilder buf, double x0, double x1, double y0, double y1, double z,
                                    float u0, float u1, float v0, float v1, int r, int g, int b, int a ) {
         buf.vertex( x0, y1, z ).uv( u0, v1 ).color( r, g, b, a ).endVertex();
@@ -698,6 +699,7 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
          * @return This gui's new focus state.
          */
         @Override
+        @Nullable
         public ComponentPath nextFocusPath( FocusNavigationEvent event ) {
             for( AbstractWidget w : WIDGETS ) {
                 ComponentPath path = w.nextFocusPath( event );

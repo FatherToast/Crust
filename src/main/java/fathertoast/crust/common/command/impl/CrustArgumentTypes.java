@@ -25,6 +25,7 @@ public class CrustArgumentTypes {
     }
     
     /** Registers an argument type to the deferred register. */
+    @SuppressWarnings( "SameParameterValue" )
     private static <T extends ArgumentType<?>> void register( RegistryObject<?> regObj, Supplier<ArgumentTypeInfo<T, ?>> supplier ) {
         ARGUMENT_TYPE_REGISTER.register( Objects.requireNonNull( regObj.getId() ).getPath(), supplier );
     }

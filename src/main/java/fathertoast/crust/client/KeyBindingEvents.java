@@ -86,7 +86,7 @@ public final class KeyBindingEvents {
         button.ON_PRESS.onPress( null );
     }
     
-    protected static void init() {
+    private static void init() {
         String key = KEY + "buttons.";
         List<String> builtInButtons = ButtonInfo.builtInIds();
         BUTTONS = new KeyMapping[builtInButtons.size() + ClientRegister.EXTRA_INV_BUTTONS.CUSTOM_BUTTONS.length];
