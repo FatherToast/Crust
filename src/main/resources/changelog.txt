@@ -1,8 +1,9 @@
-1.20.1-4.9.0
+1.20.1-4.9.14
     - Added a search bar to the in game config editor.
     - Slightly modified the in game config editor appearance and improved tooltips.
     - Improved config warning/error feedback.
     - Fixed dimension_type environment.
+    - Fixed day_time environment.
     - Magnet mode no longer works while spectating, and removed jittering (by default).
     API Changes:
     - Added object holders for Crust's registry objects.
