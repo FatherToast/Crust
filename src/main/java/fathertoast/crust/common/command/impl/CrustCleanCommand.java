@@ -23,12 +23,12 @@ public class CrustCleanCommand {
     
     /** Command implementation. */
     private static int runPointer( CommandSourceStack source, ServerPlayer player ) {
-        if( player.inventoryMenu.getCarried().isEmpty() ) {
+        if( player.containerMenu.getCarried().isEmpty() ) {
             CommandUtil.sendFailure( source, "clean.pointer", player.getDisplayName() );
             return 0;
         }
         
-        player.inventoryMenu.setCarried( ItemStack.EMPTY );
+        player.containerMenu.setCarried( ItemStack.EMPTY );
         CrustPacketHandler.sendDestroyItemOnPointerUpdate( player );
         CommandUtil.sendSuccess( source, "clean.pointer", player.getDisplayName() );
         return 1;

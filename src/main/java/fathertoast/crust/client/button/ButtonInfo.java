@@ -91,7 +91,7 @@ public class ButtonInfo {
             .condition( () -> !player().getActiveEffectsMap().isEmpty() ) );
     public static final ButtonInfo DESTROY_POINTER_ITEM = builtIn( new ButtonInfo( "destroyOnPointer", "fire.png",
             ButtonInfo::destroyOnPointer, Command.CLEAN_POINTER )
-            .condition( () -> !player().inventoryMenu.getCarried().isEmpty() ) );
+            .condition( () -> !player().containerMenu.getCarried().isEmpty() ) );
     public static final ButtonInfo KILL_ALL = builtIn( new ButtonInfo( "killAll", "creeper_slash.png",
             "kill @e[type=!player]" ) );
     @SuppressWarnings( "unused" )
