@@ -40,6 +40,7 @@ public class CrustPortalCommand {
         Direction forward = target.getDirection();
         BlockPos.MutableBlockPos currentPos = target.blockPosition().mutable().move( forward, 3 );
         
+        // noinspection resource
         if( currentPos.getY() <= target.level().getMinBuildHeight() || currentPos.getY() >= target.level().getMaxBuildHeight() - 5 )
             failed = true;
         else if( isOpenSpace( target.level(), currentPos ) ) findGroundBelow( target.level(), currentPos );

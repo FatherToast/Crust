@@ -58,7 +58,10 @@ public class InjectionWrapperField<T extends AbstractConfigField> extends Abstra
     
     /** @return The value that should be assigned to this field in the config file. */
     @Override
-    public Object getValue() { return wrappedField.getValue(); }
+    @Nullable
+    public Object getValue() {
+        return wrappedField.getValue();
+    }
     
     /** @return The default value of this field. */
     @Override

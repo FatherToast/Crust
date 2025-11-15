@@ -1,6 +1,8 @@
 package fathertoast.crust.api.datagen.loot;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.storage.loot.LootPool;
@@ -44,11 +46,21 @@ public class LootTableBuilder {
                 .toLootPool() );
     }
     
+    /** Adds a pool with a single item drop. */
+    public LootTableBuilder addGuaranteedDrop( String id, TagKey<Item> tag, int count ) {
+        return addPool( new LootPoolBuilder( id )
+                .addEntry( new LootEntryTagBuilder( tag ).setCount( count ).toLootEntry() )
+                .toLootPool() );
+    }
+    
     /** Adds a pool with an item drop of 0-2 + (0-1 * luck). */
     public LootTableBuilder addCommonDrop( String id, ItemLike item ) { return addCommonDrop( id, item, 2 ); }
     
     /** Adds a pool with an item drop of 0-2 + (0-1 * luck). */
     public LootTableBuilder addCommonDrop( String id, ItemStack item ) { return addCommonDrop( id, item, 2 ); }
+    
+    /** Adds a pool with an item drop of 0-2 + (0-1 * luck). */
+    public LootTableBuilder addCommonDrop( String id, TagKey<Item> tag ) { return addCommonDrop( id, tag, 2 ); }
     
     /** Adds a pool with an item drop of 0-max + (0-1 * luck). */
     public LootTableBuilder addCommonDrop( String id, ItemLike item, int max ) {
@@ -61,6 +73,13 @@ public class LootTableBuilder {
     public LootTableBuilder addCommonDrop( String id, ItemStack item, int max ) {
         return addPool( new LootPoolBuilder( id )
                 .addEntry( new LootEntryItemBuilder( item ).setCount( 0, max ).addLootingBonus( 0, 1 ).toLootEntry() )
+                .toLootPool() );
+    }
+    
+    /** Adds a pool with an item drop of 0-max + (0-1 * luck). */
+    public LootTableBuilder addCommonDrop( String id, TagKey<Item> tag, int max ) {
+        return addPool( new LootPoolBuilder( id )
+                .addEntry( new LootEntryTagBuilder( tag ).setCount( 0, max ).addLootingBonus( 0, 1 ).toLootEntry() )
                 .toLootPool() );
     }
     
@@ -80,11 +99,22 @@ public class LootTableBuilder {
                 .toLootPool() );
     }
     
+    /** Adds a pool with an item drop of (-1)-1 + (0-1 * luck). */
+    public LootTableBuilder addSemicommonDrop( String id, TagKey<Item> tag ) {
+        return addPool( new LootPoolBuilder( id )
+                .addConditions( LootHelper.KILLED_BY_PLAYER_CONDITION )
+                .addEntry( new LootEntryTagBuilder( tag ).setCount( -1, 1 ).addLootingBonus( 0, 1 ).toLootEntry() )
+                .toLootPool() );
+    }
+    
     /** Adds a pool with an item drop of 1-8 and chance of 25% + (5% * luck). */
     public LootTableBuilder addClusterDrop( String id, ItemLike item ) { return addClusterDrop( id, item, 8 ); }
     
     /** Adds a pool with an item drop of 1-8 and chance of 25% + (5% * luck). */
     public LootTableBuilder addClusterDrop( String id, ItemStack item ) { return addClusterDrop( id, item, 8 ); }
+    
+    /** Adds a pool with an item drop of 1-8 and chance of 25% + (5% * luck). */
+    public LootTableBuilder addClusterDrop( String id, TagKey<Item> tag ) { return addClusterDrop( id, tag, 8 ); }
     
     /** Adds a pool with an item drop of 1-max and chance of 25% + (5% * luck). */
     public LootTableBuilder addClusterDrop( String id, ItemLike item, int max ) {
@@ -99,6 +129,14 @@ public class LootTableBuilder {
         return addPool( new LootPoolBuilder( id )
                 .addConditions( LootHelper.UNCOMMON_CONDITIONS )
                 .addEntry( new LootEntryItemBuilder( item ).setCount( 1, max ).toLootEntry() )
+                .toLootPool() );
+    }
+    
+    /** Adds a pool with an item drop of 1-max and chance of 25% + (5% * luck). */
+    public LootTableBuilder addClusterDrop( String id, TagKey<Item> tag, int max ) {
+        return addPool( new LootPoolBuilder( id )
+                .addConditions( LootHelper.UNCOMMON_CONDITIONS )
+                .addEntry( new LootEntryTagBuilder( tag ).setCount( 1, max ).toLootEntry() )
                 .toLootPool() );
     }
     
@@ -123,6 +161,13 @@ public class LootTableBuilder {
         return addPool( pool.toLootPool() );
     }
     
+    /** Adds a pool with a single item drop and chance of 25% + (5% * luck). */
+    public LootTableBuilder addUncommonDrop( String id, TagKey<Item> tag ) {
+        LootPoolBuilder pool = new LootPoolBuilder( id ).addConditions( LootHelper.UNCOMMON_CONDITIONS );
+        pool.addEntry( new LootEntryTagBuilder( tag ).toLootEntry() );
+        return addPool( pool.toLootPool() );
+    }
+    
     /** Adds a pool with a single item drop (from a list) and chance of 2.5% + (0% * luck). */
     public LootTableBuilder addRareDrop( String id, ItemLike... items ) {
         LootPoolBuilder pool = new LootPoolBuilder( id ).addConditions( LootHelper.RARE_CONDITIONS );
@@ -141,6 +186,13 @@ public class LootTableBuilder {
         for( ItemStack item : items ) {
             pool.addEntry( new LootEntryItemBuilder( item ).setWeight( item.getCount() ).toLootEntry() );
         }
+        return addPool( pool.toLootPool() );
+    }
+    
+    /** Adds a pool with a single item drop (from a list) and chance of 2.5% + (0% * luck). */
+    public LootTableBuilder addRareDrop( String id, TagKey<Item> tag ) {
+        LootPoolBuilder pool = new LootPoolBuilder( id ).addConditions( LootHelper.RARE_CONDITIONS );
+        pool.addEntry( new LootEntryTagBuilder( tag ).toLootEntry() );
         return addPool( pool.toLootPool() );
     }
 }

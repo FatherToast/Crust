@@ -21,6 +21,7 @@ public class ApocalypseDifficultyOrTimeEnvironment extends ApocalypseDifficultyE
     
     /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Override
+    @Nullable
     public Long getActual( Level level, @Nullable BlockPos pos ) {
         return isApocalypseInstalled() ? super.getActual( level, pos ) : (Long) level.dayTime();
     }

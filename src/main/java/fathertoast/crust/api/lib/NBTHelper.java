@@ -40,6 +40,7 @@ public final class NBTHelper {
      * @param name The name of the tag to check.
      * @return True if the compound contains a tag with the given name that stores another compound value.
      */
+    @SuppressWarnings( "BooleanMethodIsAlwaysInverted" )
     public static boolean containsCompound( CompoundTag tag, String name ) { return contains( tag, name, TAG_COMPOUND ); }
     
     /**

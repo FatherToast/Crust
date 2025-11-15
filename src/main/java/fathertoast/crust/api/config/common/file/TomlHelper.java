@@ -69,7 +69,7 @@ public final class TomlHelper {
     
     /** Attempts to convert a string value to a raw toml primitive type. May or may not be accurate. */
     public static Object parseStringPrimitive( @Nullable String value ) {
-        if( value != null && !"".equals( value ) ) {
+        if( value != null && !value.isEmpty() ) {
             // Try to parse as a numerical value
             try {
                 return Long.parseLong( value );

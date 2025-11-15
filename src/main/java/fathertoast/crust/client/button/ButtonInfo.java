@@ -91,7 +91,7 @@ public class ButtonInfo {
             .condition( () -> !player().getActiveEffectsMap().isEmpty() ) );
     public static final ButtonInfo DESTROY_POINTER_ITEM = builtIn( new ButtonInfo( "destroyOnPointer", "fire.png",
             ButtonInfo::destroyOnPointer, Command.CLEAN_POINTER )
-            .condition( () -> !player().inventoryMenu.getCarried().isEmpty() ) );
+            .condition( () -> !player().containerMenu.getCarried().isEmpty() ) );
     public static final ButtonInfo KILL_ALL = builtIn( new ButtonInfo( "killAll", "creeper_slash.png",
             "kill @e[type=!player]" ) );
     @SuppressWarnings( "unused" )
@@ -303,11 +303,13 @@ public class ButtonInfo {
     }
     
     private static void toggleDay( @Nullable Button button ) {
+        // noinspection resource
         final int dayTime = (int) (world().getDayTime() % 24_000L);
         cmd( dayTime < 1_000 || dayTime >= 13_000 ? Command.TIME_DAY : Command.TIME_NIGHT );
     }
     
     private static void toggleRain( @Nullable Button button ) {
+        // noinspection resource
         cmd( world().getLevelData().isRaining() || world().getLevelData().isThundering() ?
                 Command.clear() : Command.rain() );
     }

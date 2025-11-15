@@ -73,7 +73,9 @@ public class WeightedPotionListField extends RegistryEntryValueListField<MobEffe
     }
     
     /** Parses a single entry line and returns the result. */
-    @Nullable // TODO Use this as the starting point for making value lists generic
+    @Nullable
+    // TODO Use this as the starting point for making value lists generic
+    //      (Remember that default entries, namespace entries and tag entries are not handled properly here, maybe see RegistryEntryValueList)
     private static RegistryValueEntry<MobEffect> parseEntry( final String line, @Nullable final WeightedPotionListField field,
                                                              final int reqValues, final double minVal, final double maxVal ) {
         // Parse the value array

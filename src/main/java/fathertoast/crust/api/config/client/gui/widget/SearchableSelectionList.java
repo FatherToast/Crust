@@ -1,13 +1,12 @@
 package fathertoast.crust.api.config.client.gui.widget;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import fathertoast.crust.api.config.client.gui.ElementOffset;
 import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
 import fathertoast.crust.client.ClientRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A selection list implementation designed to
@@ -17,10 +16,11 @@ public abstract class SearchableSelectionList<T extends ContainerObjectSelection
     
     /** Offsets to be applied to element highlights. */
     private final ElementOffset highlightOffset;
-    /** A bidirectional map that maps search candidate indexes to selection list element indexes. */
-    private BiMap<Integer, Integer> elementByCandidateIndexes = HashBiMap.create();
-    /** The focused search candidate index, typically specified by a searchbar. */
-    private int focusedIndex;
+    
+    /** The searchbar this list "communicates" with. */
+    @Nullable
+    private Searchbar searchbar;
+    
     
     public SearchableSelectionList( Minecraft minecraft, int width, int height, int topY, int bottomY, int itemHeight, ElementOffset highlightOffset ) {
         super( minecraft, width, height, topY, bottomY, itemHeight );
@@ -28,28 +28,21 @@ public abstract class SearchableSelectionList<T extends ContainerObjectSelection
     }
     
     /**
-     * Intended to be called by a {@link Searchbar} instance that
-     * operates on this search list.<br><br>
-     * <p>
-     * Updates this search list's map of element-by-candidate indexes;
-     * Element index being the index of an element in this search list
-     * and candidate index being the element's index in the search bar as
-     * a search match.
+     * Sets the searchbar for this list.
+     * Without a searchbar, this list doesn't do much interesting.
      */
-    public void setIndexes( BiMap<Integer, Integer> elementByCandidateIndexes ) {
-        this.elementByCandidateIndexes = elementByCandidateIndexes;
+    public void setSearchbar( Searchbar searchbar ) {
+        this.searchbar = searchbar;
     }
     
     /**
-     * Intended to be called by a {@link Searchbar} instance that
-     * operates on this search list.<br><br>
-     * <p>
-     * Updates this search list's focused search match index.
-     * Whatever item in this list that corresponds to the focused
-     * index will have a special highlight drawn behind it to stand out.
+     * Tells the underlying searchbar to forcibly run a new search.
+     * Make sure to call this if the number of elements/children in
+     * this list changes.
      */
-    public void setFocusedIndex( int index ) {
-        this.focusedIndex = index;
+    protected void rerunSearch() {
+        if( searchbar != null )
+            searchbar.search( searchbar.getValue(), true );
     }
     
     /**
@@ -60,8 +53,8 @@ public abstract class SearchableSelectionList<T extends ContainerObjectSelection
     protected void renderItem( GuiGraphics graphics, int mouseX, int mouseY, float partialTick,
                                int itemIndex, int rowLeft, int rowTop, int rowWidth, int itemHeight ) {
         // Check if highlights are enabled in the config.
-        if( ClientRegister.CONFIG_EDITOR.SEARCHBAR.showSearchHighlights.get() ) {
-            if( elementByCandidateIndexes.inverse().containsKey( itemIndex ) ) {
+        if( searchbar != null && ClientRegister.CONFIG_EDITOR.SEARCHBAR.showSearchHighlights.get() ) {
+            if( searchbar.getElementByCandidateIndexes().inverse().containsKey( itemIndex ) ) {
                 int x = (getLeft() + ((getWidth() - rowWidth) / 2)) + highlightOffset.getX();
                 int y = rowTop + highlightOffset.getY();
                 int width = (getLeft() + ((getWidth() + rowWidth) / 2) - 3) + highlightOffset.getWidth();
@@ -69,7 +62,7 @@ public abstract class SearchableSelectionList<T extends ContainerObjectSelection
                 
                 // TODO - Maybe make highlight color configurable
                 // noinspection ConstantConditions
-                if( elementByCandidateIndexes.inverse().get( itemIndex ) == focusedIndex ) {
+                if( searchbar.getElementByCandidateIndexes().inverse().get( itemIndex ) == searchbar.getFocusedIndex() ) {
                     graphics.fillGradient( x, y, width, height, 0x70_EDDB38, 0x90_EDDB38 );
                 }
                 else {

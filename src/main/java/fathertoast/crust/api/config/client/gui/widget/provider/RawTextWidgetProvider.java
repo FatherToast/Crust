@@ -15,6 +15,7 @@ import java.util.function.Supplier;
  *
  * @see net.minecraft.client.gui.components.EditBox
  */
+@SuppressWarnings( "ClassCanBeRecord" )
 public class RawTextWidgetProvider implements IConfigFieldWidgetProvider {
     
     /** The providing field. */
@@ -41,11 +42,12 @@ public class RawTextWidgetProvider implements IConfigFieldWidgetProvider {
         
         components.add( editButton );
         
+        // noinspection resource
         EditBox editBox = new EditBox( listEntry.minecraft().font,
                 1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for ~1px frame
                 Component.literal( FIELD.getKey() ) );
         editBox.setMaxLength( Integer.MAX_VALUE );
-
+        
         editBox.setValue( displayValue.toString() );
         editBox.setResponder( listEntry::updateValue );
         

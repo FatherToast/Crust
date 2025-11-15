@@ -34,6 +34,6 @@ public class DayTimeEnvironment extends EnumEnvironment<DayTimeEnvironment.Value
     /** @return Returns true if this environment matches the provided environment. */
     @Override
     public boolean matches( Level level, @Nullable BlockPos pos ) {
-        return (VALUE.matches( (int) (level.dayTime() / 24_000L) )) != INVERT;
+        return (VALUE.matches( (int) (level.dayTime() % 24_000L) )) != INVERT;
     }
 }

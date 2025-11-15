@@ -13,6 +13,7 @@ import java.util.function.Function;
 /**
  * Displays a text box for a number value.
  */
+@SuppressWarnings( "ClassCanBeRecord" )
 public class NumberFieldWidgetProvider implements IConfigFieldWidgetProvider {
     
     /** The providing field. */
@@ -41,11 +42,12 @@ public class NumberFieldWidgetProvider implements IConfigFieldWidgetProvider {
      */
     @Override
     public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+        // noinspection resource
         EditBox editBox = new EditBox( listEntry.minecraft().font,
                 1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for ~1px frame
                 Component.literal( FIELD.getKey() ) );
         editBox.setMaxLength( 127 );
-
+        
         editBox.setValue( TomlHelper.toLiteral( displayValue ) );
         editBox.setResponder( ( value ) -> {
             Number newValue = TomlHelper.parseNumber( value );

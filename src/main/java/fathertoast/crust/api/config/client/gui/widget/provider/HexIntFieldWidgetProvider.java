@@ -13,6 +13,7 @@ import java.util.function.Function;
 /**
  * Displays a text box for a hexadecimal number value.
  */
+@SuppressWarnings( "ClassCanBeRecord" )
 public class HexIntFieldWidgetProvider implements IConfigFieldWidgetProvider {
     
     /** The providing field. */
@@ -38,6 +39,7 @@ public class HexIntFieldWidgetProvider implements IConfigFieldWidgetProvider {
      */
     @Override
     public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+        // noinspection resource
         EditBox editBox = new EditBox( listEntry.minecraft().font,
                 1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for 1px frame
                 Component.literal( FIELD.getKey() ) );
@@ -46,7 +48,7 @@ public class HexIntFieldWidgetProvider implements IConfigFieldWidgetProvider {
         TomlHelper.HEX_MODE = FIELD.getMinDigits();
         editBox.setValue( TomlHelper.toLiteral( displayValue ).substring( 2 ) );
         TomlHelper.HEX_MODE = 0;
-
+        
         editBox.setResponder( ( value ) -> {
             Integer newValue = TomlHelper.parseHexInt( value );
             if( newValue == null || !VALIDATOR.apply( newValue ) ) {

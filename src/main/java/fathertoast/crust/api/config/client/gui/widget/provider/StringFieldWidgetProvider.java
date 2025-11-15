@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * Displays a text box for a string value.
  */
+@SuppressWarnings( "ClassCanBeRecord" )
 public class StringFieldWidgetProvider implements IConfigFieldWidgetProvider {
     
     /** The providing field. */
@@ -31,6 +32,7 @@ public class StringFieldWidgetProvider implements IConfigFieldWidgetProvider {
      */
     @Override
     public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+        // noinspection resource
         EditBox editBox = new EditBox( listEntry.minecraft().font,
                 1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for ~1px frame
                 Component.literal( FIELD.getKey() ) );

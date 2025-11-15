@@ -57,7 +57,7 @@ public class CrustConfigSelectScreen extends Screen {
     
     private final boolean createSearchBar;
     /** The search bar for looking up entries in {@link CrustConfigSelectScreen#selectionList}. */
-    private Searchbar searchBar;
+    private Searchbar searchbar;
     
     
     /** Creates a new config selection screen, opened to the mod select page. */
@@ -113,7 +113,8 @@ public class CrustConfigSelectScreen extends Screen {
         if( createSearchBar ) {
             Searchbar.Orientation orientation = ClientRegister.CONFIG_EDITOR.SEARCHBAR.orientation.get();
             int searchbarX = orientation == Searchbar.Orientation.LEFT ? 8 : width - 108;
-            searchBar = Searchbar.create( this, selectionList, orientation.getOpposite(), font, searchbarX, 20, 100, Searchbar.DEFAULT_MATCHER );
+            searchbar = Searchbar.create( this, selectionList, orientation.getOpposite(), font, searchbarX, 20, 100, Searchbar.DEFAULT_MATCHER );
+            selectionList.setSearchbar( searchbar );
         }
         
         // Footer content
@@ -131,8 +132,8 @@ public class CrustConfigSelectScreen extends Screen {
     
     @Override
     public void tick() {
-        if( searchBar != null )
-            searchBar.tick();
+        if( searchbar != null )
+            searchbar.tick();
     }
     
     /** Called to render the screen. */

@@ -1,6 +1,8 @@
 package fathertoast.crust.api.config.common.field;
 
 import com.electronwill.nightconfig.core.io.CharacterOutput;
+import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.provider.StringListFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
@@ -61,4 +63,9 @@ public class StringListField extends GenericField<List<String>> {
     
     /** @return Returns true if there are no entries in this string list. */
     public boolean isEmpty() { return get().isEmpty(); }
+    
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() {
+        return new StringListFieldWidgetProvider( this );
+    }
 }

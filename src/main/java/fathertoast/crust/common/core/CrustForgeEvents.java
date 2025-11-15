@@ -60,6 +60,7 @@ public final class CrustForgeEvents {
     /** Called when an entity is taking damage. */
     @SubscribeEvent( priority = EventPriority.NORMAL )
     static void onLivingHurt( LivingHurtEvent event ) {
+        // noinspection resource
         Level level = event.getEntity().level();
         
         if( event.getEntity() != null && event.getSource().type() != level.damageSources().fellOutOfWorld().type() && !event.getSource().is( DamageTypeTags.BYPASSES_ENCHANTMENTS ) &&

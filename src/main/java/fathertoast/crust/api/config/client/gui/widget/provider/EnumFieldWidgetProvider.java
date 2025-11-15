@@ -18,6 +18,7 @@ import java.util.function.Supplier;
 /**
  * Displays a button that opens a dropdown menu for an enum value.
  */
+@SuppressWarnings( "ClassCanBeRecord" )
 public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldWidgetProvider {
     
     /** The providing field. */
@@ -78,7 +79,7 @@ public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldW
         
         PopupListWidget<PopupListWidget.WidgetListEntry> dropdownMenu = new PopupListWidget<>( openingButton.getX() - 2, y,
                 openingButton.getWidth() + 4 + (hasScrollbar ? PopupListWidget.SCROLLBAR_WIDTH + 2 : 0),
-                height, rowHeight, Component.literal(provider.FIELD.getKey()) );
+                height, rowHeight, Component.literal( provider.FIELD.getKey() ) );
         PopupListWidget.WidgetListEntry selectedEntry = null;
         for( T value : validValues ) {
             boolean isSelected = TomlHelper.equals( value, listEntry.getValue() );

@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 /**
  * Displays an on/off toggle button for a boolean value.
  */
+@SuppressWarnings( "ClassCanBeRecord" )
 public class BooleanFieldWidgetProvider implements IConfigFieldWidgetProvider {
     
     /** The providing field. */
@@ -34,7 +35,7 @@ public class BooleanFieldWidgetProvider implements IConfigFieldWidgetProvider {
     @Override
     public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
         Button toggleButton = new Button( 0, 0, VALUE_WIDTH, VALUE_HEIGHT,
-                CommonComponents.optionStatus( cast( displayValue ) ), (button ) -> {
+                CommonComponents.optionStatus( cast( displayValue ) ), ( button ) -> {
             boolean newValue = !cast( listEntry.getValue() );
             button.setMessage( CommonComponents.optionStatus( newValue ) );
             listEntry.updateValue( newValue );

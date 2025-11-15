@@ -1,7 +1,6 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableMap;
 import fathertoast.crust.api.config.client.gui.widget.SearchableSelectionList;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
@@ -40,14 +39,12 @@ public class Searchbar extends EditBox {
     /** The search matcher predicate used by this searchbar. */
     private final BiPredicate<String, String> matchPredicate;
     /** A bidirectional map that maps search candidate indexes to selection list element indexes. */
-    private final BiMap<Integer, Integer> elementByCandidateIndexes = HashBiMap.create();
+    private ImmutableBiMap<Integer, Integer> elementByCandidateIndexes = ImmutableBiMap.of();
     
     /** Navigation button for going to the next search candidate. */
     private final Button previousCandidate;
     /** Navigation button for going to the previous search candidate. */
     private final Button nextCandidate;
-    /** The orientation of this searchbar's subcomponents. */
-    private final Orientation orientation;
     
     /** The current map of search candidates and element indexes. Refreshed on search. */
     private ImmutableMap<Integer, Searchable> searchCandidates = ImmutableMap.of();
@@ -88,10 +85,9 @@ public class Searchbar extends EditBox {
         Objects.requireNonNull( matchPredicate );
         this.selectionList = selectionList;
         this.matchPredicate = matchPredicate;
-        this.orientation = orientation;
         setHint( Component.translatable( "menu.crust.config.search_bar.hint" )
                 .withStyle( ChatFormatting.ITALIC, ChatFormatting.GRAY ) );
-        setResponder( this::search );
+        setResponder( ( value ) -> search( value, false ) );
         
         // Create navigation buttons
         final int buttonX = orientation == Orientation.RIGHT
@@ -151,10 +147,10 @@ public class Searchbar extends EditBox {
      * for easy scroll navigation later.<br><br>
      * Scrolls to the first found candidate, if any.
      */
-    public void search( String value ) {
+    public void search( String value, boolean forceSearch ) {
         // No point in doing anything if the
-        // search value didn't change.
-        if( value.equals( lastSearch ) )
+        // search value didn't change, unless we are forcing a search.
+        if( !forceSearch && value.equals( lastSearch ) )
             return;
         
         // Update last search.
@@ -168,7 +164,7 @@ public class Searchbar extends EditBox {
         
         // Clear indexes and search candidates.
         searchCandidates = ImmutableMap.of();
-        elementByCandidateIndexes.clear();
+        elementByCandidateIndexes = ImmutableBiMap.of();
         
         // Reset scroll if empty.
         if( value.isEmpty() ) {
@@ -176,6 +172,7 @@ public class Searchbar extends EditBox {
         }
         else {
             final Map<Integer, Searchable> candidates = new HashMap<>();
+            final Map<Integer, Integer> elementByCandidates = new HashMap<>();
             boolean foundFirst = false;
             int mapKey = 0;
             
@@ -193,11 +190,12 @@ public class Searchbar extends EditBox {
                         scrollToIndex( elementIndex );
                     }
                     candidates.put( mapKey, searchable );
-                    elementByCandidateIndexes.put( mapKey, elementIndex );
+                    elementByCandidates.put( mapKey, elementIndex );
                     ++mapKey;
                 }
             }
             searchCandidates = ImmutableMap.copyOf( candidates );
+            elementByCandidateIndexes = ImmutableBiMap.copyOf( elementByCandidates );
             
             // Update navigation buttons.
             if( !searchCandidates.isEmpty() ) {
@@ -211,8 +209,6 @@ public class Searchbar extends EditBox {
                 setTextColor( IConfigFieldWidgetProvider.INVALID_COLOR );
             }
         }
-        // Notify selection list of current search candidates and index mappings.
-        selectionList.setIndexes( elementByCandidateIndexes );
     }
     
     /** Tells this searchbar's selection list to scroll to the element at the given index. */
@@ -237,12 +233,24 @@ public class Searchbar extends EditBox {
     /** Sets focused search match index for self and the underlying selection list. */
     private void setFocusedIndex( int index ) {
         focusedIndex = index;
-        selectionList.setFocusedIndex( index );
+    }
+    
+    /** @return The index of the currently focused search match. */
+    public int getFocusedIndex() {
+        return focusedIndex;
     }
     
     /** @return An unmodifiable view of the searchbar's current search candidates. */
     public ImmutableMap<Integer, Searchable> getSearchCandidates() {
         return searchCandidates;
+    }
+    
+    /** @return An unmodifiable view of the searchbar's element-by-candidate indexes. */
+    public ImmutableBiMap<Integer, Integer> getElementByCandidateIndexes() { return elementByCandidateIndexes; }
+    
+    @Override
+    public void tick() {
+        super.tick();
     }
     
     @Override

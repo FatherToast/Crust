@@ -30,9 +30,6 @@ public class PortalTypeArgument implements ArgumentType<PortalBuilder> {
     
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions( CommandContext<S> context, SuggestionsBuilder suggestions ) {
-        StringReader reader = new StringReader( suggestions.getInput() );
-        reader.setCursor( suggestions.getStart() );
-        
         for( PortalBuilder builder : CrustObjects.PORTAL_REGISTRY.get().getValues() ) {
             //noinspection ConstantConditions
             suggestions.suggest( CrustObjects.PORTAL_REGISTRY.get().getKey( builder ).toString() );

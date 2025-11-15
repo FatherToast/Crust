@@ -127,6 +127,7 @@ public class Crust {
         } );
     }
     
+    @SuppressWarnings( "all" )
     private void processPlugins() {
         // Load mod plugins
         ModList.get().getAllScanData().forEach( ( scanData ) ->

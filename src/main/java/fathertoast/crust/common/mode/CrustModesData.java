@@ -28,6 +28,7 @@ public class CrustModesData {
     private CrustModesData( Player player ) {
         PLAYER = player;
         CompoundTag modTag = NBTHelper.getPlayerData( player, ICrustApi.MOD_ID );
+        // noinspection resource
         boolean setDefaults = !player.level().isClientSide() && !NBTHelper.containsCompound( modTag, TAG_NAME );
         SAVE_TAG = NBTHelper.getOrCreateCompound( modTag, TAG_NAME );
         
@@ -59,6 +60,7 @@ public class CrustModesData {
     public <T> void enable( CrustMode<T> mode, T data ) {
         if( !get( mode ).equals( data ) ) {
             mode.enable( SAVE_TAG, data );
+            // noinspection resource
             if( !PLAYER.level().isClientSide() ) CrustForgeEvents.markModesDirty( PLAYER );
         }
     }
@@ -67,6 +69,7 @@ public class CrustModesData {
     public void disable( CrustMode<?> mode ) {
         if( mode.enabled( SAVE_TAG ) ) {
             mode.disable( SAVE_TAG );
+            // noinspection resource
             if( !PLAYER.level().isClientSide() ) CrustForgeEvents.markModesDirty( PLAYER );
         }
     }
