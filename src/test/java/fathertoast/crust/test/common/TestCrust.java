@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 public class TestCrust implements ICrustPlugin {
     
     /** Logger instance for the test package. */
-    public static final Logger LOG = LogManager.getLogger( "crust/TEST" );
+    public static final Logger LOG = LogManager.getLogger( ICrustApi.MOD_ID + "/TEST" );
     
     /** API instance */
     public static ICrustApi API;

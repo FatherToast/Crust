@@ -10,7 +10,7 @@ import java.util.List;
  * that has bounding boxes that should be rendered in
  * debug mode (when entity hitboxes are rendered).
  * <p>
- * Will be removed beyond MC 1.20, use {@link IBlockEntityDebugShapeProvider}
+ * Will be removed beyond MC 1.20, use {@link IDebugShapeProvider}
  * instead for improved debug tools.
  */
 @Deprecated( forRemoval = true )

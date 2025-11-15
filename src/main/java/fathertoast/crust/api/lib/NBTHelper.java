@@ -1,5 +1,6 @@
 package fathertoast.crust.api.lib;
 
+import fathertoast.crust.api.ICrustApi;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -25,7 +26,7 @@ import static net.minecraft.nbt.Tag.*;
 public final class NBTHelper {
     
     /** Logger instance for the Crust NBT helper. */
-    public static final Logger LOG = LogManager.getLogger( "crust/nbt" );
+    public static final Logger LOG = LogManager.getLogger( ICrustApi.MOD_ID + "/nbt" );
     
     /**
      * @param tag  The compound tag to read from.

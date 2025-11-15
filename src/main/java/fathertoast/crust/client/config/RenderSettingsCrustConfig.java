@@ -3,14 +3,13 @@ package fathertoast.crust.client.config;
 import fathertoast.crust.api.config.common.AbstractConfigCategory;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
-import fathertoast.crust.api.config.common.field.BooleanField;
-import fathertoast.crust.api.config.common.field.IntField;
-import fathertoast.crust.api.config.common.field.RestartNote;
+import fathertoast.crust.api.config.common.field.*;
 
 public class RenderSettingsCrustConfig extends AbstractConfigFile {
     
     public final Misc MISC;
-    public final BlockEntityBBRendering BLOCK_ENTITY_BB_RENDERING;
+    public final BlockEntityShapes BLOCK_ENTITY_SHAPES;
+    public final EntityShapes ENTITY_SHAPES;
     
     /**
      * @param cfgManager The mod's config manager.
@@ -21,7 +20,8 @@ public class RenderSettingsCrustConfig extends AbstractConfigFile {
                 "Misc. settings for in-world rendering related features." );
         
         MISC = new Misc( this, "misc" );
-        BLOCK_ENTITY_BB_RENDERING = new BlockEntityBBRendering( this, "block_entity_BB_rendering" );
+        BLOCK_ENTITY_SHAPES = new BlockEntityShapes( this, "block_entity_debug_shapes" );
+        ENTITY_SHAPES = new EntityShapes( this, "entity_debug_shapes" );
     }
     
     public static class Misc extends AbstractConfigCategory<RenderSettingsCrustConfig> {
@@ -38,18 +38,17 @@ public class RenderSettingsCrustConfig extends AbstractConfigFile {
         }
     }
     
-    public static class BlockEntityBBRendering extends AbstractConfigCategory<RenderSettingsCrustConfig> {
+    public static class BlockEntityShapes extends AbstractConfigCategory<RenderSettingsCrustConfig> {
         
         public final BooleanField enabled;
         public final IntField distance;
         
-        BlockEntityBBRendering( RenderSettingsCrustConfig parent, String category ) {
-            super( parent, category, "Options for Crust's block entity bounding box renderer." );
+        BlockEntityShapes( RenderSettingsCrustConfig parent, String category ) {
+            super( parent, category, "Options for Crust's block entity debug bounding box renderer." );
             
             enabled = SPEC.define( new BooleanField( "enabled", true,
-                    "If true, block entities close to the player that support Crust's bounding box " +
-                            "outline rendering will draw their boxes if 'show entity hitboxes' is active.",
-                    "This is primarily a debug feature." ) );
+                    "If true, block entities close to the player that support Crust's debug bounding box " +
+                            "rendering will draw their boxes while 'show entity hitboxes' (F3+B) is active." ) );
             
             SPEC.newLine();
             
@@ -58,6 +57,27 @@ public class RenderSettingsCrustConfig extends AbstractConfigFile {
                             "'radius' in chunks around the player in which Crust will look for block entities to " +
                             "render bounding boxes for. A value of 1 means only the chunk the player is standing in. " +
                             "This value is also capped by the effective render distance." ) );
+        }
+    }
+    
+    public static class EntityShapes extends AbstractConfigCategory<RenderSettingsCrustConfig> {
+        
+        public final BooleanField enabled;
+        public final DoubleField distanceSqr;
+        
+        EntityShapes( RenderSettingsCrustConfig parent, String category ) {
+            super( parent, category, "Options for Crust's entity debug bounding box renderer." );
+            
+            enabled = SPEC.define( new BooleanField( "enabled", true,
+                    "If true, entities close to the player that support Crust's debug bounding box " +
+                            "rendering will draw their boxes while 'show entity hitboxes' (F3+B) is active." ) );
+            
+            SPEC.newLine();
+            
+            distanceSqr = SPEC.define( new SqrDoubleField( "distance", 48.0, DoubleField.Range.NON_NEGATIVE,
+                    "If entity bounding box rendering is enabled, this value determines the maximum " +
+                            "distance from the player in which Crust will look for entities to render bounding " +
+                            "boxes for. This value is also capped by the effective render distance." ) );
         }
     }
 }

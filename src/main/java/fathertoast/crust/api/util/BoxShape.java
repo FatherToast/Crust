@@ -1,50 +1,180 @@
-package fathertoast.crust.api.util;
+package fathertoast.crust.api.util; // TODO move to util.shape in MC versions beyond 1.20.1
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.core.BlockPos;
+import fathertoast.crust.api.ICrustApi;
+import fathertoast.crust.api.util.shape.AbstractColoredShape;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nullable;
-
-public class BoxShape extends ColoredShape {
+public class BoxShape extends AbstractColoredShape {
     
-    protected AABB box;
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "box" );
+    
+    public static final AABB NO_BB = new AABB( 0, 0, 0, 0, 0, 0 );
+    
+    private AABB bounds = NO_BB;
+    
+    public BoxShape() { }
+    
+    public BoxShape( double width, double height ) { this( width, height, width ); }
+    
+    public BoxShape( double sizeX, double sizeY, double sizeZ ) {
+        withBounds( NO_BB.inflate( sizeX / 2.0, sizeY / 2.0, sizeZ / 2.0 ) );
+    }
+    
+    /** A box shape that matches the entity's bounding box. */
+    public BoxShape( Entity entity ) {
+        final Vec3 pos = entity.position();
+        final float hw = entity.getBbWidth() / 2.0F;
+        withBounds( pos.x() - hw, pos.y(), pos.z() - hw,
+                pos.x() + hw, pos.y() + entity.getBbHeight(), pos.z() + hw );
+    }
+    
+    /**  */
+    public BoxShape( AABB boundingBox ) { withBounds( boundingBox ); }
     
     public BoxShape( double minX, double minY, double minZ, double maxX, double maxY, double maxZ ) {
-        this( new AABB( minX, minY, minZ, maxX, maxY, maxZ ) );
+        withBounds( minX, minY, minZ, maxX, maxY, maxZ );
     }
     
-    public BoxShape( double minX, double minY, double minZ, double maxX, double maxY, double maxZ, float a ) {
-        this( new AABB( minX, minY, minZ, maxX, maxY, maxZ ), a );
-    }
-    
-    public BoxShape( double minX, double minY, double minZ, double maxX, double maxY, double maxZ,
-                     float a, float r, float g, float b ) {
-        this( new AABB( minX, minY, minZ, maxX, maxY, maxZ ),
-                a, r, g, b );
-    }
-    
-    public BoxShape( AABB boundingBox ) { this( boundingBox, 1.0F ); }
-    
-    public BoxShape( AABB boundingBox, float a ) { this( boundingBox, a, 0.0F, 1.0F, 0.0F ); }
-    
-    public BoxShape( AABB boundingBox, float a, float r, float g, float b ) {
-        super( a, r, g, b );
-        box = boundingBox;
-    }
-    
+    /**
+     * @return The id that this shape is registered to. Generally, each non-abstract
+     * shape class should override this method and return its own unique id.
+     */
     @Override
-    public void renderShape (PoseStack poseStack, @Nullable BlockPos pos, Vec3 cameraPos, VertexConsumer buffer ) {
-        LevelRenderer.renderLineBox( poseStack, buffer, box,
-                red, green, blue, alpha );
+    public ResourceLocation getId() { return ID; }
+    
+    /** @return The bounds of this shape. */
+    public AABB bounds() { return bounds; }
+    
+    /** Sets the bounds of this shape and returns it. */
+    public BoxShape withBounds( AABB boundingBox ) {
+        bounds = boundingBox;
+        return this;
     }
-
-    public void setBounds( double minX, double minY, double minZ, double maxX, double maxY, double maxZ ) {
-        box.setMinX( minX ); box.setMaxX( maxX );
-        box.setMinY( minY ); box.setMaxY( maxY );
-        box.setMinZ( minZ ); box.setMaxZ( maxZ );
+    
+    /** Sets the bounds of this shape and returns it. */
+    public BoxShape withBounds( double minX, double minY, double minZ, double maxX, double maxY, double maxZ ) {
+        return withBounds( new AABB(
+                minX, minY, minZ,
+                maxX, maxY, maxZ ) );
+    }
+    
+    /** @return This shape's position (center of the box). */
+    @Override // to align with the setter behavior
+    public Vec3 pos() { return bounds().getCenter(); }
+    
+    /** Sets this shape's position and returns it; the box is set to be centered on the new position. */
+    @Override
+    public BoxShape withPos( double x, double y, double z ) {
+        double dX = (bounds.maxX - bounds.minX) / 2.0;
+        double dY = (bounds.maxY - bounds.minY) / 2.0;
+        double dZ = (bounds.maxZ - bounds.minZ) / 2.0;
+        return withBounds( x - dX, y - dY, z - dZ,
+                x + dX, y + dY, z + dZ );
+    }
+    
+    /** Sets this shape's position and returns it; the box is set to be centered on the new position. */
+    @Override
+    public BoxShape withPos( Vec3 pos ) { return withPos( pos.x(), pos.y(), pos.z() ); }
+    
+    /** Writes this shape to nbt. Called to serialize this shape to send to clients. */
+    @Override
+    public void serialize( CompoundTag shapeTag ) {
+        super.serialize( shapeTag );
+        // We overwrite the x,y,z position with our min bounds, since bounds are already in world space
+        shapeTag.putDouble( "x", bounds.minX );
+        shapeTag.putDouble( "y", bounds.minY );
+        shapeTag.putDouble( "z", bounds.minZ );
+        shapeTag.putDouble( "x2", bounds.maxX );
+        shapeTag.putDouble( "y2", bounds.maxY );
+        shapeTag.putDouble( "z2", bounds.maxZ );
+    }
+    
+    /**
+     * Loads this shape from nbt. Called to deserialize data received from the
+     * server after being generated by its registered factory.
+     */
+    @Override
+    public void deserialize( CompoundTag shapeTag ) {
+        super.deserialize( shapeTag );
+        bounds = new AABB(
+                shapeTag.getDouble( "x" ),
+                shapeTag.getDouble( "y" ),
+                shapeTag.getDouble( "z" ),
+                shapeTag.getDouble( "x2" ),
+                shapeTag.getDouble( "y2" ),
+                shapeTag.getDouble( "z2" ) );
+    }
+    
+    
+    // ---- Builder-Type Methods ---- //
+    
+    /** Sets the alpha (opacity) of this shape (0 to 1) and returns it. */
+    @Override
+    public BoxShape withAlpha( float a ) {
+        super.withAlpha( a );
+        return this;
+    }
+    
+    /** Sets the red portion of this shape's color (0 to 1) and returns it. */
+    @Override
+    public BoxShape withRed( float r ) {
+        super.withRed( r );
+        return this;
+    }
+    
+    /** Sets the green portion of this shape's color (0 to 1) and returns it. */
+    @Override
+    public BoxShape withGreen( float g ) {
+        super.withGreen( g );
+        return this;
+    }
+    
+    /** Sets the blue portion of this shape's color (0 to 1) and returns it. */
+    @Override
+    public BoxShape withBlue( float b ) {
+        super.withBlue( b );
+        return this;
+    }
+    
+    /** Sets the color and alpha (opacity) of this shape (0.0 - 1.0) and returns it. The shape will be fully opaque. */
+    @Override
+    public BoxShape withColor( float r, float g, float b ) {
+        super.withColor( r, g, b );
+        return this;
+    }
+    
+    /** Sets the color and alpha (opacity) of this shape (0.0 - 1.0) and returns it. */
+    @Override
+    public BoxShape withColor( float a, float r, float g, float b ) {
+        super.withColor( a, r, g, b );
+        return this;
+    }
+    
+    /**
+     * Sets the color and alpha (opacity) of this shape and returns it.
+     * Accepts both RGB and ARGB color ints - as a side effect, this does not allow setting alpha to 0.
+     */
+    @Override
+    public BoxShape withColor( int color ) {
+        super.withColor( color );
+        return this;
+    }
+    
+    /** Sets the color and alpha (opacity) of this shape and returns it. The shape will be fully opaque. */
+    @Override
+    public BoxShape withRGB( int rgb ) {
+        super.withRGB( rgb );
+        return this;
+    }
+    
+    /** Sets the color and alpha (opacity) of this shape and returns it. */
+    @Override
+    public BoxShape withARGB( int argb ) {
+        super.withARGB( argb );
+        return this;
     }
 }

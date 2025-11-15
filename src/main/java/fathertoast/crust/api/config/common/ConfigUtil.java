@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.common;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +23,7 @@ import java.util.Locale;
 public final class ConfigUtil {
     
     /** Logger instance for the Crust Config API. */
-    public static final Logger LOG = LogManager.getLogger( "crust/configs" );
+    public static final Logger LOG = LogManager.getLogger( ICrustApi.MOD_ID + "/configs" );
     
     /** The plus or minus symbol (+/-). */
     public static final String PLUS_OR_MINUS = "\u00b1";

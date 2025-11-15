@@ -44,7 +44,7 @@ public class Crust {
      *              + dimension ID based sub-lists
      *  - helpers
      *      - advancement load event
-     *      - tile entity bounding box renderer
+     *      - shape renderer (block entity, entity)
      *      - portal registry
      *      - data gen
      *          - loot table

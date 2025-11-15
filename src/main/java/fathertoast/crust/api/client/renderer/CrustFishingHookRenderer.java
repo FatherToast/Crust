@@ -84,7 +84,7 @@ public class CrustFishingHookRenderer<T extends CrustFishingHook> extends Entity
     public static void quadVertex( VertexConsumer vertexConsumer, Matrix4f pose, Matrix3f normal, int packedLight,
                                    float dX, float dY, int u, int v ) {
         vertexConsumer.vertex( pose, dX - 0.5F, dY - 0.5F, 0.0F )
-                .color( 255, 255, 255, 255 ) // RGBA - white is no tint
+                .color( 0xFF, 0xFF, 0xFF, 0xFF ) // RGBA - white is no tint
                 .uv( u, v ).overlayCoords( OverlayTexture.NO_OVERLAY ).uv2( packedLight )
                 .normal( normal, 0.0F, 1.0F, 0.0F ).endVertex();
     }
@@ -122,7 +122,7 @@ public class CrustFishingHookRenderer<T extends CrustFishingHook> extends Entity
         normalZ /= sqRoot;
         
         vertexConsumer.vertex( pose.pose(), vertX, vertY, vertZ )
-                .color( 0, 0, 0, 255 )
+                .color( 0x00, 0x00, 0x00, 0xFF )
                 .normal( pose.normal(), normalX, normalY, normalZ )
                 .endVertex();
     }

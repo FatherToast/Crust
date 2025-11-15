@@ -2,9 +2,15 @@ package fathertoast.crust.client;
 
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.client.renderer.CrustFishingHookRenderer;
+import fathertoast.crust.api.client.util.shape.*;
 import fathertoast.crust.api.config.client.ClientConfigUtil;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.lib.CrustObjects;
+import fathertoast.crust.api.util.BoxShape;
+import fathertoast.crust.api.util.shape.CircleShape;
+import fathertoast.crust.api.util.shape.CylinderShape;
+import fathertoast.crust.api.util.shape.QuadShape;
+import fathertoast.crust.api.util.shape.SphereShape;
 import fathertoast.crust.client.config.CfgEditorCrustConfig;
 import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
 import fathertoast.crust.client.config.RenderSettingsCrustConfig;
@@ -49,10 +55,11 @@ public final class ClientRegister {
                     ResourceLocation.withDefaultNamespace( "cast" ), new FishingRodItemPropertyGetter() ) );
         }
         
+        // Register our debug shape renderers
+        registerShapeRenderers();
+        
         // Tell Forge to open the config editor when our mod's "Config" button is clicked in the Mods screen
         ClientConfigUtil.registerConfigButtonAsEditScreen();
-        
-        //IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
     }
     
     /** Registers this mod's additional key bindings. */
@@ -63,10 +70,18 @@ public final class ClientRegister {
     
     /** Registers this mod's entity renderers. */
     @SubscribeEvent
-    public static void registerEntityRenderers( EntityRenderersEvent.RegisterRenderers event ) {
+    static void registerEntityRenderers( EntityRenderersEvent.RegisterRenderers event ) {
         event.registerEntityRenderer( CrustObjects.Entities.FISH_HOOK.get(), CrustFishingHookRenderer::new );
     }
     
+    /** Registers this mod's debug shape renderers. */
+    private static void registerShapeRenderers() {
+        DebugShapeRenderManager.register( BoxShape::new, new BoxShapeRenderer() );
+        DebugShapeRenderManager.register( QuadShape::new, new QuadShapeRenderer() );
+        DebugShapeRenderManager.register( CircleShape::new, new CircleShapeRenderer() );
+        DebugShapeRenderManager.register( SphereShape::new, new SphereShapeRenderer() );
+        DebugShapeRenderManager.register( CylinderShape::new, new CylinderShapeRenderer() );
+    }
     
     // Static listener, no instantiation
     private ClientRegister() { }

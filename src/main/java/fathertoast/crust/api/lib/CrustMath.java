@@ -1,23 +1,19 @@
 package fathertoast.crust.api.lib;
 
 
-import net.minecraft.util.Mth;
-
 @SuppressWarnings( "unused" )
 public final class CrustMath {
     
     // ---- COLOR METHODS ---- //
     
-    /** @return The separate RGB float values (0.0-1.0) combined into a single ARGB color int with no alpha. */
+    /** @return The separate RGB float values (0.0 - 1.0) combined into a single ARGB color int with no alpha. */
     public static int toRGB( float r, float g, float b ) {
-        return bitsToRGB( Mth.ceil( r * 0xFF ), Mth.ceil( g * 0xFF ),
-                Mth.ceil( b * 0xFF ) );
+        return bitsToRGB( getBits( r ), getBits( g ), getBits( b ) );
     }
     
-    /** @return The separate ARGB float values (0.0-1.0) combined into a single ARGB color int. */
+    /** @return The separate ARGB float values (0.0 - 1.0) combined into a single ARGB color int. */
     public static int toARGB( float a, float r, float g, float b ) {
-        return bitsToARGB( Mth.ceil( a * 0xFF ), Mth.ceil( r * 0xFF ),
-                Mth.ceil( g * 0xFF ), Mth.ceil( b * 0xFF ) );
+        return bitsToARGB( getBits( a ), getBits( r ), getBits( g ), getBits( b ) );
     }
     
     /** @return The separate RGB values (0x00 - 0xFF) combined into a single ARGB color int with no alpha. */
@@ -39,16 +35,22 @@ public final class CrustMath {
     public static int getAlphaBits( int color ) { return color >> 24 & 0xFF; }
     
     /** @return The red portion of an ARGB color int. Returned value will be in the range 0.0 - 1.0. */
-    public static float getRed( int color ) { return (float) getRedBits( color ) / 0xFF; }
+    public static float getRed( int color ) { return getFloat( getRedBits( color ) ); }
     
     /** @return The green portion of an ARGB color int. Returned value will be in the range 0.0 - 1.0. */
-    public static float getGreen( int color ) { return (float) getGreenBits( color ) / 0xFF; }
+    public static float getGreen( int color ) { return getFloat( getGreenBits( color ) ); }
     
     /** @return The blue portion of an ARGB color int. Returned value will be in the range 0.0 - 1.0. */
-    public static float getBlue( int color ) { return (float) getBlueBits( color ) / 0xFF; }
+    public static float getBlue( int color ) { return getFloat( getBlueBits( color ) ); }
     
     /** @return The alpha (opacity) portion of an ARGB color int. Returned value will be in the range 0.0 - 1.0. */
-    public static float getAlpha( int color ) { return (float) getAlphaBits( color ) / 0xFF; }
+    public static float getAlpha( int color ) { return getFloat( getAlphaBits( color ) ); }
+    
+    /** @return The color float value (0.0 - 1.0) converted to bits (0x00 - 0xFF). */
+    public static int getBits( float v ) { return (int) (v * 0xFF); }
+    
+    /** @return The color bits (0x00 - 0xFF) converted to a float value (0.0 - 1.0). */
+    public static float getFloat( int bits ) { return (float) bits / 0xFF; }
     
     
     // Utility class

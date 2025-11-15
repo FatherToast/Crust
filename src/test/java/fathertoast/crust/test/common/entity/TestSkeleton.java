@@ -2,7 +2,11 @@ package fathertoast.crust.test.common.entity;
 
 import fathertoast.crust.api.entity.CrustFishingHook;
 import fathertoast.crust.api.entity.IAngler;
+import fathertoast.crust.api.util.IDebugShapeProvider;
+import fathertoast.crust.api.util.shape.CircleShape;
+import fathertoast.crust.api.util.IDebugShape;
 import fathertoast.crust.test.common.TestCrust;
+import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
@@ -20,7 +24,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class TestSkeleton extends AbstractSkeleton implements IAngler {
+import java.util.List;
+
+public class TestSkeleton extends AbstractSkeleton implements IAngler, IDebugShapeProvider {
     private final Goal fishGoal = new TestRangedAttackGoal<>( this, 1.0, 20, 15.0F );
     
     public TestSkeleton( EntityType<? extends TestSkeleton> type, Level level ) {
@@ -90,4 +96,17 @@ public class TestSkeleton extends AbstractSkeleton implements IAngler {
      */
     @Override // IAngler
     public Vec3 getLinePos( float partialTick ) { return IAngler.getBipedLinePos( this, partialTick ); }
+    
+    
+    // ---- IDebugShapeProvider Implementation ---- //
+    
+    @Nullable
+    @Override // IDebugShapeProvider
+    public List<IDebugShape> getDebugShapes() {
+        List<IDebugShape> debugShapes = IDebugShapeProvider.fromBBs( 0x0000FF, getBoundingBox().inflate( 1.0 ) );
+        //debugShapes.add( new BoxShape( this ).withPos( 0, 2, 0 ).withColor( 0xFFFF00 ) );
+        debugShapes.add( new CircleShape( Direction.Axis.Y, 0.5F )
+                .withPos( 0, 2.1, 0 ).withColor( 0xFFFF00 ) ); // Blessed be thy fishington
+        return debugShapes;
+    }
 }
