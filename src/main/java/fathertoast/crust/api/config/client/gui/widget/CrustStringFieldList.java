@@ -57,13 +57,6 @@ public class CrustStringFieldList extends SearchableSelectionList<CrustStringFie
     /** The amount of entries this list contained when first created. */
     private final int initialEntryCount;
     
-    /**
-     * True if any of this list's entries don't meet
-     * the criteria of this list's validator. If this
-     * list's validator is null, this does not matter.
-     */
-    private boolean hasInvalidEntries;
-    
     /** True if any entries have been changed since opening. */
     private boolean changed;
     
@@ -148,7 +141,6 @@ public class CrustStringFieldList extends SearchableSelectionList<CrustStringFie
         
         private final String INITIAL_VALUE;
         
-        private boolean valid = true;
         private boolean changed;
         
         public Entry( CrustStringFieldList parent, String value ) {
@@ -163,12 +155,10 @@ public class CrustStringFieldList extends SearchableSelectionList<CrustStringFie
             if( PARENT.validator != null ) {
                 EDIT_BOX.setResponder( ( val ) -> {
                     if( val == null || !PARENT.validator.test( val ) ) {
-                        valid = false;
                         EDIT_BOX.setTextColor( IConfigFieldWidgetProvider.INVALID_COLOR );
                         clearValue();
                     }
                     else {
-                        valid = true;
                         EDIT_BOX.setTextColor( IConfigFieldWidgetProvider.DEFAULT_COLOR );
                         updateValue( val );
                     }
@@ -189,6 +179,10 @@ public class CrustStringFieldList extends SearchableSelectionList<CrustStringFie
                 PARENT.changed = true;
                 PARENT.updateChangedState();
                 PARENT.rerunSearch();
+                
+                if( !PARENT.children().isEmpty() ) {
+                    PARENT.setScrollAmount( PARENT.getScrollAmount() );
+                }
             } );
         }
         

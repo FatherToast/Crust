@@ -150,12 +150,11 @@ public class Searchbar extends EditBox {
     public void search( String value, boolean forceSearch ) {
         // No point in doing anything if the
         // search value didn't change, unless we are forcing a search.
-        if( !forceSearch && value.equals( lastSearch ) )
+        if( value.equals( lastSearch ) && !forceSearch )
             return;
         
         // Update last search.
         lastSearch = value;
-        
         
         previousCandidate.active = false;
         previousCandidate.visible = false;

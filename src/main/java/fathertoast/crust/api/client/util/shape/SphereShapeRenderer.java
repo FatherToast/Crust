@@ -1,4 +1,3 @@
-
 package fathertoast.crust.api.client.util.shape;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -13,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Renderer for a circle shape. Semi-well rounded.
+ * Renderer for a spherical shape.
  */
 public class SphereShapeRenderer implements IDebugShapeRenderer<SphereShape> {
     
