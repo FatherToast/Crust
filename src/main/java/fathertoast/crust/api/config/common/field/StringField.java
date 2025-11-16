@@ -59,9 +59,7 @@ public class StringField extends GenericField<String> {
     
     /** @return This string field's value validator. Can be null. */
     @Nullable
-    public Predicate<String> getValidator() {
-        return validator;
-    }
+    public Predicate<String> getValidator() { return validator; }
     
     /** @return This field's gui component provider. */
     @Override

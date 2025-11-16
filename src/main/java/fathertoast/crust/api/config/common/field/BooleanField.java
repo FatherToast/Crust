@@ -43,43 +43,27 @@ public class BooleanField extends AbstractConfigField {
      */
     @Override
     public void load( @Nullable Object raw ) {
-        Object newValue;
-        if( raw instanceof String ) {
-            ConfigUtil.infoFor( this );
-            ConfigUtil.LOG.info( "Unboxing string value \"{}\" to a different primitive.", raw );
-            newValue = TomlHelper.parseStringPrimitive( (String) raw );
-        }
-        else {
-            newValue = raw;
-        }
-        
-        if( newValue instanceof Boolean ) {
-            value = (Boolean) newValue;
-        }
-        else if( newValue instanceof Number ) {
-            final double newNumberValue = ((Number) newValue).doubleValue();
-            value = newNumberValue != 0.0; // 0 is false, anything else is true
-            
-            ConfigUtil.warnFor( this );
-            ConfigUtil.LOG.warn( "Numerical value given for boolean! Converting value {} to {}.", raw, value );
-        }
-        else {
-            if( newValue != null ) {
+        Boolean newValue = TomlHelper.readAsBoolean( this, raw );
+        if( newValue == null ) {
+            if( raw != null ) {
                 ConfigUtil.warnFor( this );
-                ConfigUtil.LOG.warn( "Invalid boolean! Falling back to default ({}). Invalid value: {}", valueDefault, raw );
+                ConfigUtil.LOG.warn( "Invalid boolean! Falling back to default ({}). Invalid value: {}",
+                        valueDefault, raw );
             }
             value = valueDefault;
+        }
+        else {
+            value = newValue;
         }
     }
     
     /** @return The value that should be assigned to this field in the config file. */
     @Override
-    @Nullable
-    public Object getValue() { return value; }
+    public Boolean getValue() { return value; }
     
     /** @return The default value of this field. */
     @Override
-    public Object getDefaultValue() { return valueDefault; }
+    public Boolean getDefaultValue() { return valueDefault; }
     
     /** @return This field's gui component provider. */
     @Override

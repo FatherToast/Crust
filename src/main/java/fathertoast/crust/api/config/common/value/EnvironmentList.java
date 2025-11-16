@@ -1,7 +1,6 @@
 package fathertoast.crust.api.config.common.value;
 
 import fathertoast.crust.api.config.common.field.DoubleField;
-import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.lib.EnvironmentHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -42,7 +41,7 @@ public class EnvironmentList implements IStringArray {
     
     /** @return A string representation of this object. */
     @Override
-    public String toString() { return TomlHelper.toLiteral( toStringList().toArray() ); }
+    public String toString() { return toTomlLiteral(); }
     
     /** @return Returns true if this object has the same value as another object. */
     @Override
@@ -155,7 +154,7 @@ public class EnvironmentList implements IStringArray {
     
     /** @return The maximum value that can be given to entry values. */
     public double getMaxValue() { return maxValue; }
-
+    
     /** @return True if this list hold no condition entries. */
     public boolean isEmpty() {
         return ENTRIES.length == 0;

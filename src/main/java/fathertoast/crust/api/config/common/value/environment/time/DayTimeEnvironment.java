@@ -22,8 +22,10 @@ public class DayTimeEnvironment extends EnumEnvironment<DayTimeEnvironment.Value
         }
         
         public boolean matches( int dayTime ) {
+            // If time interval does not cross midnight, simply check if day time is within the interval
             if( START < END ) return START <= dayTime && dayTime < END;
-            return START <= dayTime || dayTime < END; // Handle day wrapping
+            // Otherwise, check if the day time is outside the interval instead
+            return dayTime < END || START <= dayTime;
         }
     }
     
@@ -34,6 +36,6 @@ public class DayTimeEnvironment extends EnumEnvironment<DayTimeEnvironment.Value
     /** @return Returns true if this environment matches the provided environment. */
     @Override
     public boolean matches( Level level, @Nullable BlockPos pos ) {
-        return (VALUE.matches( (int) (level.dayTime() % 24_000L) )) != INVERT;
+        return VALUE.matches( (int) (level.dayTime() % 24_000L) ) != INVERT;
     }
 }

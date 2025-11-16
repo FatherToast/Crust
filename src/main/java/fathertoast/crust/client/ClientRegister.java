@@ -50,7 +50,7 @@ public final class ClientRegister {
         RENDER_SETTINGS.SPEC.initialize();
         
         // Inject our own fishing rod animation
-        if( RENDER_SETTINGS.MISC.fancyFishing.get() ) {
+        if( RENDER_SETTINGS.fancyFishing.get() ) {
             event.enqueueWork( () -> ItemProperties.register( Items.FISHING_ROD,
                     ResourceLocation.withDefaultNamespace( "cast" ), new FishingRodItemPropertyGetter() ) );
         }

@@ -1,11 +1,14 @@
 package fathertoast.crust.api.config.common.file;
 
-import com.electronwill.nightconfig.core.NullObject;
 import com.electronwill.nightconfig.core.utils.StringUtils;
 import fathertoast.crust.api.config.common.ConfigUtil;
+import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.DoubleField;
 import fathertoast.crust.api.config.common.field.IntField;
-import fathertoast.crust.api.config.common.value.IStringArray;
+import fathertoast.crust.api.config.common.value.ITomlDoubleValue;
+import fathertoast.crust.api.config.common.value.ITomlIntValue;
+import fathertoast.crust.api.config.common.value.ITomlValue;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -13,49 +16,113 @@ import java.util.*;
 @SuppressWarnings( "unused" )
 public final class TomlHelper {
     
-    /** While positive, integers are written in hex with this many minimum digits. */
-    public static int HEX_MODE = 0; // TODO make this non-static somehow
+    // ---- Key Helpers ---- //
     
-    /** Attempts to convert a toml literal to a string list. May or may not be accurate. */
-    public static List<String> parseStringList( Object value ) {
-        final List<String> list = new ArrayList<>();
-        if( value instanceof List ) {
-            // Get all values from the list
-            for( Object entry : (List<?>) value ) {
-                if( entry != null ) {
-                    list.add( entry.toString() );
-                }
-            }
-        }
-        else {
-            // Read non-list as a single item list
-            list.add( toLiteral( value ) );
-        }
-        return list;
+    /** @return The resource location as a string, stripped of any characters disallowed for TOML bare dotted keys. */
+    public static String toBareKey( ResourceLocation resLoc ) {
+        // Only char in resource locations that is invalid is '/', which is only allowed in the path
+        return resLoc.getNamespace() + "." + resLoc.getPath().replace( '/', '.' );
     }
     
-    /** @return The hex int string parsed to an integer, or null the parse fails. */
+    /** @return True if the string is allowed as a TOML bare dotted key (A-Za-z0-9_-.). */
+    public static boolean isValidBareKey( String key ) {
+        for( int i = 0; i < key.length(); i++ ) {
+            if( !isValidBareKeyChar( key.charAt( i ) ) ) return false;
+        }
+        return true;
+    }
+    
+    /** @return True if the character is allowed in a TOML bare dotted key (A-Za-z0-9_-.). */
+    public static boolean isValidBareKeyChar( char c ) {
+        return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '.' || c == '_' || c == '-' || c >= '0' && c <= '9';
+    }
+    
+    
+    /** Splits a TOML dotted key into a path. */
+    public static List<String> splitKey( String key ) { return StringUtils.split( key, '.' ); }
+    
+    /** Combines a path into a TOML dotted key. */
+    public static String mergePath( @Nullable List<String> path ) {
+        if( path == null || path.isEmpty() ) return "";
+        StringBuilder key = new StringBuilder();
+        Iterator<String> itr = path.listIterator();
+        if( itr.hasNext() ) while( true ) {
+            key.append( itr.next() );
+            if( itr.hasNext() ) key.append( '.' );
+            else break;
+        }
+        return key.toString();
+    }
+    
+    
+    // ---- Parsing Helpers ---- //
+    
+    /** @return The object as a string, or null if it cannot be. */
     @Nullable
-    public static Integer parseHexInt( @Nullable String value ) {
-        if( value != null ) {
-            try {
-                return Integer.parseUnsignedInt( value, 16 );
+    public static String readAsString( @Nullable AbstractConfigField field, @Nullable Object raw ) {
+        return raw == null ? null : raw.toString();
+    }
+    
+    /** @return The object as a non-string TOML primitive type, or null if it cannot be. */
+    @Nullable
+    public static Object readAsPrimitive( @Nullable AbstractConfigField field, @Nullable Object raw ) {
+        if( raw instanceof String stringValue ) {
+            if( field != null ) {
+                ConfigUtil.infoFor( field );
+                ConfigUtil.LOG.info( "Unboxing string value \"{}\" to a different primitive.", raw );
             }
-            catch( NumberFormatException ex ) {
-                // This is okay; string was not a hex int
+            return parseStringPrimitive( stringValue );
+        }
+        return raw;
+    }
+    
+    /** @return The object as a number, or null if it cannot be. */
+    @Nullable
+    public static Number readAsNumber( @Nullable AbstractConfigField field, @Nullable Object raw ) {
+        return asNumber( readAsPrimitive( field, raw ) );
+    }
+    
+    /** @return The object as a boolean, or null if it cannot be. */
+    @Nullable
+    public static Boolean readAsBoolean( @Nullable AbstractConfigField field, @Nullable Object raw ) {
+        Object value = readAsPrimitive( field, raw );
+        if( value instanceof Boolean booleanValue ) return booleanValue;
+        if( value instanceof Number numberValue ) {
+            boolean newValue = !(numberValue.doubleValue() == 0.0); // 0 is false, anything else is true
+            if( field != null ) {
+                ConfigUtil.infoFor( field );
+                ConfigUtil.LOG.info( "Numerical value given for boolean! Converting value {} to {}.",
+                        value, newValue );
             }
+            return newValue;
         }
         return null;
     }
     
-    /** @return The enum value's string representation, as used by configs. */
-    public static String enumToString( Enum<?> value ) { return value.name().toLowerCase(); }
+    /** @return The object as a list of strings, or null if it cannot be. */
+    @Nullable
+    public static List<String> readAsStringList( @Nullable AbstractConfigField field, @Nullable Object raw ) {
+        return raw == null ? null : parseStringList( raw );
+    }
+    
+    /** @return The object as a list of numbers, or null if it cannot be. */
+    @Nullable
+    public static List<Number> readAsNumberList( @Nullable AbstractConfigField field, @Nullable Object raw ) {
+        return raw == null ? null : parseNumberList( field, raw );
+    }
+    
+    /** @return The object as a list of booleans, or null if it cannot be. */
+    @Nullable
+    public static List<Boolean> readAsBooleanList( @Nullable AbstractConfigField field, @Nullable Object raw ) {
+        return raw == null ? null : parseBooleanList( field, raw );
+    }
+    
     
     /** @return The object cast to number, or null if it cannot be. */
     @Nullable
     public static Number asNumber( @Nullable Object raw ) { return raw instanceof Number ? (Number) raw : null; }
     
-    /** @return The string parsed to a number, or null the parse fails. */
+    /** @return The string parsed to a number, or null if the parse fails. */
     @Nullable
     public static Number parseNumber( @Nullable String value ) { return asNumber( parseStringPrimitive( value ) ); }
     
@@ -63,14 +130,15 @@ public final class TomlHelper {
     @Nullable
     public static Boolean asBoolean( @Nullable Object raw ) { return raw instanceof Boolean ? (Boolean) raw : null; }
     
-    /** @return The string parsed to a boolean, or null the parse fails. */
+    /** @return The string parsed to a boolean, or null if the parse fails. */
     @Nullable
     public static Boolean parseBoolean( @Nullable String value ) { return asBoolean( parseStringPrimitive( value ) ); }
     
-    /** Attempts to convert a string value to a raw toml primitive type. May or may not be accurate. */
+    /** @return The string parsed to a non-string TOML primitive type, or null if the parse fails. */
+    @Nullable
     public static Object parseStringPrimitive( @Nullable String value ) {
         if( value != null && !value.isEmpty() ) {
-            // Try to parse as a numerical value
+            // Try to parse as a numerical value (long or double)
             try {
                 return Long.parseLong( value );
             }
@@ -91,85 +159,265 @@ public final class TomlHelper {
             }
         }
         // Null or failed to parse string
-        return NullObject.NULL_OBJECT;
+        return null;
     }
     
-    /** @return True if the two objects result in equivalent toml literals. */
+    /** @return The hex int string (without "0x" prefix) parsed to an integer, or null if the parse fails. */
+    @Nullable
+    public static Integer parseHexInt( @Nullable String value ) {
+        if( value != null ) {
+            try {
+                return Integer.parseUnsignedInt( value, 16 );
+            }
+            catch( NumberFormatException ex ) {
+                // This is okay; string was not a hex int
+            }
+        }
+        return null;
+    }
+    
+    /** Attempts to convert a TOML literal to a list of strings. */
+    public static List<String> parseStringList( Object value ) {
+        final List<String> list = new ArrayList<>();
+        if( value instanceof List ) {
+            // Get all values from the list
+            for( Object entry : (List<?>) value ) {
+                if( entry != null ) list.add( entry.toString() );
+            }
+        }
+        else {
+            // Read non-list as a single item list
+            list.add( value.toString() );
+        }
+        return list;
+    }
+    
+    /** Attempts to convert a TOML literal to a list of numbers. */
+    public static List<Number> parseNumberList( @Nullable AbstractConfigField field, Object value ) {
+        final List<Number> list = new ArrayList<>();
+        if( value instanceof List ) {
+            // Get all values from the list
+            for( Object entry : (List<?>) value ) {
+                Number number = readAsNumber( field, entry );
+                if( number != null ) list.add( number );
+            }
+        }
+        else {
+            // Read non-list as a single item list
+            Number number = readAsNumber( field, value );
+            if( number != null ) list.add( number );
+        }
+        return list;
+    }
+    
+    /** Attempts to convert a TOML literal to a list of booleans. */
+    public static List<Boolean> parseBooleanList( @Nullable AbstractConfigField field, Object value ) {
+        final List<Boolean> list = new ArrayList<>();
+        if( value instanceof List ) {
+            // Get all values from the list
+            for( Object entry : (List<?>) value ) {
+                Boolean bool = readAsBoolean( field, entry );
+                if( bool != null ) list.add( bool );
+            }
+        }
+        else {
+            // Read non-list as a single item list
+            Boolean bool = readAsBoolean( field, value );
+            if( bool != null ) list.add( bool );
+        }
+        return list;
+    }
+    
+    
+    // ---- Writing Helpers ---- //
+    
+    /** @return True if the two objects result in equivalent TOML literals. */
     public static boolean equals( @Nullable Object valueA, @Nullable Object valueB ) {
         return Objects.equals( toLiteral( valueA ), toLiteral( valueB ) );
     }
     
-    /** Attempts to convert an object to a toml literal for the use of a comment. Prevents printing of excessively long lists. */
-    public static String toLiteralForComment( @Nullable Object value ) {
-        if( value instanceof IStringArray ) {
-            final List<String> list = ((IStringArray) value).toStringList();
-            if( list.size() > 10 ) {
-                String str = toLiteral( list.subList( 0, 9 ).toArray() );
-                return str.substring( 0, str.length() - 2 ) + ", ... ]";
-            }
-        }
-        return toLiteral( value );
-    }
     
-    /** Attempts to convert an object to a toml literal. May or may not be accurate. */
-    public static String toLiteral( @Nullable Object value ) {
+    /**
+     * Attempts to convert an object to a TOML literal for the use of a comment.
+     * Enables truncation of excessively long values.
+     */
+    public static String toLiteralForComment( @Nullable Object value ) { return toLiteral( value, true ); }
+    
+    /**
+     * Attempts to convert an object to a single-line TOML literal. Only compatible with the following objects:<p>
+     * * null (becomes the empty string)<p>
+     * * {@link String}s<p>
+     * * {@link Number}s<p>
+     * * {@link Boolean}s<p>
+     * * {@link Enum}s (as by {@link TomlHelper#enumToString(Enum)})<p>
+     * * {@link List}s<p>
+     * * Objects that implement {@link ITomlValue}<p>
+     * * Objects that override {@link Object#toString()} to provide a valid TOML literal<p>
+     *
+     * @param value The value to convert.
+     * @return The value, converted to a single-line TOML literal.
+     */
+    public static String toLiteral( @Nullable Object value ) { return toLiteral( value, false ); }
+    
+    /**
+     * Attempts to convert an object to a single-line TOML literal. Only compatible with the following objects:<p>
+     * * null (becomes the empty string)<p>
+     * * {@link String}s<p>
+     * * {@link Number}s<p>
+     * * {@link Boolean}s<p>
+     * * {@link Enum}s (as by {@link TomlHelper#enumToString(Enum)})<p>
+     * * {@link List}s<p>
+     * * Objects that implement {@link ITomlValue}<p>
+     * * Objects that override {@link Object#toString()} to provide a valid TOML literal<p>
+     *
+     * @param value      The value to convert.
+     * @param forComment If true, particularly long values (e.g., many-element lists) should be truncated.
+     * @return The value, converted to a single-line TOML literal.
+     */
+    public static String toLiteral( @Nullable Object value, boolean forComment ) {
         if( value == null ) {
-            return "";
+            return toBasicStringLiteral( null );
         }
-        else if( value instanceof List<?> ) {
-            return toLiteral( ((List<?>) value).toArray() );
+        else if( value instanceof ITomlValue tomlValue ) {
+            return tomlValue.toTomlLiteral( forComment );
         }
-        else if( value instanceof Enum<?> ) {
-            return "\"" + enumToString( (Enum<?>) value ) + "\"";
+        if( value instanceof String stringValue ) {
+            return toBasicStringLiteral( stringValue, forComment );
         }
-        else if( value instanceof String ) {
-            return "\"" + ((String) value).replace( "\"", "\\\"" ) + "\"";
+        else if( value instanceof List<?> listValue ) {
+            return toArrayLiteral( listValue, forComment );
         }
-        else if( HEX_MODE > 0 && value instanceof Integer ) {
-            String hex = Integer.toHexString( (Integer) value ).toUpperCase( Locale.ROOT );
-            if( HEX_MODE > hex.length() ) {
-                StringBuilder padding = new StringBuilder();
-                for( int i = HEX_MODE - hex.length(); i-- > 0; ) padding.append( '0' );
-                hex = padding + hex;
-            }
-            return "0x" + hex;
+        else if( value instanceof Enum<?> enumValue ) {
+            return toBasicStringLiteral( enumToString( enumValue ), forComment );
         }
-        // Infinite values not supported
-        //else if( value instanceof Double && ((Double) value).isInfinite() ) {
-        //    // Toml infinite literals do not match java
-        //    return (Double) value > 0.0 ? "Inf" : "-Inf";
+        // TOML special float values do not match java's Double#toString() - We do not support these
+        //else if( value instanceof Double || value instanceof Float ) {
+        //    double doubleValue = ((Number) value).doubleValue();
+        //    if( Double.isInfinite( doubleValue ) ) return doubleValue > 0.0 ? "inf" : "-inf";
+        //    else if( Double.isNaN( doubleValue ) ) return "nan";
         //}
-        else {
-            return value.toString();
-        }
+        // By default, assume the object's #toString() method returns its TOML literal; this
+        //  generally works for numerical and boolean values, but nothing else unless
+        //  #toString() is specifically overridden to return a valid TOML literal
+        return value.toString();
+        
     }
     
-    /** Attempts to convert an object array to a toml literal. May or may not be accurate. */
-    public static String toLiteral( @Nullable Object... values ) {
-        if( values == null ) {
-            return "";
+    /** @return The enum value's string representation, as used by configs. */
+    public static String enumToString( Enum<?> value ) { return value.name().toLowerCase(); }
+    
+    /** @return The value as a basic TOML string (surrounded by double quotes). */
+    public static String toBasicStringLiteral( @Nullable String value, boolean forComment ) {
+        if( forComment ) {
+            // Limit to 99 chars or less
+            String literal = toBasicStringLiteral( value );
+            if( literal.length() < 100 ) return literal;
+            return literal.substring( 0, 93 ) + " ... \"";
         }
-        if( values.length < 1 ) {
-            return "[]";
-        }
-        else {
-            return "[ " + toLiteralList( values ) + " ]";
-        }
+        return toBasicStringLiteral( value );
     }
     
-    /** Attempts to convert an object list to a list of toml literals. May or may not be accurate. */
+    /** @return The value as a basic TOML string (surrounded by double quotes). */
+    public static String toBasicStringLiteral( @Nullable String value ) {
+        if( value == null || value.isEmpty() ) return "\"\"";
+        StringBuilder literal = new StringBuilder( "\"" );
+        for( char c : value.toCharArray() ) {
+            // Escape allowable TOML escape chars (ignoring unicode), otherwise just append as normal
+            switch( c ) {
+                case '\b':
+                    literal.append( "\\b" );
+                    break;
+                case '\t':
+                    literal.append( "\\t" );
+                    break;
+                case '\n':
+                    literal.append( "\\n" );
+                    break;
+                case '\f':
+                    literal.append( "\\f" );
+                    break;
+                case '\r':
+                    literal.append( "\\r" );
+                    break;
+                case '\"':
+                    literal.append( "\\\"" );
+                    break;
+                case '\\':
+                    literal.append( "\\\\" );
+                    break;
+                default:
+                    literal.append( c );
+            }
+        }
+        return literal.append( "\"" ).toString();
+    }
+    
+    /** @return The value as a literal TOML string (surrounded by single quotes). */
+    public static String toLiteralStringLiteral( @Nullable String value, boolean forComment ) {
+        if( forComment ) {
+            // Limit to 99 chars or less
+            String literal = toLiteralStringLiteral( value );
+            if( literal.length() < 100 ) return literal;
+            return literal.substring( 0, 93 ) + " ... '";
+        }
+        return toLiteralStringLiteral( value );
+    }
+    
+    /** @return The value as a literal TOML string (surrounded by single quotes). */
+    public static String toLiteralStringLiteral( @Nullable String value ) {
+        if( value == null ) return "''";
+        if( value.contains( "'" ) )
+            throw new IllegalArgumentException( "Literal TOML strings may not contain single quotes (')!" );
+        return String.format( "'%s'", value );
+    }
+    
+    /** @return The list value as a TOML array literal. */
+    public static String toArrayLiteral( @Nullable List<?> value, boolean forComment ) {
+        if( forComment && value != null && value.size() > 10 ) {
+            // Limit to 9 elements or less
+            String literal = toArrayLiteral( value.subList( 0, 9 ) );
+            return literal.substring( 0, literal.length() - 2 ) + ", ... ]";
+        }
+        return toArrayLiteral( value );
+    }
+    
+    /** @return The array value as a TOML array literal. */
+    public static String toArrayLiteral( @Nullable Object... value ) {
+        return toArrayLiteral( value == null ? null : Arrays.asList( value ) );
+    }
+    
+    /** @return The list value as a TOML array literal. */
+    public static String toArrayLiteral( @Nullable List<?> value ) {
+        return value == null || value.isEmpty() ? "[]" : "[ " + literalList( value ) + " ]";
+    }
+    
+    /** Use {@link #toArrayLiteral(Object...)} instead; removing this one because was named too ambiguously. */
+    @Deprecated( forRemoval = true ) // TODO Remove when updating beyond MC 1.20.1
+    public static String toLiteral( @Nullable Object... values ) { return toArrayLiteral( values ); }
+    
+    
+    /**
+     * Attempts to convert an object array to a readable list of TOML literals.
+     * Not to be confused with a TOML array literal - this does NOT include brackets so it cannot be used as a TOML value.
+     */
     public static String toLiteralList( Object... list ) { return literalList( Arrays.asList( list ) ); }
     
-    /** Attempts to convert an object list to a list of toml literals. May or may not be accurate. */
-    public static String literalList( @Nullable List<?> list ) {
-        if( list == null || list.isEmpty() ) return "";
-        StringBuilder literals = new StringBuilder();
-        for( Object obj : list ) {
-            literals.append( toLiteral( obj ) ).append( ", " );
+    /**
+     * Attempts to convert an object list to a readable list of TOML literals.
+     * Not to be confused with a TOML array literal - this does NOT include brackets so it cannot be used as a TOML value.
+     */
+    public static String literalList( @Nullable List<?> valuesList ) {
+        if( valuesList == null || valuesList.isEmpty() ) return "";
+        StringBuilder literal = new StringBuilder();
+        Iterator<?> itr = valuesList.listIterator();
+        if( itr.hasNext() ) while( true ) {
+            literal.append( toLiteral( itr.next() ) );
+            if( itr.hasNext() ) literal.append( ", " );
+            else break;
         }
-        literals.delete( literals.length() - 2, literals.length() );
-        return literals.toString();
+        return literal.toString();
     }
+    
     
     /** @return The default field info for a field that must provide its help in the field comment. */
     public static String fieldInfoNoHelp( String typeName, Object defaultValue ) {
@@ -195,11 +443,21 @@ public final class TomlHelper {
         return String.format( "<%s> Range: %s", "Integer", fieldRange( min, max ) );
     }
     
+    /** @return The default field info for a series of int fields (no defaults listed). */
+    public static String multiFieldInfo( ITomlIntValue min, ITomlIntValue max ) {
+        return String.format( "<%s> Range: %s", "Integer", fieldRange( min, max ) );
+    }
+    
     /** @return The default field info for a series of double fields (no defaults listed). */
     public static String multiFieldInfo( DoubleField.Range range ) { return multiFieldInfo( range.MIN, range.MAX ); }
     
     /** @return The default field info for a series of double fields (no defaults listed). */
     public static String multiFieldInfo( double min, double max ) {
+        return String.format( "<%s> Range: %s", "Number", fieldRange( min, max ) );
+    }
+    
+    /** @return The default field info for a series of double fields (no defaults listed). */
+    public static String multiFieldInfo( ITomlDoubleValue min, ITomlDoubleValue max ) {
         return String.format( "<%s> Range: %s", "Number", fieldRange( min, max ) );
     }
     
@@ -209,16 +467,26 @@ public final class TomlHelper {
     }
     
     /** @return The default field info for a number with a range. */
+    public static String fieldInfoRange( ITomlIntValue defaultValue, ITomlIntValue min, ITomlIntValue max ) {
+        return fieldInfoRange( "Integer", fieldRange( min, max ), defaultValue );
+    }
+    
+    /** @return The default field info for a number with a range. */
     public static String fieldInfoRange( double defaultValue, double min, double max ) {
         return fieldInfoRange( "Number", fieldRange( min, max ), defaultValue );
     }
     
     /** @return The default field info for a number with a range. */
-    private static String fieldInfoRange( String typeName, String range, Number defaultValue ) {
+    public static String fieldInfoRange( ITomlDoubleValue defaultValue, ITomlDoubleValue min, ITomlDoubleValue max ) {
+        return fieldInfoRange( "Number", fieldRange( min, max ), defaultValue );
+    }
+    
+    /** @return The default field info for a number with a range. */
+    private static String fieldInfoRange( String typeName, String range, Object defaultValue ) {
         return String.format( "<%s> Range: %s, Default: %s", typeName, range, toLiteral( defaultValue ) );
     }
     
-    /** @return A range representation of toml literals. */
+    /** @return A range representation of TOML literals. */
     public static String fieldRange( int min, int max ) {
         if( min == Integer.MIN_VALUE ) {
             if( max == Integer.MAX_VALUE ) {
@@ -236,7 +504,25 @@ public final class TomlHelper {
         }
     }
     
-    /** @return A range representation of toml literals. */
+    /** @return A range representation of TOML literals. */
+    public static String fieldRange( ITomlIntValue min, ITomlIntValue max ) {
+        if( min.get() == Integer.MIN_VALUE ) {
+            if( max.get() == Integer.MAX_VALUE ) {
+                return fieldRangeNoLimit();
+            }
+            else {
+                return fieldRangeUpperLimit( max );
+            }
+        }
+        else if( max.get() == Integer.MAX_VALUE ) {
+            return fieldRangeLowerLimit( min );
+        }
+        else {
+            return fieldRangeInterval( min, max );
+        }
+    }
+    
+    /** @return A range representation of TOML literals. */
     public static String fieldRange( double min, double max ) {
         if( min <= -Double.MAX_VALUE ) {
             if( max >= Double.MAX_VALUE ) {
@@ -254,31 +540,36 @@ public final class TomlHelper {
         }
     }
     
-    /** @return A range representation of toml literals with no lower or upper limit. */
+    /** @return A range representation of TOML literals. */
+    public static String fieldRange( ITomlDoubleValue min, ITomlDoubleValue max ) {
+        if( min.get() <= -Double.MAX_VALUE ) {
+            if( max.get() >= Double.MAX_VALUE ) {
+                return fieldRangeNoLimit();
+            }
+            else {
+                return fieldRangeUpperLimit( max );
+            }
+        }
+        else if( max.get() >= Double.MAX_VALUE ) {
+            return fieldRangeLowerLimit( min );
+        }
+        else {
+            return fieldRangeInterval( min, max );
+        }
+    }
+    
+    /** @return A range representation of TOML literals with no lower or upper limit. */
     private static String fieldRangeNoLimit() { return "Any Value"; }
     
-    /** @return A range representation of toml literals with only an upper limit. */
-    private static String fieldRangeUpperLimit( Number max ) { return ConfigUtil.LESS_OR_EQUAL + " " + toLiteral( max ); }
+    /** @return A range representation of TOML literals with only an upper limit. */
+    private static String fieldRangeUpperLimit( Object max ) { return ConfigUtil.LESS_OR_EQUAL + " " + toLiteral( max ); }
     
-    /** @return A range representation of toml literals with only a lower limit. */
-    private static String fieldRangeLowerLimit( Number min ) { return ConfigUtil.GREATER_OR_EQUAL + " " + toLiteral( min ); }
+    /** @return A range representation of TOML literals with only a lower limit. */
+    private static String fieldRangeLowerLimit( Object min ) { return ConfigUtil.GREATER_OR_EQUAL + " " + toLiteral( min ); }
     
-    /** @return A range representation of toml literals with both a lower and upper limit. */
-    private static String fieldRangeInterval( Number min, Number max ) { return toLiteral( min ) + " ~ " + toLiteral( max ); }
+    /** @return A range representation of TOML literals with both a lower and upper limit. */
+    private static String fieldRangeInterval( Object min, Object max ) { return toLiteral( min ) + " ~ " + toLiteral( max ); }
     
-    /** Splits a toml key into a path. */
-    public static List<String> splitKey( String key ) { return StringUtils.split( key, '.' ); }
-    
-    /** Combines a toml path into a key. */
-    public static String mergePath( @Nullable List<String> path ) {
-        if( path == null || path.isEmpty() ) return "";
-        StringBuilder key = new StringBuilder();
-        for( String subKey : path ) {
-            key.append( subKey ).append( '.' );
-        }
-        key.deleteCharAt( key.length() - 1 );
-        return key.toString();
-    }
     
     /** Convenience method for creating a list of single-line comments (no \n or \r). */
     public static ArrayList<String> newComment( String... lines ) { return new ArrayList<>( Arrays.asList( lines ) ); }
@@ -289,11 +580,13 @@ public final class TomlHelper {
     /** Combines a list of objects as a comma-separated string. */
     public static String combineList( @Nullable List<Object> list ) {
         if( list == null || list.isEmpty() ) return "";
-        StringBuilder key = new StringBuilder();
-        for( Object obj : list ) {
-            key.append( obj ).append( ", " );
+        StringBuilder str = new StringBuilder();
+        Iterator<Object> itr = list.listIterator();
+        if( itr.hasNext() ) while( true ) {
+            str.append( itr.next().toString() );
+            if( itr.hasNext() ) str.append( ", " );
+            else break;
         }
-        key.delete( key.length() - 2, key.length() );
-        return key.toString();
+        return str.toString();
     }
 }

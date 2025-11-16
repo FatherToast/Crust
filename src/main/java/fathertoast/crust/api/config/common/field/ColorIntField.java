@@ -3,6 +3,7 @@ package fathertoast.crust.api.config.common.field;
 import fathertoast.crust.api.config.client.gui.widget.provider.ColorFieldWidgetProvider;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.lib.CrustMath;
+import net.minecraft.ChatFormatting;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -24,9 +25,19 @@ public class ColorIntField extends IntField.Hex {
         this( key, defaultValue.getRGB(), useAlpha, description );
     }
     
+    /**
+     * Creates a new field.
+     *
+     * @throws NullPointerException If provided default value is not a chat formatting color.
+     */
+    public ColorIntField( String key, ChatFormatting defaultValue, boolean useAlpha, @Nullable String... description ) {
+        //noinspection DataFlowIssue
+        this( key, defaultValue.getColor(), useAlpha, description );
+    }
+    
+    
     /** @return True if the alpha bits on this color are usable. */
     public boolean usesAlpha() { return getMinDigits() > 6; }
-    
     
     /** @return Returns the config field's value as a 'color' object. If this field does not 'use alpha', alpha will always be 0. */
     public Color getColor() { return new Color( get(), true ); }
@@ -58,6 +69,7 @@ public class ColorIntField extends IntField.Hex {
     
     /** @return The alpha (opacity) portion of the config field's value. Returned value will be in the range 0.0 - 1.0. */
     public float getAlpha() { return CrustMath.getAlpha( get() ); }
+    
     
     /** @return This field's gui component provider. */
     @Override

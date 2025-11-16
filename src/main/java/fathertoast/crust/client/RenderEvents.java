@@ -54,13 +54,13 @@ public final class RenderEvents {
             if( player != null ) {
                 if( event.getStage() == RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS ) {
                     // Render entity debug shapes right before entities
-                    if( ClientRegister.RENDER_SETTINGS.ENTITY_SHAPES.enabled.get() ) {
+                    if( ClientRegister.RENDER_SETTINGS.entityShapes.get() ) {
                         renderEntityShapes( player, event );
                     }
                 }
                 else if( event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES ) {
                     // Render block entity debug shapes right before block entities
-                    if( ClientRegister.RENDER_SETTINGS.BLOCK_ENTITY_SHAPES.enabled.get() ) {
+                    if( ClientRegister.RENDER_SETTINGS.blockEntityShapes.get() ) {
                         renderBlockEntityShapes( player, event );
                     }
                 }
@@ -76,7 +76,7 @@ public final class RenderEvents {
         final ClientLevel level = (ClientLevel) player.level();
         
         // Radius value from config, effectively capped by how far away the client tracks entities
-        final double radiusSqr = ClientRegister.RENDER_SETTINGS.ENTITY_SHAPES.distanceSqr.get();
+        final double radiusSqr = ClientRegister.RENDER_SETTINGS.entityShapesDistanceSqr.get();
         
         // Loop through all entities to check for shape providers
         for( Entity entity : level.entitiesForRendering() ) {
@@ -98,7 +98,7 @@ public final class RenderEvents {
         final int chunkZ = playerPos.getZ() >> 4;
         
         // Radius value from config, capped at current effective render distance
-        final int radius = Math.min( ClientRegister.RENDER_SETTINGS.BLOCK_ENTITY_SHAPES.distance.get(),
+        final int radius = Math.min( ClientRegister.RENDER_SETTINGS.blockEntityShapesDistance.get(),
                 Minecraft.getInstance().options.getEffectiveRenderDistance() );
         
         // Don't bother with the crazy loop if we only render for one chunk

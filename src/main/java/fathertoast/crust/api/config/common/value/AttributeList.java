@@ -1,6 +1,5 @@
 package fathertoast.crust.api.config.common.value;
 
-import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 
@@ -31,7 +30,7 @@ public class AttributeList implements IStringArray {
     
     /** @return A string representation of this object. */
     @Override
-    public String toString() { return TomlHelper.toLiteral( toStringList().toArray() ); }
+    public String toString() { return toTomlLiteral(); }
     
     /** @return Returns true if this object has the same value as another object. */
     @Override

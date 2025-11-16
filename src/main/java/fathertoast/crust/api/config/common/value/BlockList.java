@@ -2,7 +2,6 @@ package fathertoast.crust.api.config.common.value;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -153,7 +152,7 @@ public class BlockList implements IStringArray {
     
     /** @return A string representation of this object. */
     @Override
-    public String toString() { return TomlHelper.toLiteral( toStringList().toArray() ); }
+    public String toString() { return toTomlLiteral(); }
     
     /** @return Returns true if this object has the same value as another object. */
     @Override

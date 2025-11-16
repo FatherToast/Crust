@@ -34,8 +34,6 @@ public abstract class AbstractConfigCategory<T extends AbstractConfigFile> {
     public AbstractConfigCategory( T parent, String categoryName, String... categoryDescription ) {
         PARENT = parent;
         SPEC = parent.SPEC;
-        
-        parent.SPEC.loadingCategory = categoryName + ".";
         SPEC.category( categoryName, TomlHelper.newComment( categoryDescription ) );
     }
 }
