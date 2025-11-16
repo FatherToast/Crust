@@ -39,15 +39,13 @@ public class ColorFieldWidgetProvider implements IConfigFieldWidgetProvider {
         Number startValue = TomlHelper.asNumber( displayValue );
         previewWidget.setColor( startValue == null ? 0 : startValue.intValue(), FIELD.usesAlpha() );
         
-        // noinspection resource
         EditBox editBox = new EditBox( listEntry.minecraft().font, 1, 1,
                 VALUE_WIDTH - 3 - ColorPreviewWidget.SIZE, VALUE_HEIGHT - 2, // Account for 1px frame
                 Component.literal( FIELD.getKey() ) );
         editBox.setMaxLength( FIELD.getMinDigits() );
         
-        TomlHelper.HEX_MODE = FIELD.getMinDigits();
-        editBox.setValue( TomlHelper.toLiteral( displayValue ).substring( 2 ) );
-        TomlHelper.HEX_MODE = 0;
+        editBox.setValue( startValue == null ? "" :
+                TomlHelper.toLiteral( FIELD.wrap( startValue.intValue() ) ).substring( 2 ) );
         
         editBox.setResponder( ( value ) -> {
             Integer newValue = TomlHelper.parseHexInt( value );

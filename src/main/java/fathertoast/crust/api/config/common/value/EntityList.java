@@ -1,6 +1,5 @@
 package fathertoast.crust.api.config.common.value;
 
-import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -52,49 +51,49 @@ public class EntityList implements IStringArray {
         ENTRIES = entries;
         DEFAULT_ENTRY = defaultEntry;
     }
-
-
+    
+    
     /** Adds the given tag-entries to this entity list. Discards duplicates. */
     public EntityList addTagEntries( List<EntityTagEntry> tagEntries ) {
-        for ( EntityTagEntry entry : tagEntries ) {
+        for( EntityTagEntry entry : tagEntries ) {
             TagKey<EntityType<?>> tagKey = entry.TAG;
             boolean exists = false;
-
-            for ( EntityTagEntry existingEntry : TAG_ENTRIES ) {
-                if ( existingEntry.TAG.location().equals( tagKey.location() ) ) {
+            
+            for( EntityTagEntry existingEntry : TAG_ENTRIES ) {
+                if( existingEntry.TAG.location().equals( tagKey.location() ) ) {
                     exists = true;
                     break;
                 }
             }
-            if ( !exists ) {
+            if( !exists ) {
                 TAG_ENTRIES.add( entry );
             }
         }
-
+        
         return this;
     }
-
+    
     /** Adds the given namespace-entries to this entity list. Discards duplicates. */
     public EntityList addNamespaceEntries( List<NamespaceRegistryEntry> namespaceEntries ) {
-        for ( NamespaceRegistryEntry entry : namespaceEntries ) {
+        for( NamespaceRegistryEntry entry : namespaceEntries ) {
             String namespace = entry.NAMESPACE;
             boolean exists = false;
-
-             for ( NamespaceRegistryEntry existingEntry : NAMESPACE_ENTRIES ) {
-                 if ( existingEntry.NAMESPACE.equals( namespace ) ) {
-                     exists = true;
-                     break;
-                 }
-             }
-             if ( !exists )
-                 NAMESPACE_ENTRIES.add( entry );
+            
+            for( NamespaceRegistryEntry existingEntry : NAMESPACE_ENTRIES ) {
+                if( existingEntry.NAMESPACE.equals( namespace ) ) {
+                    exists = true;
+                    break;
+                }
+            }
+            if( !exists )
+                NAMESPACE_ENTRIES.add( entry );
         }
         return this;
     }
-
+    
     /** @return A string representation of this object. */
     @Override
-    public String toString() { return TomlHelper.toLiteral( toStringList().toArray() ); }
+    public String toString() { return toTomlLiteral(); }
     
     /** @return Returns true if this object has the same value as another object. */
     @Override
@@ -112,13 +111,13 @@ public class EntityList implements IStringArray {
         for( EntityEntry entry : ENTRIES ) {
             list.add( entry.toString() );
         }
-        for ( EntityTagEntry tagEntry : TAG_ENTRIES ) {
+        for( EntityTagEntry tagEntry : TAG_ENTRIES ) {
             list.add( tagEntry.toString() );
         }
-        for ( NamespaceRegistryEntry namespaceEntry : NAMESPACE_ENTRIES ) {
+        for( NamespaceRegistryEntry namespaceEntry : NAMESPACE_ENTRIES ) {
             list.add( namespaceEntry.toString() );
         }
-        if ( DEFAULT_ENTRY != null ) {
+        if( DEFAULT_ENTRY != null ) {
             list.add( DEFAULT_ENTRY.toString() );
         }
         return list;
@@ -127,22 +126,22 @@ public class EntityList implements IStringArray {
     /** @return True if the entity is contained in this list. */
     public boolean contains( @Nullable Entity entity ) {
         if( entity == null ) return false;
-
+        
         final EntityEntry targetEntry = new EntityEntry( entity );
-
+        
         for( EntityEntry currentEntry : ENTRIES ) {
             currentEntry.checkClass( entity.level() );
             if( currentEntry.contains( targetEntry ) )
                 return true;
         }
-
-        for ( EntityTagEntry tagEntry : TAG_ENTRIES ) {
-            if ( tagEntry.contains( entity.getType() ) )
+        
+        for( EntityTagEntry tagEntry : TAG_ENTRIES ) {
+            if( tagEntry.contains( entity.getType() ) )
                 return true;
         }
-
-        for ( NamespaceRegistryEntry namespaceEntry : NAMESPACE_ENTRIES ) {
-            if ( namespaceEntry.contains( targetEntry.ENTITY_KEY.getNamespace() ) )
+        
+        for( NamespaceRegistryEntry namespaceEntry : NAMESPACE_ENTRIES ) {
+            if( namespaceEntry.contains( targetEntry.ENTITY_KEY.getNamespace() ) )
                 return true;
         }
         return false;
@@ -155,10 +154,10 @@ public class EntityList implements IStringArray {
     @Nullable
     public double[] getValues( @Nullable Entity entity ) {
         if( entity == null ) return null;
-
+        
         final EntityEntry targetEntry = new EntityEntry( entity );
         EntityEntry bestMatch = null;
-
+        
         for( EntityEntry currentEntry : ENTRIES ) {
             currentEntry.checkClass( entity.level() );
             // Immediately return if we match the most stringent entry possible
@@ -171,19 +170,19 @@ public class EntityList implements IStringArray {
             }
         }
         // Check tag entries
-        for ( EntityTagEntry tagEntry : TAG_ENTRIES ) {
-            if ( tagEntry.contains( entity.getType() ) )
+        for( EntityTagEntry tagEntry : TAG_ENTRIES ) {
+            if( tagEntry.contains( entity.getType() ) )
                 return tagEntry.VALUES;
         }
         // Check namespace entries
-        for ( NamespaceRegistryEntry namespaceEntry : NAMESPACE_ENTRIES ) {
-            if ( namespaceEntry.contains( targetEntry.ENTITY_KEY.getNamespace() ) )
+        for( NamespaceRegistryEntry namespaceEntry : NAMESPACE_ENTRIES ) {
+            if( namespaceEntry.contains( targetEntry.ENTITY_KEY.getNamespace() ) )
                 return namespaceEntry.VALUES;
         }
         // Return default values, if possible
-        if ( DEFAULT_ENTRY != null )
+        if( DEFAULT_ENTRY != null )
             return DEFAULT_ENTRY.VALUES;
-
+        
         return bestMatch == null ? null : bestMatch.VALUES;
     }
     

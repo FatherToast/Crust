@@ -208,7 +208,6 @@ public class CrustConfigFieldList extends SearchableSelectionList<CrustConfigFie
         public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
     }
     
-    @SuppressWarnings( "resource" )
     public static class LeftAlignedStringEntry extends Entry {
         
         private final FormattedCharSequence TEXT;
@@ -236,7 +235,6 @@ public class CrustConfigFieldList extends SearchableSelectionList<CrustConfigFie
         public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
     }
     
-    @SuppressWarnings( "resource" )
     public static class TitledCommentEntry extends Entry {
         
         private final Component TEXT;
@@ -281,7 +279,6 @@ public class CrustConfigFieldList extends SearchableSelectionList<CrustConfigFie
         public List<FormattedCharSequence> getTooltip() { return TOOLTIP; }
     }
     
-    @SuppressWarnings( "resource" )
     public static class CenteredStringEntry extends Entry {
         
         protected final Component TEXT;
@@ -313,7 +310,6 @@ public class CrustConfigFieldList extends SearchableSelectionList<CrustConfigFie
         public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
     }
     
-    @SuppressWarnings( "resource" )
     public static class HeaderEntry extends CenteredStringEntry {
         
         private final List<FormattedCharSequence> TOOLTIP;
@@ -344,7 +340,6 @@ public class CrustConfigFieldList extends SearchableSelectionList<CrustConfigFie
         }
     }
     
-    @SuppressWarnings( "resource" )
     public static class FieldEntry extends Entry {
         
         public final CrustConfigFieldList PARENT;

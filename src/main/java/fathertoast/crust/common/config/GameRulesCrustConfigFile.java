@@ -40,8 +40,7 @@ public class GameRulesCrustConfigFile extends AbstractConfigFile {
                 "For more information on game rules, see the in-game descriptions in the 'Create New World' menu or the " +
                         "Minecraft Wiki article (https://minecraft.fandom.com/wiki/Game_rule)." );
         
-        SPEC.newLine( 2 );
-        SPEC.decreaseIndent();
+        SPEC.setupSimpleFile();
         
         enabled = SPEC.define( new BooleanField( "config_enabled", false,
                 "Whether this config file is enabled." ), RestartNote.GAME_PARTIAL );

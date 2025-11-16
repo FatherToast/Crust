@@ -5,6 +5,7 @@ import com.electronwill.nightconfig.core.io.*;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.RestartNote;
+import fathertoast.crust.api.config.common.value.ITomlValue;
 import net.minecraft.util.StringUtil;
 
 import javax.annotation.Nullable;
@@ -91,8 +92,18 @@ public class CrustTomlWriter implements ConfigWriter {
         writeNewLine( output );
     }
     
+    /** Writes a value. */
+    public void writeValue( @Nullable Object value, CharacterOutput output ) {
+        if( value instanceof ITomlValue tomlValue ) tomlValue.write( this, output );
+        else writeLine( TomlHelper.toLiteral( value ), output );
+    }
+    
     /** Writes a literal array of single-line strings. */
-    public void writeStringArray( @Nullable List<String> list, CharacterOutput output ) {
+    @Deprecated( forRemoval = true ) // TODO Remove in MC versions beyond 1.20.1
+    public void writeStringArray( @Nullable List<String> list, CharacterOutput output ) { writeArray( list, output ); }
+    
+    /** Writes an array of values. */
+    public void writeArray( @Nullable List<?> list, CharacterOutput output ) {
         if( list == null || list.isEmpty() ) {
             writeLine( "[]", output );
             return;
@@ -101,14 +112,18 @@ public class CrustTomlWriter implements ConfigWriter {
         writeLine( "[", output );
         increaseIndentLevel();
         
-        Iterator<String> itr = list.listIterator();
-        while( itr.hasNext() ) {
+        Iterator<?> itr = list.listIterator();
+        if( itr.hasNext() ) while( true ) {
             writeIndent( output );
-            output.write( String.format( "\"%s\"", itr.next() ) );
+            output.write( TomlHelper.toLiteral( itr.next(), false ) );
             if( itr.hasNext() ) {
                 output.write( ',' );
+                writeNewLine( output );
             }
-            writeNewLine( output );
+            else {
+                writeNewLine( output );
+                break;
+            }
         }
         
         decreaseIndentLevel();

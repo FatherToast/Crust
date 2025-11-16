@@ -6,7 +6,6 @@ import fathertoast.crust.api.config.client.gui.widget.provider.UnsupportedWidget
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.api.config.common.value.IStringArray;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -22,6 +21,7 @@ public abstract class AbstractConfigField {
      * message, since it means there is something wrong with a hard coded default value.
      */
     public static String describeNullable( @Nullable AbstractConfigField field ) { return field == null ? "<unknown default value>" : field.describeLocation(); }
+    
     
     /** @see #getSpec() */
     private CrustConfigSpec SPEC;
@@ -44,6 +44,10 @@ public abstract class AbstractConfigField {
      * If the comment is null, it will cancel the entire comment, including the automatic field info text.
      */
     AbstractConfigField( String key, @Nullable List<String> comment ) {
+        if( !TomlHelper.isValidBareKey( key ) ) {
+            throw new IllegalArgumentException( "Key '" + key + "' is invalid! Keys may only contain characters " +
+                    "usable for TOML bare dotted keys (A-Za-z0-9_-.)" );
+        }
         KEY = key;
         COMMENT = comment == null ? null : Collections.unmodifiableList( comment );
     }
@@ -100,15 +104,7 @@ public abstract class AbstractConfigField {
     public abstract Object getDefaultValue();
     
     /** Writes this field's value to file. */
-    public void writeValue( CrustTomlWriter writer, CharacterOutput output ) {
-        Object value = getValue();
-        if( value instanceof IStringArray ) {
-            writer.writeStringArray( ((IStringArray) value).toStringList(), output );
-        }
-        else {
-            writer.writeLine( TomlHelper.toLiteral( value ), output );
-        }
-    }
+    public void writeValue( CrustTomlWriter writer, CharacterOutput output ) { writer.writeValue( getValue(), output ); }
     
     /** @return This field's gui component provider. */
     public IConfigFieldWidgetProvider getWidgetProvider() { return new UnsupportedWidgetProvider(); }

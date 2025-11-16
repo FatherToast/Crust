@@ -8,6 +8,7 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.config.common.value.HexIntWrapper;
 import net.minecraft.util.RandomSource;
 
 import javax.annotation.Nullable;
@@ -90,20 +91,12 @@ public class IntField extends AbstractConfigField {
      */
     @Override
     public void load( @Nullable Object raw ) {
-        Number newValue;
-        if( raw instanceof String ) {
-            ConfigUtil.infoFor( this );
-            ConfigUtil.LOG.info( "Unboxing string value \"{}\" to a different primitive.", raw );
-            newValue = TomlHelper.parseNumber( (String) raw );
-        }
-        else {
-            newValue = TomlHelper.asNumber( raw );
-        }
-        
+        Number newValue = TomlHelper.readAsNumber( this, raw );
         if( newValue == null ) {
             if( raw != null ) {
                 ConfigUtil.warnFor( this );
-                ConfigUtil.LOG.warn( "Invalid integer! Falling back to default ({}). Invalid value: {}", valueDefault, raw );
+                ConfigUtil.LOG.warn( "Invalid integer! Falling back to default ({}). Invalid value: {}",
+                        valueDefault, raw );
             }
             value = valueDefault;
         }
@@ -122,7 +115,8 @@ public class IntField extends AbstractConfigField {
             else {
                 if( (double) castValue != newValue.doubleValue() ) {
                     ConfigUtil.warnFor( this );
-                    ConfigUtil.LOG.warn( "Floating point value given for integer! Truncating value {} to {}.", raw, castValue );
+                    ConfigUtil.LOG.warn( "Floating point value given for integer! Truncating value {} to {}.",
+                            raw, castValue );
                 }
                 value = castValue;
             }
@@ -131,11 +125,11 @@ public class IntField extends AbstractConfigField {
     
     /** @return The value that should be assigned to this field in the config file. */
     @Override
-    public Object getValue() { return value; }
+    public Integer getValue() { return value; }
     
     /** @return The default value of this field. */
     @Override
-    public Object getDefaultValue() { return valueDefault; }
+    public Integer getDefaultValue() { return valueDefault; }
     
     /** @return This field's gui component provider. */
     @Override
@@ -198,20 +192,20 @@ public class IntField extends AbstractConfigField {
         /** @return The minimum number of digits this field prints. */
         public int getMinDigits() { return minDigits; }
         
+        /** @return The value in an appropriate hex wrapper. */
+        public HexIntWrapper wrap( int value ) { return new HexIntWrapper( value, getMinDigits() ); }
+        
         /** Adds info about the field type, format, and bounds to the end of a field's description. */
         @Override
         public void appendFieldInfo( List<String> comment ) {
-            TomlHelper.HEX_MODE = minDigits;
-            super.appendFieldInfo( comment );
-            TomlHelper.HEX_MODE = 0;
+            comment.add( TomlHelper.fieldInfoRange( wrap( (int) getDefaultValue() ),
+                    wrap( minValue() ), wrap( maxValue() ) ) );
         }
         
         /** Writes this field's value to file. */
         @Override
         public void writeValue( CrustTomlWriter writer, CharacterOutput output ) {
-            TomlHelper.HEX_MODE = minDigits;
-            super.writeValue( writer, output );
-            TomlHelper.HEX_MODE = 0;
+            writer.writeValue( wrap( get() ), output );
         }
         
         /** @return This field's gui component provider. */

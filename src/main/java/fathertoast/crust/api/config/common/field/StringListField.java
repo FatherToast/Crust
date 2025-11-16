@@ -54,9 +54,7 @@ public class StringListField extends GenericField<List<String>> {
     
     /** Writes this field's value to file. */
     @Override
-    public void writeValue( CrustTomlWriter writer, CharacterOutput output ) {
-        writer.writeStringArray( get(), output );
-    }
+    public void writeValue( CrustTomlWriter writer, CharacterOutput output ) { writer.writeArray( get(), output ); }
     
     
     // Convenience methods
@@ -65,7 +63,5 @@ public class StringListField extends GenericField<List<String>> {
     public boolean isEmpty() { return get().isEmpty(); }
     
     @Override
-    public IConfigFieldWidgetProvider getWidgetProvider() {
-        return new StringListFieldWidgetProvider( this );
-    }
+    public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider( this ); }
 }

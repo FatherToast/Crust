@@ -44,7 +44,7 @@ public class TestConfigFile extends AbstractConfigFile {
         GENERAL = new General( this );
         ENVIRONMENT = new Environment( this );
         
-        SPEC.newLine( 2 );
+        SPEC.fileOnlyNewLine( 2 );
         SPEC.describeEnvironmentListPart2of2();
     }
     
@@ -174,11 +174,20 @@ public class TestConfigFile extends AbstractConfigFile {
             predicateStringListField = SPEC.define( new InjectionWrapperField<>(
                     new PredicateStringListField( "predicate_string_list", Arrays.asList( "test0", "test1", "test2", "test3" ),
                             ( line ) -> !line.contains( ":" ), (String[]) null ), General::testCallback ) ).field();
-            longCommentField = SPEC.define( new BooleanField( "long_comment", true, "Oh boy, this comment sure is long! The reason it " +
-                    "is so very very long is because of the sheer length of the comment, which attributes to the comment's general longness.",
+            longCommentField = SPEC.define( new BooleanField( "long_comment", true,
+                    "Oh boy, this comment sure is long! The reason it is so very very long is because of " +
+                            "the sheer length of the comment, which attributes to the comment's general longness.",
                     "Now that we know how long this comment is, let us not make too lengthy commentary on the lengthness.",
-                    "Thank you for your longness! So long, and we long to hear from you again! Bye. Im just gonna write some more just in case.",
-                    "Gotta make sure the comment is long enough okay thats enough bye!" ) );
+                    "Thank you for your longness! So long, and we long to hear from you again! Bye. Im just gonna write " +
+                            "some more just in case.",
+                    "Gotta make sure the comment is long enough... okay that's enough bye!",
+                    "Just kidding. Let's keep going with this long comment action - how about some really long portion " +
+                            "that requires some additional wrapping, much like some kind of spaghetti wraps around the " +
+                            "utensil traditionally use for spaghetti. Is it a chopstick? Quite possibly. Speaking of " +
+                            "chopsticks, did you know that chopsticks are shaped pairs of equal-length sticks that have " +
+                            "been used as kitchen and eating utensils in most countries of Sinosphere for over three " +
+                            "millennia? They are held in the dominant hand, secured by fingers, and wielded as extensions " +
+                            "of the hand, to pick up food. Truly exciting." ) );
         }
         
         private static void testCallback( AbstractConfigField field ) {

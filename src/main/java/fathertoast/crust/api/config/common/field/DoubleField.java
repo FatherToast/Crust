@@ -89,16 +89,7 @@ public class DoubleField extends AbstractConfigField {
      */
     @Override
     public void load( @Nullable Object raw ) {
-        Number newValue;
-        if( raw instanceof String ) {
-            ConfigUtil.infoFor( this );
-            ConfigUtil.LOG.info( "Unboxing string value \"{}\" to a different primitive.", raw );
-            newValue = TomlHelper.parseNumber( (String) raw );
-        }
-        else {
-            newValue = TomlHelper.asNumber( raw );
-        }
-        
+        Number newValue = TomlHelper.readAsNumber( this, raw );
         if( newValue == null ) {
             if( raw != null ) {
                 ConfigUtil.warnFor( this );
@@ -127,12 +118,11 @@ public class DoubleField extends AbstractConfigField {
     
     /** @return The value that should be assigned to this field in the config file. */
     @Override
-    @Nullable
-    public Object getValue() { return value; }
+    public Double getValue() { return value; }
     
     /** @return The default value of this field. */
     @Override
-    public Object getDefaultValue() { return valueDefault; }
+    public Double getDefaultValue() { return valueDefault; }
     
     /** @return This field's gui component provider. */
     @Override
