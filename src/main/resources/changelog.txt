@@ -1,16 +1,26 @@
 1.20.1-4.9.15
     - Added a search bar to the in game config editor.
+    - Added config editor GUI for field types StringListField and PredicateStringListField.
     - Slightly modified the in game config editor appearance and improved tooltips.
     - Improved config warning/error feedback.
     - Fixed dimension_type environment.
     - Fixed day_time environment.
     - Magnet mode no longer works while spectating, and removed jittering (by default).
+    - Destroy-item-on-pointer inventory button now works in all containers, not just the player inventory.
+    - Overhaul direct config file read/write methods.
     API Changes:
+    - Added simple config category implementation.
     - Added object holders for Crust's registry objects.
     - Deprecated Crust's registry object ID fields.
     - Config managers now maintain a mapping of spec names to config files for easier access.
     - Added sorted key mapping; used to make key mappings appear in a specified order in the GUI.
     - Added entity helper, initially just contains some entity type registering helpers.
+    - Added fishhook entity designed for pulling entities that doesn't need a player in order to be used.
+    - Reworked Crust's debug shape rendering utilities:
+        - New shapes like circles, spheres, cylinders etc.
+        - Separated client-only logic so that debug shape objects can exist on the server without problem.
+        - Shapes must now be registered on the client and mapped to a IDebugShapeRenderer.
+        - Added support for entities to draw Crust debug shapes.
 1.20.1-4.8.14
     - Fixed IntField.RandomRange and DoubleField.RandomRange not having public getters for the internal min and max fields.
 1.20.1-4.7.14

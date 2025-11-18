@@ -41,7 +41,7 @@ public abstract class SearchableSelectionList<T extends ContainerObjectSelection
      * this list changes.
      */
     protected void rerunSearch() {
-        if( searchbar != null )
+        if( searchbar != null && !searchbar.getValue().isEmpty() )
             searchbar.search( searchbar.getValue(), true );
     }
     
