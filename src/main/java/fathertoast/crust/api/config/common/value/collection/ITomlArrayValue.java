@@ -1,8 +1,9 @@
-package fathertoast.crust.api.config.common.value;
+package fathertoast.crust.api.config.common.value.collection;
 
 import com.electronwill.nightconfig.core.io.CharacterOutput;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.config.common.value.ITomlValue;
 
 import java.util.List;
 
@@ -15,15 +16,16 @@ public interface ITomlArrayValue extends ITomlValue {
     List<?> toTomlList();
     
     /** @return This value, converted to a single-line TOML literal. */
-    default String toTomlLiteral() { return toTomlLiteral( false ); }
+    @Override
+    default String toTomlLiteral() { return TomlHelper.toArrayLiteral( toTomlList() ); }
     
     /** @return This value, converted to a single-line TOML literal. Used for writing comments and optionally for writing values. */
+    @Override
     default String toTomlLiteral( boolean forComment ) {
         return TomlHelper.toArrayLiteral( toTomlList(), forComment );
     }
     
     /** Writes this value to file. */
-    default void write( CrustTomlWriter writer, CharacterOutput output ) {
-        writer.writeArray( toTomlList(), output );
-    }
+    @Override
+    default void write( CrustTomlWriter writer, CharacterOutput output ) { writer.writeArray( toTomlList(), output ); }
 }
