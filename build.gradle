@@ -95,7 +95,13 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:apocalypse-229199:${apocalypse_version}")
     compileOnly fg.deobf("curse.maven:apocalypse_api-229199:${apocalypse_api_version}")
 
-    runtimeOnly fg.deobf("curse.maven:deadlyworld-60098:${deadlyworld_version}")
+    runtimeOnly fg.deobf("curse.maven:deadly-world-60098:${deadly_world_version}")
+
+    runtimeOnly fg.deobf("curse.maven:natural-absorption-224296:${natural_absorption_version}")
+
+    runtimeOnly fg.deobf("curse.maven:special-ai-224301:${special_ai_version}")
+
+    runtimeOnly fg.deobf("curse.maven:special-mobs-59968:${special_mobs_version}")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
