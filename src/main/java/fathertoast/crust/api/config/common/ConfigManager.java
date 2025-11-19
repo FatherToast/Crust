@@ -6,6 +6,7 @@ import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -158,6 +159,7 @@ public final class ConfigManager {
      * Global toggle for file watching. Generally, you should not mess with this.
      * Crust automatically freezes file watchers until mod loading is complete.
      */
+    @ApiStatus.Internal
     public static volatile boolean GLOBAL_FREEZE_FILE_WATCHERS = ModList.get().isLoaded( ICrustApi.MOD_ID );
     
     /** Mapping of each mod id to its config manager. */
