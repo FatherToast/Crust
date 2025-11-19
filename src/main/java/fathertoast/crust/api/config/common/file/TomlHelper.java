@@ -24,6 +24,28 @@ public final class TomlHelper {
         return resLoc.getNamespace() + "." + resLoc.getPath().replace( '/', '.' );
     }
     
+    /**
+     * @return The string with all characters invalid for use as a TOML bare dotted key removed or changed.
+     * Non-trailing/leading whitespace is replaced with '_', while ':', '/', and '\' are changed to '.' -
+     * all other characters are deleted.
+     */
+    public static String toBareKey( String key ) {
+        key = key.trim();
+        final StringBuilder newKey = new StringBuilder();
+        for( char c : key.toCharArray() ) {
+            if( isValidBareKeyChar( c ) ) {
+                newKey.append( c );
+            }
+            else if( Character.isWhitespace( c ) ) {
+                newKey.append( '_' );
+            }
+            else if( c == ':' || c == '/' || c == '\\' ) {
+                newKey.append( '.' );
+            }
+        }
+        return newKey.toString();
+    }
+    
     /** @return True if the string is allowed as a TOML bare dotted key (A-Za-z0-9_-.). */
     public static boolean isValidBareKey( String key ) {
         for( int i = 0; i < key.length(); i++ ) {

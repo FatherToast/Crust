@@ -3,6 +3,7 @@ package fathertoast.crust.api.config.common;
 import com.electronwill.nightconfig.core.file.FileConfig;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -51,6 +52,16 @@ public final class ConfigUtil {
     public static void errorFor( @Nullable AbstractConfigField field ) {
         ConfigUtil.LOG.error( "Error for {}:", AbstractConfigField.describeNullable( field ) );
     }
+    
+    /** @return The resource location as a string, stripped of any characters disallowed for TOML bare dotted keys. */
+    public static String toBareKey( ResourceLocation resLoc ) { return TomlHelper.toBareKey( resLoc ); }
+    
+    /**
+     * @return The string with all characters invalid for use as a TOML bare dotted key removed or changed.
+     * Non-trailing/leading whitespace is replaced with '_', while ':', '/', and '\' are changed to '.' -
+     * all other characters are deleted.
+     */
+    public static String toBareKey( String key ) { return TomlHelper.toBareKey( key ); }
     
     /** @return The string with all spaces replaced by underscores. Useful for file names. */
     public static String toLowerCaseNoSpaces( String str ) { return noSpaces( str.toLowerCase( Locale.ROOT ) ); }
