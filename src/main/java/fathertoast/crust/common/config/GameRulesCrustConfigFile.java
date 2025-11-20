@@ -98,7 +98,7 @@ public class GameRulesCrustConfigFile extends AbstractConfigFile {
         
         /** Defines a config option in the spec to control the default setting of an integer game rule. */
         private void defineFor( GameRules.Key<GameRules.IntegerValue> gameRule, int defaultValue ) {
-            String id = ConfigUtil.camelCaseToLowerUnderscore( gameRule.getId() );
+            String id = ConfigUtil.toBareKey( ConfigUtil.camelCaseToLowerUnderscore( gameRule.getId() ) );
             IntField wrappedField = new IntField( id, defaultValue, IntField.Range.ANY, (String[]) null );
             SPEC.define( new InjectionWrapperField<>( wrappedField, ( wrapped ) -> {
                 if( CrustConfig.DEFAULT_GAME_RULES.enabled.get() )
