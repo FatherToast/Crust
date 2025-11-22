@@ -6,6 +6,7 @@ import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.config.common.value.*;
+import fathertoast.crust.api.config.common.value.collection.CrustRegistrySet;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
 import fathertoast.crust.api.config.common.value.environment.biome.BiomeCategory;
 import net.minecraft.ChatFormatting;
@@ -66,6 +67,7 @@ public class TestConfigFile extends AbstractConfigFile {
         public final RegistryEntryListField<EntityType<?>> registryEntryListField;
         public final RegistryEntryValueListField<MobEffect> registryEntryValueListField;
         public final LazyRegistryEntryListField<MobEffect> lazyRegistryEntryListField;
+        public final RegistrySetField<EntityType<?>> registrySetField;
         public final ScaledDoubleField scaledDoubleField;
         public final SqrDoubleField sqrDoubleField;
         public final StringField stringField;
@@ -158,6 +160,14 @@ public class TestConfigFile extends AbstractConfigFile {
                                     null,
                                     MobEffects.CONFUSION ),
                             (String[]) null ), General::testCallback ) ).field();
+            registrySetField = SPEC.define( new InjectionWrapperField<>(
+                    new RegistrySetField<>( "registry_set_field", new CrustRegistrySet
+                            .Builder<>( ForgeRegistries.ENTITY_TYPES )
+                            .add( EntityType.CREEPER ).add( TestCrustObjects.Obj.TEST_SKELETON )
+                            .add( EntityType.STRAY, true ).addTag( EntityTypeTags.SKELETONS )
+                            .addWildcard( "minecraft", "ender" )
+                            .build(),
+                            "Yeh we test it" ), General::testCallback ) ).field();
             scaledDoubleField = SPEC.define( new InjectionWrapperField<>(
                     new ScaledDoubleField( "scaled_double", 1.0, 6.0, DoubleField.Range.ANY,
                             (String[]) null ), General::testCallback ) ).field();

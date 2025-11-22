@@ -3,67 +3,55 @@ package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.value.collection.key.DefaultKey;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyRegKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.tags.ITag;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * TODO
  */
 @ApiStatus.Experimental
 public class CrustRegistrySet<T> extends FuzzySet<T> {
-    
-    /** @return The array of miscellaneous objects parsed into keys valid for this set type. */
-    public static <T> List<FuzzyKey<T>> parseObjects( IForgeRegistry<T> reg, Object... objects ) {
-        List<FuzzyKey<T>> keys = new ArrayList<>( objects.length );
-        for( Object obj : objects ) {
-            if( obj instanceof FuzzyKey<?> ) {
-                //noinspection unchecked
-                keys.add( (FuzzyKey<T>) obj );
-            }
-            else if( obj instanceof ResourceLocation ) {
-                keys.add( FuzzyRegKey.ResLoc.of( false, reg, (ResourceLocation) obj ) );
-            }
-            else if( obj instanceof TagKey<?> ) {
-                //noinspection unchecked
-                keys.add( FuzzyRegKey.Tag.of( false, reg, (TagKey<T>) obj ) );
-            }
-            else if( obj instanceof ITag<?> ) {
-                //noinspection unchecked
-                keys.add( FuzzyRegKey.Tag.of( false, reg, (ITag<T>) obj ) );
-            }
-            else if( obj instanceof String ) {
-                tryParse( reg, null, (String) obj, (String) obj, false );
-            }
-        }
-        return keys;
-    }
-    
+    /**
+     * Attempts to parse a key string into a fuzzy key.
+     *
+     * @param reg       The registry the key should target.
+     * @param field     Loading field for error context, or null if not loading from a field.
+     * @param line      The entire entry line the key string came from for error context.
+     * @param keyString The key string to parse.
+     * @param blacklist True if the key should be a blacklist key.
+     * @return A new fuzzy key based on the key string, or null if invalid.
+     */
     @Nullable
     public static <T> FuzzyKey<T> tryParse( IForgeRegistry<T> reg, @Nullable AbstractConfigField field,
                                             String line, String keyString, boolean blacklist ) {
-        FuzzyRegKey<T> key;
+        FuzzyKey<T> key;
         if( keyString.startsWith( FuzzyRegKey.Tag.CODE ) ) {
             key = FuzzyRegKey.Tag.of( blacklist, reg, keyString );
             if( key == null ) {
                 ConfigUtil.warnFor( field );
                 ConfigUtil.LOG.warn( "Registry entry has invalid tag key! Skipping. Entry: {}", line );
             }
+            if( reg.tags() == null ) {
+                ConfigUtil.warnFor( field );
+                ConfigUtil.LOG.warn( "Registry entry defines a tag key for a registry that does not support tags! Entry: {}",
+                        line );
+            }
         }
         else if( keyString.endsWith( FuzzyRegKey.Wildcard.CODE ) ) {
             key = FuzzyRegKey.Wildcard.of( blacklist, reg, keyString );
             if( key == null ) {
                 ConfigUtil.warnFor( field );
-                ConfigUtil.LOG.warn( "Registry entry has invalid wildcard key! Must follow pattern \"namespace:path*\". Skipping. Entry: {}",
+                ConfigUtil.LOG.warn( "Registry entry has invalid wildcard key! Skipping. Entry: {}",
                         line );
             }
         }
@@ -78,29 +66,27 @@ public class CrustRegistrySet<T> extends FuzzySet<T> {
     }
     
     
-    /** The registry this list acts as a subset of. */
+    /** The target registry. */
     private final IForgeRegistry<T> registry;
     
     /** Constructs an empty set. Use this if you want to {@link #load} a set from file/NBT. */
-    protected CrustRegistrySet( IForgeRegistry<T> reg ) { registry = reg; }
-    
-    /** Constructs a set containing the keys provided. Use this for creating default values during config definition. */
-    protected CrustRegistrySet( IForgeRegistry<T> reg, Object... objects ) {
-        this( reg, parseObjects( reg, objects ) );
-    }
+    public CrustRegistrySet( IForgeRegistry<T> reg ) { registry = reg; }
     
     /** Constructs a set containing the keys provided. Use this for creating default values during config definition. */
     @SafeVarargs
-    protected CrustRegistrySet( IForgeRegistry<T> reg, FuzzyKey<T>... keys ) {
+    public CrustRegistrySet( IForgeRegistry<T> reg, FuzzyKey<T>... keys ) {
         super( keys );
         registry = reg;
     }
     
     /** Constructs a set containing the keys provided. Use this for creating default values during config definition. */
-    protected CrustRegistrySet( IForgeRegistry<T> reg, Collection<FuzzyKey<T>> keys ) {
+    public CrustRegistrySet( IForgeRegistry<T> reg, Collection<FuzzyKey<T>> keys ) {
         super( keys );
         registry = reg;
     }
+    
+    /** The target registry */
+    public IForgeRegistry<T> getRegistry() { return registry; }
     
     /**
      * Loads an entry from the provided TOML string. If anything goes wrong, correct it at the lowest level possible
@@ -112,5 +98,113 @@ public class CrustRegistrySet<T> extends FuzzySet<T> {
     protected FuzzyKey<T> loadEntry( @Nullable AbstractConfigField field, String line, String key,
                                      @Nullable String value, boolean blacklist ) {
         return tryParse( registry, field, line, key, blacklist );
+    }
+    
+    
+    /** Builder to make constructing registry sets smoother. */
+    @ApiStatus.Experimental
+    public static class Builder<T> extends FuzzySet.Builder<T> {
+        public final IForgeRegistry<T> registry;
+        
+        public Builder( IForgeRegistry<T> reg ) { registry = reg; }
+        
+        /** @return A new registry set reflecting the current state of this builder. */
+        @Override
+        public CrustRegistrySet<T> build() { return new CrustRegistrySet<>( registry, list ); }
+        
+        /** @return A new registry set with a default key reflecting the current state of this builder. */
+        @Override
+        public CrustRegistrySet<T> buildWithDefault() {
+            add( DefaultKey.get() );
+            return build();
+        }
+        
+        /** Adds a pre-constructed key. */
+        @Override
+        public Builder<T> add( FuzzyKey<T> key ) {
+            super.add( key );
+            return this;
+        }
+        
+        
+        // ---- Resource Location Keys ---- //
+        
+        /** Adds a resource location key based on the resource location. */
+        public Builder<T> add( ResourceLocation resLoc ) { return add( resLoc, false ); }
+        
+        /** Adds a resource location key based on the resource location. */
+        public Builder<T> add( ResourceLocation resLoc, boolean blacklist ) {
+            return add( FuzzyRegKey.ResLoc.of( blacklist, registry, resLoc ) );
+        }
+        
+        /** Adds a resource location key based on the registry object. */
+        public Builder<T> add( RegistryObject<? extends T> regObj ) { return add( regObj, false ); }
+        
+        /** Adds a resource location key based on the registry object. */
+        public Builder<T> add( RegistryObject<? extends T> regObj, boolean blacklist ) {
+            return add( FuzzyRegKey.ResLoc.of( blacklist, registry, regObj ) );
+        }
+        
+        /** Adds a resource location key based on the registered object. Only suitable for vanilla stuff. */
+        public Builder<T> add( T obj ) { return add( obj, false ); }
+        
+        /** Adds a resource location key based on the registered object. Only suitable for vanilla stuff. */
+        public Builder<T> add( T obj, boolean blacklist ) {
+            return add( FuzzyRegKey.ResLoc.of( blacklist, registry, obj ) );
+        }
+        
+        
+        // ---- Wildcard Keys ---- //
+        
+        /** Adds a wildcard key based on the partial resource location. */
+        public Builder<T> addWildcard( ResourceLocation partialResLoc ) { return addWildcard( partialResLoc, false ); }
+        
+        /** Adds a wildcard key based on the partial resource location. */
+        public Builder<T> addWildcard( ResourceLocation partialResLoc, boolean blacklist ) {
+            return add( FuzzyRegKey.Wildcard.of( blacklist, registry, partialResLoc ) );
+        }
+        
+        /** Adds a wildcard key based on the namespace. */
+        public Builder<T> addWildcard( String namespace ) { return addWildcard( namespace, false ); }
+        
+        /** Adds a wildcard key based on the namespace. */
+        public Builder<T> addWildcard( String namespace, boolean blacklist ) {
+            return addWildcard( namespace, "", blacklist );
+        }
+        
+        /** Adds a wildcard key based on the namespace and partial path. */
+        public Builder<T> addWildcard( String namespace, String partialPath ) { return addWildcard( namespace, partialPath, false ); }
+        
+        /** Adds a wildcard key based on the namespace and partial path. */
+        public Builder<T> addWildcard( String namespace, String partialPath, boolean blacklist ) {
+            return add( FuzzyRegKey.Wildcard.of( blacklist, registry, namespace, partialPath ) );
+        }
+        
+        
+        // ---- Tag Keys ---- //
+        
+        /** Adds a tag key based on the resource location. */
+        public Builder<T> addTag( ResourceLocation resLoc ) { return addTag( resLoc, false ); }
+        
+        /** Adds a tag key based on the resource location. */
+        public Builder<T> addTag( ResourceLocation resLoc, boolean blacklist ) {
+            return add( FuzzyRegKey.Tag.of( blacklist, registry, resLoc ) );
+        }
+        
+        /** Adds a tag key based on the tag. */
+        public Builder<T> addTag( TagKey<T> tag ) { return addTag( tag, false ); }
+        
+        /** Adds a tag key based on the tag. */
+        public Builder<T> addTag( TagKey<T> tag, boolean blacklist ) {
+            return add( FuzzyRegKey.Tag.of( blacklist, registry, tag ) );
+        }
+        
+        /** Adds a tag key based on the tag. */
+        public Builder<T> addTag( ITag<T> tag ) { return addTag( tag, false ); }
+        
+        /** Adds a tag key based on the tag. */
+        public Builder<T> addTag( ITag<T> tag, boolean blacklist ) {
+            return add( FuzzyRegKey.Tag.of( blacklist, registry, tag ) );
+        }
     }
 }

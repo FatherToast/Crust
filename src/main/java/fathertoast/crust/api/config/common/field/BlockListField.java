@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.provider.StringListFieldWidgetProvider;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.BlockList;
 import net.minecraft.world.level.block.state.BlockState;
@@ -7,12 +9,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Represents a config field with a block list value.
  */
 @SuppressWarnings( "unused" )
-public class BlockListField extends GenericField<BlockList> {
+public class BlockListField extends GenericField<BlockList> implements IStringListScreenEditable {
     
     /** Provides a detailed description of how to use block lists. Recommended putting at the top of any file using block lists. */
     public static List<String> verboseDescription() {
@@ -65,6 +68,22 @@ public class BlockListField extends GenericField<BlockList> {
             // All the actual loading is done through the objects
             value = new BlockList( this, TomlHelper.parseStringList( raw ) );
         }
+    }
+    
+    /** @return This field's gui component provider. */
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider<>( this ); }
+    
+    /** Converts the displayable string list to a field value. */
+    @Override // IStringListScreenEditable
+    public Object stringListToValue( List<String> value ) {
+        return new BlockList( this, value );
+    }
+    
+    /** @return This field's line validator, or null if any string is allowed. */
+    @Override // IStringListScreenEditable
+    public Predicate<String> getLineValidator() {
+        return null;//TODO
     }
     
     

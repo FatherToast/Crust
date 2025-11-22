@@ -1,7 +1,6 @@
 package fathertoast.crust.api.config.common.value;
 
 import fathertoast.crust.api.config.common.value.collection.IStringArrayValue;
-import fathertoast.crust.api.config.common.value.collection.ITomlArrayValue;
 
 import java.util.List;
 
@@ -11,10 +10,7 @@ import java.util.List;
  * @see IStringArrayValue
  */
 @Deprecated( forRemoval = true ) // Use new lists impl, see above
-public interface IStringArray extends ITomlArrayValue {
-    
-    /** @return A list of strings that will represent this object when written to a TOML file. */
-    List<String> toStringList();
+public interface IStringArray extends IStringArrayValue {
     
     /** @return A list of objects that will represent this object when written to a TOML file. */
     @Override

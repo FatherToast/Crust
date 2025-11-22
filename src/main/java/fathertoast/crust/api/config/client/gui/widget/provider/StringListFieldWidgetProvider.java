@@ -3,7 +3,8 @@ package fathertoast.crust.api.config.client.gui.widget.provider;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigFileScreen;
 import fathertoast.crust.api.config.client.gui.screen.EditStringListScreen;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
-import fathertoast.crust.api.config.common.field.StringListField;
+import fathertoast.crust.api.config.common.field.GenericField;
+import fathertoast.crust.api.config.common.field.IStringListScreenEditable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -18,14 +19,13 @@ import java.util.List;
  * editing strings in a string list.
  */
 @SuppressWarnings( "ClassCanBeRecord" )
-public class StringListFieldWidgetProvider implements IConfigFieldWidgetProvider {
+public class StringListFieldWidgetProvider<T extends GenericField<?> & IStringListScreenEditable> implements
+        IConfigFieldWidgetProvider {
     
     /** The providing field. */
-    protected final StringListField FIELD;
+    protected final T FIELD;
     
-    public StringListFieldWidgetProvider( StringListField field ) {
-        FIELD = field;
-    }
+    public StringListFieldWidgetProvider( T field ) { FIELD = field; }
     
     /**
      * Called to initialize the field's gui components.
@@ -45,7 +45,9 @@ public class StringListFieldWidgetProvider implements IConfigFieldWidgetProvider
                 component,
                 ( button ) -> {
                     if( Minecraft.getInstance().screen instanceof CrustConfigFileScreen screen ) {
-                        Screen editScreen = new EditStringListScreen( screen, FIELD );
+                        Screen editScreen = new EditStringListScreen<>( screen, listEntry,
+                                FIELD.get(),//TODO use displayValue instead once we fix screen transition
+                                FIELD );
                         Minecraft.getInstance().setScreen( editScreen );
                     }
                 },

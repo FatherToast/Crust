@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.provider.StringListFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.*;
@@ -12,12 +14,13 @@ import net.minecraft.world.entity.LivingEntity;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Represents a config field with an entity list value.
  */
 @SuppressWarnings( "unused" )
-public class EntityListField extends GenericField<EntityList> {
+public class EntityListField extends GenericField<EntityList> implements IStringListScreenEditable {
     
     /** Provides a detailed description of how to use entity lists. Recommended to put at the top of any file using entity lists. */
     public static List<String> verboseDescription() {
@@ -95,43 +98,48 @@ public class EntityListField extends GenericField<EntityList> {
             value = (EntityList) raw;
         }
         else {
-            final List<String> list = TomlHelper.parseStringList( raw );
-            final List<EntityEntry> entryList = new ArrayList<>();
-            final List<EntityTagEntry> tagEntries = new ArrayList<>();
-            final List<NamespaceRegistryEntry> namespaceEntries = new ArrayList<>();
-            DefaultValueEntry defaultEntry = null;
+            value = parse( TomlHelper.parseStringList( raw ) );
+        }
+    }
+    
+    private EntityList parse( List<String> list ) {
+        final List<EntityEntry> entryList = new ArrayList<>();
+        final List<EntityTagEntry> tagEntries = new ArrayList<>();
+        final List<NamespaceRegistryEntry> namespaceEntries = new ArrayList<>();
+        DefaultValueEntry defaultEntry = null;
+        
+        for( String line : list ) {
+            String[] args = line.split( " " );
             
-            for( String line : list ) {
-                String[] args = line.split( " " );
-                
-                // Check for default entry
-                if( defaultEntry == null ) {
-                    if( args[0].equals( "default" ) ) {
-                        double[] values = parseValues( line, args );
-                        defaultEntry = new DefaultValueEntry( values );
-                        continue;
-                    }
-                }
-                // Check for namespace entries
-                if( args[0].endsWith( "*" ) ) {
-                    NamespaceRegistryEntry entry = parseNamespaceEntry( line );
-                    if( entry != null ) namespaceEntries.add( entry );
-                }
-                // Check for entity type tags
-                else if( line.startsWith( "#" ) ) {
-                    EntityTagEntry entry = parseTagEntry( line );
-                    if( entry != null ) tagEntries.add( entry );
-                }
-                // Try parse as normal entry
-                else {
-                    EntityEntry entry = parseEntry( line );
-                    if( entry != null ) entryList.add( entry );
+            // Check for default entry
+            if( defaultEntry == null ) {
+                if( args[0].equals( "default" ) ) {
+                    double[] values = parseValues( line, args );
+                    defaultEntry = new DefaultValueEntry( values );
+                    continue;
                 }
             }
-            value = new EntityList( defaultEntry, entryList );
-            value.addNamespaceEntries( namespaceEntries );
-            value.addTagEntries( tagEntries );
+            // Check for namespace entries
+            if( args[0].endsWith( "*" ) ) {
+                NamespaceRegistryEntry entry = parseNamespaceEntry( line );
+                if( entry != null ) namespaceEntries.add( entry );
+            }
+            // Check for entity type tags
+            else if( line.startsWith( "#" ) ) {
+                EntityTagEntry entry = parseTagEntry( line );
+                if( entry != null ) tagEntries.add( entry );
+            }
+            // Try parse as normal entry
+            else {
+                EntityEntry entry = parseEntry( line );
+                if( entry != null ) entryList.add( entry );
+            }
         }
+        
+        final EntityList entityList = new EntityList( defaultEntry, entryList );
+        entityList.addNamespaceEntries( namespaceEntries );
+        entityList.addTagEntries( tagEntries );
+        return entityList;
     }
     
     /** Parses a single entry line and returns the result. */
@@ -281,6 +289,22 @@ public class EntityListField extends GenericField<EntityList> {
             value = valueDefault.getMaxValue();
         }
         return value;
+    }
+    
+    /** @return This field's gui component provider. */
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider<>( this ); }
+    
+    /** Converts the displayable string list to a field value. */
+    @Override // IStringListScreenEditable
+    public Object stringListToValue( List<String> value ) {
+        return parse( value );
+    }
+    
+    /** @return This field's line validator, or null if any string is allowed. */
+    @Override // IStringListScreenEditable
+    public Predicate<String> getLineValidator() {
+        return null;//TODO
     }
     
     

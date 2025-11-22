@@ -76,6 +76,10 @@ public abstract class TomlStringList<T extends ITomlStringValue> implements IStr
     @Override // ITomlArrayValue
     public List<T> toTomlList() { return getList(); }
     
+    /** @return This value's string representation (a single-line TOML literal). */
+    @Override
+    public String toString() { return toTomlLiteral(); }
+    
     /** @return Returns true if this object has the same value as another object. */
     @Override
     public boolean equals( @Nullable Object other ) {

@@ -92,10 +92,10 @@ public abstract class FuzzySet<T> extends TomlStringList<FuzzyKey<T>> {
             }
             else {
                 // Load all other key types
-                if( !allowsValues() ) {
+                if( !blacklist && !allowsValues() && lineValue != null ) {
                     ConfigUtil.warnFor( field );
                     ConfigUtil.LOG.warn( "Values not allowed for this field! Deleting value \"{}\". Entry: {}",
-                            value, line );
+                            lineValue, line );
                 }
                 final FuzzyKey<T> entry = loadEntry( field, line, keyAndValue[0], lineValue, blacklist );
                 if( entry != null ) {
@@ -170,18 +170,21 @@ public abstract class FuzzySet<T> extends TomlStringList<FuzzyKey<T>> {
     }
     
     
-    //    /** Boilerplate builder class for fuzzy sets/maps. */ TODO would this be helpful at all?
-    //    @ApiStatus.Experimental
-    //    public static abstract class Builder<T> {
-    //        public final ArrayList<FuzzyKey<T>> list = new ArrayList<>();
-    //
-    //        public abstract FuzzySet<T> build();
-    //
-    //        public abstract FuzzySet<T> buildWithDefault();
-    //
-    //        public Builder<T> add( FuzzyKey<T> key ) {
-    //            list.add( key );
-    //            return this;
-    //        }
-    //    }
+    /** Boilerplate builder class for fuzzy sets/maps. */
+    @ApiStatus.Experimental
+    public static abstract class Builder<T> {
+        public final ArrayList<FuzzyKey<T>> list = new ArrayList<>();
+        
+        /** @return A new fuzzy set reflecting the current state of this builder. */
+        public abstract FuzzySet<T> build();
+        
+        /** @return A new fuzzy set with a default key reflecting the current state of this builder. */
+        public abstract FuzzySet<T> buildWithDefault();
+        
+        /** Adds a pre-constructed key. */
+        public Builder<T> add( FuzzyKey<T> key ) {
+            list.add( key );
+            return this;
+        }
+    }
 }

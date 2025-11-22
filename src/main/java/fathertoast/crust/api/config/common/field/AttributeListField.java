@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.provider.StringListFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.AttributeEntry;
@@ -12,13 +14,14 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Represents a config field with an entity list value.
  *
  * @see ConfigDrivenAttributeModifierMap
  */
-public class AttributeListField extends GenericField<AttributeList> {
+public class AttributeListField extends GenericField<AttributeList> implements IStringListScreenEditable {
     
     /** Provides a detailed description of how to use attribute lists. Recommended to put at the top of any file using attribute lists. */
     public static List<String> verboseDescription() {
@@ -69,15 +72,18 @@ public class AttributeListField extends GenericField<AttributeList> {
             value = (AttributeList) raw;
         }
         else {
-            List<String> list = TomlHelper.parseStringList( raw );
-            List<AttributeEntry> entryList = new ArrayList<>();
-            for( String line : list ) {
-                entryList.add( parseEntry( line ) );
-            }
-            value = new AttributeList( entryList );
+            value = parse( TomlHelper.parseStringList( raw ) );
         }
         
         if( linkedAttributeMap != null ) linkedAttributeMap.invalidate();
+    }
+    
+    private AttributeList parse( List<String> list ) {
+        List<AttributeEntry> entryList = new ArrayList<>();
+        for( String line : list ) {
+            entryList.add( parseEntry( line ) );
+        }
+        return new AttributeList( entryList );
     }
     
     /** Parses a single entry line and returns a valid result. */
@@ -147,6 +153,22 @@ public class AttributeListField extends GenericField<AttributeList> {
             value = identity;
         }
         return value;
+    }
+    
+    /** @return This field's gui component provider. */
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider<>( this ); }
+    
+    /** Converts the displayable string list to a field value. */
+    @Override // IStringListScreenEditable
+    public Object stringListToValue( List<String> value ) {
+        return parse( value );
+    }
+    
+    /** @return This field's line validator, or null if any string is allowed. */
+    @Override // IStringListScreenEditable
+    public Predicate<String> getLineValidator() {
+        return null;//TODO
     }
     
     

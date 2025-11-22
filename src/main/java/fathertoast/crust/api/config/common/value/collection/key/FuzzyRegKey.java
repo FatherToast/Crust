@@ -53,7 +53,7 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
         }
         
         /** @return A new resource location key based on the registry object. */
-        public static <T> ResLoc<T> of( boolean blacklist, IForgeRegistry<T> reg, RegistryObject<T> regObj ) {
+        public static <T> ResLoc<T> of( boolean blacklist, IForgeRegistry<T> reg, RegistryObject<? extends T> regObj ) {
             //noinspection DataFlowIssue
             return of( blacklist, reg, regObj.getId() );
         }
@@ -166,20 +166,21 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
         }
         
         /** @return A new tag key based on the tag key (well, different kind of tag key). */
-        public static <T> Tag<T> of( boolean blacklist, IForgeRegistry<T> reg, TagKey<T> tag ) {
+        public static <T> Tag<T> of( boolean blacklist, IForgeRegistry<T> reg, TagKey<? extends T> tag ) {
             return new Tag<>( blacklist, reg, tag );
         }
         
         /** @return A new tag key based on the tag. */
-        public static <T> Tag<T> of( boolean blacklist, IForgeRegistry<T> reg, ITag<T> tag ) {
+        public static <T> Tag<T> of( boolean blacklist, IForgeRegistry<T> reg, ITag<? extends T> tag ) {
             return of( blacklist, reg, tag.getKey() );
         }
         
         protected final TagKey<T> tagKey;
         
-        protected Tag( boolean blacklist, IForgeRegistry<T> reg, TagKey<T> tag ) {
+        protected Tag( boolean blacklist, IForgeRegistry<T> reg, TagKey<? extends T> tag ) {
             super( blacklist, reg );
-            tagKey = tag;
+            //noinspection unchecked
+            tagKey = (TagKey<T>) tag;
         }
         
         /** @return This fuzzy key's string definition. This must uniquely describe the match conditions. */
