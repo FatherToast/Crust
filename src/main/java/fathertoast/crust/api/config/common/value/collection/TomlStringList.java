@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.ITomlStringValue;
 import fathertoast.crust.api.lib.NBTHelper;
 import net.minecraft.nbt.CompoundTag;
@@ -13,8 +14,11 @@ import java.util.*;
 /**
  * A list of values represented in files by a string array.
  * <p>
+ * This implementation is semi-fixed to protect against inadvertent modification, but allows
+ * direct {@link #load} operations to make it easier to use in non-config applications (e.g., NBT).
+ * <p>
  * Extending classes should typically provide a no-args constructor to support load operations,
- * as well as a var-args constructor to simplify default value creation.
+ * as well as a var-args constructor and/or a builder to simplify default value creation.
  */
 @ApiStatus.Experimental
 public abstract class TomlStringList<T extends ITomlStringValue> implements IStringArrayValue {
@@ -33,8 +37,16 @@ public abstract class TomlStringList<T extends ITomlStringValue> implements IStr
     
     
     /**
-     * Loads the list value. If anything goes wrong, correct it at the lowest level possible and
-     * provide useful feedback, identifying the config field if present.
+     * Loads this value from the given raw TOML value. If anything goes wrong, correct it at the lowest level possible.
+     * If the field is null, error reporting is suppressed.
+     */
+    public void load( @Nullable AbstractConfigField field, Object raw ) {
+        load( field, TomlHelper.parseStringList( raw ) );
+    }
+    
+    /**
+     * Loads this value from the given list. If anything goes wrong, correct it at the lowest level possible.
+     * If the field is null, error reporting is suppressed.
      *
      * @param field The config field we are loading for, or null if not loading from a config.
      * @param value List value to load from. This generally comes from a TOML string array value

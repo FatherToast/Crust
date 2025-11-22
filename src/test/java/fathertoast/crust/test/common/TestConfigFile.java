@@ -167,7 +167,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             .add( EntityType.STRAY, true ).addTag( EntityTypeTags.SKELETONS )
                             .addWildcard( "minecraft", "ender" )
                             .build(),
-                            "Yeh we test it" ), General::testCallback ) ).field();
+                            (String[]) null ), General::testCallback ) ).field();
             scaledDoubleField = SPEC.define( new InjectionWrapperField<>(
                     new ScaledDoubleField( "scaled_double", 1.0, 6.0, DoubleField.Range.ANY,
                             (String[]) null ), General::testCallback ) ).field();

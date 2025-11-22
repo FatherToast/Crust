@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
  * <p>
  * For example, say you have two keys in a set, the first is a blacklist key that matches husks,
  * and the second is a tag key that matches all zombies - contains checks for husks will return
- * false, which other zombies will return true.
+ * false, but all other zombies will return true.
  * <p>
  * If you were to swap the positions of those keys, the blacklist husk entry will never be used,
  * since husks will return true on matching the zombie tag key before it checks the husk blacklist
@@ -70,6 +70,8 @@ public abstract class FuzzyKey<T> implements ITomlStringValue {
         return tomlString.trim().split( ARG_SEPARATOR, max );
     }
     
+    
+    // ---- Instance Methods ---- //
     
     /** @see #isBlacklist() */
     private final boolean isBlacklist;

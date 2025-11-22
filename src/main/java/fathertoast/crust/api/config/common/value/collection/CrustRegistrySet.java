@@ -17,55 +17,15 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
- * TODO
+ * A fuzzy set used to match registered objects.
+ * <p>
+ * See also:
+ * {@link net.minecraftforge.registries.ForgeRegistries}, {@link FuzzyRegKey}, and
+ * {@link fathertoast.crust.api.config.common.field.RegistrySetField}
+ *
  */
 @ApiStatus.Experimental
 public class CrustRegistrySet<T> extends FuzzySet<T> {
-    /**
-     * Attempts to parse a key string into a fuzzy key.
-     *
-     * @param reg       The registry the key should target.
-     * @param field     Loading field for error context, or null if not loading from a field.
-     * @param line      The entire entry line the key string came from for error context.
-     * @param keyString The key string to parse.
-     * @param blacklist True if the key should be a blacklist key.
-     * @return A new fuzzy key based on the key string, or null if invalid.
-     */
-    @Nullable
-    public static <T> FuzzyKey<T> tryParse( IForgeRegistry<T> reg, @Nullable AbstractConfigField field,
-                                            String line, String keyString, boolean blacklist ) {
-        FuzzyKey<T> key;
-        if( keyString.startsWith( FuzzyRegKey.Tag.CODE ) ) {
-            key = FuzzyRegKey.Tag.of( blacklist, reg, keyString );
-            if( key == null ) {
-                ConfigUtil.warnFor( field );
-                ConfigUtil.LOG.warn( "Registry entry has invalid tag key! Skipping. Entry: {}", line );
-            }
-            if( reg.tags() == null ) {
-                ConfigUtil.warnFor( field );
-                ConfigUtil.LOG.warn( "Registry entry defines a tag key for a registry that does not support tags! Entry: {}",
-                        line );
-            }
-        }
-        else if( keyString.endsWith( FuzzyRegKey.Wildcard.CODE ) ) {
-            key = FuzzyRegKey.Wildcard.of( blacklist, reg, keyString );
-            if( key == null ) {
-                ConfigUtil.warnFor( field );
-                ConfigUtil.LOG.warn( "Registry entry has invalid wildcard key! Skipping. Entry: {}",
-                        line );
-            }
-        }
-        else {
-            key = FuzzyRegKey.ResLoc.of( blacklist, reg, keyString );
-            if( key == null ) {
-                ConfigUtil.warnFor( field );
-                ConfigUtil.LOG.warn( "Registry entry has invalid key! Skipping. Entry: {}", line );
-            }
-        }
-        return key;
-    }
-    
-    
     /** The target registry. */
     private final IForgeRegistry<T> registry;
     
@@ -85,6 +45,9 @@ public class CrustRegistrySet<T> extends FuzzySet<T> {
         registry = reg;
     }
     
+    /** @return A fresh, empty set of the same type as this one. */
+    public FuzzySet<T> makeNew() { return new CrustRegistrySet<>( registry ); }
+    
     /** The target registry */
     public IForgeRegistry<T> getRegistry() { return registry; }
     
@@ -97,7 +60,37 @@ public class CrustRegistrySet<T> extends FuzzySet<T> {
     @Nullable
     protected FuzzyKey<T> loadEntry( @Nullable AbstractConfigField field, String line, String key,
                                      @Nullable String value, boolean blacklist ) {
-        return tryParse( registry, field, line, key, blacklist );
+        FuzzyKey<T> loadedKey;
+        if( key.startsWith( FuzzyRegKey.Tag.CODE ) ) {
+            loadedKey = FuzzyRegKey.Tag.of( blacklist, registry, key );
+            if( field != null ) {
+                if( loadedKey == null ) {
+                    ConfigUtil.warnFor( field );
+                    ConfigUtil.LOG.warn( "Registry entry has invalid tag key! Skipping. Entry: {}", line );
+                }
+                if( registry.tags() == null ) {
+                    ConfigUtil.warnFor( field );
+                    ConfigUtil.LOG.warn( "Registry entry defines a tag key for a registry that does not support tags! Entry: {}",
+                            line );
+                }
+            }
+        }
+        else if( key.endsWith( FuzzyRegKey.Wildcard.CODE ) ) {
+            loadedKey = FuzzyRegKey.Wildcard.of( blacklist, registry, key );
+            if( field != null && loadedKey == null ) {
+                ConfigUtil.warnFor( field );
+                ConfigUtil.LOG.warn( "Registry entry has invalid wildcard key! Skipping. Entry: {}",
+                        line );
+            }
+        }
+        else {
+            loadedKey = FuzzyRegKey.ResLoc.of( blacklist, registry, key );
+            if( field != null && loadedKey == null ) {
+                ConfigUtil.warnFor( field );
+                ConfigUtil.LOG.warn( "Registry entry has invalid key! Skipping. Entry: {}", line );
+            }
+        }
+        return loadedKey;
     }
     
     
