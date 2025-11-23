@@ -149,13 +149,13 @@ public class TestConfigFile extends AbstractConfigFile {
                                     List.of( EntityTypeTags.FALL_DAMAGE_IMMUNE ),
                                     EntityType.SHEEP, EntityType.ALLAY ),
                             (String[]) null ), General::testCallback ) ).field();
-            registryEntryValueListField = SPEC.define(
+            registryEntryValueListField = SPEC.define( new InjectionWrapperField<>(
                     new RegistryEntryValueListField<>( "registry_entry_value_list",
                             new RegistryEntryValueList<>( new DefaultValueEntry( 0.0 ), () -> ForgeRegistries.MOB_EFFECTS,
                                     new RegistryValueEntry<>( ForgeRegistries.MOB_EFFECTS.getKey( MobEffects.CONFUSION ), 1.2 ),
                                     new RegistryValueEntry<>( ForgeRegistries.MOB_EFFECTS.getKey( MobEffects.ABSORPTION ), 2.0 )
-                            ).setSingleValue()
-                    ) );
+                            ).setSingleValue(),
+                            (String[]) null ), General::testCallback ) ).field();
             lazyRegistryEntryListField = SPEC.define( new InjectionWrapperField<>(
                     new LazyRegistryEntryListField<>( "lazy_registry_entry_list",
                             new LazyRegistryEntryList<>( ForgeRegistries.MOB_EFFECTS,
@@ -170,7 +170,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             .putBlacklist( EntityType.STRAY ).putTag( EntityTypeTags.SKELETONS, 666 )
                             .putWildcard( "minecraft", "ender", 3 )
                             .buildWithDefault( -1 ),
-                            "(String[]) null" ), General::testCallback ) ).field();
+                            (String[]) null ), General::testCallback ) ).field();
             registrySetField = SPEC.define( new InjectionWrapperField<>(
                     new RegistrySetField<>( "registry_set_field", new CrustRegistrySet
                             .Builder<>( ForgeRegistries.ENTITY_TYPES )
