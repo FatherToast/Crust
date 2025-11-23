@@ -4,8 +4,8 @@ import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.FuzzySetField;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
-import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
+import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
@@ -115,16 +115,16 @@ public class FuzzyMap<T, V> extends FuzzySet<T> {
         /** @return A new fuzzy map reflecting the current state of this builder. */
         public abstract F build();
         
-        /** @return A new fuzzy map with a default key reflecting the current state of this builder. */
+        /** @return A new fuzzy map with a default key-value pair reflecting the current state of this builder. */
         public F buildWithDefault( V value ) {
             add( FuzzyEntry.ofDefault( value, valueCodec ) );
             return build();
         }
         
-        /** Adds a pre-constructed key with value. */
+        /** Adds a pre-constructed key-value pair. */
         public B put( FuzzyKey<T> key, V value ) { return add( FuzzyEntry.of( key, value, valueCodec ) ); }
         
-        /** Adds a pre-constructed key with value. */
+        /** Adds a pre-constructed blacklist key. */
         public B putBlacklist( FuzzyKey<T> key ) { return add( FuzzyEntry.ofBlacklist( key ) ); }
         
         /** Adds a pre-constructed entry. */
@@ -149,7 +149,10 @@ public class FuzzyMap<T, V> extends FuzzySet<T> {
         @Override
         public FuzzyMap<T, V> build() { return new FuzzyMap<>( keyParser, valueCodec, list ); }
         
-        /** Adds a parsed entry. */
+        /** Adds a parsed key-value pair. */
         public B put( String key, V value ) { return put( Objects.requireNonNull( keyParser.parseTomlString( null, key, key, false ) ), value ); }
+        
+        /** Adds a parsed blacklist key. */
+        public B put( String key ) { return putBlacklist( Objects.requireNonNull( keyParser.parseTomlString( null, key, key, true ) ) ); }
     }
 }

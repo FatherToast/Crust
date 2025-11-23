@@ -17,11 +17,12 @@ public class TestGameEventHandler {
         
         // Test stuff here
         EntityType<?> entityType = event.getEntity().getType();
-        if( TestCrust.CONFIG.GENERAL.registrySetField.contains( entityType ) ) {
-            TestCrust.LOG.debug( "Entity matched: {}", entityType );
+        Integer value = TestCrust.CONFIG.GENERAL.registryMapField.get( entityType );
+        if( value == null ) {
+            TestCrust.LOG.debug( "Entity NOT matched: {}", entityType );
         }
         else {
-            TestCrust.LOG.debug( "Entity NOT matched: {}", entityType );
+            TestCrust.LOG.debug( "Value = {} for entity: {}", value, entityType );
         }
     }
 }

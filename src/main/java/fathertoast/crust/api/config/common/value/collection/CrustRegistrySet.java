@@ -67,57 +67,57 @@ public class CrustRegistrySet<T> extends FuzzySet<T> {
         // ---- Basic Keys ---- //
         
         /** Adds a key based on the resource location. */
-        public B add( ResourceLocation resLoc ) { return add( resLoc, false ); }
+        public B add( ResourceLocation resLoc ) { return add( FuzzyRegKey.Basic.of( registry, resLoc, false ) ); }
         
-        /** Adds a key based on the resource location. */
-        public B add( ResourceLocation resLoc, boolean blacklist ) { return add( FuzzyRegKey.Basic.of( registry, resLoc, blacklist ) ); }
-        
-        /** Adds a key based on the registry object. */
-        public B add( RegistryObject<? extends T> regObj ) { return add( regObj, false ); }
+        /** Adds a blacklist key based on the resource location. */
+        public B addBlacklist( ResourceLocation resLoc ) { return add( FuzzyRegKey.Basic.of( registry, resLoc, true ) ); }
         
         /** Adds a key based on the registry object. */
-        public B add( RegistryObject<? extends T> regObj, boolean blacklist ) { return add( FuzzyRegKey.Basic.of( registry, regObj, blacklist ) ); }
+        public B add( RegistryObject<? extends T> regObj ) { return add( FuzzyRegKey.Basic.of( registry, regObj, false ) ); }
+        
+        /** Adds a blacklist key based on the registry object. */
+        public B addBlacklist( RegistryObject<? extends T> regObj ) { return add( FuzzyRegKey.Basic.of( registry, regObj, true ) ); }
         
         /** Adds a key based on the registered object. Only suitable for vanilla stuff. */
-        public B add( T obj ) { return add( obj, false ); }
+        public B add( T obj ) { return add( FuzzyRegKey.Basic.of( registry, obj, false ) ); }
         
-        /** Adds a key based on the registered object. Only suitable for vanilla stuff. */
-        public B add( T obj, boolean blacklist ) { return add( FuzzyRegKey.Basic.of( registry, obj, blacklist ) ); }
+        /** Adds a blacklist key based on the registered object. Only suitable for vanilla stuff. */
+        public B addBlacklist( T obj ) { return add( FuzzyRegKey.Basic.of( registry, obj, true ) ); }
         
         
         // ---- Wildcard Keys ---- //
         
         /** Adds a wildcard key based on the partial resource location. */
-        public B addWildcard( ResourceLocation partialResLoc ) { return addWildcard( partialResLoc, false ); }
+        public B addWildcard( ResourceLocation partialResLoc ) { return add( FuzzyRegKey.Wildcard.of( registry, partialResLoc, false ) ); }
         
-        /** Adds a wildcard key based on the partial resource location. */
-        public B addWildcard( ResourceLocation partialResLoc, boolean blacklist ) { return add( FuzzyRegKey.Wildcard.of( registry, partialResLoc, blacklist ) ); }
-        
-        /** Adds a wildcard key based on the namespace. */
-        public B addWildcard( String namespace ) { return addWildcard( namespace, false ); }
+        /** Adds a blacklist wildcard key based on the partial resource location. */
+        public B addWildcardBlacklist( ResourceLocation partialResLoc ) { return add( FuzzyRegKey.Wildcard.of( registry, partialResLoc, true ) ); }
         
         /** Adds a wildcard key based on the namespace. */
-        public B addWildcard( String namespace, boolean blacklist ) { return addWildcard( namespace, "", blacklist ); }
+        public B addWildcard( String namespace ) { return addWildcard( namespace, "" ); }
+        
+        /** Adds a blacklist wildcard key based on the namespace. */
+        public B addWildcardBlacklist( String namespace ) { return addWildcardBlacklist( namespace, "" ); }
         
         /** Adds a wildcard key based on the namespace and partial path. */
-        public B addWildcard( String namespace, String partialPath ) { return addWildcard( namespace, partialPath, false ); }
+        public B addWildcard( String namespace, String partialPath ) { return add( FuzzyRegKey.Wildcard.of( registry, namespace, partialPath, false ) ); }
         
-        /** Adds a wildcard key based on the namespace and partial path. */
-        public B addWildcard( String namespace, String partialPath, boolean blacklist ) { return add( FuzzyRegKey.Wildcard.of( registry, namespace, partialPath, blacklist ) ); }
+        /** Adds a blacklist wildcard key based on the namespace and partial path. */
+        public B addWildcardBlacklist( String namespace, String partialPath ) { return add( FuzzyRegKey.Wildcard.of( registry, namespace, partialPath, true ) ); }
         
         
         // ---- Tag Keys ---- //
         
         /** Adds a tag key based on the resource location. */
-        public B addTag( ResourceLocation resLoc ) { return addTag( resLoc, false ); }
+        public B addTag( ResourceLocation resLoc ) { return add( FuzzyRegKey.Tag.of( registry, resLoc, false ) ); }
         
-        /** Adds a tag key based on the resource location. */
-        public B addTag( ResourceLocation resLoc, boolean blacklist ) { return add( FuzzyRegKey.Tag.of( registry, resLoc, blacklist ) ); }
-        
-        /** Adds a tag key based on the tag. */
-        public B addTag( TagKey<T> tag ) { return addTag( tag, false ); }
+        /** Adds a blacklist tag key based on the resource location. */
+        public B addTagBlacklist( ResourceLocation resLoc ) { return add( FuzzyRegKey.Tag.of( registry, resLoc, true ) ); }
         
         /** Adds a tag key based on the tag. */
-        public B addTag( TagKey<T> tag, boolean blacklist ) { return add( FuzzyRegKey.Tag.of( registry, tag, blacklist ) ); }
+        public B addTag( TagKey<T> tag ) { return add( FuzzyRegKey.Tag.of( registry, tag, false ) ); }
+        
+        /** Adds a blacklist tag key based on the tag. */
+        public B addTagBlacklist( TagKey<T> tag ) { return add( FuzzyRegKey.Tag.of( registry, tag, true ) ); }
     }
 }

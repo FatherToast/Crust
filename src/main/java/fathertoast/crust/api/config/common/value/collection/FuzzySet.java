@@ -233,5 +233,8 @@ public class FuzzySet<T> extends TomlStringList<FuzzyKey<T>> {
         
         /** Adds a parsed key. */
         public B add( String key ) { return add( Objects.requireNonNull( keyParser.parseTomlString( null, key, key, false ) ) ); }
+        
+        /** Adds a parsed blacklist key. */
+        public B addBlacklist( String key ) { return add( Objects.requireNonNull( keyParser.parseTomlString( null, key, key, true ) ) ); }
     }
 }
