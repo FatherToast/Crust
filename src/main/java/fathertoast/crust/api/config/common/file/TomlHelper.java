@@ -441,6 +441,16 @@ public final class TomlHelper {
     }
     
     
+    /** @return The default field info for a fuzzy set/map field (they print the default value on a separate line). */
+    public static String fieldInfoNoDefault( String typeName, String format ) {
+        return String.format( "<%s> Format: %s", typeName, format );
+    }
+    
+    /** @return Only the default value for a fuzzy set/map field. */
+    public static String fieldInfoOnlyDefault( Object defaultValue ) {
+        return String.format( "Default: %s", toLiteralForComment( defaultValue ) );
+    }
+    
     /** @return The default field info for a field that must provide its help in the field comment. */
     public static String fieldInfoNoHelp( String typeName, Object defaultValue ) {
         return String.format( "<%s> Default: %s", typeName, toLiteralForComment( defaultValue ) );

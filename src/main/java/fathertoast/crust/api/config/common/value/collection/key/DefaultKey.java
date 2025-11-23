@@ -3,21 +3,29 @@ package fathertoast.crust.api.config.common.value.collection.key;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Represents the default key for fuzzy sets and maps.
+ * Represents a default key for fuzzy sets and maps.
  * <p>
- * Always matches everything and cannot be a blacklist type.
+ * Always matches everything. Cannot be a blacklist type key.
  */
 @ApiStatus.Experimental
 public class DefaultKey<T> extends FuzzyKey<T> {
     
+    /** @return A new parameterized default key. */
     public static <T> DefaultKey<T> get() { return new DefaultKey<>(); }
     
     
     private DefaultKey() { super( false ); }
     
+    /** @return True if this key is a default key. A default key's {@link #matches(Object)} always returns true. */
+    @Override
+    public boolean isDefault() { return true; }
+    
+    
     /** @return This fuzzy key's string definition. This must uniquely describe the match conditions. */
+    @Override
     public String keyString() { return DEFAULT_KEY; }
     
     /** @return True if this key matches the target. */
+    @Override
     public boolean matches( T target ) { return true; }
 }

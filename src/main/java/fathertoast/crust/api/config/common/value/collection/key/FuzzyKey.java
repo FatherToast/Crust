@@ -1,7 +1,6 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
 import fathertoast.crust.api.config.common.value.ITomlStringValue;
-import fathertoast.crust.api.config.common.value.collection.FuzzyEntry;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
@@ -22,6 +21,8 @@ import javax.annotation.Nullable;
  * If you were to swap the positions of those keys, the blacklist husk entry will never be used,
  * since husks will return true on matching the zombie tag key before it checks the husk blacklist
  * key. We attempt to do some verification to warn of these conflicts, but not all are detectable.
+ *
+ * @param <T> The type to match against.
  */
 @ApiStatus.Experimental
 public abstract class FuzzyKey<T> implements ITomlStringValue {
@@ -39,36 +40,12 @@ public abstract class FuzzyKey<T> implements ITomlStringValue {
     public static final String ARG_SEPARATOR = " ";
     
     /** @return The string, split into a key (index 0) and value (index 1, if present). */
-    public static String[] getKeyAndValue( String tomlString ) { return getArgs( tomlString, 2 ); }
-    
-    /** @return The key and value, combined into a single string. */
-    public static String keyWithValue( FuzzyEntry<?, ?> entry ) {
-        return keyWithValue( entry.getKey(), entry.getValue() );
+    public static String[] getKeyAndValue( String tomlString ) {
+        return tomlString.trim().split( ARG_SEPARATOR, 2 );
     }
     
     /** @return The key and value, combined into a single string. */
-    public static String keyWithValue( FuzzyKey<?> key, @Nullable ITomlStringValue value ) {
-        return key.isBlacklist() ? keyWithValue( key.keyString(), BLACKLIST_VALUE ) :
-                keyWithValue( key.keyString(), value == null ? null : value.toTomlString() );
-    }
-    
-    /** @return The key and value (if applicable), combined into a single string. */
-    public static String keyWithValue( FuzzyKey<?> key ) {
-        return key.isBlacklist() ? keyWithValue( key.keyString(), BLACKLIST_VALUE ) : key.keyString();
-    }
-    
-    /** @return The key and value, combined into a single string. */
-    public static String keyWithValue( String key, @Nullable String value ) {
-        return value == null ? key : key + ARG_SEPARATOR + value;
-    }
-    
-    /** @return The string, split into an array of arguments. */
-    public static String[] getArgs( String tomlString ) { return getArgs( tomlString, 0 ); }
-    
-    /** @return The string, split into an array of arguments, up to a maximum array length. */
-    public static String[] getArgs( String tomlString, int max ) {
-        return tomlString.trim().split( ARG_SEPARATOR, max );
-    }
+    public static String keyWithValue( String key, String value ) { return key + ARG_SEPARATOR + value; }
     
     
     // ---- Instance Methods ---- //
@@ -84,6 +61,9 @@ public abstract class FuzzyKey<T> implements ITomlStringValue {
      */
     public boolean isBlacklist() { return isBlacklist; }
     
+    /** @return True if this key is a default key. A default key's {@link #matches(Object)} always returns true. */
+    public boolean isDefault() { return false; }
+    
     
     /** @return This fuzzy key's string definition. This must uniquely describe the match conditions. */
     public abstract String keyString();
@@ -94,7 +74,7 @@ public abstract class FuzzyKey<T> implements ITomlStringValue {
     
     /** @return This value, converted to a single-line string. */
     @Override // ITomlStringValue
-    public String toTomlString() { return keyWithValue( this ); }
+    public String toTomlString() { return isBlacklist() ? keyWithValue( keyString(), BLACKLIST_VALUE ) : keyString(); }
     
     /** Two fuzzy keys are equal if they match the exact same targets. */
     @Override

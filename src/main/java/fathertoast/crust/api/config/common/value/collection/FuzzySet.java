@@ -3,8 +3,10 @@ package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.FuzzySetField;
 import fathertoast.crust.api.config.common.value.collection.key.DefaultKey;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
+import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
@@ -19,53 +21,43 @@ import java.util.*;
  * This implementation is semi-fixed to protect against inadvertent modification, but allows
  * direct {@link #load} operations to make it easier to use in non-config applications (e.g., NBT).
  *
+ * @param <T> The type to match against.
  * @see FuzzyKey
+ * @see FuzzySetField
  */
 @ApiStatus.Experimental
-public abstract class FuzzySet<T> extends TomlStringList<FuzzyKey<T>> {
+public class FuzzySet<T> extends TomlStringList<FuzzyKey<T>> {
+    
+    /** This set's key parser. */
+    protected final IFuzzyKeyParser<T> keyParser;
     
     /** Constructs an empty set. Use this if you want to {@link #load} a set from file/NBT. */
-    protected FuzzySet() { }
+    public FuzzySet( IFuzzyKeyParser<T> parser ) { keyParser = parser; }
     
     /** Constructs a set containing the keys provided. Use this for creating default values during config definition. */
     @SafeVarargs
-    protected FuzzySet( FuzzyKey<T>... keys ) {
+    public FuzzySet( IFuzzyKeyParser<T> parser, FuzzyKey<T>... keys ) {
         super( keys );
+        keyParser = parser;
         validate();
     }
     
     /** Constructs a set containing the keys provided. Use this for creating default values during config definition. */
-    protected FuzzySet( Collection<FuzzyKey<T>> keys ) {
+    public FuzzySet( IFuzzyKeyParser<T> parser, Collection<? extends FuzzyKey<T>> keys ) {
         super( keys );
+        keyParser = parser;
         validate();
     }
     
     /** @return A fresh, empty set of the same type as this one. */
-    public abstract FuzzySet<T> makeNew();
+    public FuzzySet<T> makeNew() { return new FuzzySet<>( keyParser ); }
     
-    /**
-     * Loads an entry from the provided TOML string. If anything goes wrong, correct it at the lowest level possible.
-     * If the config field is not null, provide useful feedback and identify the field.
-     *
-     * @return The freshly loaded entry, or null if the line is invalid.
-     */
-    @Nullable
-    protected abstract FuzzyKey<T> loadEntry( @Nullable AbstractConfigField field, String line, String key,
-                                              @Nullable String value, boolean blacklist );
     
-    /**
-     * Loads a default entry from the provided TOML string. If anything goes wrong, correct it at the lowest level.
-     * If the config field is not null, provide useful feedback and identify the field.
-     * <p>
-     * This is ONLY called for sets flagged as {@link #allowsValues()} (i.e., maps), and MUST be overridden for
-     * those types of sets.
-     *
-     * @return The freshly loaded default entry, or null if the line is invalid.
-     */
-    @Nullable
-    protected FuzzyKey<T> loadValueForDefault( @Nullable AbstractConfigField field, String line, String value ) {
-        throw new IllegalArgumentException( "Default entry does not know how to load values!" );
-    }
+    /** @return The field's type name. */
+    public String getTypeName() { return keyParser.getTypeName(); }
+    
+    /** @return The field's key patterns (e.g., "\"pattern_1\", \"pattern_2\", \"pattern_n\""). */
+    public String getKeyPatterns() { return keyParser.getPatterns(); }
     
     /**
      * Loads this value from the given list. If anything goes wrong, correct it at the lowest level possible.
@@ -77,29 +69,32 @@ public abstract class FuzzySet<T> extends TomlStringList<FuzzyKey<T>> {
      */
     public void load( @Nullable AbstractConfigField field, List<String> value ) {
         final ArrayList<FuzzyKey<T>> list = new ArrayList<>( value.size() );
-        // Used to exclude repeat keys (blacklist and/or value ignored)
-        final Set<FuzzyKey<T>> loadedKeys = new HashSet<>( value.size() );
+        
+        // Used to error report unreachable keys
+        final Set<FuzzyKey<T>> loadedKeys = field == null ? null : new HashSet<>( value.size() );
         boolean foundDefault = false;
+        
         for( String line : value ) {
-            // Print a warning for every entry after the default - these are all "dead code"
             if( foundDefault ) {
-                if( field != null ) {
-                    ConfigUtil.warnFor( field );
-                    ConfigUtil.LOG.warn( "Unreachable entry (defined after \"{}\" key): \"{}\"",
-                            FuzzyKey.DEFAULT_KEY, line );
-                }
+                ConfigUtil.warnFor( field );
+                ConfigUtil.LOG.warn( "Unreachable entry (defined after \"{}\" key): \"{}\"",
+                        FuzzyKey.DEFAULT_KEY, line );
             }
-            // Parse the line
+            
             FuzzyKey<T> entry = loadLine( field, line );
             if( entry != null ) {
-                if( entry instanceof DefaultKey ) foundDefault = true;
-                else if( !loadedKeys.add( entry ) && field != null ) {
-                    ConfigUtil.warnFor( field );
-                    ConfigUtil.LOG.warn( "Unreachable entry (duplicate key): \"{}\"", line );
-                }
                 list.add( entry );
+                
+                if( field != null ) {
+                    if( entry.isDefault() ) foundDefault = true;
+                    else if( !loadedKeys.add( entry ) ) {
+                        ConfigUtil.warnFor( field );
+                        ConfigUtil.LOG.warn( "Unreachable entry (duplicate key): \"{}\"", line );
+                    }
+                }
             }
         }
+        
         // Tidy up and set value
         list.trimToSize();
         setList( list );
@@ -109,72 +104,58 @@ public abstract class FuzzySet<T> extends TomlStringList<FuzzyKey<T>> {
     @Nullable
     public FuzzyKey<T> loadLine( @Nullable AbstractConfigField field, String line ) {
         String[] keyAndValue = FuzzyKey.getKeyAndValue( line );
-        String lineValue = keyAndValue.length > 1 ? keyAndValue[1].trim() : null;
-        boolean blacklist = lineValue != null && lineValue.equalsIgnoreCase( FuzzyKey.BLACKLIST_VALUE );
-        // Handle default key loading
+        String value = keyAndValue.length > 1 ? keyAndValue[1].trim() : null;
+        boolean blacklist = value != null && value.equalsIgnoreCase( FuzzyKey.BLACKLIST_VALUE );
+        // Load default keys
         if( keyAndValue[0].equalsIgnoreCase( FuzzyKey.DEFAULT_KEY ) ) {
             if( blacklist ) {
                 if( field != null ) {
                     ConfigUtil.warnFor( field );
                     ConfigUtil.LOG.warn( "Default key defined as blacklist - this is not allowed! Deleting." );
                 }
+                return null;
             }
-            else {
-                return loadDefaultEntry( field, line, lineValue );
-            }
+            return loadDefaultEntry( field, line, value );
         }
         // Load all other key types
-        else {
-            if( !blacklist && !allowsValues() && lineValue != null && field != null ) {
-                ConfigUtil.warnFor( field );
-                ConfigUtil.LOG.warn( "Values not allowed for this field! Deleting value \"{}\". Entry: {}",
-                        lineValue, line );
-            }
-            return loadEntry( field, line, keyAndValue[0], lineValue, blacklist );
-        }
-        return null;
+        return loadEntry( field, line, keyAndValue[0], value, blacklist );
     }
     
     /** @return The freshly loaded default entry, or null if the line is invalid. */
     @Nullable
     protected FuzzyKey<T> loadDefaultEntry( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
-        if( value == null ) {
-            if( allowsValues() ) {
-                if( field != null ) {
-                    ConfigUtil.warnFor( field );
-                    ConfigUtil.LOG.warn( "Default key missing value - this does nothing! Deleting entry." );
-                }
-                return null;
-            }
-        }
-        else {
-            if( allowsValues() ) {
-                return loadValueForDefault( field, line, value );
-            }
-            if( field != null ) {
-                ConfigUtil.warnFor( field );
-                ConfigUtil.LOG.warn( "Default key has value - this does nothing! Deleting value \"{}\". Entry: {}",
-                        value, line );
-            }
+        if( field != null && value != null ) {
+            ConfigUtil.warnFor( field );
+            ConfigUtil.LOG.warn( "Values not allowed for this field! Deleting value \"{}\". Entry: {}",
+                    value, line );
         }
         return DefaultKey.get();
     }
     
     /**
-     * Note: If you override this to return true, you must also override
-     * {@link #loadValueForDefault(AbstractConfigField, String, String)}.
+     * Loads an entry from the provided TOML string. If anything goes wrong, correct it at the lowest level possible.
+     * If the config field is not null, provide useful feedback and identify the field.
      *
-     * @return True if values are generally allowed.
+     * @return The freshly loaded entry, or null if the line is invalid.
      */
-    protected boolean allowsValues() { return false; } // Override this for map-type implementations
+    @Nullable
+    protected FuzzyKey<T> loadEntry( @Nullable AbstractConfigField field, String line, String key,
+                                     @Nullable String value, boolean blacklist ) {
+        if( field != null && !blacklist && value != null ) {
+            ConfigUtil.warnFor( field );
+            ConfigUtil.LOG.warn( "Values not allowed for this field! Deleting value \"{}\". Entry: {}",
+                    value, line );
+        }
+        return keyParser.parseTomlString( field, line, key, blacklist );
+    }
     
     
     /** @return True if the given target is contained within this set. */
-    public boolean contains( T target ) { return get( target ) != null; }
+    public boolean contains( T target ) { return getKey( target ) != null; }
     
-    /** @return The best match key, or null if no match was found. */
+    /** @return The first matching key, or null if no match was found or the match was a blacklist key. */
     @Nullable
-    public FuzzyKey<T> get( T target ) {
+    public FuzzyKey<T> getKey( T target ) {
         final List<FuzzyKey<T>> keys = getList();
         for( FuzzyKey<T> key : keys ) if( key.matches( target ) ) return key.isBlacklist() ? null : key;
         return null;
@@ -183,40 +164,74 @@ public abstract class FuzzySet<T> extends TomlStringList<FuzzyKey<T>> {
     
     /**
      * Called after constructing any of the pre-populated constructors, with the expectation
-     * that they are only used for creating default config values. This is fail-fast.
+     * that they are only used for creating default config values.
+     * <p>
+     * This checks for these common set construction errors:<p>
+     * * Unreachable entries (duplicate keys / any entries after a default key)<p>
+     * * Useless entries (trailing blacklist keys / null entries)
      *
-     * @throws IllegalArgumentException If there are any issues.
+     * @throws IllegalArgumentException If any errors are found.
      */
     private void validate() {
         final List<FuzzyKey<T>> list = getList();
-        // Used to exclude repeat keys (blacklist and/or value ignored)
-        Set<FuzzyKey<T>> loadedKeys = new HashSet<>( list.size() );
+        if( list.isEmpty() ) return;
+        
+        final Set<FuzzyKey<T>> loadedKeys = new HashSet<>( list.size() );
+        boolean foundDefault = false;
+        boolean lastWasBlacklist = true;
         for( FuzzyKey<T> entry : list ) {
-            if( loadedKeys.contains( entry ) ) {
+            if( entry == null ) throw new IllegalArgumentException( "Null keys not allowed!" );
+            
+            if( foundDefault ) throw new IllegalArgumentException( "No keys allowed after a default key!" );
+            if( entry.isDefault() ) foundDefault = true;
+            
+            if( loadedKeys.contains( entry ) )
                 throw new IllegalArgumentException( "Duplicate keys not allowed! Duplicate entry: " + entry.toTomlString() );
-            }
-            else {
-                loadedKeys.add( entry );
-            }
+            loadedKeys.add( entry );
+            
+            lastWasBlacklist = entry.isBlacklist();
+        }
+        // Check for trailing blacklist keys (also catches sets with no non-blacklist keys)
+        if( lastWasBlacklist )
+            throw new IllegalArgumentException( "Blacklist keys must be followed by at least one non-blacklist key!" );
+    }
+    
+    
+    /** Boilerplate builder class for fuzzy sets. */
+    @ApiStatus.Experimental
+    public static abstract class Builder<T, F extends FuzzySet<T>, B extends Builder<T, F, B>> {
+        public final ArrayList<FuzzyKey<T>> list = new ArrayList<>();
+        
+        /** @return A new fuzzy set reflecting the current state of this builder. */
+        public abstract F build();
+        
+        /** @return A new fuzzy set with a default key reflecting the current state of this builder. */
+        public F buildWithDefault() {
+            list.add( DefaultKey.get() );
+            return build();
+        }
+        
+        /** Adds a pre-constructed key. */
+        public B add( FuzzyKey<T> key ) {
+            list.add( key );
+            //noinspection unchecked
+            return (B) this;
         }
     }
     
     
-    /** Boilerplate builder class for fuzzy sets/maps. */
+    /** Builder class for a generic fuzzy set. */
     @ApiStatus.Experimental
-    public static abstract class Builder<T> {
-        public final ArrayList<FuzzyKey<T>> list = new ArrayList<>();
+    public static class GenericBuilder<T, B extends GenericBuilder<T, B>> extends Builder<T, FuzzySet<T>, B> {
+        public final IFuzzyKeyParser<T> keyParser;
+        
+        public GenericBuilder( IFuzzyKeyParser<T> parser ) { keyParser = parser; }
         
         /** @return A new fuzzy set reflecting the current state of this builder. */
-        public abstract FuzzySet<T> build();
+        @Override
+        public FuzzySet<T> build() { return new FuzzySet<>( keyParser, list ); }
         
-        /** @return A new fuzzy set with a default key reflecting the current state of this builder. */
-        public abstract FuzzySet<T> buildWithDefault();
-        
-        /** Adds a pre-constructed key. */
-        public Builder<T> add( FuzzyKey<T> key ) {
-            list.add( key );
-            return this;
-        }
+        /** Adds a parsed key. */
+        public B add( String key ) { return add( Objects.requireNonNull( keyParser.parseTomlString( null, key, key, false ) ) ); }
     }
 }
