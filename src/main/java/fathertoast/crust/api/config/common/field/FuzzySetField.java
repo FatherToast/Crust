@@ -15,7 +15,9 @@ import java.util.function.Predicate;
 /**
  * Boilerplate for fuzzy set fields, but can also be used directly with generic fuzzy sets.
  *
- * @param <T> The
+ * @param <T> The type to match against.
+ * @see fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser
+ * @see FuzzyMapField
  */
 @ApiStatus.Experimental
 public class FuzzySetField<T, F extends FuzzySet<T>> extends GenericField<F> implements IStringListScreenEditable {

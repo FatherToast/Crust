@@ -23,6 +23,9 @@ import javax.annotation.Nullable;
  * key. We attempt to do some verification to warn of these conflicts, but not all are detectable.
  *
  * @param <T> The type to match against.
+ * @see IFuzzyKeyParser
+ * @see fathertoast.crust.api.config.common.value.collection.FuzzySet
+ * @see fathertoast.crust.api.config.common.value.collection.FuzzyMap
  */
 @ApiStatus.Experimental
 public abstract class FuzzyKey<T> implements ITomlStringValue {

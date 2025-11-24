@@ -2,8 +2,11 @@ package fathertoast.crust.api.config.common.value.collection;
 
 
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyRegKey;
+import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -17,32 +20,49 @@ import java.util.Collection;
  *
  * @param <T> The type to match against (i.e., the registry type).
  * @param <V> The value type.
+ * @see net.minecraft.core.registries.Registries
  * @see net.minecraftforge.registries.ForgeRegistries
  * @see FuzzyRegKey
  * @see IValueCodec
- * @see fathertoast.crust.api.config.common.field.RegistrySetField
+ * @see fathertoast.crust.api.config.common.field.RegistryMapField
+ * @see CrustRegistrySet CrustRegistrySet - A similar collection that does not allow values
  */
 @ApiStatus.Experimental
 public class CrustRegistryMap<T, V> extends FuzzyMap<T, V> {
     /** The target registry. */
-    private final IForgeRegistry<T> registry;
+    private final IRegWrapper<T> registry;
     
-    /** Constructs an empty set. Use this if you want to {@link #load} a set from file/NBT. */
-    public CrustRegistryMap( IForgeRegistry<T> reg, IValueCodec<V> codec ) {
-        super( FuzzyRegKey.parser( reg ), codec );
+    /** Constructs an empty map. Use this if you want to {@link #load} a map from file/NBT. */
+    public CrustRegistryMap( IForgeRegistry<T> reg, IValueCodec<V> codec ) { this( IRegWrapper.of( reg ), codec ); }
+    
+    /** Constructs an empty map. Use this if you want to {@link #load} a map from file/NBT. */
+    public CrustRegistryMap( Registry<T> reg, IValueCodec<V> codec ) { this( IRegWrapper.of( reg ), codec ); }
+    
+    /** Constructs an empty map. Use this if you want to {@link #load} a map from file/NBT. */
+    public CrustRegistryMap( ResourceKey<Registry<T>> key, IValueCodec<V> codec ) { this( IRegWrapper.forKey( key ), codec ); }
+    
+    /** Constructs an empty map. Use this if you want to {@link #load} a map from file/NBT. */
+    public CrustRegistryMap( IRegWrapper<T> reg, IValueCodec<V> codec ) {
+        super( reg.getParser(), codec );
         registry = reg;
     }
     
-    /** Constructs a set containing the keys provided. Use this for creating default values during config definition. */
+    /**
+     * Constructs a map containing the entries provided. You may use this for creating default values
+     * during config definition, however the {@link CrustRegistryMap.Builder} is much easier.
+     */
     @SafeVarargs
-    public CrustRegistryMap( IForgeRegistry<T> reg, IValueCodec<V> codec, FuzzyEntry<T, V>... keys ) {
-        super( FuzzyRegKey.parser( reg ), codec, keys );
+    public CrustRegistryMap( IRegWrapper<T> reg, IValueCodec<V> codec, FuzzyEntry<T, V>... keys ) {
+        super( reg.getParser(), codec, keys );
         registry = reg;
     }
     
-    /** Constructs a set containing the keys provided. Use this for creating default values during config definition. */
-    public CrustRegistryMap( IForgeRegistry<T> reg, IValueCodec<V> codec, Collection<FuzzyEntry<T, V>> keys ) {
-        super( FuzzyRegKey.parser( reg ), codec, keys );
+    /**
+     * Constructs a map containing the entries provided. You may use this for creating default values
+     * during config definition, however the {@link CrustRegistryMap.Builder} is much easier.
+     */
+    public CrustRegistryMap( IRegWrapper<T> reg, IValueCodec<V> codec, Collection<FuzzyEntry<T, V>> keys ) {
+        super( reg.getParser(), codec, keys );
         registry = reg;
     }
     
@@ -50,7 +70,7 @@ public class CrustRegistryMap<T, V> extends FuzzyMap<T, V> {
     public CrustRegistryMap<T, V> makeNew() { return new CrustRegistryMap<>( registry, valueCodec ); }
     
     /** The target registry */
-    public IForgeRegistry<T> getRegistry() { return registry; }
+    public IRegWrapper<T> getRegistry() { return registry; }
     
     
     // ---- Builder Implementation ---- //
@@ -58,9 +78,15 @@ public class CrustRegistryMap<T, V> extends FuzzyMap<T, V> {
     /** Builder to make constructing registry maps smoother. */
     @ApiStatus.Experimental
     public static class Builder<T, V, B extends Builder<T, V, B>> extends FuzzyMap.Builder<T, V, CrustRegistryMap<T, V>, B> {
-        public final IForgeRegistry<T> registry;
+        public final IRegWrapper<T> registry;
         
-        public Builder( IForgeRegistry<T> reg, IValueCodec<V> codec ) {
+        public Builder( IForgeRegistry<T> reg, IValueCodec<V> codec ) { this( IRegWrapper.of( reg ), codec ); }
+        
+        public Builder( Registry<T> reg, IValueCodec<V> codec ) { this( IRegWrapper.of( reg ), codec ); }
+        
+        public Builder( ResourceKey<Registry<T>> key, IValueCodec<V> codec ) { this( IRegWrapper.forKey( key ), codec ); }
+        
+        public Builder( IRegWrapper<T> reg, IValueCodec<V> codec ) {
             super( codec );
             registry = reg;
         }

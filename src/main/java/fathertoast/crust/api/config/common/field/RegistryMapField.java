@@ -1,17 +1,18 @@
 package fathertoast.crust.api.config.common.field;
 
 import fathertoast.crust.api.config.common.value.collection.CrustRegistryMap;
-import net.minecraftforge.registries.IForgeRegistry;
+import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents a config field with a registry map value.
- * <p>
- * See also: {@link net.minecraftforge.registries.ForgeRegistries}
+ *
+ * @see net.minecraft.core.registries.Registries
+ * @see net.minecraftforge.registries.ForgeRegistries
+ * @see IRegWrapper
+ * @see fathertoast.crust.api.config.common.value.collection.value.IValueCodec
  */
 @ApiStatus.Experimental
 public class RegistryMapField<T, V> extends FuzzyMapField<T, V, CrustRegistryMap<T, V>> {
@@ -25,5 +26,5 @@ public class RegistryMapField<T, V> extends FuzzyMapField<T, V, CrustRegistryMap
     // ---- Convenience Methods ---- //
     
     /** @return The target registry. */
-    public IForgeRegistry<T> getRegistry() { return getDefaultValue().getRegistry(); }
+    public IRegWrapper<T> getRegistry() { return getDefaultValue().getRegistry(); }
 }

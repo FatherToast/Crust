@@ -3,6 +3,9 @@ package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyRegKey;
+import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -18,28 +21,44 @@ import java.util.Collection;
  * @see net.minecraftforge.registries.ForgeRegistries
  * @see FuzzyRegKey
  * @see fathertoast.crust.api.config.common.field.RegistrySetField
+ * @see CrustRegistryMap CrustRegistryMap - A similar collection that allows values
  */
 @ApiStatus.Experimental
 public class CrustRegistrySet<T> extends FuzzySet<T> {
     /** The target registry. */
-    private final IForgeRegistry<T> registry;
+    private final IRegWrapper<T> registry;
     
     /** Constructs an empty set. Use this if you want to {@link #load} a set from file/NBT. */
-    public CrustRegistrySet( IForgeRegistry<T> reg ) {
-        super( FuzzyRegKey.parser( reg ) );
+    public CrustRegistrySet( IForgeRegistry<T> reg ) { this( IRegWrapper.of( reg ) ); }
+    
+    /** Constructs an empty set. Use this if you want to {@link #load} a set from file/NBT. */
+    public CrustRegistrySet( Registry<T> reg ) { this( IRegWrapper.of( reg ) ); }
+    
+    /** Constructs an empty set. Use this if you want to {@link #load} a set from file/NBT. */
+    public CrustRegistrySet( ResourceKey<Registry<T>> key ) { this( IRegWrapper.forKey( key ) ); }
+    
+    /** Constructs an empty set. Use this if you want to {@link #load} a set from file/NBT. */
+    public CrustRegistrySet( IRegWrapper<T> reg ) {
+        super( reg.getParser() );
         registry = reg;
     }
     
-    /** Constructs a set containing the keys provided. Use this for creating default values during config definition. */
+    /**
+     * Constructs a set containing the keys provided. You may use this for creating default values
+     * during config definition, however the {@link CrustRegistrySet.Builder} is much easier.
+     */
     @SafeVarargs
-    public CrustRegistrySet( IForgeRegistry<T> reg, FuzzyKey<T>... keys ) {
-        super( FuzzyRegKey.parser( reg ), keys );
+    public CrustRegistrySet( IRegWrapper<T> reg, FuzzyKey<T>... keys ) {
+        super( reg.getParser(), keys );
         registry = reg;
     }
     
-    /** Constructs a set containing the keys provided. Use this for creating default values during config definition. */
-    public CrustRegistrySet( IForgeRegistry<T> reg, Collection<FuzzyKey<T>> keys ) {
-        super( FuzzyRegKey.parser( reg ), keys );
+    /**
+     * Constructs a set containing the keys provided. You may use this for creating default values
+     * during config definition, however the {@link CrustRegistrySet.Builder} is much easier.
+     */
+    public CrustRegistrySet( IRegWrapper<T> reg, Collection<FuzzyKey<T>> keys ) {
+        super( reg.getParser(), keys );
         registry = reg;
     }
     
@@ -47,7 +66,7 @@ public class CrustRegistrySet<T> extends FuzzySet<T> {
     public CrustRegistrySet<T> makeNew() { return new CrustRegistrySet<>( registry ); }
     
     /** The target registry */
-    public IForgeRegistry<T> getRegistry() { return registry; }
+    public IRegWrapper<T> getRegistry() { return registry; }
     
     
     // ---- Builder Implementation ---- //
@@ -55,9 +74,15 @@ public class CrustRegistrySet<T> extends FuzzySet<T> {
     /** Builder to make constructing registry sets smoother. */
     @ApiStatus.Experimental
     public static class Builder<T, B extends Builder<T, B>> extends FuzzySet.Builder<T, CrustRegistrySet<T>, B> {
-        public final IForgeRegistry<T> registry;
+        public final IRegWrapper<T> registry;
         
-        public Builder( IForgeRegistry<T> reg ) { registry = reg; }
+        public Builder( IForgeRegistry<T> reg ) { this( IRegWrapper.of( reg ) ); }
+        
+        public Builder( Registry<T> reg ) { this( IRegWrapper.of( reg ) ); }
+        
+        public Builder( ResourceKey<Registry<T>> key ) { this( IRegWrapper.forKey( key ) ); }
+        
+        public Builder( IRegWrapper<T> reg ) { registry = reg; }
         
         /** @return A new fuzzy set reflecting the current state of this builder. */
         @Override

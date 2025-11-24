@@ -1,7 +1,6 @@
 package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.field.FuzzySetField;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
@@ -23,9 +22,11 @@ import java.util.Objects;
  * @param <T> The type to match against.
  * @param <V> The value type.
  * @see FuzzyKey
- * @see IValueCodec
+ * @see IFuzzyKeyParser
  * @see FuzzyEntry
- * @see FuzzySetField
+ * @see IValueCodec
+ * @see fathertoast.crust.api.config.common.field.FuzzyMapField
+ * @see FuzzySet FuzzySet - A similar collection that does not allow values
  */
 public class FuzzyMap<T, V> extends FuzzySet<T> {
     
@@ -38,14 +39,20 @@ public class FuzzyMap<T, V> extends FuzzySet<T> {
         valueCodec = codec;
     }
     
-    /** Constructs a map containing the entries provided. Use this for creating default values during config definition. */
+    /**
+     * Constructs a map containing the entries provided. You may use this for creating default values
+     * during config definition, however the {@link Builder} is much easier.
+     */
     @SafeVarargs
     protected FuzzyMap( IFuzzyKeyParser<T> parser, IValueCodec<V> codec, FuzzyEntry<T, V>... keys ) {
         super( parser, keys );
         valueCodec = codec;
     }
     
-    /** Constructs a map containing the entries provided. Use this for creating default values during config definition. */
+    /**
+     * Constructs a map containing the entries provided. You may use this for creating default values
+     * during config definition, however the {@link Builder} is much easier.
+     */
     protected FuzzyMap( IFuzzyKeyParser<T> parser, IValueCodec<V> codec, Collection<FuzzyEntry<T, V>> keys ) {
         super( parser, keys );
         valueCodec = codec;

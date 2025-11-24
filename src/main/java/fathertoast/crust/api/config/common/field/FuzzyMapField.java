@@ -11,6 +11,12 @@ import java.util.List;
 
 /**
  * Boilerplate for fuzzy map fields, but can also be used directly with generic fuzzy maps.
+ *
+ * @param <T> The type to match against.
+ * @param <V> The value type.
+ * @see fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser
+ * @see fathertoast.crust.api.config.common.value.collection.value.IValueCodec
+ * @see FuzzySetField
  */
 @ApiStatus.Experimental
 public class FuzzyMapField<T, V, F extends FuzzyMap<T, V>> extends FuzzySetField<T, F> {

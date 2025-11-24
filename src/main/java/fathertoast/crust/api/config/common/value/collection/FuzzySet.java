@@ -3,7 +3,6 @@ package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.field.FuzzySetField;
 import fathertoast.crust.api.config.common.value.collection.key.DefaultKey;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
@@ -23,7 +22,9 @@ import java.util.*;
  *
  * @param <T> The type to match against.
  * @see FuzzyKey
- * @see FuzzySetField
+ * @see IFuzzyKeyParser
+ * @see fathertoast.crust.api.config.common.field.FuzzySetField
+ * @see FuzzyMap FuzzyMap - A similar collection that allows values
  */
 @ApiStatus.Experimental
 public class FuzzySet<T> extends TomlStringList<FuzzyKey<T>> {

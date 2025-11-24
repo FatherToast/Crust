@@ -2,33 +2,45 @@ package fathertoast.crust.api.config.common.value.collection.key;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.registries.tags.IReverseTag;
-import net.minecraftforge.registries.tags.ITagManager;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * A key for fuzzy sets and maps that tests against registered objects.
  *
+ * @see net.minecraft.core.registries.Registries
  * @see net.minecraftforge.registries.ForgeRegistries
+ * @see fathertoast.crust.api.config.common.value.collection.CrustRegistrySet
+ * @see fathertoast.crust.api.config.common.value.collection.CrustRegistryMap
  */
 @ApiStatus.Experimental
 public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
     
     /** @return The parser appropriate for a particular registry. */
     public static <T> IFuzzyKeyParser<T> parser( IForgeRegistry<T> registry ) {
-        final ResourceLocation regName = registry.getRegistryName();
+        return parser( registry.getRegistryKey() );
+    }
+    
+    /** @return The parser appropriate for a particular registry. */
+    public static <T> IFuzzyKeyParser<T> parser( Registry<T> registry ) {
+        return parser( registry.key() );
+    }
+    
+    /** @return The parser appropriate for a particular registry key. */
+    public static <T> IFuzzyKeyParser<T> parser( ResourceKey<? extends Registry<T>> registryKey ) {
+        ResourceLocation regName = registryKey.location();
         if( !PARSERS.containsKey( regName ) ) {
-            final Parser<T> parser = new Parser<>( registry );
+            final Parser<T> parser = new Parser<>( IRegWrapper.forKey( registryKey ) );
             PARSERS.put( regName, parser );
             return parser;
         }
@@ -40,9 +52,9 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
     // ---- Key Implementations ---- //
     
     /** This key's target registry. */
-    protected final IForgeRegistry<T> registry;
+    protected final IRegWrapper<T> registry;
     
-    protected FuzzyRegKey( IForgeRegistry<T> reg, boolean blacklist ) {
+    protected FuzzyRegKey( IRegWrapper<T> reg, boolean blacklist ) {
         super( blacklist );
         registry = reg;
     }
@@ -57,18 +69,18 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
         
         /** @return A new key, parsed from a key string, or null if the key was invalid. */
         @Nullable
-        public static <T> Basic<T> parse( IForgeRegistry<T> reg, String key, boolean blacklist ) {
+        public static <T> Basic<T> parse( IRegWrapper<T> reg, String key, boolean blacklist ) {
             ResourceLocation resLoc = ResourceLocation.tryParse( key );
             return resLoc == null ? null : of( reg, resLoc, blacklist );
         }
         
         /** @return A new resource location key based on the resource location. */
-        public static <T> Basic<T> of( IForgeRegistry<T> reg, ResourceLocation resLoc, boolean blacklist ) {
+        public static <T> Basic<T> of( IRegWrapper<T> reg, ResourceLocation resLoc, boolean blacklist ) {
             return new Basic<>( reg, resLoc, blacklist );
         }
         
-        /** @return A new resource location key based on the registry object. */
-        public static <T> Basic<T> of( IForgeRegistry<T> reg, RegistryObject<? extends T> regObj, boolean blacklist ) {
+        /** @return A new resource location key based on the registryKey object. */
+        public static <T> Basic<T> of( IRegWrapper<T> reg, RegistryObject<? extends T> regObj, boolean blacklist ) {
             //noinspection DataFlowIssue
             return of( reg, regObj.getId(), blacklist );
         }
@@ -78,14 +90,14 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
          * object is not registered.
          * When building default config values, this is only suitable for vanilla objects.
          */
-        public static <T> Basic<T> of( IForgeRegistry<T> reg, T obj, boolean blacklist ) {
+        public static <T> Basic<T> of( IRegWrapper<T> reg, T obj, boolean blacklist ) {
             return of( reg, Objects.requireNonNull( reg.getKey( obj ) ), blacklist );
         }
         
         
         protected final ResourceLocation resLoc;
         
-        protected Basic( IForgeRegistry<T> reg, ResourceLocation rl, boolean blacklist ) {
+        protected Basic( IRegWrapper<T> reg, ResourceLocation rl, boolean blacklist ) {
             super( reg, blacklist );
             resLoc = rl;
         }
@@ -110,18 +122,18 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
         
         /** @return A new wildcard key, parsed from a key string, or null if the key was invalid. */
         @Nullable
-        public static <T> Wildcard<T> parse( IForgeRegistry<T> reg, String key, boolean blacklist ) {
+        public static <T> Wildcard<T> parse( IRegWrapper<T> reg, String key, boolean blacklist ) {
             ResourceLocation resLoc = ResourceLocation.tryParse( key.substring( 0, key.length() - CODE.length() ) );
             return resLoc == null ? null : of( reg, resLoc.getNamespace(), resLoc.getPath(), blacklist );
         }
         
         /** @return A new wildcard key, based on the partial resource location. */
-        public static <T> Wildcard<T> of( IForgeRegistry<T> reg, ResourceLocation partialResLoc, boolean blacklist ) {
+        public static <T> Wildcard<T> of( IRegWrapper<T> reg, ResourceLocation partialResLoc, boolean blacklist ) {
             return of( reg, partialResLoc.getNamespace(), partialResLoc.getPath(), blacklist );
         }
         
         /** @return A new wildcard key, based on the namespace and partial path. */
-        public static <T> Wildcard<T> of( IForgeRegistry<T> reg, String namespace, String partialPath, boolean blacklist ) {
+        public static <T> Wildcard<T> of( IRegWrapper<T> reg, String namespace, String partialPath, boolean blacklist ) {
             return new Wildcard<>( reg, namespace, partialPath, blacklist );
         }
         
@@ -129,7 +141,7 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
         protected final String namespace;
         protected final String path;
         
-        protected Wildcard( IForgeRegistry<T> reg, String ns, String p, boolean blacklist ) {
+        protected Wildcard( IRegWrapper<T> reg, String ns, String p, boolean blacklist ) {
             super( reg, blacklist );
             namespace = ns;
             path = p;
@@ -158,25 +170,25 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
         
         /** @return A new tag key, parsed from a key string, or null if the key was invalid. */
         @Nullable
-        public static <T> Tag<T> parse( IForgeRegistry<T> reg, String key, boolean blacklist ) {
+        public static <T> Tag<T> parse( IRegWrapper<T> reg, String key, boolean blacklist ) {
             ResourceLocation resLoc = ResourceLocation.tryParse( key.substring( CODE.length() ) );
             return resLoc == null ? null : of( reg, resLoc, blacklist );
         }
         
         /** @return A new tag key based on the tag resource location. */
-        public static <T> Tag<T> of( IForgeRegistry<T> reg, ResourceLocation resLoc, boolean blacklist ) {
-            return of( reg, TagKey.create( reg.getRegistryKey(), resLoc ), blacklist );
+        public static <T> Tag<T> of( IRegWrapper<T> reg, ResourceLocation resLoc, boolean blacklist ) {
+            return of( reg, TagKey.create( reg.registryKey(), resLoc ), blacklist );
         }
         
         /** @return A new tag key based on the tag key (well, different kind of tag key). */
-        public static <T> Tag<T> of( IForgeRegistry<T> reg, TagKey<? extends T> tag, boolean blacklist ) {
+        public static <T> Tag<T> of( IRegWrapper<T> reg, TagKey<? extends T> tag, boolean blacklist ) {
             return new Tag<>( reg, tag, blacklist );
         }
         
         
         protected final TagKey<T> tagKey;
         
-        protected Tag( IForgeRegistry<T> reg, TagKey<? extends T> tag, boolean blacklist ) {
+        protected Tag( IRegWrapper<T> reg, TagKey<? extends T> tag, boolean blacklist ) {
             super( reg, blacklist );
             //noinspection unchecked
             tagKey = (TagKey<T>) tag;
@@ -188,16 +200,7 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
         
         /** @return True if this key matches the target. */
         @Override
-        public boolean matches( T target ) {
-            ITagManager<T> tags = registry.tags();
-            if( tags != null ) {
-                Optional<IReverseTag<T>> reverseTag = tags.getReverseTag( target );
-                if( reverseTag.isPresent() ) {
-                    return reverseTag.get().containsTag( tagKey );
-                }
-            }
-            return false;
-        }
+        public boolean matches( T target ) { return registry.tagContains( tagKey, target ); }
     }
     
     
@@ -205,11 +208,11 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
     
     private static final Map<ResourceLocation, Parser<?>> PARSERS = new HashMap<>();
     
-    private record Parser<T>(IForgeRegistry<T> registry) implements IFuzzyKeyParser<T> {
+    private record Parser<T>(IRegWrapper<T> registry) implements IFuzzyKeyParser<T> {
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
         public String getTypeName() {
-            return "\"" + ConfigUtil.toString( registry.getRegistryName() ) + "\" Registry";
+            return "\"" + ConfigUtil.toString( registry.registryName() ) + "\" Registry";
         }
         
         /** @return The key parser's patterns (e.g., "\"pattern_1\", \"pattern_2\", \"pattern_n\""). */
@@ -236,9 +239,9 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
                         ConfigUtil.LOG.warn( "Registry entry has invalid tag key! Must follow pattern \"{}\". Skipping. Entry: {}",
                                 Tag.PATTERN, line );
                     }
-                    if( registry.tags() == null ) {
+                    if( !registry.supportsTags() ) {
                         ConfigUtil.warnFor( field );
-                        ConfigUtil.LOG.warn( "Registry entry defines a tag key for a registry that does not support tags! Entry: {}",
+                        ConfigUtil.LOG.warn( "Registry entry defines a tag key for a registryKey that does not support tags! Entry: {}",
                                 line );
                     }
                 }
