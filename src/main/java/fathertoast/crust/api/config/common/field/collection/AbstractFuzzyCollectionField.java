@@ -1,10 +1,11 @@
-package fathertoast.crust.api.config.common.field;
+package fathertoast.crust.api.config.common.field.collection;
 
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.client.gui.widget.provider.StringListFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.api.config.common.value.collection.FuzzySet;
+import fathertoast.crust.api.config.common.field.GenericField;
+import fathertoast.crust.api.config.common.field.IStringListScreenEditable;
+import fathertoast.crust.api.config.common.value.collection.AbstractFuzzyCollection;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -13,27 +14,19 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * Boilerplate for fuzzy set fields, but can also be used directly with generic fuzzy sets.
+ * Boilerplate for fuzzy collection fields.
  *
- * @param <T> The type to match against.
+ * @param <T> The collection type.
+ * @param <K> The type of fuzzy key.
  * @see fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser
- * @see FuzzyMapField
  */
 @ApiStatus.Experimental
-public class FuzzySetField<T, F extends FuzzySet<T>> extends GenericField<F> implements IStringListScreenEditable {
+public abstract class AbstractFuzzyCollectionField<T, K extends FuzzyKey<T>, C extends AbstractFuzzyCollection<T, K>>
+        extends GenericField<C> implements IStringListScreenEditable {
     
     /** Creates a new field. */
-    public FuzzySetField( String key, F defaultValue, @Nullable String... description ) {
+    public AbstractFuzzyCollectionField( String key, C defaultValue, @Nullable String... description ) {
         super( key, defaultValue, description );
-    }
-    
-    /** Adds info about the field type, format, and bounds to the end of a field's description. */
-    @Override
-    public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoNoDefault( valueDefault.getTypeName() + " Set",
-                "[ \"key_1\", \"" + FuzzyKey.keyWithValue( "key_2", FuzzyKey.BLACKLIST_VALUE ) + "\", \"key_3\", ... ]" ) );
-        comment.add( "Key Patterns: " + valueDefault.getKeyPatterns() );
-        comment.add( TomlHelper.fieldInfoOnlyDefault( valueDefault ) );
     }
     
     /**
@@ -49,14 +42,14 @@ public class FuzzySetField<T, F extends FuzzySet<T>> extends GenericField<F> imp
             return;
         }
         
-        if( raw instanceof FuzzySet ) {
+        if( raw instanceof AbstractFuzzyCollection<?, ?> ) {
             try {
                 //noinspection unchecked
-                value = (F) raw;
+                value = (C) raw;
             }
             catch( ClassCastException ex ) {
                 ConfigUtil.errorFor( this );
-                ConfigUtil.LOG.error( "Attempted to assign fuzzy set of the wrong type! Falling back to default. Invalid value: {}",
+                ConfigUtil.LOG.error( "Attempted to assign fuzzy collection of the wrong type! Falling back to default. Invalid value: {}",
                         raw );
                 value = valueDefault;
             }
@@ -65,12 +58,12 @@ public class FuzzySetField<T, F extends FuzzySet<T>> extends GenericField<F> imp
             // All the actual loading is done through the object
             try {
                 //noinspection unchecked
-                value = (F) valueDefault.makeNew();
+                value = (C) valueDefault.makeNew();
                 value.load( this, raw );
             }
             catch( ClassCastException ex ) {
                 ConfigUtil.errorFor( this );
-                ConfigUtil.LOG.error( "Fuzzy set factory returns the wrong type! Falling back to default. Invalid factory method: {}#makeNew()",
+                ConfigUtil.LOG.error( "Fuzzy collection factory returns the wrong type! Falling back to default. Invalid factory method: {}#makeNew()",
                         valueDefault.getClass().getName() );
                 value = valueDefault;
             }
@@ -84,33 +77,23 @@ public class FuzzySetField<T, F extends FuzzySet<T>> extends GenericField<F> imp
     /** Converts the displayable string list to a field value. */
     @Override // IStringListScreenEditable
     public Object stringListToValue( List<String> value ) {
-        FuzzySet<T> regSet = getDefaultValue().makeNew();
-        regSet.load( this, value );
-        return regSet;
+        AbstractFuzzyCollection<T, K> c = getDefaultValue().makeNew();
+        c.load( this, value );
+        return c;
     }
     
     /** @return This field's line validator, or null if any string is allowed. */
     @Override // IStringListScreenEditable
     public Predicate<String> getLineValidator() {
-        return ( line ) -> getDefaultValue().loadLine( null, line ) != null;
+        return ( line ) -> {
+            final K loaded = getDefaultValue().loadLine( null, line );
+            return loaded != null && (!loaded.isNull() || FuzzyKey.NULL_KEY.equalsIgnoreCase( loaded.keyString() ));
+        };
     }
     
     
     // ---- Convenience Methods ---- //
     
-    /** @return An unmodifiable list of objects that represent this field's value when written to file. */
-    public List<FuzzyKey<T>> getList() { return get().getList(); }
-    
-    /** @return The number of elements. */
-    public int size() { return get().size(); }
-    
     /** @return True if this contains no elements. */
     public boolean isEmpty() { return get().isEmpty(); }
-    
-    /** @return True if the given target is contained within this set. */
-    public boolean contains( T target ) { return get().contains( target ); }
-    
-    /** @return The first matching key, or null if no match was found or the match was a blacklist key. */
-    @Nullable
-    public FuzzyKey<T> getKey( T target ) { return get().getKey( target ); }
 }

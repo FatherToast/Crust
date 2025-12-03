@@ -2,23 +2,23 @@ package fathertoast.crust.api.config.common.value.collection.key;
 
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.common.ConfigManager;
+import fathertoast.crust.api.util.JavaRandomSource;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
-import net.minecraftforge.registries.tags.IReverseTag;
 import net.minecraftforge.registries.tags.ITagManager;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Wraps the various registry types so that we can ignore their implementation differences.
@@ -71,11 +71,27 @@ public interface IRegWrapper<T> {
     @Nullable
     ResourceLocation getKey( T target );
     
+    /** @return The object registered to the provided key. */
+    @Nullable
+    T get( ResourceLocation key );
+    
     /** @return True if the registry supports tags. */
     default boolean supportsTags() { return true; }
     
     /** @return True if the tag contains a particular object. */
     boolean tagContains( TagKey<T> tag, T target );
+    
+    /** @return A random object contained by the tag, or null if the tag is empty. */
+    @Nullable
+    default T nextOfTag( TagKey<T> tag, Random random ) { return nextOfTag( tag, JavaRandomSource.of( random ) ); }
+    
+    /** @return A random object contained by the tag, or null if the tag is empty. */
+    @Nullable
+    T nextOfTag( TagKey<T> tag, RandomSource random );
+    
+    /** @return An iterator over the objects contained by the tag, or null if anything goes wrong. */
+    @Nullable
+    Iterator<T> tagIterator( TagKey<T> tag );
     
     
     /** A registry wrapper for a standard registry. */
@@ -99,6 +115,11 @@ public interface IRegWrapper<T> {
         @Nullable
         public ResourceLocation getKey( T target ) { return getRegistry().getKey( target ); }
         
+        /** @return The object registered to the provided key. */
+        @Override
+        @Nullable
+        public T get( ResourceLocation key ) { return getRegistry().getValue( key ); }
+        
         /** @return True if the registry supports tags. */
         @Override
         public boolean supportsTags() { return getRegistry().tags() != null; }
@@ -107,13 +128,26 @@ public interface IRegWrapper<T> {
         @Override
         public boolean tagContains( TagKey<T> tag, T target ) {
             ITagManager<T> tags = getRegistry().tags();
-            if( tags != null ) {
-                Optional<IReverseTag<T>> reverseTag = tags.getReverseTag( target );
-                if( reverseTag.isPresent() ) {
-                    return reverseTag.get().containsTag( tag );
-                }
-            }
-            return false;
+            return tags != null && tags.getReverseTag( target ).map( ( reverseTag ) ->
+                    reverseTag.containsTag( tag ) ).orElse( false );
+        }
+        
+        /** @return A random object contained by the tag, or null if the tag is empty. */
+        @Override
+        @Nullable
+        public T nextOfTag( TagKey<T> tag, RandomSource random ) {
+            ITagManager<T> tags = getRegistry().tags();
+            return tags != null && tags.isKnownTagName( tag ) ?
+                    tags.getTag( tag ).getRandomElement( random ).orElse( null ) : null;
+        }
+        
+        /** @return An iterator over the objects contained by the tag, or null if anything goes wrong. */
+        @Override
+        @Nullable
+        public Iterator<T> tagIterator( TagKey<T> tag ) {
+            ITagManager<T> tags = getRegistry().tags();
+            return tags != null && tags.isKnownTagName( tag ) ?
+                    tags.getTag( tag ).iterator() : null;
         }
     }
     
@@ -138,10 +172,31 @@ public interface IRegWrapper<T> {
         @Nullable
         public ResourceLocation getKey( T target ) { return getRegistry().getKey( target ); }
         
+        /** @return The object registered to the provided key. */
+        @Override
+        @Nullable
+        public T get( ResourceLocation key ) { return getRegistry().get( key ); }
+        
         /** @return True if the tag contains a particular object. */
         @Override
         public boolean tagContains( TagKey<T> tag, T target ) {
             return getRegistry().wrapAsHolder( target ).is( tag );
+        }
+        
+        /** @return A random object contained by the tag, or null if the tag is empty. */
+        @Override
+        @Nullable
+        public T nextOfTag( TagKey<T> tag, RandomSource random ) {
+            return getRegistry().getTag( tag ).flatMap( ( tagSet ) ->
+                    tagSet.getRandomElement( random ) ).map( Holder::value ).orElse( null );
+        }
+        
+        /** @return An iterator over the objects contained by the tag, or null if anything goes wrong. */
+        @Override
+        @Nullable
+        public Iterator<T> tagIterator( TagKey<T> tag ) {
+            return getRegistry().getTag( tag ).map( ( tagSet ) ->
+                    new HolderIterator<>( tagSet.iterator() ) ).orElse( null );
         }
     }
     
@@ -193,11 +248,37 @@ public interface IRegWrapper<T> {
             return reg == null ? null : reg.getKey( target );
         }
         
+        /** @return The object registered to the provided key. */
+        @Override
+        @Nullable
+        public T get( ResourceLocation key ) {
+            Registry<T> reg = getRegistry();
+            return reg == null ? null : reg.get( key );
+        }
+        
         /** @return True if the tag contains a particular object. */
         @Override
         public boolean tagContains( TagKey<T> tag, T target ) {
             Registry<T> reg = getRegistry();
             return reg != null && reg.wrapAsHolder( target ).is( tag );
+        }
+        
+        /** @return A random object contained by the tag, or null if the tag is empty. */
+        @Override
+        @Nullable
+        public T nextOfTag( TagKey<T> tag, RandomSource random ) {
+            Registry<T> reg = getRegistry();
+            return reg == null ? null : reg.getTag( tag ).flatMap( ( tagSet ) ->
+                    tagSet.getRandomElement( random ) ).map( Holder::value ).orElse( null );
+        }
+        
+        /** @return An iterator over the objects contained by the tag, or null if anything goes wrong. */
+        @Override
+        @Nullable
+        public Iterator<T> tagIterator( TagKey<T> tag ) {
+            Registry<T> reg = getRegistry();
+            return reg == null ? null : reg.getTag( tag ).map( ( tagSet ) ->
+                    new HolderIterator<>( tagSet.iterator() ) ).orElse( null );
         }
     }
     
@@ -260,6 +341,14 @@ public interface IRegWrapper<T> {
             return reg == null ? null : reg.getKey( target );
         }
         
+        /** @return The object registered to the provided key. */
+        @Override
+        @Nullable
+        public T get( ResourceLocation key ) {
+            IRegWrapper<T> reg = getRegistry();
+            return reg == null ? null : reg.get( key );
+        }
+        
         /** @return True if the registry supports tags. */
         @Override
         public boolean supportsTags() {
@@ -273,6 +362,22 @@ public interface IRegWrapper<T> {
             IRegWrapper<T> reg = getRegistry();
             return reg != null && reg.tagContains( tag, target );
         }
+        
+        /** @return A random object contained by the tag, or null if the tag is empty. */
+        @Override
+        @Nullable
+        public T nextOfTag( TagKey<T> tag, RandomSource random ) {
+            IRegWrapper<T> reg = getRegistry();
+            return reg == null ? null : reg.nextOfTag( tag, random );
+        }
+        
+        /** @return An iterator over the objects contained by the tag, or null if anything goes wrong. */
+        @Override
+        @Nullable
+        public Iterator<T> tagIterator( TagKey<T> tag ) {
+            IRegWrapper<T> reg = getRegistry();
+            return reg == null ? null : reg.tagIterator( tag );
+        }
     }
     
     
@@ -283,7 +388,7 @@ public interface IRegWrapper<T> {
         /** @return The wrapper, or null if the registry has not yet been wrapped. */
         public static <T> IRegWrapper<T> get( ResourceKey<? extends Registry<T>> key ) {
             IRegWrapper<T> regWrapper = tryGet( key );
-            return regWrapper == null ? Pool.pop( new Lazy<>( key ) ) : regWrapper;
+            return regWrapper == null ? new Lazy<>( key ) : regWrapper;
         }
         
         /**
@@ -330,5 +435,13 @@ public interface IRegWrapper<T> {
             if( dynamicReg.isPresent() ) return dynamicReg.get();
         }
         return null;
+    }
+    
+    record HolderIterator<T>( Iterator<Holder<T>> itr ) implements Iterator<T> {
+        @Override
+        public boolean hasNext() { return itr.hasNext(); }
+        
+        @Override
+        public T next() { return itr.next().get(); }
     }
 }

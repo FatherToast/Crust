@@ -11,6 +11,10 @@ import javax.annotation.Nullable;
  * Provides instructions on how to read/write a value from/to an entry value TOML string.
  *
  * @param <V> The type of value this codec reads/writes.
+ * @see DoubleValueCodec
+ * @see IntValueCodec
+ * @see ArrayValueCodec
+ * @see fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser
  */
 @ApiStatus.Experimental
 public interface IValueCodec<V> {
@@ -25,7 +29,7 @@ public interface IValueCodec<V> {
      * @param field The config field we are loading for, or null if error reporting should be suppressed.
      * @param line  The full line, for error context.
      * @param value The value string to parse from.
-     * @return A new value based on the value string.
+     * @return A new value based on the value string. If the parse fails, returns a non-null default value.
      */
     V parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value );
     

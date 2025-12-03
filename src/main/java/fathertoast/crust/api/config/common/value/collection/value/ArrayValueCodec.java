@@ -62,7 +62,7 @@ public class ArrayValueCodec<T> implements IValueCodec<T[]> {
      * @param field The config field we are loading for, or null if error reporting should be suppressed.
      * @param line  The full line, for error context.
      * @param value The value string to parse from.
-     * @return A new value based on the value string.
+     * @return A new value based on the value string. If the parse fails, returns a non-null default value.
      */
     @Override
     public T[] parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {

@@ -3,6 +3,7 @@ package fathertoast.crust.api.config.common.value.weighted;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.value.RegistryEntryValueList;
 import fathertoast.crust.api.config.common.value.RegistryValueEntry;
+import fathertoast.crust.api.util.JavaRandomSource;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.util.RandomSource;
@@ -83,18 +84,14 @@ public class WeightedPotionList extends RegistryEntryValueList<MobEffect> {
     
     /** @return Selects an entity type from the list at random. */
     @Nullable
-    public MobEffectInstance next( Random random ) { return next( random.nextDouble() ); }
+    public MobEffectInstance next( Random random ) { return next( JavaRandomSource.of( random ) ); }
     
     /** @return Selects an entity type from the list at random. */
     @Nullable
-    public MobEffectInstance next( RandomSource random ) { return next( random.nextDouble() ); }
-    
-    /** @return Selects an entity type from the list at random. */
-    @Nullable
-    private MobEffectInstance next( double roll ) {
+    public MobEffectInstance next( RandomSource random ) {
         if( isEmpty() || isDisabled() ) return null;
         
-        double choice = roll * TOTAL_WEIGHT;
+        double choice = random.nextDouble() * TOTAL_WEIGHT;
         for( RegistryValueEntry<MobEffect> entry : ENTRIES ) {
             if( entry.REG_KEY != null ) {
                 choice -= entry.VALUES[0];

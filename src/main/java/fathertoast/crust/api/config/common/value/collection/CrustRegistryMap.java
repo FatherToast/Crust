@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.common.value.collection;
 
 
+import fathertoast.crust.api.config.common.field.collection.RegistryMapField;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyRegKey;
 import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
@@ -24,7 +25,7 @@ import java.util.Collection;
  * @see net.minecraftforge.registries.ForgeRegistries
  * @see FuzzyRegKey
  * @see IValueCodec
- * @see fathertoast.crust.api.config.common.field.RegistryMapField
+ * @see RegistryMapField
  * @see CrustRegistrySet CrustRegistrySet - A similar collection that does not allow values
  */
 @ApiStatus.Experimental
@@ -77,7 +78,8 @@ public class CrustRegistryMap<T, V> extends FuzzyMap<T, V> {
     
     /** Builder to make constructing registry maps smoother. */
     @ApiStatus.Experimental
-    public static class Builder<T, V, B extends Builder<T, V, B>> extends FuzzyMap.Builder<T, V, CrustRegistryMap<T, V>, B> {
+    public static class Builder<T, V, B extends Builder<T, V, B>> extends AbstractBuilder<T, V, CrustRegistryMap<T, V>, B> {
+        
         public final IRegWrapper<T> registry;
         
         public Builder( IForgeRegistry<T> reg, IValueCodec<V> codec ) { this( IRegWrapper.of( reg ), codec ); }

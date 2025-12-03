@@ -15,6 +15,12 @@ import javax.annotation.Nullable;
 @ApiStatus.Experimental
 public class IntValueCodec implements IValueCodec<Integer> {
     
+    /** An integer codec that allows any value and defaults to 0. */
+    public static final IntValueCodec ANY = of( 0, IntField.Range.ANY );
+    
+    /** The standard codec for weights to make weighted random lists. */
+    public static final IntValueCodec WEIGHT = of( 0, IntField.Range.NON_NEGATIVE );
+    
     public static IntValueCodec of( int defaultValue, IntField.Range range ) { return of( defaultValue, range.MIN, range.MAX ); }
     
     public static IntValueCodec of( int defaultValue, int min, int max ) { return new IntValueCodec( defaultValue, min, max ); }
@@ -45,7 +51,7 @@ public class IntValueCodec implements IValueCodec<Integer> {
      * @param field The config field we are loading for, or null if error reporting should be suppressed.
      * @param line  The full line, for error context.
      * @param value The value string to parse from.
-     * @return A new value based on the value string.
+     * @return A new value based on the value string. If the parse fails, returns a non-null default value.
      */
     @Override
     public Integer parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {

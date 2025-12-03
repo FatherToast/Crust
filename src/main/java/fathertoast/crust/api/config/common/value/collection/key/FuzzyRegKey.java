@@ -2,26 +2,34 @@ package fathertoast.crust.api.config.common.value.collection.key;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.config.common.value.collection.CrustRegistryMap;
+import fathertoast.crust.api.config.common.value.collection.CrustRegistrySet;
+import fathertoast.crust.api.config.common.value.collection.KeyUsage;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
 /**
  * A key for fuzzy sets and maps that tests against registered objects.
  *
- * @see net.minecraft.core.registries.Registries
- * @see net.minecraftforge.registries.ForgeRegistries
- * @see fathertoast.crust.api.config.common.value.collection.CrustRegistrySet
- * @see fathertoast.crust.api.config.common.value.collection.CrustRegistryMap
+ * @see Registries
+ * @see ForgeRegistries
+ * @see CrustRegistrySet
+ * @see CrustRegistryMap
  */
 @ApiStatus.Experimental
 public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
@@ -64,7 +72,7 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
      * A key that matches one specific registered object.
      */
     @ApiStatus.Experimental
-    public static class Basic<T> extends FuzzyRegKey<T> {
+    public static class Basic<T> extends FuzzyRegKey<T> implements IReverseKey<T> {
         public static final String PATTERN = "namespace:path";
         
         /** @return A new key, parsed from a key string, or null if the key was invalid. */
@@ -79,7 +87,7 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
             return new Basic<>( reg, resLoc, blacklist );
         }
         
-        /** @return A new resource location key based on the registryKey object. */
+        /** @return A new resource location key based on the registry object. */
         public static <T> Basic<T> of( IRegWrapper<T> reg, RegistryObject<? extends T> regObj, boolean blacklist ) {
             //noinspection DataFlowIssue
             return of( reg, regObj.getId(), blacklist );
@@ -109,6 +117,12 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
         /** @return True if this key matches the target. */
         @Override
         public boolean matches( T target ) { return resLoc.equals( registry.getKey( target ) ); }
+        
+        
+        /** @return The value that matches this key, or null if anything goes wrong. */
+        @Override // IReverseKey
+        @Nullable
+        public T asValue() { return registry.get( resLoc ); }
     }
     
     
@@ -116,7 +130,7 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
      * A key that matches all registered objects in a namespace that have a path starting with a specific string.
      */
     @ApiStatus.Experimental
-    public static class Wildcard<T> extends FuzzyRegKey<T> {
+    public static class Wildcard<T> extends FuzzyRegKey<T> {// implements IMultiKey<T> { // Note: We could do this, if we want
         public static final String CODE = "*";
         public static final String PATTERN = "namespace:partial_path" + CODE;
         
@@ -164,7 +178,7 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
      * A key that matches all registered objects belonging to a specific tag.
      */
     @ApiStatus.Experimental
-    public static class Tag<T> extends FuzzyRegKey<T> {
+    public static class Tag<T> extends FuzzyRegKey<T> implements IMultiKey<T> {
         public static final String CODE = "#";
         public static final String PATTERN = CODE + "namespace:tag_path";
         
@@ -201,6 +215,17 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
         /** @return True if this key matches the target. */
         @Override
         public boolean matches( T target ) { return registry.tagContains( tagKey, target ); }
+        
+        
+        /** @return A value that matches this key, or null if anything goes wrong. */
+        @Override // IRandomKey
+        @Nullable
+        public T nextValue( RandomSource random ) { return registry.nextOfTag( tagKey, random ); }
+        
+        /** @return An iterator over all values that match this key, or null if anything goes wrong. */
+        @Override // IMultiKey
+        @Nullable
+        public Iterator<T> getValueIterator() { return registry.tagIterator( tagKey ); }
     }
     
     
@@ -208,7 +233,7 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
     
     private static final Map<ResourceLocation, Parser<?>> PARSERS = new HashMap<>();
     
-    private record Parser<T>(IRegWrapper<T> registry) implements IFuzzyKeyParser<T> {
+    private record Parser<T>( IRegWrapper<T> registry ) implements IFuzzyKeyParser<T> {
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
         public String getTypeName() {
@@ -217,19 +242,29 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
         
         /** @return The key parser's patterns (e.g., "\"pattern_1\", \"pattern_2\", \"pattern_n\""). */
         @Override
-        public String getPatterns() {
-            return String.format( "\"%s\", \"%s\", \"%s\"", Basic.PATTERN, Wildcard.PATTERN, Tag.PATTERN );
+        public String getPatterns( KeyUsage usage ) {
+            return switch( usage ) {
+                case MATCH -> TomlHelper.toLiteralList( Basic.PATTERN, Wildcard.PATTERN, Tag.PATTERN );
+                case POLL, ITERATE -> TomlHelper.toLiteralList( Basic.PATTERN, Tag.PATTERN );
+            };
         }
         
+        /** @return The value format (e.g., {@literal "<Number (Any Value)>"}). */
+        @Override
+        public String getFormat() { return "<" + getTypeName() + " Key>"; }
+        
         /**
+         * Loads a key from the provided TOML string. If anything goes wrong, correct it at the lowest level possible,
+         * and if the config field is not null, provide useful feedback and identify the field.
+         *
          * @param field The config field we are loading for, or null if error reporting should be suppressed.
          * @param line  The full line, for error context.
          * @param key   The key string to parse from.
-         * @return A new fuzzy key based on the key string.
+         * @return A new fuzzy key based on the key string, or null if parsing fails.
          */
         @Override
         @Nullable
-        public FuzzyKey<T> parseTomlString( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
+        public FuzzyKey<T> parseKeyString( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
             FuzzyKey<T> loadedKey;
             if( key.startsWith( Tag.CODE ) ) {
                 loadedKey = Tag.parse( registry, key, blacklist );
@@ -241,7 +276,7 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
                     }
                     if( !registry.supportsTags() ) {
                         ConfigUtil.warnFor( field );
-                        ConfigUtil.LOG.warn( "Registry entry defines a tag key for a registryKey that does not support tags! Entry: {}",
+                        ConfigUtil.LOG.warn( "Registry entry defines a tag key for a registry that does not support tags! Entry: {}",
                                 line );
                     }
                 }

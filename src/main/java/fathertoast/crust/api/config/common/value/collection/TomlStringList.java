@@ -9,6 +9,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Stream;
 
 
 /**
@@ -21,7 +22,7 @@ import java.util.*;
  * as well as a var-args constructor and/or a builder to simplify default value creation.
  */
 @ApiStatus.Experimental
-public abstract class TomlStringList<T extends ITomlStringValue> implements IStringArrayValue {
+public abstract class TomlStringList<T extends ITomlStringValue> implements IStringArrayValue, Iterable<T> {
     
     private List<T> underlyingList;
     
@@ -55,7 +56,7 @@ public abstract class TomlStringList<T extends ITomlStringValue> implements IStr
     public abstract void load( @Nullable AbstractConfigField field, List<String> value );
     
     /** Call this to set the list value during {@link #load(AbstractConfigField, List)}. */
-    protected final void setList( Collection<? extends T> newList ) { underlyingList = List.copyOf( newList ); }
+    protected void setList( Collection<? extends T> newList ) { underlyingList = List.copyOf( newList ); }
     
     
     /** Convenience method to load this value from NBT. */
@@ -73,6 +74,20 @@ public abstract class TomlStringList<T extends ITomlStringValue> implements IStr
     
     /** @return True if this contains no elements. */
     public boolean isEmpty() { return getList().isEmpty(); }
+    
+    /** @return An iterator over the elements in this, in the proper sequence. */
+    @Override // Iterable
+    public Iterator<T> iterator() { return getList().iterator(); }
+    
+    /** @return A spliterator over the elements in this, in the proper sequence. */
+    @Override // Iterable
+    public Spliterator<T> spliterator() { return getList().spliterator(); }
+    
+    /** @return A list iterator over the elements in this, in the proper sequence. */
+    public ListIterator<T> listIterator() { return getList().listIterator(); }
+    
+    /** @return A stream with this as its source. */
+    public Stream<T> stream() { return getList().stream(); }
     
     
     /** @return A list of strings that represent this object's value when written to file. */

@@ -5,6 +5,8 @@ import fathertoast.crust.api.config.common.AbstractConfigCategory;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.*;
+import fathertoast.crust.api.config.common.field.collection.RegistryMapField;
+import fathertoast.crust.api.config.common.field.collection.RegistrySetField;
 import fathertoast.crust.api.config.common.value.*;
 import fathertoast.crust.api.config.common.value.collection.CrustRegistryMap;
 import fathertoast.crust.api.config.common.value.collection.CrustRegistrySet;

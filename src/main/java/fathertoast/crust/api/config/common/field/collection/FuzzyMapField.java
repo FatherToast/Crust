@@ -1,16 +1,19 @@
-package fathertoast.crust.api.config.common.field;
+package fathertoast.crust.api.config.common.field.collection;
 
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.collection.FuzzyMap;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
+import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Boilerplate for fuzzy map fields, but can also be used directly with generic fuzzy maps.
+ * Use {@link #get(T)} to retrieve to value for a target object (or null if the object is not mapped).
  *
  * @param <T> The type to match against.
  * @param <V> The value type.
@@ -19,7 +22,7 @@ import java.util.List;
  * @see FuzzySetField
  */
 @ApiStatus.Experimental
-public class FuzzyMapField<T, V, F extends FuzzyMap<T, V>> extends FuzzySetField<T, F> {
+public class FuzzyMapField<T, V, F extends FuzzyMap<T, V>> extends AbstractFuzzyCollectionField<T, FuzzyEntry<T, V>, F> {
     
     /** Creates a new field. */
     public FuzzyMapField( String key, F defaultValue, @Nullable String... description ) {
@@ -41,11 +44,28 @@ public class FuzzyMapField<T, V, F extends FuzzyMap<T, V>> extends FuzzySetField
     
     // ---- Convenience Methods ---- //
     
+    /** @return True if the given target is contained within this set. */
+    public boolean contains( T target ) { return get().contains( target ); }
+    
     /** @return The value for the given target, or null if the target is not contained in this map. */
     @Nullable
     public V get( T target ) { return get().get( target ); }
     
-    /** @return The first matching entry, or null if no match was found or the match was a blacklist entry. */
-    @Nullable
-    public FuzzyEntry<T, V> getEntry( T target ) { return get().getEntry( target ); }
+    /**
+     * @return Gets the value for the given target and returns the result of a random roll
+     * against it based on this map's value type:<p>
+     * Double/Float: Treats the value as a percent chance (from 0 to 1).<p>
+     * Integer/Short/etc.: Treats the value as a 1-in-X chance (Note: long is truncated to int).<p>
+     * Non-Number types (or no value found for target): Returns false.
+     */
+    public boolean rollChance( T target, Random random ) { return get().rollChance( target, random ); }
+    
+    /**
+     * @return Gets the value for the given target and returns the result of a random roll
+     * against it based on this map's value type:<p>
+     * Double/Float: Treats the value as a percent chance (from 0 to 1).<p>
+     * Integer/Short/etc.: Treats the value as a 1-in-X chance (Note: long is truncated to int).<p>
+     * Non-Number types (or no value found for target): Returns false.
+     */
+    public boolean rollChance( T target, RandomSource random ) { return get().rollChance( target, random ); }
 }

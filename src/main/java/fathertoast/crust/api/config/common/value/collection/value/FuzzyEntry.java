@@ -1,7 +1,10 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
+import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.collection.key.DefaultKey;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
+import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
@@ -19,6 +22,11 @@ import java.util.function.Supplier;
 @ApiStatus.Experimental
 public class FuzzyEntry<T, V> extends FuzzyKey<T> implements Supplier<V> {
     
+    /** Creates an entry that associates a non-blacklist key with a value. */
+    public static <T, V> FuzzyEntry<T, V> of( FuzzyKey<T> key, V value, IValueCodec<V> codec ) {
+        return new FuzzyEntry<>( key, value, codec );
+    }
+    
     /** Creates an entry that defines a default value for the map. */
     public static <T, V> FuzzyEntry<T, V> ofDefault( V value, IValueCodec<V> codec ) {
         return of( DefaultKey.get(), value, codec );
@@ -29,20 +37,69 @@ public class FuzzyEntry<T, V> extends FuzzyKey<T> implements Supplier<V> {
         return new FuzzyEntry<>( key, null, null );
     }
     
-    /** Creates an entry that associates a non-blacklist key with a value. */
-    public static <T, V> FuzzyEntry<T, V> of( FuzzyKey<T> key, V value, IValueCodec<V> codec ) {
-        return new FuzzyEntry<>( key, value, codec );
+    /**
+     * Loads a fuzzy entry from the provided TOML string. Expects the pattern "key value".<p>
+     * If the value is "exclude", the entry is declared a blacklist type.<p>
+     * If the value is not included, it is set to the codec's default value.<p>
+     * If the key is "default" and also declared a blacklist type, the line is deleted.
+     *
+     * @param parser The key parser to use.
+     * @param codec  The value codec to use.
+     * @param field  The config field we are loading for, or null if error reporting should be suppressed.
+     * @param line   The full TOML string.
+     * @return A new fuzzy entry based on the provided line, or null if the line should be deleted.
+     */
+    @Nullable
+    public static <T, V> FuzzyEntry<T, V> parseLine( IFuzzyKeyParser<T> parser, IValueCodec<V> codec,
+                                                     @Nullable AbstractConfigField field, String line ) {
+        // Check for blacklist declaration and parse the value
+        String[] keyAndValue = FuzzyKey.getKeyAndValue( line );
+        String key = keyAndValue[0];
+        boolean isDefault = key.equalsIgnoreCase( DEFAULT_KEY );
+        boolean isBlacklist;
+        V value;
+        if( keyAndValue.length > 1 ) {
+            if( keyAndValue[1].equalsIgnoreCase( BLACKLIST_VALUE ) ) {
+                if( isDefault ) {
+                    if( field != null ) {
+                        ConfigUtil.warnFor( field );
+                        ConfigUtil.LOG.warn( "Default keys cannot be blacklist type! Deleting." );
+                    }
+                    return null;
+                }
+                isBlacklist = true;
+                value = null;
+            }
+            else {
+                isBlacklist = false;
+                value = codec.parseTomlString( field, line, keyAndValue[1].trim() );
+            }
+        }
+        else {
+            isBlacklist = false;
+            value = codec.parseTomlString( field, line, null );
+            if( field != null ) {
+                ConfigUtil.warnFor( field );
+                ConfigUtil.LOG.warn( "Key-value pair must include a value! Assigning fallback value of {}. Entry: {}",
+                        value, line );
+            }
+        }
+        
+        // Finally, parse the key
+        return isDefault ? ofDefault( value, codec ) :
+                isBlacklist ? ofBlacklist( parser.parseKeyStringNonNull( field, line, key, true ) ) :
+                        of( parser.parseKeyStringNonNull( field, line, key, false ), value, codec );
     }
     
     
     private final FuzzyKey<T> key;
-    @Nullable
+    @Nullable // Only null for blacklist keys
     private final V value;
-    @Nullable
+    @Nullable // Only null for blacklist keys
     private final IValueCodec<V> valueCodec;
     
     /** Constructs a key from the loaded string definition. */
-    private FuzzyEntry( FuzzyKey<T> k, @Nullable V v, @Nullable IValueCodec<V> codec ) {
+    protected FuzzyEntry( FuzzyKey<T> k, @Nullable V v, @Nullable IValueCodec<V> codec ) {
         super( k.isBlacklist() );
         key = k;
         value = v;
@@ -64,35 +121,44 @@ public class FuzzyEntry<T, V> extends FuzzyKey<T> implements Supplier<V> {
     
     /**
      * @return This entry's associated value.
-     * @throws NullPointerException If this key is a blacklist type.
+     * @throws NullPointerException If this is a blacklist key.
      */
     @Override // Supplier
     public V get() { return Objects.requireNonNull( value ); }
     
+    /**
+     * @return This entry's value codec.
+     * @throws NullPointerException If this is a blacklist key.
+     */
+    public IValueCodec<V> getCodec() { return Objects.requireNonNull( valueCodec ); }
+    
     
     /** @return True if the other key is contained within this one. */
     @Override
-    public boolean matches( T target ) { return key.matches( target ); }
+    public boolean matches( T target ) { return getKey().matches( target ); }
     
     /** @return This fuzzy key's string definition. */
     @Override
-    public String keyString() { return key.keyString(); }
+    public String keyString() { return getKey().keyString(); }
     
     /**
      * @return True if this key is a blacklist type; in other words, when this is the best match,
      * the containing set/map should treat it as if no match was found.
      */
     @Override
-    public boolean isBlacklist() { return key.isBlacklist(); }
+    public boolean isBlacklist() { return getKey().isBlacklist(); }
     
     /** @return True if this key is a default key. A default key's {@link #matches(Object)} always returns true. */
     @Override
-    public boolean isDefault() { return key.isDefault(); }
+    public boolean isDefault() { return getKey().isDefault(); }
+    
+    /** @return True if this key is a null key. A null key's {@link #matches(Object)} always returns false. */
+    @Override
+    public boolean isNull() { return getKey().isNull(); }
     
     /** @return This value, converted to a single-line string. */
     @Override // ITomlStringValue
     public String toTomlString() {
-        //noinspection DataFlowIssue
-        return keyWithValue( keyString(), isBlacklist() ? BLACKLIST_VALUE : valueCodec.toTomlString( get() ) );
+        return keyWithValue( keyString(), isBlacklist() ? BLACKLIST_VALUE : getCodec().toTomlString( get() ) );
     }
 }

@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.common.value.collection;
 
 
+import fathertoast.crust.api.config.common.field.collection.RegistrySetField;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyRegKey;
 import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
@@ -20,7 +21,7 @@ import java.util.Collection;
  * @param <T> The type to match against (i.e., the registry type).
  * @see net.minecraftforge.registries.ForgeRegistries
  * @see FuzzyRegKey
- * @see fathertoast.crust.api.config.common.field.RegistrySetField
+ * @see RegistrySetField
  * @see CrustRegistryMap CrustRegistryMap - A similar collection that allows values
  */
 @ApiStatus.Experimental
@@ -73,7 +74,8 @@ public class CrustRegistrySet<T> extends FuzzySet<T> {
     
     /** Builder to make constructing registry sets smoother. */
     @ApiStatus.Experimental
-    public static class Builder<T, B extends Builder<T, B>> extends FuzzySet.Builder<T, CrustRegistrySet<T>, B> {
+    public static class Builder<T, B extends Builder<T, B>> extends AbstractBuilder<T, CrustRegistrySet<T>, B> {
+        
         public final IRegWrapper<T> registry;
         
         public Builder( IForgeRegistry<T> reg ) { this( IRegWrapper.of( reg ) ); }

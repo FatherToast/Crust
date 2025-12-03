@@ -9,12 +9,12 @@ import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.HexIntWrapper;
+import fathertoast.crust.api.util.JavaRandomSource;
 import net.minecraft.util.RandomSource;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Function;
 
 /**
  * Represents a config field with an integer value.
@@ -62,14 +62,11 @@ public class IntField extends AbstractConfigField {
     /** @return Returns the config field's value cast down to a byte. */
     public byte getByte() { return (byte) get(); }
     
-    /** @return Treats the config field's value as a one-in-X chance and returns the result of a single roll. */
-    public boolean rollChance( Random random ) { return rollChance( random::nextInt ); }
+    /** @return Treats the config field's value as a 1-in-X chance and returns the result of a single roll. */
+    public boolean rollChance( Random random ) { return rollChance( JavaRandomSource.of( random ) ); }
     
-    /** @return Treats the config field's value as a one-in-X chance and returns the result of a single roll. */
-    public boolean rollChance( RandomSource random ) { return rollChance( random::nextInt ); }
-    
-    /** @return Treats the config field's value as a one-in-X chance and returns the result of a single roll. */
-    private boolean rollChance( Function<Integer, Integer> random ) { return get() > 0 && random.apply( get() ) == 0; }
+    /** @return Treats the config field's value as a 1-in-X chance and returns the result of a single roll. */
+    public boolean rollChance( RandomSource random ) { return get() > 0 && random.nextInt( get() ) == 0; }
     
     /** @return Returns the minimum value allowed by this field. */
     public int minValue() { return valueMin; }
@@ -274,23 +271,19 @@ public class IntField extends AbstractConfigField {
         
         
         /** @return A random value between the minimum and the maximum (inclusive). */
-        public int next( Random random ) { return next( random::nextInt ); }
+        public int next( Random random ) { return next( JavaRandomSource.of( random ) ); }
         
         /** @return A random value between the minimum and the maximum (inclusive). */
-        public int next( RandomSource random ) { return next( random::nextInt ); }
-        
-        /** @return A random value between the minimum and the maximum (inclusive). */
-        private int next( Function<Integer, Integer> random ) {
-            final int delta = getMax() - getMin();
-            if( delta > 0 ) {
-                return getMin() + random.apply( delta + 1 );
+        public int next( RandomSource random ) {
+            try {
+                return random.nextIntBetweenInclusive( getMin(), getMax() );
             }
-            if( delta < 0 ) {
+            catch( IllegalArgumentException ex ) {
                 ConfigUtil.warnFor( MAXIMUM );
                 ConfigUtil.LOG.warn( "Values for range are invalid; min ({}) is greater than max ({})! Ignoring maximum value.",
                         getMin(), getMax() );
+                return getMin();
             }
-            return getMin();
         }
     }
 }

@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
+import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.ITomlStringValue;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -30,17 +32,68 @@ import javax.annotation.Nullable;
 @ApiStatus.Experimental
 public abstract class FuzzyKey<T> implements ITomlStringValue {
     
-    /** Key string for the default key. */
+    /** Key string for the default key; only used for matching. */
     public static final String DEFAULT_KEY = "default";
     
     /**
-     * May be used as a pseudo-value on any key (except "default") to make it into a blacklist key.
+     * Key string for the null key; used to represent a "chance to pick nothing" in weighted lists
+     * or a missing value argument when a key parser is used as a value codec.
+     */
+    public static final String NULL_KEY = "null";
+    
+    /**
+     * May be used as a pseudo-value on any key (except "default") used for matching to make it into a blacklist key.
      * This applies to both maps and sets, even though sets do not allow values.
      */
     public static final String BLACKLIST_VALUE = "exclude";
     
     /** The string used to separate arguments. */
     public static final String ARG_SEPARATOR = " ";
+    
+    /**
+     * Loads a basic fuzzy key from the provided TOML string. Expects the pattern "key exclude".<p>
+     * If "exclude" is present, the key is declared a blacklist type.<p>
+     * If a value is included after the key, the value is deleted.<p>
+     * If the key is "default" and also declared a blacklist type, the line is deleted.
+     *
+     * @param parser The key parser to use.
+     * @param field  The config field we are loading for, or null if error reporting should be suppressed.
+     * @param line   The full TOML string.
+     * @return A new fuzzy key based on the provided line, or null if the line should be deleted.
+     */
+    @Nullable
+    public static <T> FuzzyKey<T> parseLine( IFuzzyKeyParser<T> parser, @Nullable AbstractConfigField field, String line ) {
+        // Check for a value or blacklist declaration
+        String[] keyAndValue = FuzzyKey.getKeyAndValue( line );
+        String key = keyAndValue[0];
+        boolean isDefault = key.equalsIgnoreCase( DEFAULT_KEY );
+        boolean isBlacklist;
+        if( keyAndValue.length > 1 ) {
+            if( keyAndValue[1].equalsIgnoreCase( BLACKLIST_VALUE ) ) {
+                if( isDefault ) {
+                    if( field != null ) {
+                        ConfigUtil.warnFor( field );
+                        ConfigUtil.LOG.warn( "Default keys cannot be blacklist type! Deleting." );
+                    }
+                    return null;
+                }
+                isBlacklist = true;
+            }
+            else {
+                if( field != null ) {
+                    ConfigUtil.warnFor( field );
+                    ConfigUtil.LOG.warn( "Basic keys do not allow values! Deleting value. Entry: {}", line );
+                }
+                isBlacklist = false;
+            }
+        }
+        else {
+            isBlacklist = false;
+        }
+        
+        // Finally, parse the key
+        return isDefault ? DefaultKey.get() : parser.parseKeyStringNonNull( field, line, key, isBlacklist );
+    }
     
     /** @return The string, split into a key (index 0) and value (index 1, if present). */
     public static String[] getKeyAndValue( String tomlString ) {
@@ -67,6 +120,9 @@ public abstract class FuzzyKey<T> implements ITomlStringValue {
     /** @return True if this key is a default key. A default key's {@link #matches(Object)} always returns true. */
     public boolean isDefault() { return false; }
     
+    /** @return True if this key is a null key. A null key's {@link #matches(Object)} always returns false. */
+    public boolean isNull() { return false; }
+    
     
     /** @return This fuzzy key's string definition. This must uniquely describe the match conditions. */
     public abstract String keyString();
@@ -78,6 +134,10 @@ public abstract class FuzzyKey<T> implements ITomlStringValue {
     /** @return This value, converted to a single-line string. */
     @Override // ITomlStringValue
     public String toTomlString() { return isBlacklist() ? keyWithValue( keyString(), BLACKLIST_VALUE ) : keyString(); }
+    
+    /** @return This value, converted to a single-line string. */
+    @Override
+    public String toString() { return toTomlString(); }
     
     /** Two fuzzy keys are equal if they match the exact same targets. */
     @Override

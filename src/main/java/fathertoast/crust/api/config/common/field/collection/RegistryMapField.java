@@ -1,4 +1,4 @@
-package fathertoast.crust.api.config.common.field;
+package fathertoast.crust.api.config.common.field.collection;
 
 import fathertoast.crust.api.config.common.value.collection.CrustRegistryMap;
 import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
@@ -8,6 +8,12 @@ import javax.annotation.Nullable;
 
 /**
  * Represents a config field with a registry map value.
+ * Use {@link #get(T)} to retrieve to value for a target object (or null if the object is not mapped).
+ * <p>
+ * Allows any value type that has a codec.
+ * <p>
+ * All standard registry types are supported: Forge registries, vanilla registries,
+ * and the data-driven dynamic registries.
  *
  * @see net.minecraft.core.registries.Registries
  * @see net.minecraftforge.registries.ForgeRegistries

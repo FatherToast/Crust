@@ -15,6 +15,12 @@ import javax.annotation.Nullable;
 @ApiStatus.Experimental
 public class DoubleValueCodec implements IValueCodec<Double> {
     
+    /** A double codec that allows any value and defaults to 0.0. */
+    public static final DoubleValueCodec ANY = of( 0.0, DoubleField.Range.ANY );
+    
+    /** The standard codec for percentages (0 to 1). Defaults to 0.0. */
+    public static final DoubleValueCodec PERCENT = of( 0.0, DoubleField.Range.PERCENT );
+    
     public static DoubleValueCodec of( double defaultValue, DoubleField.Range range ) { return of( defaultValue, range.MIN, range.MAX ); }
     
     public static DoubleValueCodec of( double defaultValue, double min, double max ) { return new DoubleValueCodec( defaultValue, min, max ); }
@@ -45,7 +51,7 @@ public class DoubleValueCodec implements IValueCodec<Double> {
      * @param field The config field we are loading for, or null if error reporting should be suppressed.
      * @param line  The full line, for error context.
      * @param value The value string to parse from.
-     * @return A new value based on the value string.
+     * @return A new value based on the value string. If the parse fails, returns a non-null default value.
      */
     @Override
     public Double parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
