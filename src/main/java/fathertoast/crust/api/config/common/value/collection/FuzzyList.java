@@ -2,11 +2,7 @@ package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.field.collection.FuzzyListField;
-import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
-import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
-import fathertoast.crust.api.config.common.value.collection.key.IMultiKey;
-import fathertoast.crust.api.config.common.value.collection.key.IReverseKey;
+import fathertoast.crust.api.config.common.value.collection.key.*;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
@@ -28,7 +24,7 @@ import java.util.Objects;
  * @param <T> The type of list.
  * @see FuzzyKey
  * @see IFuzzyKeyParser
- * @see FuzzyListField
+ * @see fathertoast.crust.api.config.common.field.collection.FuzzyListField
  * @see FuzzyValueList FuzzyValueList - A similar collection that allows values
  */
 @ApiStatus.Experimental
@@ -90,15 +86,23 @@ public class FuzzyList<T> extends AbstractFuzzyCollection<T, FuzzyKey<T>> {
         
         public Builder( IFuzzyKeyParser<T> parser ) { keyParser = parser; }
         
-        /** @return A new fuzzy set reflecting the current state of this builder. */
+        /** @return A new fuzzy list reflecting the current state of this builder. */
         @Override
         public FuzzyList<T> build() { return new FuzzyList<>( keyParser, list ); }
         
         /** Adds a parsed key. */
         public B add( String key ) { return add( Objects.requireNonNull( keyParser.parseKeyString( null, key, key, false ) ) ); }
+    }
+    
+    /** Builder class for a fuzzy string list. */
+    @ApiStatus.Experimental
+    public static class StrBuilder extends Builder<String, StrBuilder> {
         
-        /** Adds a parsed blacklist key. */
-        public B addBlacklist( String key ) { return add( Objects.requireNonNull( keyParser.parseKeyString( null, key, key, true ) ) ); }
+        public StrBuilder() { super( StringKey.PARSER ); }
+        
+        /** @return A new fuzzy list reflecting the current state of this builder. */
+        @Override
+        public FuzzyList<String> build() { return new FuzzyList<>( keyParser, list ); }
     }
     
     

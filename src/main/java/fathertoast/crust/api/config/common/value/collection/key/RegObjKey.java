@@ -3,8 +3,6 @@ package fathertoast.crust.api.config.common.value.collection.key;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.api.config.common.value.collection.CrustRegistryMap;
-import fathertoast.crust.api.config.common.value.collection.CrustRegistrySet;
 import fathertoast.crust.api.config.common.value.collection.KeyUsage;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -24,15 +22,19 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * A key for fuzzy sets and maps that tests against registered objects.
+ * A key for fuzzy collections that test against or contain registered objects.
  *
  * @see Registries
  * @see ForgeRegistries
- * @see CrustRegistrySet
- * @see CrustRegistryMap
+ * @see fathertoast.crust.api.config.common.value.collection.RegistrySet
+ * @see fathertoast.crust.api.config.common.value.collection.RegistryMap
+ * @see fathertoast.crust.api.config.common.value.collection.RegistryList
+ * @see fathertoast.crust.api.config.common.value.collection.RegistryValueList
+ * @see fathertoast.crust.api.config.common.value.collection.RegistryWeightedList
+ * @see fathertoast.crust.api.config.common.value.collection.RegistryWeightedValueList
  */
 @ApiStatus.Experimental
-public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
+public abstract class RegObjKey<T> extends FuzzyKey<T> {
     
     /** @return The parser appropriate for a particular registry. */
     public static <T> IFuzzyKeyParser<T> parser( IForgeRegistry<T> registry ) {
@@ -62,7 +64,7 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
     /** This key's target registry. */
     protected final IRegWrapper<T> registry;
     
-    protected FuzzyRegKey( IRegWrapper<T> reg, boolean blacklist ) {
+    protected RegObjKey( IRegWrapper<T> reg, boolean blacklist ) {
         super( blacklist );
         registry = reg;
     }
@@ -72,7 +74,7 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
      * A key that matches one specific registered object.
      */
     @ApiStatus.Experimental
-    public static class Basic<T> extends FuzzyRegKey<T> implements IReverseKey<T> {
+    public static class Basic<T> extends RegObjKey<T> implements IReverseKey<T> {
         public static final String PATTERN = "namespace:path";
         
         /** @return A new key, parsed from a key string, or null if the key was invalid. */
@@ -130,7 +132,7 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
      * A key that matches all registered objects in a namespace that have a path starting with a specific string.
      */
     @ApiStatus.Experimental
-    public static class Wildcard<T> extends FuzzyRegKey<T> {// implements IMultiKey<T> { // Note: We could do this, if we want
+    public static class Wildcard<T> extends RegObjKey<T> {// implements IMultiKey<T> { // Note: We could do this, if we want
         public static final String CODE = "*";
         public static final String PATTERN = "namespace:partial_path" + CODE;
         
@@ -175,10 +177,10 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
     
     
     /**
-     * A key that matches all registered objects belonging to a specific tag.
+     * A key that matches all registered objects contained by a specific tag.
      */
     @ApiStatus.Experimental
-    public static class Tag<T> extends FuzzyRegKey<T> implements IMultiKey<T> {
+    public static class Tag<T> extends RegObjKey<T> implements IMultiKey<T> {
         public static final String CODE = "#";
         public static final String PATTERN = CODE + "namespace:tag_path";
         
@@ -248,10 +250,6 @@ public abstract class FuzzyRegKey<T> extends FuzzyKey<T> {
                 case POLL, ITERATE -> TomlHelper.toLiteralList( Basic.PATTERN, Tag.PATTERN );
             };
         }
-        
-        /** @return The value format (e.g., {@literal "<Number (Any Value)>"}). */
-        @Override
-        public String getFormat() { return "<" + getTypeName() + " Key>"; }
         
         /**
          * Loads a key from the provided TOML string. If anything goes wrong, correct it at the lowest level possible,

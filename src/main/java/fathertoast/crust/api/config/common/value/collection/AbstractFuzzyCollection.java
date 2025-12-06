@@ -5,7 +5,6 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
-import fathertoast.crust.api.config.common.value.collection.key.WeightedKey;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
 import fathertoast.crust.api.config.common.value.collection.value.WeightedEntry;
 import org.jetbrains.annotations.ApiStatus;
@@ -25,8 +24,9 @@ import java.util.*;
  * @see FuzzyMap
  * @see FuzzyList
  * @see FuzzyValueList
- * @see WeightedList
- * @see WeightedValueList
+ * @see FuzzyWeightedList
+ * @see FuzzyWeightedValueList
+ * @see fathertoast.crust.api.config.common.field.collection.AbstractFuzzyCollectionField
  */
 @ApiStatus.Experimental
 public abstract class AbstractFuzzyCollection<T, K extends FuzzyKey<T>> extends TomlStringList<K> {
@@ -171,70 +171,18 @@ public abstract class AbstractFuzzyCollection<T, K extends FuzzyKey<T>> extends 
     }
     
     
-    /** Boilerplate builder class for fuzzy collections that consist of just the keys themselves. */
+    /** Boilerplate builder class for fuzzy collections. */
     @ApiStatus.Experimental
     public static abstract class AbstractBuilder<T, K extends FuzzyKey<T>, C extends AbstractFuzzyCollection<T, K>,
             B extends AbstractBuilder<T, K, C, B>> {
         
         public final ArrayList<K> list = new ArrayList<>();
         
-        /** @return A new fuzzy set reflecting the current state of this builder. */
+        /** @return A new fuzzy collection reflecting the current state of this builder. */
         public abstract C build();
         
         /** Adds a pre-constructed key. */
         public B add( K key ) {
-            list.add( key );
-            //noinspection unchecked
-            return (B) this;
-        }
-    }
-    
-    /** Boilerplate builder class for fuzzy collections without values. */
-    @ApiStatus.Experimental
-    public static abstract class WeightedListBuilder<T, C extends AbstractFuzzyCollection<T, WeightedKey<T>>,
-            B extends WeightedListBuilder<T, C, B>> {
-        
-        public final ArrayList<WeightedKey<T>> list = new ArrayList<>();
-        
-        
-        /** @return A new weighted list reflecting the current state of this builder. */
-        public abstract C build();
-        
-        
-        /** Adds a null key with a given weight. */
-        public B addNull( int weight ) { return add( WeightedKey.ofNull( weight ) ); }
-        
-        /** Adds a pre-constructed key. */
-        public B add( WeightedKey<T> key ) {
-            list.add( key );
-            //noinspection unchecked
-            return (B) this;
-        }
-    }
-    
-    /** Boilerplate builder class for fuzzy collections with values. */
-    @ApiStatus.Experimental
-    public static abstract class WeightedValueListBuilder<T, V, C extends AbstractFuzzyCollection<T, WeightedEntry<T, V>>,
-            B extends WeightedValueListBuilder<T, V, C, B>> {
-        
-        public final ArrayList<WeightedEntry<T, V>> list = new ArrayList<>();
-        public final IValueCodec<V> valueCodec;
-        
-        public WeightedValueListBuilder( IValueCodec<V> codec ) { valueCodec = codec; }
-        
-        
-        /** @return A new weighted value list reflecting the current state of this builder. */
-        public abstract C build();
-        
-        
-        /** Adds a pre-constructed key-value pair with a given weight. */
-        public B put( int weight, FuzzyKey<T> key, V value ) { return add( WeightedEntry.of( weight, key, value, valueCodec ) ); }
-        
-        /** Adds a null key with a given weight. */
-        public B putNull( int weight ) { return add( WeightedEntry.ofNull( weight ) ); }
-        
-        /** Adds a pre-constructed key. */
-        public B add( WeightedEntry<T, V> key ) {
             list.add( key );
             //noinspection unchecked
             return (B) this;

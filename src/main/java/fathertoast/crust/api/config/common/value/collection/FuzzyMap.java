@@ -1,8 +1,8 @@
 package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.field.collection.FuzzyMapField;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
+import fathertoast.crust.api.config.common.value.collection.key.StringKey;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
@@ -36,7 +36,7 @@ import java.util.Random;
  * @see IFuzzyKeyParser
  * @see FuzzyEntry
  * @see IValueCodec
- * @see FuzzyMapField
+ * @see fathertoast.crust.api.config.common.field.collection.FuzzyMapField
  * @see FuzzySet FuzzySet - A similar collection that does not allow values
  */
 public class FuzzyMap<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<T, V>> {
@@ -185,5 +185,16 @@ public class FuzzyMap<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<T, V>>
         
         /** Adds a parsed blacklist key. */
         public B putBlacklist( String key ) { return putBlacklist( Objects.requireNonNull( keyParser.parseKeyString( null, key, key, true ) ) ); }
+    }
+    
+    /** Builder class for a fuzzy string map. */
+    @ApiStatus.Experimental
+    public static class StrBuilder<V> extends Builder<String, V, StrBuilder<V>> {
+        
+        public StrBuilder( IValueCodec<V> codec ) { super( StringKey.PARSER, codec ); }
+        
+        /** @return A new fuzzy map reflecting the current state of this builder. */
+        @Override
+        public FuzzyMap<String, V> build() { return new FuzzyMap<>( keyParser, valueCodec, list ); }
     }
 }

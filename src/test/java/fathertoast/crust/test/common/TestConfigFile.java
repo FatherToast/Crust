@@ -8,8 +8,8 @@ import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.config.common.field.collection.RegistryMapField;
 import fathertoast.crust.api.config.common.field.collection.RegistrySetField;
 import fathertoast.crust.api.config.common.value.*;
-import fathertoast.crust.api.config.common.value.collection.CrustRegistryMap;
-import fathertoast.crust.api.config.common.value.collection.CrustRegistrySet;
+import fathertoast.crust.api.config.common.value.collection.RegistryMap;
+import fathertoast.crust.api.config.common.value.collection.RegistrySet;
 import fathertoast.crust.api.config.common.value.collection.value.IntValueCodec;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
 import fathertoast.crust.api.config.common.value.environment.biome.BiomeCategory;
@@ -166,7 +166,7 @@ public class TestConfigFile extends AbstractConfigFile {
                                     MobEffects.CONFUSION ),
                             (String[]) null ), General::testCallback ) ).field();
             registryMapField = SPEC.define( new InjectionWrapperField<>(
-                    new RegistryMapField<>( "registry_map_field", new CrustRegistryMap
+                    new RegistryMapField<>( "registry_map_field", new RegistryMap
                             .Builder<>( ForgeRegistries.ENTITY_TYPES, IntValueCodec.of( 0, IntField.Range.TOKEN_NEGATIVE ) )
                             .put( EntityType.DONKEY, 5 ).put( TestCrustObjects.Obj.TEST_SKELETON, 420 )
                             .putBlacklist( EntityType.STRAY ).putTag( EntityTypeTags.SKELETONS, 666 )
@@ -174,7 +174,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             .buildWithDefault( -1 ),
                             (String[]) null ), General::testCallback ) ).field();
             registrySetField = SPEC.define( new InjectionWrapperField<>(
-                    new RegistrySetField<>( "registry_set_field", new CrustRegistrySet
+                    new RegistrySetField<>( "registry_set_field", new RegistrySet
                             .Builder<>( ForgeRegistries.ENTITY_TYPES )
                             .add( EntityType.CREEPER ).add( TestCrustObjects.Obj.TEST_SKELETON )
                             .addBlacklist( EntityType.STRAY ).addTag( EntityTypeTags.SKELETONS )

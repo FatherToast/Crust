@@ -23,6 +23,10 @@ public interface IFuzzyKeyParser<T> extends IValueCodec<FuzzyKey<T>> {
     /** @return The key parser's allowed patterns (e.g., "\"pattern_1\", \"pattern_2\", \"pattern_n\""). */
     String getPatterns( KeyUsage usage );
     
+    /** @return The value format (e.g., {@literal "<Number (Any Value)>"}). */
+    @Override
+    default String getFormat() { return "<" + getTypeName() + " Key>"; }
+    
     /**
      * Loads a key from the provided TOML string. If anything goes wrong, correct it at the lowest level possible,
      * and if the config field is not null, provide useful feedback and identify the field.

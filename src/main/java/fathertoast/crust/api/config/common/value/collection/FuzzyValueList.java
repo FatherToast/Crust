@@ -2,11 +2,7 @@ package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.field.collection.FuzzyValueListField;
-import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
-import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
-import fathertoast.crust.api.config.common.value.collection.key.IMultiKey;
-import fathertoast.crust.api.config.common.value.collection.key.IReverseKey;
+import fathertoast.crust.api.config.common.value.collection.key.*;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
 import org.jetbrains.annotations.ApiStatus;
@@ -33,7 +29,7 @@ import java.util.Objects;
  * @see IFuzzyKeyParser
  * @see FuzzyEntry
  * @see IValueCodec
- * @see FuzzyValueListField
+ * @see fathertoast.crust.api.config.common.field.collection.FuzzyValueListField
  * @see FuzzyList FuzzyList - A similar collection that does not allow values
  */
 public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<T, V>> {
@@ -104,14 +100,8 @@ public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<
         
         public AbstractBuilder( IValueCodec<V> codec ) { valueCodec = codec; }
         
-        /** @return A new fuzzy map with a default key reflecting the current state of this builder. */
-        public C buildWithDefault( V value ) { return add( FuzzyEntry.ofDefault( value, valueCodec ) ).build(); }
-        
         /** Adds a pre-constructed key-value pair. */
         public B put( FuzzyKey<T> key, V value ) { return add( FuzzyEntry.of( key, value, valueCodec ) ); }
-        
-        /** Adds a pre-constructed blacklist key. */
-        public B putBlacklist( FuzzyKey<T> key ) { return add( FuzzyEntry.ofBlacklist( key ) ); }
         
         /** Adds a pre-constructed key. */
         @Override
@@ -132,15 +122,23 @@ public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<
             keyParser = parser;
         }
         
-        /** @return A new fuzzy map reflecting the current state of this builder. */
+        /** @return A new fuzzy value list reflecting the current state of this builder. */
         @Override
         public FuzzyValueList<T, V> build() { return new FuzzyValueList<>( keyParser, valueCodec, list ); }
         
         /** Adds a parsed key-value pair. */
         public B put( String key, V value ) { return put( Objects.requireNonNull( keyParser.parseKeyString( null, key, key, false ) ), value ); }
+    }
+    
+    /** Builder class for a fuzzy string-value list. */
+    @ApiStatus.Experimental
+    public static class StrBuilder<V> extends Builder<String, V, StrBuilder<V>> {
         
-        /** Adds a parsed blacklist key. */
-        public B putBlacklist( String key ) { return putBlacklist( Objects.requireNonNull( keyParser.parseKeyString( null, key, key, true ) ) ); }
+        public StrBuilder( IValueCodec<V> codec ) { super( StringKey.PARSER, codec ); }
+        
+        /** @return A new fuzzy value list reflecting the current state of this builder. */
+        @Override
+        public FuzzyValueList<String, V> build() { return new FuzzyValueList<>( keyParser, valueCodec, list ); }
     }
     
     

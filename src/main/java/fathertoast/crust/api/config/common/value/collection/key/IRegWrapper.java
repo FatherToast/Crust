@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 /**
- * Wraps the various registry types so that we can ignore their implementation differences.
+ * Wraps the various registry types so that reg obj keys can ignore their implementation differences.
  *
  * @param <T> The type of values registered.
  * @see net.minecraft.core.registries.Registries
@@ -30,8 +30,8 @@ import java.util.*;
 public interface IRegWrapper<T> {
     /**
      * @return A wrapper we can use to refer to the registry identified in an agnostic way.
-     * If the registry is not (yet) available, a "lazy" wrapper is returned,
-     * which acts like an empty registry until the registry becomes available.
+     * If the registry is not currently available, a "lazy" wrapper is returned, which acts
+     * like an empty registry until the registry becomes available.
      */
     static <T> IRegWrapper<T> forKey( ResourceKey<? extends Registry<T>> key ) { return Pool.get( key ); }
     
@@ -51,7 +51,7 @@ public interface IRegWrapper<T> {
     default ResourceLocation registryName() { return registryKey().location(); }
     
     /** @return The registry's fuzzy key parser. */
-    default IFuzzyKeyParser<T> getParser() { return FuzzyRegKey.parser( registryKey() ); }
+    default IFuzzyKeyParser<T> getParser() { return RegObjKey.parser( registryKey() ); }
     
     /** @return True if the registry is present. */
     default boolean isPresent() { return true; }

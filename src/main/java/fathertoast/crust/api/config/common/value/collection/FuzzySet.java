@@ -1,9 +1,9 @@
 package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.field.collection.FuzzySetField;
 import fathertoast.crust.api.config.common.value.collection.key.DefaultKey;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
+import fathertoast.crust.api.config.common.value.collection.key.StringKey;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -29,7 +29,7 @@ import java.util.Objects;
  * @param <T> The type to match against.
  * @see FuzzyKey
  * @see IFuzzyKeyParser
- * @see FuzzySetField
+ * @see fathertoast.crust.api.config.common.field.collection.FuzzySetField
  * @see FuzzyMap FuzzyMap - A similar collection that allows values
  */
 @ApiStatus.Experimental
@@ -110,5 +110,16 @@ public class FuzzySet<T> extends AbstractFuzzyCollection<T, FuzzyKey<T>> {
         
         /** Adds a parsed blacklist key. */
         public B addBlacklist( String key ) { return add( Objects.requireNonNull( keyParser.parseKeyString( null, key, key, true ) ) ); }
+    }
+    
+    /** Builder class for a fuzzy string set. */
+    @ApiStatus.Experimental
+    public static class StrBuilder extends Builder<String, StrBuilder> {
+        
+        public StrBuilder() { super( StringKey.PARSER ); }
+        
+        /** @return A new fuzzy set reflecting the current state of this builder. */
+        @Override
+        public FuzzySet<String> build() { return new FuzzySet<>( keyParser, list ); }
     }
 }

@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.common.field.collection;
 
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.api.config.common.value.collection.WeightedList;
+import fathertoast.crust.api.config.common.value.collection.FuzzyWeightedList;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.WeightedKey;
 import fathertoast.crust.api.config.common.value.collection.value.IntValueCodec;
@@ -18,13 +18,13 @@ import java.util.Random;
  *
  * @param <T> The type of list.
  * @see fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser
- * @see WeightedValueListField WeightedValueListField - A similar collection that allows values
+ * @see FuzzyWeightedValueListField WeightedValueListField - A similar collection that allows values
  */
 @ApiStatus.Experimental
-public class WeightedListField<T, C extends WeightedList<T>> extends AbstractFuzzyCollectionField<T, WeightedKey<T>, C> {
+public class FuzzyWeightedListField<T, C extends FuzzyWeightedList<T>> extends AbstractFuzzyCollectionField<T, WeightedKey<T>, C> {
     
     /** Creates a new field. */
-    public WeightedListField( String key, C defaultValue, @Nullable String... description ) {
+    public FuzzyWeightedListField( String key, C defaultValue, @Nullable String... description ) {
         super( key, defaultValue, description );
     }
     

@@ -2,8 +2,9 @@ package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.field.collection.WeightedValueListField;
+import fathertoast.crust.api.config.common.field.collection.FuzzyWeightedValueListField;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
+import fathertoast.crust.api.config.common.value.collection.key.StringKey;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
 import fathertoast.crust.api.config.common.value.collection.key.IRandomKey;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
@@ -34,10 +35,10 @@ import java.util.Random;
  * @see IFuzzyKeyParser
  * @see FuzzyEntry
  * @see IValueCodec
- * @see WeightedValueListField
- * @see WeightedList WeightedList - A similar collection that does not allow values
+ * @see FuzzyWeightedValueListField
+ * @see FuzzyWeightedList WeightedList - A similar collection that does not allow values
  */
-public class WeightedValueList<T, V> extends AbstractFuzzyCollection<T, WeightedEntry<T, V>> {
+public class FuzzyWeightedValueList<T, V> extends AbstractFuzzyCollection<T, WeightedEntry<T, V>> {
     
     /** This map's value codec. */
     protected final IValueCodec<V> valueCodec;
@@ -46,7 +47,7 @@ public class WeightedValueList<T, V> extends AbstractFuzzyCollection<T, Weighted
     private int totalWeight;
     
     /** Constructs an empty map. Use this if you want to {@link #load} a map from file/NBT. */
-    protected WeightedValueList( IFuzzyKeyParser<T> parser, IValueCodec<V> codec ) {
+    protected FuzzyWeightedValueList( IFuzzyKeyParser<T> parser, IValueCodec<V> codec ) {
         super( parser );
         valueCodec = codec;
     }
@@ -56,7 +57,7 @@ public class WeightedValueList<T, V> extends AbstractFuzzyCollection<T, Weighted
      * during config definition, however the {@link AbstractBuilder} is much easier.
      */
     @SafeVarargs
-    protected WeightedValueList( IFuzzyKeyParser<T> parser, IValueCodec<V> codec, WeightedEntry<T, V>... keys ) {
+    protected FuzzyWeightedValueList( IFuzzyKeyParser<T> parser, IValueCodec<V> codec, WeightedEntry<T, V>... keys ) {
         super( parser, keys );
         valueCodec = codec;
     }
@@ -65,14 +66,14 @@ public class WeightedValueList<T, V> extends AbstractFuzzyCollection<T, Weighted
      * Constructs a map containing the entries provided. You may use this for creating default values
      * during config definition, however the {@link AbstractBuilder} is much easier.
      */
-    protected WeightedValueList( IFuzzyKeyParser<T> parser, IValueCodec<V> codec, Collection<WeightedEntry<T, V>> keys ) {
+    protected FuzzyWeightedValueList( IFuzzyKeyParser<T> parser, IValueCodec<V> codec, Collection<WeightedEntry<T, V>> keys ) {
         super( parser, keys );
         valueCodec = codec;
     }
     
     /** @return A fresh, empty collection of the same type as this one. */
     @Override
-    public WeightedValueList<T, V> makeNew() { return new WeightedValueList<>( keyParser, valueCodec ); }
+    public FuzzyWeightedValueList<T, V> makeNew() { return new FuzzyWeightedValueList<>( keyParser, valueCodec ); }
     
     
     /** @return The field's value format (e.g., {@literal "<Number (Any Value)>"}). */
@@ -146,9 +147,9 @@ public class WeightedValueList<T, V> extends AbstractFuzzyCollection<T, Weighted
     }
     
     
-    /** Boilerplate builder class for fuzzy value lists. */
+    /** Boilerplate builder class for fuzzy weighted value lists. */
     @ApiStatus.Experimental
-    public static abstract class AbstractBuilder<T, V, C extends WeightedValueList<T, V>, B extends AbstractBuilder<T, V, C, B>>
+    public static abstract class AbstractBuilder<T, V, C extends FuzzyWeightedValueList<T, V>, B extends AbstractBuilder<T, V, C, B>>
             extends AbstractFuzzyCollection.AbstractBuilder<T, WeightedEntry<T, V>, C, B> {
         
         public final IValueCodec<V> valueCodec;
@@ -156,7 +157,7 @@ public class WeightedValueList<T, V> extends AbstractFuzzyCollection<T, Weighted
         public AbstractBuilder( IValueCodec<V> codec ) { valueCodec = codec; }
         
         /**
-         * @return A new weighted list (with a null key) reflecting the current state of this builder.
+         * @return A new weighted value list (with a null key) reflecting the current state of this builder.
          * A null key is a chance to pick nothing. Multiple are allowed, but discouraged.
          */
         public C buildWithNull( int weight ) { return add( WeightedEntry.ofNull( weight ) ).build(); }
@@ -172,9 +173,9 @@ public class WeightedValueList<T, V> extends AbstractFuzzyCollection<T, Weighted
         }
     }
     
-    /** Builder class for a generic fuzzy value list. */
+    /** Builder class for a generic fuzzy weighted value list. */
     @ApiStatus.Experimental
-    public static class Builder<T, V, B extends Builder<T, V, B>> extends AbstractBuilder<T, V, WeightedValueList<T, V>, B> {
+    public static class Builder<T, V, B extends Builder<T, V, B>> extends AbstractBuilder<T, V, FuzzyWeightedValueList<T, V>, B> {
         
         public final IFuzzyKeyParser<T> keyParser;
         
@@ -183,14 +184,25 @@ public class WeightedValueList<T, V> extends AbstractFuzzyCollection<T, Weighted
             keyParser = parser;
         }
         
-        /** @return A new fuzzy map reflecting the current state of this builder. */
+        /** @return A new fuzzy weighted value list reflecting the current state of this builder. */
         @Override
-        public WeightedValueList<T, V> build() { return new WeightedValueList<>( keyParser, valueCodec, list ); }
+        public FuzzyWeightedValueList<T, V> build() { return new FuzzyWeightedValueList<>( keyParser, valueCodec, list ); }
         
         /** Adds a parsed key-value pair. */
         public B put( int weight, String key, V value ) {
             return put( weight, Objects.requireNonNull(
                     keyParser.parseKeyString( null, key, key, false ) ), value );
         }
+    }
+    
+    /** Builder class for a fuzzy weighted string-value list. */
+    @ApiStatus.Experimental
+    public static class StrBuilder<V> extends Builder<String, V, StrBuilder<V>> {
+        
+        public StrBuilder( IValueCodec<V> codec ) { super( StringKey.PARSER, codec ); }
+        
+        /** @return A new fuzzy weighted value list reflecting the current state of this builder. */
+        @Override
+        public FuzzyWeightedValueList<String, V> build() { return new FuzzyWeightedValueList<>( keyParser, valueCodec, list ); }
     }
 }
