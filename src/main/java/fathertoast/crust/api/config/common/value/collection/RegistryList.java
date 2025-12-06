@@ -95,20 +95,20 @@ public class RegistryList<T> extends FuzzyList<T> {
         // ---- Basic Keys ---- //
         
         /** Adds a key based on the resource location. */
-        public B add( ResourceLocation resLoc ) { return add( RegObjKey.Basic.of( registry, resLoc, false ) ); }
+        public B add( ResourceLocation resLoc ) { return add( RegObjKey.of( registry, resLoc, false ) ); }
         
         /** Adds a key based on the registry object. */
-        public B add( RegistryObject<? extends T> regObj ) { return add( RegObjKey.Basic.of( registry, regObj, false ) ); }
+        public B add( RegistryObject<? extends T> regObj ) { return add( RegObjKey.of( registry, regObj, false ) ); }
         
         /** Adds a key based on the registered object. Only suitable for vanilla stuff. */
-        public B add( T obj ) { return add( RegObjKey.Basic.of( registry, obj, false ) ); }
+        public B add( T obj ) { return add( RegObjKey.of( registry, obj, false ) ); }
         
         // ---- Tag Keys ---- //
         
         /** Adds a tag key based on the resource location. Tag keys add the tag's entire contents to the iterator. */
-        public B addTag( ResourceLocation resLoc ) { return add( RegObjKey.Tag.of( registry, resLoc, false ) ); }
+        public B addTag( ResourceLocation resLoc ) { return add( RegObjKey.ofTag( registry, resLoc, false ) ); }
         
         /** Adds a tag key based on the tag. Tag keys add the tag's entire contents to the iterator. */
-        public B addTag( TagKey<T> tag ) { return add( RegObjKey.Tag.of( registry, tag, false ) ); }
+        public B addTag( TagKey<T> tag ) { return add( RegObjKey.ofTag( registry, tag, false ) ); }
     }
 }

@@ -19,6 +19,16 @@ import java.util.List;
 @ApiStatus.Experimental
 public class FuzzyListField<T, C extends FuzzyList<T>> extends AbstractFuzzyCollectionField<T, FuzzyKey<T>, C> {
     
+    /** A simple implementation for using generic fuzzy lists without the extra type parameter. */
+    @SuppressWarnings( "unused" )
+    @ApiStatus.Experimental
+    public static class Generic<T> extends FuzzyListField<T, FuzzyList<T>> {
+        /** Creates a new field. */
+        public Generic( String key, FuzzyList<T> defaultValue, @Nullable String... description ) {
+            super( key, defaultValue, description );
+        }
+    }
+    
     /** Creates a new field. */
     public FuzzyListField( String key, C defaultValue, @Nullable String... description ) {
         super( key, defaultValue, description );

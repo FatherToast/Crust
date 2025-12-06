@@ -101,21 +101,21 @@ public class RegistryWeightedValueList<T, V> extends FuzzyWeightedValueList<T, V
         // ---- Basic Keys ---- //
         
         /** Adds a key-value pair based on the resource location. */
-        public B put( int weight, ResourceLocation resLoc, V value ) { return put( weight, RegObjKey.Basic.of( registry, resLoc, false ), value ); }
+        public B put( int weight, ResourceLocation resLoc, V value ) { return put( weight, RegObjKey.of( registry, resLoc, false ), value ); }
         
         /** Adds a key-value pair based on the registry object. */
-        public B put( int weight, RegistryObject<? extends T> regObj, V value ) { return put( weight, RegObjKey.Basic.of( registry, regObj, false ), value ); }
+        public B put( int weight, RegistryObject<? extends T> regObj, V value ) { return put( weight, RegObjKey.of( registry, regObj, false ), value ); }
         
         /** Adds a key-value pair based on the registered object. Only suitable for vanilla stuff. */
-        public B put( int weight, T obj, V value ) { return put( weight, RegObjKey.Basic.of( registry, obj, false ), value ); }
+        public B put( int weight, T obj, V value ) { return put( weight, RegObjKey.of( registry, obj, false ), value ); }
         
         
         // ---- Tag Keys ---- //
         
         /** Adds a tag key-value pair based on the resource location. Tag keys return a uniform random element from the tag's contents when picked. */
-        public B putTag( int weight, ResourceLocation resLoc, V value ) { return put( weight, RegObjKey.Tag.of( registry, resLoc, false ), value ); }
+        public B putTag( int weight, ResourceLocation resLoc, V value ) { return put( weight, RegObjKey.ofTag( registry, resLoc, false ), value ); }
         
         /** Adds a tag key-value pair based on the tag. Tag keys return a uniform random element from the tag's contents when picked. */
-        public B putTag( int weight, TagKey<T> tag, V value ) { return put( weight, RegObjKey.Tag.of( registry, tag, false ), value ); }
+        public B putTag( int weight, TagKey<T> tag, V value ) { return put( weight, RegObjKey.ofTag( registry, tag, false ), value ); }
     }
 }

@@ -2,11 +2,11 @@ package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
-import fathertoast.crust.api.config.common.value.collection.key.StringKey;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
+import fathertoast.crust.api.config.common.value.collection.key.StringKey;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
-import fathertoast.crust.api.util.JavaRandomSource;
+import fathertoast.crust.api.lib.CrustMath;
 import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -92,7 +92,7 @@ public class FuzzyMap<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<T, V>>
      * Integer/Short/etc.: Treats the value as a 1-in-X chance (Note: long is truncated to int).<p>
      * Non-Number types (or no value found for target): Returns false.
      */
-    public boolean rollChance( T target, Random random ) { return rollChance( target, JavaRandomSource.of( random ) ); }
+    public boolean rollChance( T target, Random random ) { return CrustMath.rollChance( get( target ), random ); }
     
     /**
      * @return Gets the value for the given target and returns the result of a random roll
@@ -101,11 +101,7 @@ public class FuzzyMap<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<T, V>>
      * Integer/Short/etc.: Treats the value as a 1-in-X chance (Note: long is truncated to int).<p>
      * Non-Number types (or no value found for target): Returns false.
      */
-    public boolean rollChance( T target, RandomSource random ) {
-        return get( target ) instanceof Number n &&
-                (n instanceof Double || n instanceof Float ? random.nextDouble() < n.doubleValue() :
-                        n.intValue() > 0 && random.nextInt( n.intValue() ) == 0);
-    }
+    public boolean rollChance( T target, RandomSource random ) { return CrustMath.rollChance( get( target ), random ); }
     
     
     /** @return The field's value format (e.g., {@literal "<Number (Any Value)>"}). */

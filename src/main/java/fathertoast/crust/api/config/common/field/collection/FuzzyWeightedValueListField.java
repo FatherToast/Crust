@@ -26,6 +26,16 @@ import java.util.Random;
 @ApiStatus.Experimental
 public class FuzzyWeightedValueListField<T, V, C extends FuzzyWeightedValueList<T, V>> extends AbstractFuzzyCollectionField<T, WeightedEntry<T, V>, C> {
     
+    /** A simple implementation for using generic weighted value lists without the extra type parameter. */
+    @SuppressWarnings( "unused" )
+    @ApiStatus.Experimental
+    public static class Generic<T, V> extends FuzzyWeightedValueListField<T, V, FuzzyWeightedValueList<T, V>> {
+        /** Creates a new field. */
+        public Generic( String key, FuzzyWeightedValueList<T, V> defaultValue, @Nullable String... description ) {
+            super( key, defaultValue, description );
+        }
+    }
+    
     /** Creates a new field. */
     public FuzzyWeightedValueListField( String key, C defaultValue, @Nullable String... description ) {
         super( key, defaultValue, description );

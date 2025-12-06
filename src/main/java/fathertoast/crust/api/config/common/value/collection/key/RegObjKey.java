@@ -58,6 +58,50 @@ public abstract class RegObjKey<T> extends FuzzyKey<T> {
         return (Parser<T>) PARSERS.get( regName );
     }
     
+    /** @return A new key based on the resource location. */
+    public static <T> Basic<T> of( IRegWrapper<T> reg, ResourceLocation resLoc, boolean blacklist ) {
+        return new Basic<>( reg, resLoc, blacklist );
+    }
+    
+    /** @return A new key based on the registry object. */
+    public static <T> Basic<T> of( IRegWrapper<T> reg, RegistryObject<? extends T> regObj, boolean blacklist ) {
+        //noinspection DataFlowIssue
+        return of( reg, regObj.getId(), blacklist );
+    }
+    
+    /**
+     * @return A new key based on the registered object, or throws an exception if the object is not registered.
+     * When building default config values, this is only suitable for vanilla objects.
+     */
+    public static <T> Basic<T> of( IRegWrapper<T> reg, T obj, boolean blacklist ) {
+        return of( reg, Objects.requireNonNull( reg.getKey( obj ) ), blacklist );
+    }
+    
+    /** @return A new wildcard key, based on the partial resource location. */
+    public static <T> Wildcard<T> ofWildcard( IRegWrapper<T> reg, ResourceLocation partialResLoc, boolean blacklist ) {
+        return ofWildcard( reg, partialResLoc.getNamespace(), partialResLoc.getPath(), blacklist );
+    }
+    
+    /** @return A new wildcard key, based on the namespace. */
+    public static <T> Wildcard<T> ofWildcard( IRegWrapper<T> reg, String namespace, boolean blacklist ) {
+        return ofWildcard( reg, namespace, "", blacklist );
+    }
+    
+    /** @return A new wildcard key, based on the namespace and partial path. */
+    public static <T> Wildcard<T> ofWildcard( IRegWrapper<T> reg, String namespace, String partialPath, boolean blacklist ) {
+        return new Wildcard<>( reg, namespace, partialPath, blacklist );
+    }
+    
+    /** @return A new tag key based on the tag resource location. */
+    public static <T> Tag<T> ofTag( IRegWrapper<T> reg, ResourceLocation resLoc, boolean blacklist ) {
+        return ofTag( reg, TagKey.create( reg.registryKey(), resLoc ), blacklist );
+    }
+    
+    /** @return A new tag key based on the tag key (well, different kind of tag key). */
+    public static <T> Tag<T> ofTag( IRegWrapper<T> reg, TagKey<? extends T> tag, boolean blacklist ) {
+        return new Tag<>( reg, tag, blacklist );
+    }
+    
     
     // ---- Key Implementations ---- //
     
@@ -82,26 +126,6 @@ public abstract class RegObjKey<T> extends FuzzyKey<T> {
         public static <T> Basic<T> parse( IRegWrapper<T> reg, String key, boolean blacklist ) {
             ResourceLocation resLoc = ResourceLocation.tryParse( key );
             return resLoc == null ? null : of( reg, resLoc, blacklist );
-        }
-        
-        /** @return A new resource location key based on the resource location. */
-        public static <T> Basic<T> of( IRegWrapper<T> reg, ResourceLocation resLoc, boolean blacklist ) {
-            return new Basic<>( reg, resLoc, blacklist );
-        }
-        
-        /** @return A new resource location key based on the registry object. */
-        public static <T> Basic<T> of( IRegWrapper<T> reg, RegistryObject<? extends T> regObj, boolean blacklist ) {
-            //noinspection DataFlowIssue
-            return of( reg, regObj.getId(), blacklist );
-        }
-        
-        /**
-         * @return A new resource location key based on the registered object, or throws an exception if the
-         * object is not registered.
-         * When building default config values, this is only suitable for vanilla objects.
-         */
-        public static <T> Basic<T> of( IRegWrapper<T> reg, T obj, boolean blacklist ) {
-            return of( reg, Objects.requireNonNull( reg.getKey( obj ) ), blacklist );
         }
         
         
@@ -140,17 +164,7 @@ public abstract class RegObjKey<T> extends FuzzyKey<T> {
         @Nullable
         public static <T> Wildcard<T> parse( IRegWrapper<T> reg, String key, boolean blacklist ) {
             ResourceLocation resLoc = ResourceLocation.tryParse( key.substring( 0, key.length() - CODE.length() ) );
-            return resLoc == null ? null : of( reg, resLoc.getNamespace(), resLoc.getPath(), blacklist );
-        }
-        
-        /** @return A new wildcard key, based on the partial resource location. */
-        public static <T> Wildcard<T> of( IRegWrapper<T> reg, ResourceLocation partialResLoc, boolean blacklist ) {
-            return of( reg, partialResLoc.getNamespace(), partialResLoc.getPath(), blacklist );
-        }
-        
-        /** @return A new wildcard key, based on the namespace and partial path. */
-        public static <T> Wildcard<T> of( IRegWrapper<T> reg, String namespace, String partialPath, boolean blacklist ) {
-            return new Wildcard<>( reg, namespace, partialPath, blacklist );
+            return resLoc == null ? null : ofWildcard( reg, resLoc.getNamespace(), resLoc.getPath(), blacklist );
         }
         
         
@@ -188,17 +202,7 @@ public abstract class RegObjKey<T> extends FuzzyKey<T> {
         @Nullable
         public static <T> Tag<T> parse( IRegWrapper<T> reg, String key, boolean blacklist ) {
             ResourceLocation resLoc = ResourceLocation.tryParse( key.substring( CODE.length() ) );
-            return resLoc == null ? null : of( reg, resLoc, blacklist );
-        }
-        
-        /** @return A new tag key based on the tag resource location. */
-        public static <T> Tag<T> of( IRegWrapper<T> reg, ResourceLocation resLoc, boolean blacklist ) {
-            return of( reg, TagKey.create( reg.registryKey(), resLoc ), blacklist );
-        }
-        
-        /** @return A new tag key based on the tag key (well, different kind of tag key). */
-        public static <T> Tag<T> of( IRegWrapper<T> reg, TagKey<? extends T> tag, boolean blacklist ) {
-            return new Tag<>( reg, tag, blacklist );
+            return resLoc == null ? null : ofTag( reg, resLoc, blacklist );
         }
         
         

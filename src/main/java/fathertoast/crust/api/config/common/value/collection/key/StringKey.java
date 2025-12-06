@@ -28,11 +28,30 @@ import java.util.regex.Pattern;
 @ApiStatus.Experimental
 public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<String> {
     
+    public static final String WILDCARD = "*";
+    
     /** The parser for string keys. */
     public static final IFuzzyKeyParser<String> PARSER = new Parser();
     
+    /** @return A new string 'equals' key. */
+    public static Basic of( String string, boolean blacklist ) { return new Basic( string, blacklist ); }
+    
+    /** @return A new string 'regex' key. */
+    public static Regex ofRegex( String pattern, boolean blacklist ) { return new Regex( pattern, blacklist ); }
+    
+    /** @return A new string 'contains' key. */
+    public static Contains containing( String string, boolean blacklist ) { return new Contains( string, blacklist ); }
+    
+    /** @return A new string 'starts with' key. */
+    public static StartsWith startingWith( String string, boolean blacklist ) { return new StartsWith( string, blacklist ); }
+    
+    /** @return A new string 'ends with' key. */
+    public static EndsWith endingWith( String string, boolean blacklist ) { return new EndsWith( string, blacklist ); }
+    
     
     // ---- Key Implementations ---- //
+    
+    protected static final String PATTERN = "string";
     
     protected final String string;
     
@@ -41,24 +60,16 @@ public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<
         string = s;
     }
     
-    
     /** @return The value that matches this key, or null if anything goes wrong. */
     @Override // IReverseKey
     public String asValue() { return keyString(); } // Allow the wildcard char to be used like a normal char when not matching
     
-    
-    public static final String WILDCARD = "*";
-    protected static final String PATTERN = "string";
     
     /**
      * A key that matches one specific string.
      */
     @ApiStatus.Experimental
     public static class Basic extends StringKey {
-        
-        /** @return A new string key. */
-        public static Basic of( String string, boolean blacklist ) { return new Basic( string, blacklist ); }
-        
         
         protected Basic( String s, boolean blacklist ) { super( s, blacklist ); }
         
@@ -73,6 +84,37 @@ public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<
     
     
     /**
+     * A key that matches a string based on a regex pattern.
+     */
+    @ApiStatus.Experimental
+    public static class Regex extends StringKey {
+        public static final String CODE = "^"; // The regex char for 'start of sequence'
+        public static final String PATTERN = CODE + "regex";
+        
+        /** @return A new string regex key, parsed from a key string. */
+        public static Regex parse( String key, boolean blacklist ) {
+            return ofRegex( key.substring( CODE.length() ), blacklist );
+        }
+        
+        
+        protected final Pattern pattern;
+        
+        protected Regex( String p, boolean blacklist ) {
+            super( p, blacklist );
+            pattern = Pattern.compile( p );
+        }
+        
+        /** @return This fuzzy key's string definition. This must uniquely describe the match conditions. */
+        @Override
+        public String keyString() { return CODE + string; }
+        
+        /** @return True if this key matches the target. */
+        @Override
+        public boolean matches( String target ) { return pattern.matcher( target ).matches(); }
+    }
+    
+    
+    /**
      * A key that matches all strings that contain a specific string.
      */
     @ApiStatus.Experimental
@@ -80,12 +122,9 @@ public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<
         public static final String PATTERN = WILDCARD + StringKey.PATTERN + WILDCARD;
         
         /** @return A new string contains key, parsed from a key string. */
-        public static StartsWith parse( String key, boolean blacklist ) {
-            return of( key.substring( WILDCARD.length(), key.length() - WILDCARD.length() ), blacklist );
+        public static Contains parse( String key, boolean blacklist ) {
+            return containing( key.substring( WILDCARD.length(), key.length() - WILDCARD.length() ), blacklist );
         }
-        
-        /** @return A new string contains key. */
-        public static StartsWith of( String string, boolean blacklist ) { return new StartsWith( string, blacklist ); }
         
         
         protected Contains( String s, boolean blacklist ) { super( s, blacklist ); }
@@ -109,11 +148,8 @@ public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<
         
         /** @return A new string starts with key, parsed from a key string. */
         public static StartsWith parse( String key, boolean blacklist ) {
-            return of( key.substring( 0, key.length() - WILDCARD.length() ), blacklist );
+            return startingWith( key.substring( 0, key.length() - WILDCARD.length() ), blacklist );
         }
-        
-        /** @return A new string starts with key. */
-        public static StartsWith of( String string, boolean blacklist ) { return new StartsWith( string, blacklist ); }
         
         
         protected StartsWith( String s, boolean blacklist ) { super( s, blacklist ); }
@@ -137,11 +173,8 @@ public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<
         
         /** @return A new string ends with key, parsed from a key string. */
         public static EndsWith parse( String key, boolean blacklist ) {
-            return of( key.substring( WILDCARD.length() ), blacklist );
+            return endingWith( key.substring( WILDCARD.length() ), blacklist );
         }
-        
-        /** @return A new string ends with key. */
-        public static EndsWith of( String string, boolean blacklist ) { return new EndsWith( string, blacklist ); }
         
         
         protected EndsWith( String s, boolean blacklist ) { super( s, blacklist ); }
@@ -155,45 +188,10 @@ public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<
         public boolean matches( String target ) { return target.endsWith( string ); }
     }
     
-    /**
-     * A key that matches a string based on a regex pattern.
-     */
-    @ApiStatus.Experimental
-    public static class Regex extends StringKey {
-        
-        public static final String CODE = "^"; // The regex char for 'start of sequence'
-        public static final String PATTERN = CODE + "regex";
-        
-        /** @return A new string regex key, parsed from a key string. */
-        public static Regex parse( String key, boolean blacklist ) {
-            return of( key.substring( CODE.length() ), blacklist );
-        }
-        
-        /** @return A new string regex key. */
-        public static Regex of( String pattern, boolean blacklist ) { return new Regex( pattern, blacklist ); }
-        
-        
-        protected final Pattern pattern;
-        
-        protected Regex( String p, boolean blacklist ) {
-            super( p, blacklist );
-            pattern = Pattern.compile( p );
-        }
-        
-        /** @return This fuzzy key's string definition. This must uniquely describe the match conditions. */
-        @Override
-        public String keyString() { return CODE + string; }
-        
-        /** @return True if this key matches the target. */
-        @Override
-        public boolean matches( String target ) { return pattern.matcher( target ).matches(); }
-    }
-    
     
     // ---- Parser Implementation ---- //
     
     private record Parser( ) implements IFuzzyKeyParser<String> {
-        
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
         public String getTypeName() { return "String"; }

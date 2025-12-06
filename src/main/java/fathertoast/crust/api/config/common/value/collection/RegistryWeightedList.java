@@ -95,21 +95,21 @@ public class RegistryWeightedList<T> extends FuzzyWeightedList<T> {
         // ---- Basic Keys ---- //
         
         /** Adds a key based on the resource location. */
-        public B add( int weight, ResourceLocation resLoc ) { return add( weight, RegObjKey.Basic.of( registry, resLoc, false ) ); }
+        public B add( int weight, ResourceLocation resLoc ) { return add( weight, RegObjKey.of( registry, resLoc, false ) ); }
         
         /** Adds a key based on the registry object. */
-        public B add( int weight, RegistryObject<? extends T> regObj ) { return add( weight, RegObjKey.Basic.of( registry, regObj, false ) ); }
+        public B add( int weight, RegistryObject<? extends T> regObj ) { return add( weight, RegObjKey.of( registry, regObj, false ) ); }
         
         /** Adds a key based on the registered object. Only suitable for vanilla stuff. */
-        public B add( int weight, T obj ) { return add( weight, RegObjKey.Basic.of( registry, obj, false ) ); }
+        public B add( int weight, T obj ) { return add( weight, RegObjKey.of( registry, obj, false ) ); }
         
         
         // ---- Tag Keys ---- //
         
         /** Adds a tag key based on the resource location. Tag keys return a uniform random element from the tag's contents when picked. */
-        public B addTag( int weight, ResourceLocation resLoc ) { return add( weight, RegObjKey.Tag.of( registry, resLoc, false ) ); }
+        public B addTag( int weight, ResourceLocation resLoc ) { return add( weight, RegObjKey.ofTag( registry, resLoc, false ) ); }
         
         /** Adds a tag key based on the tag. Tag keys return a uniform random element from the tag's contents when picked. */
-        public B addTag( int weight, TagKey<T> tag ) { return add( weight, RegObjKey.Tag.of( registry, tag, false ) ); }
+        public B addTag( int weight, TagKey<T> tag ) { return add( weight, RegObjKey.ofTag( registry, tag, false ) ); }
     }
 }

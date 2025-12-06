@@ -5,12 +5,15 @@ import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.collection.key.*;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
+import fathertoast.crust.api.lib.CrustMath;
+import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Random;
 
 /**
  * An ordered list of key-value entries represented in files by a string array. The primary way
@@ -143,7 +146,23 @@ public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<
     
     
     /** Just used to return key-value pairs. */
-    public record Pair<T, V>( T key, V value ) {}
+    public record Pair<T, V>( T key, V value ) {
+        /**
+         * @return The result of a random roll against the value based on its type:<p>
+         * Double/Float: Treats the value as a percent chance (from 0 to 1).<p>
+         * Integer/Short/etc.: Treats the value as a 1-in-X chance (Note: long is truncated to int).<p>
+         * Non-Number types (or no value found for target): Returns false.
+         */
+        public boolean rollChance( Random random ) { return CrustMath.rollChance( value(), random ); }
+        
+        /**
+         * @return The result of a random roll against the value based on its type:<p>
+         * Double/Float: Treats the value as a percent chance (from 0 to 1).<p>
+         * Integer/Short/etc.: Treats the value as a 1-in-X chance (Note: long is truncated to int).<p>
+         * Non-Number types (or no value found for target): Returns false.
+         */
+        public boolean rollChance( RandomSource random ) { return CrustMath.rollChance( value(), random ); }
+    }
     
     /** A simple iterator over the objects represented by the keys, rather than over the keys themselves. */
     public static final class KeyValueIterator<T, V> implements Iterator<Pair<T, V>>, Iterable<Pair<T, V>> {

@@ -1,8 +1,8 @@
 package fathertoast.crust.api.config.common.value.collection;
 
 
-import fathertoast.crust.api.config.common.value.collection.key.RegObjKey;
 import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
+import fathertoast.crust.api.config.common.value.collection.key.RegObjKey;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
 import net.minecraft.core.Registry;
@@ -101,57 +101,57 @@ public class RegistryMap<T, V> extends FuzzyMap<T, V> {
         // ---- Basic Keys ---- //
         
         /** Adds a key-value pair based on the resource location. Matches only the provided object. */
-        public B put( ResourceLocation resLoc, V value ) { return put( RegObjKey.Basic.of( registry, resLoc, false ), value ); }
+        public B put( ResourceLocation resLoc, V value ) { return put( RegObjKey.of( registry, resLoc, false ), value ); }
         
         /** Adds a blacklist key based on the resource location. Matches only the provided object. */
-        public B putBlacklist( ResourceLocation resLoc ) { return putBlacklist( RegObjKey.Basic.of( registry, resLoc, true ) ); }
+        public B putBlacklist( ResourceLocation resLoc ) { return putBlacklist( RegObjKey.of( registry, resLoc, true ) ); }
         
         /** Adds a key-value pair based on the registry object. Matches only the provided object. */
-        public B put( RegistryObject<? extends T> regObj, V value ) { return put( RegObjKey.Basic.of( registry, regObj, false ), value ); }
+        public B put( RegistryObject<? extends T> regObj, V value ) { return put( RegObjKey.of( registry, regObj, false ), value ); }
         
         /** Adds a blacklist key based on the registry object. Matches only the provided object. */
-        public B putBlacklist( RegistryObject<? extends T> regObj ) { return putBlacklist( RegObjKey.Basic.of( registry, regObj, true ) ); }
+        public B putBlacklist( RegistryObject<? extends T> regObj ) { return putBlacklist( RegObjKey.of( registry, regObj, true ) ); }
         
         /** Adds a key-value pair based on the registered object. Only suitable for vanilla stuff. Matches only the provided object. */
-        public B put( T obj, V value ) { return put( RegObjKey.Basic.of( registry, obj, false ), value ); }
+        public B put( T obj, V value ) { return put( RegObjKey.of( registry, obj, false ), value ); }
         
         /** Adds a blacklist key based on the registered object. Only suitable for vanilla stuff. Matches only the provided object. */
-        public B putBlacklist( T obj ) { return putBlacklist( RegObjKey.Basic.of( registry, obj, true ) ); }
+        public B putBlacklist( T obj ) { return putBlacklist( RegObjKey.of( registry, obj, true ) ); }
         
         
         // ---- Wildcard Keys ---- //
         
         /** Adds a wildcard key-value pair based on the partial resource location. Matches everything in the namespace that starts with the partial path. */
-        public B putWildcard( ResourceLocation partialResLoc, V value ) { return put( RegObjKey.Wildcard.of( registry, partialResLoc, false ), value ); }
+        public B putWildcard( ResourceLocation partialResLoc, V value ) { return put( RegObjKey.ofWildcard( registry, partialResLoc, false ), value ); }
         
         /** Adds a blacklist wildcard key based on the partial resource location. Matches everything in the namespace that starts with the partial path. */
-        public B putWildcardBlacklist( ResourceLocation partialResLoc ) { return putBlacklist( RegObjKey.Wildcard.of( registry, partialResLoc, true ) ); }
+        public B putWildcardBlacklist( ResourceLocation partialResLoc ) { return putBlacklist( RegObjKey.ofWildcard( registry, partialResLoc, true ) ); }
         
         /** Adds a wildcard key-value pair based on the namespace. Matches everything in the namespace. */
-        public B putWildcard( String namespace, V value ) { return putWildcard( namespace, "", value ); }
+        public B putWildcard( String namespace, V value ) { return put( RegObjKey.ofWildcard( registry, namespace, false ), value ); }
         
         /** Adds a blacklist wildcard key based on the namespace. Matches everything in the namespace. */
-        public B putWildcardBlacklist( String namespace ) { return putWildcardBlacklist( namespace, "" ); }
+        public B putWildcardBlacklist( String namespace ) { return putBlacklist( RegObjKey.ofWildcard( registry, namespace, true ) ); }
         
         /** Adds a wildcard key-value pair based on the namespace and partial path. Matches everything in the namespace that starts with the partial path. */
-        public B putWildcard( String namespace, String partialPath, V value ) { return put( RegObjKey.Wildcard.of( registry, namespace, partialPath, false ), value ); }
+        public B putWildcard( String namespace, String partialPath, V value ) { return put( RegObjKey.ofWildcard( registry, namespace, partialPath, false ), value ); }
         
         /** Adds a blacklist wildcard key based on the namespace and partial path. Matches everything in the namespace that starts with the partial path. */
-        public B putWildcardBlacklist( String namespace, String partialPath ) { return putBlacklist( RegObjKey.Wildcard.of( registry, namespace, partialPath, true ) ); }
+        public B putWildcardBlacklist( String namespace, String partialPath ) { return putBlacklist( RegObjKey.ofWildcard( registry, namespace, partialPath, true ) ); }
         
         
         // ---- Tag Keys ---- //
         
         /** Adds a tag key-value pair based on the resource location. Matches everything in the tag. */
-        public B putTag( ResourceLocation resLoc, V value ) { return put( RegObjKey.Tag.of( registry, resLoc, false ), value ); }
+        public B putTag( ResourceLocation resLoc, V value ) { return put( RegObjKey.ofTag( registry, resLoc, false ), value ); }
         
         /** Adds a blacklist tag key based on the resource location. Matches everything in the tag. */
-        public B putTagBlacklist( ResourceLocation resLoc ) { return putBlacklist( RegObjKey.Tag.of( registry, resLoc, true ) ); }
+        public B putTagBlacklist( ResourceLocation resLoc ) { return putBlacklist( RegObjKey.ofTag( registry, resLoc, true ) ); }
         
         /** Adds a tag key-value pair based on the tag. Matches everything in the tag. */
-        public B putTag( TagKey<T> tag, V value ) { return put( RegObjKey.Tag.of( registry, tag, false ), value ); }
+        public B putTag( TagKey<T> tag, V value ) { return put( RegObjKey.ofTag( registry, tag, false ), value ); }
         
         /** Adds a blacklist tag key based on the tag. Matches everything in the tag. */
-        public B putTagBlacklist( TagKey<T> tag ) { return putBlacklist( RegObjKey.Tag.of( registry, tag, true ) ); }
+        public B putTagBlacklist( TagKey<T> tag ) { return putBlacklist( RegObjKey.ofTag( registry, tag, true ) ); }
     }
 }

@@ -14,6 +14,8 @@ import java.util.Random;
 /**
  * Boilerplate for fuzzy map fields, but can also be used directly with generic fuzzy maps.
  * Use {@link #get(T)} to retrieve to value for a target object (or null if the object is not mapped).
+ * If the value type is a number, you may use {@link #rollChance(T, RandomSource)} to retrieve the
+ * value, roll it like a percentage or 1-in-X chance, and get back a pass/fail boolean instead.
  *
  * @param <T> The type to match against.
  * @param <V> The value type.
@@ -23,6 +25,16 @@ import java.util.Random;
  */
 @ApiStatus.Experimental
 public class FuzzyMapField<T, V, F extends FuzzyMap<T, V>> extends AbstractFuzzyCollectionField<T, FuzzyEntry<T, V>, F> {
+    
+    /** A simple implementation for using generic fuzzy maps without the extra type parameter. */
+    @SuppressWarnings( "unused" )
+    @ApiStatus.Experimental
+    public static class Generic<T, V> extends FuzzyMapField<T, V, FuzzyMap<T, V>> {
+        /** Creates a new field. */
+        public Generic( String key, FuzzyMap<T, V> defaultValue, @Nullable String... description ) {
+            super( key, defaultValue, description );
+        }
+    }
     
     /** Creates a new field. */
     public FuzzyMapField( String key, F defaultValue, @Nullable String... description ) {
