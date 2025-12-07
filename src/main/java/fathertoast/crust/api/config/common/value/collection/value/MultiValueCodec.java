@@ -4,8 +4,6 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.ITomlStringValue;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
@@ -21,56 +19,41 @@ import java.util.function.Supplier;
  * <p>
  * To use multi-value codecs, create a class or static nested class extending this with that same
  * class as its own type parameter (V). You do not need to add a constructor, but if you do, you must
- * include a no-argument constructor or override {@link #duplicate()} to still deep-clone the class.
+ * include a no-argument constructor or override {@link #duplicate()}.
  * <p>
  * In the body of the class, declare the values you want in exactly the order you want them to be
  * defined in config files by calling {@link #value(IValueCodec)} and storing the results in final
  * fields. Do NOT access these supplier fields from the instances you use as codecs.
  * <p>
  * It is not required, but may be handy to store an instance of the new class in a public static
- * final field to be used as the codec "singleton".
+ * final field to be used as the codec "singleton", to provide to fields that use an {@link IValueCodec}.
  * <p>
  * Finally, the values loaded by this codec will also be instances of the codec - however, the values
  * are loaded in, so you may access the loaded values through the supplier fields you defined above.
  *
  * @param <V> The type of value this codec reads/writes; should be this multi-value codec itself.
- * @see MultiValueCodec.MobEffectStats An example multi-value codec.
+ * @see MobEffectStats An example multi-value codec.
  */
 @ApiStatus.Experimental
 public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements IValueCodec<V> {
-    
-    /** Holds the duration and amplifier for a mob effect instance. */
-    public static class MobEffectStats extends MultiValueCodec<MobEffectStats> {
-        /** The mob effect stats codec "singleton". */
-        public static final MobEffectStats CODEC = new MobEffectStats();
-        
-        /** The effect duration, in ticks (20 ticks = 1 second). */
-        public final Supplier<Integer> duration = value( IntValueCodec.NON_NEGATIVE );
-        /** The effect amplifier (0 = I, 1 = II, etc.). */
-        public final Supplier<Integer> amplifier = value( IntValueCodec.ANY );
-        
-        /** @return A new effect instance using the loaded duration and amplifier. */
-        public MobEffectInstance create( MobEffect effect ) {
-            return new MobEffectInstance( effect, duration.get(), amplifier.get() );
-        }
-        
-        /** @return A new invisible effect instance using the loaded duration and amplifier. */
-        public MobEffectInstance createInvisible( MobEffect effect ) {
-            return new MobEffectInstance( effect, duration.get(), amplifier.get(), true, false, false );
-        }
-    }
-    
-    
-    // ---- Instance Methods ---- //
-    
+    /** List of all value entries that have been defined via {@link #value(IValueCodec)}. */
     final List<Entry<?>> entries = new ArrayList<>();
     
+    /**
+     * Call this to define a sub-value for this multi-value codec.
+     * Should only be called during instantiation; either in field definitions or in the constructor.
+     * Just store a reference to it so you can access the sub-value from the loaded multi-value.
+     *
+     * @return A supplier that provides the loaded sub-value, or throws a null pointer exception when
+     * used from a codec that wasn't returned as a loaded multi-value.
+     */
     protected <T> Supplier<T> value( IValueCodec<T> codec ) {
         Entry<T> entry = new Entry<>( codec );
         entries.add( entry );
         return entry;
     }
     
+    /** @return A copy of this multi-value codec, with no values loaded. */
     public V duplicate() {
         try {
             Constructor<?> constructor = getClass().getConstructor();
@@ -100,6 +83,7 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
         return str.substring( FuzzyKey.ARG_SEPARATOR.length() );
     }
     
+    /** Called to help with error detection. */
     void validate() {
         if( entries.isEmpty() ) throw new IllegalStateException( "Multi-value codec is malformed! (Has no values)" );
     }
