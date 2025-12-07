@@ -43,11 +43,11 @@ public class WeightedKey<T> extends FuzzyKey<T> {
         int weight;
         String keyWithValue;
         if( keyAndWeight.length < 2 ) {
-            weight = IntValueCodec.WEIGHT.parseTomlString( field, line, null );
+            weight = IntValueCodec.NON_NEGATIVE.parseTomlString( field, line, null );
             keyWithValue = keyAndWeight[0];
         }
         else {
-            weight = IntValueCodec.WEIGHT.parseTomlString( field, line, keyAndWeight[0] );
+            weight = IntValueCodec.NON_NEGATIVE.parseTomlString( field, line, keyAndWeight[0] );
             keyWithValue = keyAndWeight[1];
         }
         
@@ -87,7 +87,7 @@ public class WeightedKey<T> extends FuzzyKey<T> {
     
     /** @return The key and weight, combined into a single string. */
     public static String keyWithWeight( int weight, String key ) {
-        return keyWithValue( IntValueCodec.WEIGHT.toTomlString( weight ), key );
+        return keyWithValue( IntValueCodec.NON_NEGATIVE.toTomlString( weight ), key );
     }
     
     

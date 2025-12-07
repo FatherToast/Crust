@@ -43,7 +43,7 @@ public class FuzzyWeightedListField<T, C extends FuzzyWeightedList<T>> extends A
     public void appendFieldInfo( List<String> comment ) {
         comment.add( TomlHelper.fieldInfoNoDefault( valueDefault.getTypeName() + " Weighted List",
                 "[ \"weight_1 key_1\", \"weight_2 " + FuzzyKey.NULL_KEY + "\", \"weight_3 key_3\", ... ]" ) );
-        comment.add( "Weight Format: " + IntValueCodec.WEIGHT.getFormat() );
+        comment.add( "Weight Format: " + IntValueCodec.NON_NEGATIVE.getFormat() );
         comment.add( "Key Patterns: \"" + FuzzyKey.NULL_KEY + "\", " + valueDefault.getKeyPatterns() );
         comment.add( TomlHelper.fieldInfoOnlyDefault( valueDefault ) );
     }

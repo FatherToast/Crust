@@ -130,6 +130,7 @@ public final class ConfigUtil {
     public static String toString( @Nullable TagKey<?> tagKey ) { return tagKey == null ? "null" : ("#" + tagKey.location()); }
     
     /** @return Returns the given String as a config-recognizable namespace wildcard. */
+    //@Deprecated(forRemoval = true)
     public static String namespaceWildcard( @Nullable String namespaceWildcard ) { return namespaceWildcard == null ? "null" : (namespaceWildcard + ":*"); }
     
     /**
@@ -221,5 +222,5 @@ public final class ConfigUtil {
     }
     
     // Utility class
-    private ConfigUtil() { }
+    private ConfigUtil() {}
 }

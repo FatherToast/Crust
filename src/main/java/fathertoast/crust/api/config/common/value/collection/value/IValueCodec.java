@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 @ApiStatus.Experimental
 public interface IValueCodec<V> {
     
-    /** @return The value format (e.g., {@literal "<Number (Any Value)>"}). */
+    /** @return The value format (for example, {@literal "<Number (Any Value)>"}). */
     String getFormat();
     
     /** @return The value, converted to a single-line string. */
@@ -38,17 +38,4 @@ public interface IValueCodec<V> {
     static String[] getArgs( @Nullable String value ) {
         return value == null ? new String[0] : value.trim().split( FuzzyKey.ARG_SEPARATOR );
     }
-    
-    //TODO spec-style codec
-    
-    //    abstract class Custom<T> implements EntryValueCodec<T> {
-    //        protected final List<Arg<?>> arguments = new ArrayList<>();
-    //
-    //        protected <A> Arg<A> define( Arg<A> argument ) {
-    //            arguments.add( argument );
-    //            return argument;
-    //        }
-    //
-    //        public int args() { return arguments.size(); }
-    //    }
 }

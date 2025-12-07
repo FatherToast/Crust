@@ -53,11 +53,11 @@ public class WeightedEntry<T, V> extends FuzzyEntry<T, V> {
         int weight;
         String keyWithValue;
         if( keyAndWeight.length < 2 ) {
-            weight = IntValueCodec.WEIGHT.parseTomlString( field, line, null );
+            weight = IntValueCodec.NON_NEGATIVE.parseTomlString( field, line, null );
             keyWithValue = keyAndWeight[0];
         }
         else {
-            weight = IntValueCodec.WEIGHT.parseTomlString( field, line, keyAndWeight[0] );
+            weight = IntValueCodec.NON_NEGATIVE.parseTomlString( field, line, keyAndWeight[0] );
             keyWithValue = keyAndWeight[1];
         }
         

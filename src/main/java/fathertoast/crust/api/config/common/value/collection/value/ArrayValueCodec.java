@@ -38,6 +38,8 @@ public class ArrayValueCodec<T> implements IValueCodec<T[]> {
     public static <T> ArrayValueCodec<T> of( int length, IValueCodec<T> codec ) { return new ArrayValueCodec<>( length, codec ); }
     
     
+    // ---- Instance Methods ---- //
+    
     public final int length;
     public final IValueCodec<T> elementCodec;
     
@@ -46,7 +48,7 @@ public class ArrayValueCodec<T> implements IValueCodec<T[]> {
         elementCodec = codec;
     }
     
-    /** @return The value format (e.g., {@literal "<Number (Any Value)>"}). */
+    /** @return The value format (for example, {@literal "<Number (Any Value)>"}). */
     @Override
     public String getFormat() { return elementCodec.getFormat() + " x " + (length > 0 ? length : "1+") + " Times"; }
     

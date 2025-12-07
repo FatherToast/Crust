@@ -46,7 +46,7 @@ public class FuzzyWeightedValueListField<T, V, C extends FuzzyWeightedValueList<
     public void appendFieldInfo( List<String> comment ) {
         comment.add( TomlHelper.fieldInfoNoDefault( valueDefault.getTypeName() + " Map",
                 "[ \"weight_1 key_1 value_1\", \"weight_2 " + FuzzyKey.NULL_KEY + "\", \"weight_3 key_3 value_3\", ... ]" ) );
-        comment.add( "Weight Format: " + IntValueCodec.WEIGHT.getFormat() );
+        comment.add( "Weight Format: " + IntValueCodec.NON_NEGATIVE.getFormat() );
         comment.add( "Key Patterns: \"" + FuzzyKey.NULL_KEY + "\", " + valueDefault.getKeyPatterns() );
         comment.add( "Value Format: " + valueDefault.getValueFormat() );
         comment.add( TomlHelper.fieldInfoOnlyDefault( valueDefault ) );
