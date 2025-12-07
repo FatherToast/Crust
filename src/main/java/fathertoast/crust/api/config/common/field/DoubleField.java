@@ -140,7 +140,11 @@ public class DoubleField extends AbstractConfigField {
         PERCENT( 0.0, 1.0 ),
         /** Accepts any value between -1 and 1. */
         SIGNED_PERCENT( -1.0, 1.0 ),
-        /** Accepts any value between -1 and 2. */
+        /**
+         * Accepts any value between -1 and 2. This is generally a percent.
+         * A value over 1 guarantees the equipment drop and prevents it from being damaged, while
+         * a negative value should prevent the item from being equipped at all (implementation-specific).
+         */
         DROP_CHANCE( -1.0, 2.0 );
         
         public final double MIN;
