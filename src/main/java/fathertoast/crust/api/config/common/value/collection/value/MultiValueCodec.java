@@ -14,25 +14,26 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
- * A multi-value codec. Acts as a boilerplate for a value that combines multiple values of any type.
+ * A multi-value codec. Acts as a boilerplate for a value that combines multiple sub-values of any type.
  * This is setup like a condensed form of a config file with spec:
  * <p>
- * To use multi-value codecs, create a class or static nested class extending this with that same
- * class as its own type parameter (V). You do not need to add a constructor, but if you do, you must
- * include a no-argument constructor or override {@link #duplicate()}.
+ * To use multi-value codecs, create a class or static nested class extending this with itself as its
+ * own type parameter (V). You do not need to add a constructor, but if you do, you must include a
+ * no-argument constructor or override {@link #duplicate()}.
  * <p>
- * In the body of the class, declare the values you want in exactly the order you want them to be
+ * In the body of the class, declare the sub-values you want in exactly the order you want them to be
  * defined in config files by calling {@link #value(IValueCodec)} and storing the results in final
- * fields. Do NOT access these supplier fields from the instances you use as codecs.
+ * fields. Do NOT access these supplier fields from any instances you create to use as codecs.
+ * <p>
+ * The values loaded by multi-value codecs will also be instances of the same codec. However, codecs
+ * that are loaded as a value have their sub-values loaded in; access the loaded sub-values from these
+ * instances through the supplier fields you defined above.
  * <p>
  * It is not required, but may be handy to store an instance of the new class in a public static
  * final field to be used as the codec "singleton", to provide to fields that use an {@link IValueCodec}.
- * <p>
- * Finally, the values loaded by this codec will also be instances of the codec - however, the values
- * are loaded in, so you may access the loaded values through the supplier fields you defined above.
  *
  * @param <V> The type of value this codec reads/writes; should be this multi-value codec itself.
- * @see MobEffectStats An example multi-value codec.
+ * @see MobEffectStats An example multi-value codec implementation.
  */
 @ApiStatus.Experimental
 public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements IValueCodec<V> {
@@ -44,11 +45,25 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
      * Should only be called during instantiation; either in field definitions or in the constructor.
      * Just store a reference to it so you can access the sub-value from the loaded multi-value.
      *
+     * @param codec The sub-value's codec (read/write instructions).
      * @return A supplier that provides the loaded sub-value, or throws a null pointer exception when
      * used from a codec that wasn't returned as a loaded multi-value.
      */
-    protected <T> Supplier<T> value( IValueCodec<T> codec ) {
-        Entry<T> entry = new Entry<>( codec );
+    protected <T> Supplier<T> value( IValueCodec<T> codec ) { return value( codec, null ); }
+    
+    /**
+     * Call this to define a sub-value for this multi-value codec with a custom format hint.
+     * Should only be called during instantiation; either in field definitions or in the constructor.
+     * Just store a reference to it so you can access the sub-value from the loaded multi-value.
+     *
+     * @param codec  The sub-value's codec (read/write instructions).
+     * @param format A custom format hint to describe this sub-value in config file comments (for example,
+     *               {@literal "<Duration (≥ 0)>"}). If null, the codec's standard format hint is used.
+     * @return A supplier that provides the loaded sub-value, or throws a null pointer exception when
+     * used from a codec that wasn't returned as a loaded multi-value.
+     */
+    protected <T> Supplier<T> value( IValueCodec<T> codec, @Nullable String format ) {
+        Entry<T> entry = new Entry<>( codec, format );
         entries.add( entry );
         return entry;
     }
@@ -70,7 +85,10 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
     public String getFormat() {
         validate();
         StringBuilder str = new StringBuilder();
-        for( Entry<?> entry : entries ) str.append( FuzzyKey.ARG_SEPARATOR ).append( entry.valueCodec.getFormat() );
+        for( Entry<?> entry : entries ) {
+            str.append( FuzzyKey.ARG_SEPARATOR )
+                    .append( entry.formatOverride == null ? entry.valueCodec.getFormat() : entry.formatOverride );
+        }
         return str.substring( FuzzyKey.ARG_SEPARATOR.length() );
     }
     
@@ -125,19 +143,25 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
     
     /** A field-like implementation of a generic value codec. */
     private static final class Entry<V> implements Supplier<V>, ITomlStringValue {
-        
-        final IValueCodec<V> valueCodec;
+        /** This entry's read/write logic. */
+        public final IValueCodec<V> valueCodec;
+        /** The format hint override. */
         @Nullable
-        V value;
+        public final String formatOverride;
         
-        Entry( IValueCodec<V> codec ) { this( codec, null ); }
+        /**
+         * The loaded value.
+         * This is always null for the codec "singleton" and never null for loaded value codecs.
+         */
+        @Nullable
+        private V value;
         
-        Entry( IValueCodec<V> codec, @Nullable V v ) {
+        public Entry( IValueCodec<V> codec, @Nullable String format ) {
             valueCodec = codec;
-            value = v;
+            formatOverride = format;
         }
         
-        /** @return The loaded value. Don't call this on the codec itself, only on the loaded "codec clone" value. */
+        /** @return The loaded value. Don't call this from codecs you create, only on codecs loaded as a value. */
         @Override // Supplier
         public V get() { return Objects.requireNonNull( value ); }
         
@@ -145,7 +169,7 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
         @Override // ITomlStringValue
         public String toTomlString() { return valueCodec.toTomlString( get() ); }
         
-        /** Loads the entry's value based on the argument string. */
+        /** Loads the entry's value based on the argument string. Called when a codec is being loaded as a value. */
         public void load( @Nullable AbstractConfigField field, String line, @Nullable String arg ) {
             value = valueCodec.parseTomlString( field, line, arg );
         }

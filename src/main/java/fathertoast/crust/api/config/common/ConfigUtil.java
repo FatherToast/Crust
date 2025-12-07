@@ -18,7 +18,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * A static helper class that contains some helper utilities for making pretty configs.
+ * A static helper class that contains some helper utilities for making pretty configs
+ * and provide better error reporting.
  */
 @SuppressWarnings( "unused" )
 public final class ConfigUtil {
@@ -26,11 +27,11 @@ public final class ConfigUtil {
     /** Logger instance for the Crust Config API. */
     public static final Logger LOG = LogManager.getLogger( ICrustApi.MOD_ID + "/configs" );
     
-    /** The plus or minus symbol (+/-). */
+    /** The plus or minus symbol (±). */
     public static final String PLUS_OR_MINUS = "\u00b1";
-    /** The less than or equal to symbol (<=). */
+    /** The less than or equal to symbol (≤). */
     public static final String LESS_OR_EQUAL = "\u2264";
-    /** The greater than or equal to symbol (>=). */
+    /** The greater than or equal to symbol (≥). */
     public static final String GREATER_OR_EQUAL = "\u2265";
     
     /** Prints the standard debug header for field validation issues. */

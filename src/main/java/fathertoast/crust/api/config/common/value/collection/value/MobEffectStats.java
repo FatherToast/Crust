@@ -14,10 +14,12 @@ public class MobEffectStats extends MultiValueCodec<MobEffectStats> {
     public static final MobEffectStats CODEC = new MobEffectStats();
     
     /** The effect duration, in ticks (20 ticks = 1 second). */
-    public final Supplier<Integer> duration = value( IntValueCodec.NON_NEGATIVE );
+    public final Supplier<Integer> duration = value( IntValueCodec.NON_NEGATIVE,
+            IntValueCodec.NON_NEGATIVE.getFormat( "Duration" ) );
     
     /** The effect amplifier (0 = I, 1 = II, etc.). */
-    public final Supplier<Integer> amplifier = value( IntValueCodec.ANY );
+    public final Supplier<Integer> amplifier = value( IntValueCodec.ANY,
+            IntValueCodec.ANY.getFormat( "Amplifier" ) );
     
     /** @return A new effect instance using the loaded duration and amplifier. */
     public MobEffectInstance create( MobEffect effect ) {
