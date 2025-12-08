@@ -2,12 +2,14 @@ package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.collection.key.*;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
 import fathertoast.crust.api.lib.CrustMath;
 import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -161,6 +163,12 @@ public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<
          * Non-Number types (or no value found for target): Returns false.
          */
         public boolean rollChance( RandomSource random ) { return CrustMath.rollChance( value(), random ); }
+        
+        /** @return A string representation of this pair. */
+        @Override
+        public String toString() {
+            return "(" + TomlHelper.toLiteral( key() ) + ", " + TomlHelper.toLiteral( value() ) + ")";
+        }
     }
     
     /** A simple iterator over the objects represented by the keys, rather than over the keys themselves. */
@@ -192,7 +200,7 @@ public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<
             do {
                 FuzzyEntry<T, V> entry = keyIterator.next();
                 // See if we should open a new sub-iterator
-                if( entry.unwrap() instanceof IMultiKey<?> ) {
+                if( entry.wrappedKey() instanceof IMultiKey<?> ) {
                     @SuppressWarnings( "unchecked" )
                     Iterator<T> sub = ((IMultiKey<T>) entry.wrappedKey()).getValueIterator();
                     if( sub != null && sub.hasNext() ) {
@@ -202,8 +210,10 @@ public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<
                     }
                 }
                 // Otherwise, assume it's a reverse key
-                Pair<T, V> p = tryCast( entry );
-                if( p != null ) return p;
+                else {
+                    Pair<T, V> p = tryCast( entry );
+                    if( p != null ) return p;
+                }
             }
             while( hasNext() );
             return null;

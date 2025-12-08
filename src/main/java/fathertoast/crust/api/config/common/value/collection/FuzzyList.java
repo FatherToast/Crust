@@ -141,8 +141,10 @@ public class FuzzyList<T> extends AbstractFuzzyCollection<T, FuzzyKey<T>> {
                     }
                 }
                 // Otherwise, assume it's a reverse key
-                T t = tryCast( key );
-                if( t != null ) return t;
+                else {
+                    T t = tryCast( key );
+                    if( t != null ) return t;
+                }
             }
             while( hasNext() );
             return null;

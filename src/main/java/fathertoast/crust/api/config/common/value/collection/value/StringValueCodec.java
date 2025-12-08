@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
@@ -61,7 +62,7 @@ public class StringValueCodec implements IValueCodec<String> {
     @Override
     public String toTomlString( String value ) {
         // The empty string doesn't work very nicely as a value
-        return IValueCodec.super.toTomlString( value.isEmpty() ? FuzzyKey.NULL_KEY : value );
+        return value.isEmpty() ? FuzzyKey.NULL_KEY : TomlHelper.escapeString( value );
     }
     
     /**
@@ -133,6 +134,7 @@ public class StringValueCodec implements IValueCodec<String> {
         
         public LengthCorrector( String def, int l ) {
             super( def );
+            if( l < 1 ) throw new IllegalArgumentException( "Max length must be positive!" );
             if( def.length() > l )
                 throw new IllegalArgumentException( "Default value cannot be longer than the max length!" );
             length = l;

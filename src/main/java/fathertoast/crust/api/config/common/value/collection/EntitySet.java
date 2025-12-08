@@ -3,6 +3,7 @@ package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.value.collection.key.EntityKey;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -57,6 +58,12 @@ public class EntitySet extends FuzzySet<Entity> {
         // ---- Extends Keys ---- //
         
         /** Adds an extends key based on the resource location. Matches the provided entity type and any entities that extend its class. */
+        public B addExtends( String resLoc ) { return add( EntityKey.extending( resLoc, false ) ); }
+        
+        /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend its class. */
+        public B addExtendsBlacklist( String resLoc ) { return add( EntityKey.extending( resLoc, true ) ); }
+        
+        /** Adds an extends key based on the resource location. Matches the provided entity type and any entities that extend its class. */
         public B addExtends( ResourceLocation resLoc ) { return add( EntityKey.extending( resLoc, false ) ); }
         
         /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend its class. */
@@ -68,6 +75,12 @@ public class EntitySet extends FuzzySet<Entity> {
         /** Adds a blacklist extends key based on the registry object. Matches the provided entity type and any entities that extend its class. */
         public B addExtendsBlacklist( RegistryObject<? extends EntityType<?>> regObj ) { return add( EntityKey.extending( regObj, true ) ); }
         
+        /** Adds an extends key based on the resource key. Matches the provided entity type and any entities that extend its class. */
+        public B addExtends( ResourceKey<? extends EntityType<?>> resKey ) { return add( EntityKey.extending( resKey, false ) ); }
+        
+        /** Adds a blacklist extends key based on the resource key. Matches the provided entity type and any entities that extend its class. */
+        public B addExtendsBlacklist( ResourceKey<? extends EntityType<?>> resKey ) { return add( EntityKey.extending( resKey, true ) ); }
+        
         /** Adds an extends key based on the registered object. Only suitable for vanilla stuff. Matches the provided entity type and any entities that extend its class. */
         public B addExtends( EntityType<?> obj ) { return add( EntityKey.extending( obj, false ) ); }
         
@@ -76,6 +89,12 @@ public class EntitySet extends FuzzySet<Entity> {
         
         
         // ---- Basic Keys ---- //
+        
+        /** Adds a key based on the resource location. Matches only the provided entity type. */
+        public B add( String resLoc ) { return add( EntityKey.of( resLoc, false ) ); }
+        
+        /** Adds a blacklist key based on the resource location. Matches only the provided entity type. */
+        public B addBlacklist( String resLoc ) { return add( EntityKey.of( resLoc, true ) ); }
         
         /** Adds a key based on the resource location. Matches only the provided entity type. */
         public B add( ResourceLocation resLoc ) { return add( EntityKey.of( resLoc, false ) ); }
@@ -88,6 +107,12 @@ public class EntitySet extends FuzzySet<Entity> {
         
         /** Adds a blacklist key based on the registry object. Matches only the provided entity type. */
         public B addBlacklist( RegistryObject<? extends EntityType<?>> regObj ) { return add( EntityKey.of( regObj, true ) ); }
+        
+        /** Adds a key based on the resource key. Matches only the provided entity type. */
+        public B add( ResourceKey<? extends EntityType<?>> resKey ) { return add( EntityKey.of( resKey, false ) ); }
+        
+        /** Adds a blacklist key based on the resource key. Matches only the provided entity type. */
+        public B addBlacklist( ResourceKey<? extends EntityType<?>> resKey ) { return add( EntityKey.of( resKey, true ) ); }
         
         /** Adds a key based on the registered object. Only suitable for vanilla stuff. Matches only the provided entity type. */
         public B add( EntityType<?> obj ) { return add( EntityKey.of( obj, false ) ); }
@@ -118,6 +143,12 @@ public class EntitySet extends FuzzySet<Entity> {
         
         
         // ---- Tag Keys ---- //
+        
+        /** Adds a tag key based on the resource location. Matches every entity type in the tag. */
+        public B addTag( String resLoc ) { return add( EntityKey.ofTag( resLoc, false ) ); }
+        
+        /** Adds a blacklist tag key based on the resource location. Matches every entity type in the tag. */
+        public B addTagBlacklist( String resLoc ) { return add( EntityKey.ofTag( resLoc, true ) ); }
         
         /** Adds a tag key based on the resource location. Matches every entity type in the tag. */
         public B addTag( ResourceLocation resLoc ) { return add( EntityKey.ofTag( resLoc, false ) ); }

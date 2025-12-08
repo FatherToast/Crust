@@ -4,6 +4,7 @@ package fathertoast.crust.api.config.common.value.collection;
 import fathertoast.crust.api.config.common.value.collection.key.EntityKey;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -66,6 +67,12 @@ public class EntityMap<V> extends FuzzyMap<Entity, V> {
         // ---- Extends Keys ---- //
         
         /** Adds an extends key-value pair based on the resource location. Matches the provided entity type and any entities that extend its class. */
+        public B putExtends( String resLoc, V value ) { return put( EntityKey.extending( resLoc, false ), value ); }
+        
+        /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend its class. */
+        public B putExtendsBlacklist( String resLoc ) { return putBlacklist( EntityKey.extending( resLoc, true ) ); }
+        
+        /** Adds an extends key-value pair based on the resource location. Matches the provided entity type and any entities that extend its class. */
         public B putExtends( ResourceLocation resLoc, V value ) { return put( EntityKey.extending( resLoc, false ), value ); }
         
         /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend its class. */
@@ -77,6 +84,12 @@ public class EntityMap<V> extends FuzzyMap<Entity, V> {
         /** Adds a blacklist extends key based on the registry object. Matches the provided entity type and any entities that extend its class. */
         public B putExtendsBlacklist( RegistryObject<? extends EntityType<?>> regObj ) { return putBlacklist( EntityKey.extending( regObj, true ) ); }
         
+        /** Adds an extends key-value pair based on the resource key. Matches the provided entity type and any entities that extend its class. */
+        public B putExtends( ResourceKey<? extends EntityType<?>> resKey, V value ) { return put( EntityKey.extending( resKey, false ), value ); }
+        
+        /** Adds a blacklist extends key based on the resource key. Matches the provided entity type and any entities that extend its class. */
+        public B putExtendsBlacklist( ResourceKey<? extends EntityType<?>> resKey ) { return putBlacklist( EntityKey.extending( resKey, true ) ); }
+        
         /** Adds an extends key-value pair based on the registered object. Only suitable for vanilla stuff. Matches the provided entity type and any entities that extend its class. */
         public B putExtends( EntityType<?> obj, V value ) { return put( EntityKey.extending( obj, false ), value ); }
         
@@ -85,6 +98,12 @@ public class EntityMap<V> extends FuzzyMap<Entity, V> {
         
         
         // ---- Basic Keys ---- //
+        
+        /** Adds a key-value pair based on the resource location. Matches only the provided entity type. */
+        public B put( String resLoc, V value ) { return put( EntityKey.of( resLoc, false ), value ); }
+        
+        /** Adds a blacklist key based on the resource location. Matches only the provided entity type. */
+        public B putBlacklist( String resLoc ) { return putBlacklist( EntityKey.of( resLoc, true ) ); }
         
         /** Adds a key-value pair based on the resource location. Matches only the provided entity type. */
         public B put( ResourceLocation resLoc, V value ) { return put( EntityKey.of( resLoc, false ), value ); }
@@ -97,6 +116,12 @@ public class EntityMap<V> extends FuzzyMap<Entity, V> {
         
         /** Adds a blacklist key based on the registry object. Matches only the provided entity type. */
         public B putBlacklist( RegistryObject<? extends EntityType<?>> regObj ) { return putBlacklist( EntityKey.of( regObj, true ) ); }
+        
+        /** Adds a key-value pair based on the resource key. Matches only the provided entity type. */
+        public B put( ResourceKey<? extends EntityType<?>> resKey, V value ) { return put( EntityKey.of( resKey, false ), value ); }
+        
+        /** Adds a blacklist key based on the resource key. Matches only the provided entity type. */
+        public B putBlacklist( ResourceKey<? extends EntityType<?>> resKey ) { return putBlacklist( EntityKey.of( resKey, true ) ); }
         
         /** Adds a key-value pair based on the registered object. Only suitable for vanilla stuff. Matches only the provided entity type. */
         public B put( EntityType<?> obj, V value ) { return put( EntityKey.of( obj, false ), value ); }
@@ -127,6 +152,12 @@ public class EntityMap<V> extends FuzzyMap<Entity, V> {
         
         
         // ---- Tag Keys ---- //
+        
+        /** Adds a tag key-value pair based on the resource location. Matches every entity type in the tag. */
+        public B putTag( String resLoc, V value ) { return put( EntityKey.ofTag( resLoc, false ), value ); }
+        
+        /** Adds a blacklist tag key based on the resource location. Matches every entity type in the tag. */
+        public B putTagBlacklist( String resLoc ) { return putBlacklist( EntityKey.ofTag( resLoc, true ) ); }
         
         /** Adds a tag key-value pair based on the resource location. Matches every entity type in the tag. */
         public B putTag( ResourceLocation resLoc, V value ) { return put( EntityKey.ofTag( resLoc, false ), value ); }

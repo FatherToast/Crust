@@ -16,11 +16,11 @@ import java.util.Arrays;
  * This is the classic value pattern provided by Crust.
  * Legacy "value lists" all use the equivalent of the double array codec.
  *
- * @param <T> The array type.
+ * @param <V> The array type.
  */
 @SuppressWarnings( "ClassCanBeRecord" )
 @ApiStatus.Experimental
-public class ArrayValueCodec<T> implements IValueCodec<T[]> {
+public class ArrayValueCodec<V> implements IValueCodec<V[]> {
     
     /** @param length If >0, the array value will have exactly this length. Otherwise, its length will be >=1. */
     public static ArrayValueCodec<Double> ofDoubles( int length, double defaultValue, DoubleField.Range range ) { return of( length, DoubleValueCodec.of( defaultValue, range ) ); }
@@ -41,9 +41,9 @@ public class ArrayValueCodec<T> implements IValueCodec<T[]> {
     // ---- Instance Methods ---- //
     
     public final int length;
-    public final IValueCodec<T> elementCodec;
+    public final IValueCodec<V> elementCodec;
     
-    private ArrayValueCodec( int len, IValueCodec<T> codec ) {
+    private ArrayValueCodec( int len, IValueCodec<V> codec ) {
         length = len;
         elementCodec = codec;
     }
@@ -54,7 +54,7 @@ public class ArrayValueCodec<T> implements IValueCodec<T[]> {
     
     /** @return The value, converted to a single-line string. */
     @Override
-    public String toTomlString( T[] value ) {
+    public String toTomlString( V[] value ) {
         final StringBuilder str = new StringBuilder();
         for( Object arg : value ) {
             // Do null check to allow simple array initializers to be used as default values (e.g., new Integer[3])
@@ -70,7 +70,7 @@ public class ArrayValueCodec<T> implements IValueCodec<T[]> {
      * @return A new value based on the value string. If the parse fails, returns a non-null default value.
      */
     @Override
-    public T[] parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+    public V[] parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
         String[] args = IValueCodec.getArgs( value );
         int actualArgs = args.length;
         
@@ -93,7 +93,7 @@ public class ArrayValueCodec<T> implements IValueCodec<T[]> {
         }
         
         // Parse the arguments
-        T[] v = makeArray( expectedArgs, elementCodec.parseTomlString( field, line, get( args, 0 ) ) );
+        V[] v = makeArray( expectedArgs, elementCodec.parseTomlString( field, line, get( args, 0 ) ) );
         for( int i = 1; i < expectedArgs; i++ ) {
             v[i] = elementCodec.parseTomlString( field, line, get( args, i ) );
         }

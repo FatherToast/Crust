@@ -340,9 +340,12 @@ public final class TomlHelper {
     }
     
     /** @return The value as a basic TOML string (surrounded by double quotes). */
-    public static String toBasicStringLiteral( @Nullable String value ) {
-        if( value == null || value.isEmpty() ) return "\"\"";
-        StringBuilder literal = new StringBuilder( "\"" );
+    public static String toBasicStringLiteral( @Nullable String value ) { return "\"" + escapeString( value ) + "\""; }
+    
+    /** @return The value escaped, for inclusion in a basic TOML string. */
+    public static String escapeString( @Nullable String value ) {
+        if( value == null || value.isEmpty() ) return "";
+        StringBuilder literal = new StringBuilder();
         for( char c : value.toCharArray() ) {
             // Escape allowable TOML escape chars (ignoring unicode), otherwise just append as normal
             switch( c ) {
@@ -371,7 +374,7 @@ public final class TomlHelper {
                     literal.append( c );
             }
         }
-        return literal.append( "\"" ).toString();
+        return literal.toString();
     }
     
     /** @return The value as a literal TOML string (surrounded by single quotes). */

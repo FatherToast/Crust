@@ -3,6 +3,7 @@ package fathertoast.crust.api.config.common.value.collection.key;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.collection.KeyUsage;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -28,6 +29,11 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
     public static IFuzzyKeyParser<Entity> PARSER = new Parser();
     
     /** @return A new key based on the resource location. */
+    public static Extends extending( String resLoc, boolean blacklist ) {
+        return extending( RegObjKey.of( REGISTRY, resLoc, blacklist ) );
+    }
+    
+    /** @return A new key based on the resource location. */
     public static Extends extending( ResourceLocation resLoc, boolean blacklist ) {
         return extending( RegObjKey.of( REGISTRY, resLoc, blacklist ) );
     }
@@ -35,6 +41,11 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
     /** @return A new key based on the registry object. */
     public static Extends extending( RegistryObject<? extends EntityType<?>> regObj, boolean blacklist ) {
         return extending( RegObjKey.of( REGISTRY, regObj, blacklist ) );
+    }
+    
+    /** @return A new key based on the resource key. */
+    public static Extends extending( ResourceKey<? extends EntityType<?>> resKey, boolean blacklist ) {
+        return extending( RegObjKey.of( REGISTRY, resKey, blacklist ) );
     }
     
     /**
@@ -46,6 +57,11 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
     }
     
     /** @return A new key based on the resource location. */
+    public static Basic of( String resLoc, boolean blacklist ) {
+        return of( RegObjKey.of( REGISTRY, resLoc, blacklist ) );
+    }
+    
+    /** @return A new key based on the resource location. */
     public static Basic of( ResourceLocation resLoc, boolean blacklist ) {
         return of( RegObjKey.of( REGISTRY, resLoc, blacklist ) );
     }
@@ -53,6 +69,11 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
     /** @return A new key based on the registry object. */
     public static Basic of( RegistryObject<? extends EntityType<?>> regObj, boolean blacklist ) {
         return of( RegObjKey.of( REGISTRY, regObj, blacklist ) );
+    }
+    
+    /** @return A new key based on the resource key. */
+    public static Basic of( ResourceKey<? extends EntityType<?>> resKey, boolean blacklist ) {
+        return of( RegObjKey.of( REGISTRY, resKey, blacklist ) );
     }
     
     /**
@@ -76,6 +97,11 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
     /** @return A new wildcard key, based on the namespace and partial path. */
     public static Basic ofWildcard( String namespace, String partialPath, boolean blacklist ) {
         return of( RegObjKey.ofWildcard( REGISTRY, namespace, partialPath, blacklist ) );
+    }
+    
+    /** @return A new tag key based on the tag resource location. */
+    public static Basic ofTag( String resLoc, boolean blacklist ) {
+        return of( RegObjKey.ofTag( REGISTRY, resLoc, blacklist ) );
     }
     
     /** @return A new tag key based on the tag resource location. */

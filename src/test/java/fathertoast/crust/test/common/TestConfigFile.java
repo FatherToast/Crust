@@ -10,9 +10,7 @@ import fathertoast.crust.api.config.common.value.AttributeList;
 import fathertoast.crust.api.config.common.value.EnvironmentEntry;
 import fathertoast.crust.api.config.common.value.EnvironmentList;
 import fathertoast.crust.api.config.common.value.collection.*;
-import fathertoast.crust.api.config.common.value.collection.value.ArrayValueCodec;
-import fathertoast.crust.api.config.common.value.collection.value.IntValueCodec;
-import fathertoast.crust.api.config.common.value.collection.value.MobEffectStats;
+import fathertoast.crust.api.config.common.value.collection.value.*;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
 import fathertoast.crust.api.config.common.value.environment.biome.BiomeCategory;
 import fathertoast.crust.api.lib.CrustObjects;
@@ -22,14 +20,19 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.tags.InstrumentTags;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.npc.VillagerType;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.item.Instrument;
+import net.minecraft.world.item.Instruments;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -78,12 +81,15 @@ public class TestConfigFile extends AbstractConfigFile {
         public final StringField stringField;
         public final EnumField<BiomeCategory> enumField;
         
+        public final EntitySetField entitySetField;
+        public final EntityMapField<Double[]> entityMapField;
         public final RegistrySetField<EntityType<?>> registrySetField;
         public final RegistryMapField<EntityType<?>, Integer> registryMapField;
-        public final RegistryListField<Biome> registryListField;
-        public final RegistryValueListField<VillagerType, Integer[]> registryValueList;
-        public final RegistryWeightedListField<ConfiguredFeature<?, ?>> registryWeightedList;
-        public final RegistryWeightedValueListField<MobEffect, MobEffectStats> registryWeightedValueList;
+        public final RegistryListField<Item> registryListField;
+        public final RegistryListField<Instrument> registryListField2;
+        public final RegistryValueListField<DamageType, String> registryValueListField;
+        public final RegistryWeightedListField<ConfiguredFeature<?, ?>> registryWeightedListField;
+        public final RegistryWeightedValueListField<MobEffect, MobEffectStats> registryWeightedValueListField;
         
         public final AttributeListField attributeListField;
         public final EnvironmentListField environmentListField;
@@ -146,11 +152,35 @@ public class TestConfigFile extends AbstractConfigFile {
             ///     want to use each {@link fathertoast.crust.api.config.common.value.collection.key.IRegWrapper} type
             ///     (using registries that have tags) with each {@link KeyUsage}.
             /// Forge reg:      {@link ForgeRegistries#ITEMS};          tags: {@link Tags.Items}
-            /// Vanilla reg:    {@link BuiltInRegistries#INSTRUMENT};   tags: {@link net.minecraft.tags.InstrumentTags}
-            /// Dynamic reg:    {@link Registries#DAMAGE_TYPE};         tags: {@link net.minecraft.tags.DamageTypeTags}
+            /// Vanilla reg:    {@link BuiltInRegistries#INSTRUMENT};   tags: {@link InstrumentTags}
+            /// Dynamic reg:    {@link Registries#DAMAGE_TYPE};         tags: {@link DamageTypeTags}
             //TODO implement the above in various registry collection fields
             //  Forge reg tests should be covered by block state and entity collections
             ResourceLocation MISSING_FEATURE = ResourceLocation.fromNamespaceAndPath( "missing", "resource_.-/location" );
+            
+            entitySetField = SPEC.define( new InjectionWrapperField<>(
+                    new EntitySetField( "entity_set_field", new EntitySet.Builder<>()
+                            .addTagBlacklist( MISSING_FEATURE )
+                            .add( EntityType.CREEPER ).add( TestCrustObjects.Obj.TEST_SKELETON )
+                            .addWildcard( "uninstalled_mod" ).add( MISSING_FEATURE )
+                            .addBlacklist( EntityType.STRAY ).addTag( EntityTypeTags.SKELETONS )
+                            .addBlacklist( EntityType.ZOMBIE ).addExtends( EntityType.ZOMBIE )
+                            .addTag( "deadlyworld:mini" )
+                            //.add( EntityType.STRAY ) // Should crash - dupes not allowed in set/map builders
+                            .addWildcard( "minecraft", "ender" )
+                            .addWildcard( "specialmobs", "fire" )
+                            .build() ), General::testCallback ) ).field();
+            entityMapField = SPEC.define( new InjectionWrapperField<>(
+                    new EntityMapField<>( "entity_map_field", new EntityMap
+                            .Builder<>( ArrayValueCodec.of( 3, DoubleValueCodec.SIGNED_PERCENT ) )
+                            .put( EntityType.DONKEY, new Double[] { -0.420, 0.0001, 0.42042 } )
+                            .put( TestCrustObjects.Obj.TEST_SKELETON, new Double[] { 0.0, -1.0, 1.0 } )
+                            .putBlacklist( EntityType.STRAY ).putBlacklist( EntityType.ZOMBIE )
+                            .putTag( EntityTypeTags.SKELETONS, new Double[] { 0.666, 0.666, 0.666 } )
+                            .putExtends( EntityType.ZOMBIE, new Double[] { 0.9, 0.6, -0.9 } )
+                            //.put( EntityType.STRAY, new Double[3] ) // Should crash - dupes not allowed in set/map builders
+                            .putWildcard( "minecraft", "ender", new Double[] { 0.1, 0.2, 0.3 } )
+                            .buildWithDefault( new Double[3] ) ), General::testCallback ) ).field();
             
             registrySetField = SPEC.define( new InjectionWrapperField<>(
                     new RegistrySetField<>( "registry_set_field", new RegistrySet
@@ -175,19 +205,53 @@ public class TestConfigFile extends AbstractConfigFile {
             
             registryListField = SPEC.define( new InjectionWrapperField<>(
                     new RegistryListField<>( "registry_list_field", new RegistryList
-                            .Builder<>( ForgeRegistries.BIOMES )
-                            .add( Biomes.BASALT_DELTAS ).add( "mushroom_fields" ).add( MISSING_FEATURE )
-                            .addTag( BiomeTags.IS_FOREST ).addTag( MISSING_FEATURE ).addTag( Tags.Biomes.IS_MAGICAL )
+                            .Builder<>( ForgeRegistries.ITEMS )
+                            .add( Items.ANVIL ).add( MISSING_FEATURE ).add( "apple" )
+                            .addTag( Tags.Items.CROPS ).addTag( "forge:sandstone" ).addTag( MISSING_FEATURE )
                             .build() ), General::testCallback ) ).field();
-            registryValueList = SPEC.define( new InjectionWrapperField<>(
+            SPEC.callback( () -> {
+                StringBuilder str = new StringBuilder();
+                for( Item item : registryListField.entries() ) {
+                    if( item != null ) {
+                        str.append( ", " ).append( item.getDescriptionId() );
+                    }
+                }
+                TestCrust.LOG.info( str.length() > 2 ? "    " + str.substring( 2 ) : str.toString() );
+            } );
+            registryListField2 = SPEC.define( new InjectionWrapperField<>(
+                    new RegistryListField<>( "registry_list_field_2", new RegistryList
+                            .Builder<>( BuiltInRegistries.INSTRUMENT )
+                            .add( Instruments.FEEL_GOAT_HORN ).add( "sing_goat_horn" ).add( MISSING_FEATURE )
+                            .addTag( InstrumentTags.SCREAMING_GOAT_HORNS ).addTag( MISSING_FEATURE )
+                            .build() ), General::testCallback ) ).field();
+            SPEC.callback( () -> {
+                StringBuilder str = new StringBuilder();
+                for( Instrument instrument : registryListField2.entries() ) {
+                    if( instrument != null ) {
+                        //noinspection DataFlowIssue
+                        str.append( ", " ).append( registryListField2.getRegistry().getKey( instrument ).getPath() );
+                    }
+                }
+                TestCrust.LOG.info( str.length() > 2 ? "    " + str.substring( 2 ) : str.toString() );
+            } );
+            registryValueListField = SPEC.define( new InjectionWrapperField<>(
                     new RegistryValueListField<>( "registry_value_list_field", new RegistryValueList
-                            .Builder<>( BuiltInRegistries.VILLAGER_TYPE, ArrayValueCodec.ofInts( 0, 0, -1, 10 ) )
-                            .put( VillagerType.DESERT, new Integer[10] )
-                            .put( "swamp", new Integer[] { -1 } )
-                            .put( VillagerType.PLAINS, new Integer[] { 0, 1, 10 } )
+                            .Builder<>( Registries.DAMAGE_TYPE, StringValueCodec.of( 16 ) )
+                            .put( DamageTypes.CACTUS, "`~!@#$%^&()_+-=*" ).put( MISSING_FEATURE, "???" )
+                            .putTag( MISSING_FEATURE, "*wah" ).putTag( DamageTypeTags.BYPASSES_ARMOR, "^yikes!" )
+                            .putTag( "always_triggers_silverfish", "*o[ ]Oo*" )
                             .build() ), General::testCallback ) ).field();
+            SPEC.callback( () -> {
+                StringBuilder str = new StringBuilder();
+                for( FuzzyValueList.Pair<DamageType, String> pair : registryValueListField.entries() ) {
+                    if( pair != null ) {
+                        str.append( ", (" ).append( pair.key().msgId() ).append( "=" ).append( pair.value() ).append( ")" );
+                    }
+                }
+                TestCrust.LOG.info( str.length() > 2 ? "    " + str.substring( 2 ) : str.toString() );
+            } );
             
-            registryWeightedList = SPEC.define( new InjectionWrapperField<>(
+            registryWeightedListField = SPEC.define( new InjectionWrapperField<>(
                     new RegistryWeightedListField<>( "registry_weighted_list_field", new RegistryWeightedList
                             .Builder<>( Registries.CONFIGURED_FEATURE )
                             .add( 20, TreeFeatures.BIRCH )
@@ -197,7 +261,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             .addTag( 10, MISSING_FEATURE )
                             .addTag( 5, "deadlyworld:lone_chests" )
                             .build() ), General::testCallback ) ).field();
-            registryWeightedValueList = SPEC.define( new InjectionWrapperField<>(
+            registryWeightedValueListField = SPEC.define( new InjectionWrapperField<>(
                     new RegistryWeightedValueListField<>( "registry_weighted_value_list_field", new RegistryWeightedValueList
                             .Builder<>( ForgeRegistries.MOB_EFFECTS, MobEffectStats.CODEC )
                             .put( 20, MobEffects.CONFUSION, new MobEffectStats( 100, 0 ) )
@@ -306,6 +370,12 @@ public class TestConfigFile extends AbstractConfigFile {
         }
         
         private static void printLine() { TestCrust.LOG.info( "--------" ); }
+        
+        private static void printList( Iterable<?> itr ) {
+            StringBuilder str = new StringBuilder();
+            for( Object obj : itr ) if( obj != null ) str.append( ", " ).append( obj );
+            TestCrust.LOG.info( str.length() > 2 ? str.substring( 2 ) : str.toString() );
+        }
         
         private static String generateFormatTest() {
             StringBuilder str = new StringBuilder( "TEST" );
