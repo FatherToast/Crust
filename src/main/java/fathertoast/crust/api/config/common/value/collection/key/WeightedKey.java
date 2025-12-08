@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
  * @param <T> The type to match against.
  */
 @ApiStatus.Experimental
-public class WeightedKey<T> extends FuzzyKey<T> {
+public class WeightedKey<T> extends FuzzyKeyWrapper<T> {
     
     /** Creates a weighted key that represents a chance to pick a particular key. */
     public static <T> WeightedKey<T> of( int weight, FuzzyKey<T> key ) { return new WeightedKey<>( weight, key ); }
@@ -43,7 +43,7 @@ public class WeightedKey<T> extends FuzzyKey<T> {
         int weight;
         String keyWithValue;
         if( keyAndWeight.length < 2 ) {
-            weight = IntValueCodec.NON_NEGATIVE.parseTomlString( field, line, null );
+            weight = IntValueCodec.NON_NEGATIVE.getDefaultValue();
             keyWithValue = keyAndWeight[0];
         }
         else {
@@ -91,14 +91,13 @@ public class WeightedKey<T> extends FuzzyKey<T> {
     }
     
     
+    /** @see #getWeight() */
     private final int weight;
-    private final FuzzyKey<T> key;
     
     /** Constructs a key from the loaded string definition. */
     protected WeightedKey( int w, FuzzyKey<T> k ) {
-        super( false );
+        super( k );
         weight = Math.max( w, 0 );
-        key = k;
         
         // Perform some validation
         if( k.isBlacklist() ) {
@@ -106,31 +105,9 @@ public class WeightedKey<T> extends FuzzyKey<T> {
         }
     }
     
-    /** @return This entry's underlying key. */
-    public FuzzyKey<T> getKey() { return key; }
-    
-    /** @return This entry's weight. Always non-negative. */
+    /** @return This key's weight. Always non-negative. */
     public int getWeight() { return weight; }
     
-    
-    /** @return True if the other key is contained within this one. */
-    @Override
-    public boolean matches( T target ) { return key.matches( target ); }
-    
-    /** @return This fuzzy key's string definition. */
-    @Override
-    public String keyString() { return key.keyString(); }
-    
-    /**
-     * @return True if this key is a blacklist type; in other words, when this is the best match,
-     * the containing set/map should treat it as if no match was found.
-     */
-    @Override
-    public boolean isBlacklist() { return false; }
-    
-    /** @return True if this key is a default key. A default key's {@link #matches(Object)} always returns true. */
-    @Override
-    public boolean isDefault() { return key.isDefault(); }
     
     /** @return This value, converted to a single-line string. */
     @Override // ITomlStringValue

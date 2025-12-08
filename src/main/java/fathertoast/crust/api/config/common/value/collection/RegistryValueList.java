@@ -22,6 +22,7 @@ import java.util.Collection;
  * @param <V> The value type.
  * @see net.minecraftforge.registries.ForgeRegistries
  * @see net.minecraft.core.registries.Registries
+ * @see net.minecraftforge.common.Tags
  * @see RegObjKey
  * @see IValueCodec
  * @see fathertoast.crust.api.config.common.field.collection.RegistryValueListField
@@ -101,16 +102,25 @@ public class RegistryValueList<T, V> extends FuzzyValueList<T, V> {
         // ---- Basic Keys ---- //
         
         /** Adds a key-value pair based on the resource location. */
+        public B put( String resLoc, V value ) { return put( RegObjKey.of( registry, resLoc, false ), value ); }
+        
+        /** Adds a key-value pair based on the resource location. */
         public B put( ResourceLocation resLoc, V value ) { return put( RegObjKey.of( registry, resLoc, false ), value ); }
         
         /** Adds a key-value pair based on the registry object. */
         public B put( RegistryObject<? extends T> regObj, V value ) { return put( RegObjKey.of( registry, regObj, false ), value ); }
+        
+        /** Adds a key-value pair based on the resource key. */
+        public B put( ResourceKey<? extends T> resKey, V value ) { return put( RegObjKey.of( registry, resKey, false ), value ); }
         
         /** Adds a key-value pair based on the registered object. Only suitable for vanilla stuff. */
         public B put( T obj, V value ) { return put( RegObjKey.of( registry, obj, false ), value ); }
         
         
         // ---- Tag Keys ---- //
+        
+        /** Adds a tag key-value pair based on the resource location. Tag keys add the tag's entire contents to the iterator, with the same value for each. */
+        public B putTag( String resLoc, V value ) { return put( RegObjKey.ofTag( registry, resLoc, false ), value ); }
         
         /** Adds a tag key-value pair based on the resource location. Tag keys add the tag's entire contents to the iterator, with the same value for each. */
         public B putTag( ResourceLocation resLoc, V value ) { return put( RegObjKey.ofTag( registry, resLoc, false ), value ); }

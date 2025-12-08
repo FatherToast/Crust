@@ -4,6 +4,7 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.collection.key.DefaultKey;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
+import fathertoast.crust.api.config.common.value.collection.key.FuzzyKeyWrapper;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -20,7 +21,7 @@ import java.util.function.Supplier;
  * @param <V> The value type.
  */
 @ApiStatus.Experimental
-public class FuzzyEntry<T, V> extends FuzzyKey<T> implements Supplier<V> {
+public class FuzzyEntry<T, V> extends FuzzyKeyWrapper<T> implements Supplier<V> {
     
     /** Creates an entry that associates a non-blacklist key with a value. */
     public static <T, V> FuzzyEntry<T, V> of( FuzzyKey<T> key, V value, IValueCodec<V> codec ) {
@@ -77,7 +78,7 @@ public class FuzzyEntry<T, V> extends FuzzyKey<T> implements Supplier<V> {
         }
         else {
             isBlacklist = false;
-            value = codec.parseTomlString( field, line, null );
+            value = codec.getDefaultValue();
             if( field != null ) {
                 ConfigUtil.warnFor( field );
                 ConfigUtil.LOG.warn( "Key-value pair must include a value! Assigning fallback value of {}. Entry: {}",
@@ -92,16 +93,16 @@ public class FuzzyEntry<T, V> extends FuzzyKey<T> implements Supplier<V> {
     }
     
     
-    private final FuzzyKey<T> key;
+    /** @see #get() */
     @Nullable // Only null for blacklist keys
     private final V value;
+    /** @see #getCodec() */
     @Nullable // Only null for blacklist keys
     private final IValueCodec<V> valueCodec;
     
     /** Constructs a key from the loaded string definition. */
     protected FuzzyEntry( FuzzyKey<T> k, @Nullable V v, @Nullable IValueCodec<V> codec ) {
-        super( k.isBlacklist() );
-        key = k;
+        super( k );
         value = v;
         valueCodec = codec;
         
@@ -111,13 +112,10 @@ public class FuzzyEntry<T, V> extends FuzzyKey<T> implements Supplier<V> {
                 throw new IllegalArgumentException( "Blacklist key cannot map to value!" );
             }
         }
-        else if( v == null ) {
-            throw new IllegalArgumentException( "Non-blacklist key must map to a value!" );
+        else if( !k.isNull() && v == null ) {
+            throw new IllegalArgumentException( "Non-null, non-blacklist key must map to a value!" );
         }
     }
-    
-    /** @return This entry's underlying key. */
-    public FuzzyKey<T> getKey() { return key; }
     
     /**
      * @return This entry's associated value.
@@ -132,29 +130,6 @@ public class FuzzyEntry<T, V> extends FuzzyKey<T> implements Supplier<V> {
      */
     public IValueCodec<V> getCodec() { return Objects.requireNonNull( valueCodec ); }
     
-    
-    /** @return True if the other key is contained within this one. */
-    @Override
-    public boolean matches( T target ) { return getKey().matches( target ); }
-    
-    /** @return This fuzzy key's string definition. */
-    @Override
-    public String keyString() { return getKey().keyString(); }
-    
-    /**
-     * @return True if this key is a blacklist type; in other words, when this is the best match,
-     * the containing set/map should treat it as if no match was found.
-     */
-    @Override
-    public boolean isBlacklist() { return getKey().isBlacklist(); }
-    
-    /** @return True if this key is a default key. A default key's {@link #matches(Object)} always returns true. */
-    @Override
-    public boolean isDefault() { return getKey().isDefault(); }
-    
-    /** @return True if this key is a null key. A null key's {@link #matches(Object)} always returns false. */
-    @Override
-    public boolean isNull() { return getKey().isNull(); }
     
     /** @return This value, converted to a single-line string. */
     @Override // ITomlStringValue

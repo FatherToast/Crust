@@ -72,8 +72,7 @@ public class FuzzySet<T> extends AbstractFuzzyCollection<T, FuzzyKey<T>> {
     @Override
     @Nullable
     public FuzzyKey<T> loadLine( @Nullable AbstractConfigField field, String line ) {
-        FuzzyKey<T> loaded = FuzzyKey.parseLine( keyParser, field, line );
-        return loaded != null && keyUsage().allowsKey( loaded ) ? loaded : null;
+        return keyUsage().ifAllowed( FuzzyKey.parseLine( keyParser, field, line ) );
     }
     
     

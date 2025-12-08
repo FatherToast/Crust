@@ -26,6 +26,7 @@ import java.util.Objects;
  *
  * @see Registries
  * @see ForgeRegistries
+ * @see net.minecraftforge.common.Tags
  * @see fathertoast.crust.api.config.common.value.collection.RegistrySet
  * @see fathertoast.crust.api.config.common.value.collection.RegistryMap
  * @see fathertoast.crust.api.config.common.value.collection.RegistryList
@@ -59,6 +60,11 @@ public abstract class RegObjKey<T> extends FuzzyKey<T> {
     }
     
     /** @return A new key based on the resource location. */
+    public static <T> Basic<T> of( IRegWrapper<T> reg, String resLoc, boolean blacklist ) {
+        return of( reg, ResourceLocation.parse( resLoc ), blacklist );
+    }
+    
+    /** @return A new key based on the resource location. */
     public static <T> Basic<T> of( IRegWrapper<T> reg, ResourceLocation resLoc, boolean blacklist ) {
         return new Basic<>( reg, resLoc, blacklist );
     }
@@ -67,6 +73,11 @@ public abstract class RegObjKey<T> extends FuzzyKey<T> {
     public static <T> Basic<T> of( IRegWrapper<T> reg, RegistryObject<? extends T> regObj, boolean blacklist ) {
         //noinspection DataFlowIssue
         return of( reg, regObj.getId(), blacklist );
+    }
+    
+    /** @return A new key based on the resource key. */
+    public static <T> Basic<T> of( IRegWrapper<T> reg, ResourceKey<? extends T> resKey, boolean blacklist ) {
+        return of( reg, resKey.location(), blacklist );
     }
     
     /**
@@ -90,6 +101,11 @@ public abstract class RegObjKey<T> extends FuzzyKey<T> {
     /** @return A new wildcard key, based on the namespace and partial path. */
     public static <T> Wildcard<T> ofWildcard( IRegWrapper<T> reg, String namespace, String partialPath, boolean blacklist ) {
         return new Wildcard<>( reg, namespace, partialPath, blacklist );
+    }
+    
+    /** @return A new tag key based on the tag resource location. */
+    public static <T> Tag<T> ofTag( IRegWrapper<T> reg, String resLoc, boolean blacklist ) {
+        return ofTag( reg, ResourceLocation.parse( resLoc ), blacklist );
     }
     
     /** @return A new tag key based on the tag resource location. */

@@ -20,6 +20,7 @@ import java.util.Collection;
  * @param <T> The type of list (i.e., the registry type).
  * @see net.minecraftforge.registries.ForgeRegistries
  * @see net.minecraft.core.registries.Registries
+ * @see net.minecraftforge.common.Tags
  * @see RegObjKey
  * @see fathertoast.crust.api.config.common.field.collection.RegistryWeightedListField
  * @see RegistryWeightedValueList RegistryWeightedValueList - A similar collection that allows values
@@ -95,16 +96,25 @@ public class RegistryWeightedList<T> extends FuzzyWeightedList<T> {
         // ---- Basic Keys ---- //
         
         /** Adds a key based on the resource location. */
+        public B add( int weight, String resLoc ) { return add( weight, RegObjKey.of( registry, resLoc, false ) ); }
+        
+        /** Adds a key based on the resource location. */
         public B add( int weight, ResourceLocation resLoc ) { return add( weight, RegObjKey.of( registry, resLoc, false ) ); }
         
         /** Adds a key based on the registry object. */
         public B add( int weight, RegistryObject<? extends T> regObj ) { return add( weight, RegObjKey.of( registry, regObj, false ) ); }
+        
+        /** Adds a key based on the resource key. */
+        public B add( int weight, ResourceKey<? extends T> resKey ) { return add( weight, RegObjKey.of( registry, resKey, false ) ); }
         
         /** Adds a key based on the registered object. Only suitable for vanilla stuff. */
         public B add( int weight, T obj ) { return add( weight, RegObjKey.of( registry, obj, false ) ); }
         
         
         // ---- Tag Keys ---- //
+        
+        /** Adds a tag key based on the resource location. Tag keys return a uniform random element from the tag's contents when picked. */
+        public B addTag( int weight, String resLoc ) { return add( weight, RegObjKey.ofTag( registry, resLoc, false ) ); }
         
         /** Adds a tag key based on the resource location. Tag keys return a uniform random element from the tag's contents when picked. */
         public B addTag( int weight, ResourceLocation resLoc ) { return add( weight, RegObjKey.ofTag( registry, resLoc, false ) ); }

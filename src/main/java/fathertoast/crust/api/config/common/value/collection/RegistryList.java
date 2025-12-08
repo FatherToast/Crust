@@ -20,6 +20,7 @@ import java.util.Collection;
  * @param <T> The type of list (i.e., the registry type).
  * @see net.minecraftforge.registries.ForgeRegistries
  * @see net.minecraft.core.registries.Registries
+ * @see net.minecraftforge.common.Tags
  * @see RegObjKey
  * @see fathertoast.crust.api.config.common.field.collection.RegistryListField
  * @see RegistryValueList RegistryValueList - A similar collection that allows values
@@ -95,15 +96,24 @@ public class RegistryList<T> extends FuzzyList<T> {
         // ---- Basic Keys ---- //
         
         /** Adds a key based on the resource location. */
+        public B add( String resLoc ) { return add( RegObjKey.of( registry, resLoc, false ) ); }
+        
+        /** Adds a key based on the resource location. */
         public B add( ResourceLocation resLoc ) { return add( RegObjKey.of( registry, resLoc, false ) ); }
         
         /** Adds a key based on the registry object. */
         public B add( RegistryObject<? extends T> regObj ) { return add( RegObjKey.of( registry, regObj, false ) ); }
         
+        /** Adds a key based on the resource key. */
+        public B add( ResourceKey<? extends T> resKey ) { return add( RegObjKey.of( registry, resKey, false ) ); }
+        
         /** Adds a key based on the registered object. Only suitable for vanilla stuff. */
         public B add( T obj ) { return add( RegObjKey.of( registry, obj, false ) ); }
         
         // ---- Tag Keys ---- //
+        
+        /** Adds a tag key based on the resource location. Tag keys add the tag's entire contents to the iterator. */
+        public B addTag( String resLoc ) { return add( RegObjKey.ofTag( registry, resLoc, false ) ); }
         
         /** Adds a tag key based on the resource location. Tag keys add the tag's entire contents to the iterator. */
         public B addTag( ResourceLocation resLoc ) { return add( RegObjKey.ofTag( registry, resLoc, false ) ); }

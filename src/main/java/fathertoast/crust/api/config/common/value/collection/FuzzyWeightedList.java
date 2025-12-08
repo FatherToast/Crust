@@ -66,8 +66,7 @@ public class FuzzyWeightedList<T> extends AbstractFuzzyCollection<T, WeightedKey
     @Override
     @Nullable
     public WeightedKey<T> loadLine( @Nullable AbstractConfigField field, String line ) {
-        WeightedKey<T> loaded = WeightedKey.parseLine( keyParser, field, line );
-        return keyUsage().allowsKey( loaded ) ? loaded : null;
+        return keyUsage().ifAllowed( WeightedKey.parseLine( keyParser, field, line ) );
     }
     
     
@@ -94,7 +93,7 @@ public class FuzzyWeightedList<T> extends AbstractFuzzyCollection<T, WeightedKey
                 if( choice < 0 ) {
                     try {
                         //noinspection unchecked
-                        return ((IRandomKey<T>) key.getKey()).nextValue( random );
+                        return ((IRandomKey<T>) key.wrappedKey()).nextValue( random );
                     }
                     catch( ClassCastException ex ) {
                         ConfigUtil.LOG.error( "Somehow, an invalid poll key was polled! Entry: \"{}\", Weighted list: {}",
@@ -141,7 +140,7 @@ public class FuzzyWeightedList<T> extends AbstractFuzzyCollection<T, WeightedKey
         @Override
         public B add( WeightedKey<T> key ) {
             if( KeyUsage.POLL.allowsKey( key ) ) return super.add( key );
-            throw new IllegalArgumentException( "Key type not allowed for this usage! " + key.getKey() );
+            throw new IllegalArgumentException( "Key type not allowed for this usage! " + key.unwrap() );
         }
     }
     

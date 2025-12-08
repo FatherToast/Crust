@@ -353,7 +353,7 @@ public interface IRegWrapper<T> {
         @Override
         public boolean supportsTags() {
             IRegWrapper<T> reg = getRegistry();
-            return reg != null && reg.supportsTags();
+            return reg == null || reg.supportsTags(); // Default to true if not present
         }
         
         /** @return True if the tag contains a particular object. */

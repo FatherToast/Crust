@@ -111,6 +111,10 @@ public abstract class FuzzyKey<T> implements ITomlStringValue {
     
     protected FuzzyKey( boolean blacklist ) { isBlacklist = blacklist; }
     
+    /** @return Unwraps this key (if wrapped) and returns it. Used when checking for valid key usage. */
+    public FuzzyKey<T> unwrap() { return this; }
+    
+    
     /**
      * @return True if this key is a blacklist type; in other words, when this key is the
      * resulting match, then the containing set/map treats it as if no match was found.

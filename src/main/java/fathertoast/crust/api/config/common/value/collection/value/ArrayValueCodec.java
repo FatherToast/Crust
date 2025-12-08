@@ -56,7 +56,10 @@ public class ArrayValueCodec<T> implements IValueCodec<T[]> {
     @Override
     public String toTomlString( T[] value ) {
         final StringBuilder str = new StringBuilder();
-        for( Object arg : value ) str.append( FuzzyKey.ARG_SEPARATOR ).append( arg.toString() );
+        for( Object arg : value ) {
+            // Do null check to allow simple array initializers to be used as default values (e.g., new Integer[3])
+            str.append( FuzzyKey.ARG_SEPARATOR ).append( arg == null ? elementCodec.getDefaultValue() : arg.toString() );
+        }
         return str.substring( FuzzyKey.ARG_SEPARATOR.length() );
     }
     
@@ -80,7 +83,7 @@ public class ArrayValueCodec<T> implements IValueCodec<T[]> {
                 ConfigUtil.warnFor( field );
                 ConfigUtil.LOG.warn( "Entry value has too few arguments! Expected {}, but found {}. Replacing missing args with {}. Entry: {}",
                         length < 1 ? "at least one arg" : expectedArgs + " args", actualArgs,
-                        elementCodec.parseTomlString( null, line, null ), line );
+                        elementCodec.getDefaultValue(), line );
             }
             else if( actualArgs > expectedArgs ) {
                 ConfigUtil.warnFor( field );

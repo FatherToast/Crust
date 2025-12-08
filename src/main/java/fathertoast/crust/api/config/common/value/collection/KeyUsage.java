@@ -4,6 +4,9 @@ import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.IMultiKey;
 import fathertoast.crust.api.config.common.value.collection.key.IRandomKey;
 import fathertoast.crust.api.config.common.value.collection.key.IReverseKey;
+import org.jetbrains.annotations.ApiStatus;
+
+import javax.annotation.Nullable;
 
 /**
  * Describes how fuzzy keys will be used. Allows the various fuzzy collections to filter out key
@@ -15,27 +18,37 @@ public enum KeyUsage {
     
     /** The keys are used for matching; e.g., set contains checks and map value lookups. */
     MATCH {
-        /** @return True if the key is allowed for this usage. */
+        /** @return True if the unwrapped key is allowed for this usage. */
         @Override
-        public boolean allowsKey( FuzzyKey<?> key ) { return true; }
+        protected boolean allows( FuzzyKey<?> key ) { return true; }
     },
     
     /** The keys are drawn individually on demand; e.g., weighted lists. */
     POLL {
-        /** @return True if the key is allowed for this usage. */
+        /** @return True if the unwrapped key is allowed for this usage. */
         @Override
-        public boolean allowsKey( FuzzyKey<?> key ) { return !key.isBlacklist() && key instanceof IRandomKey<?>; }
+        protected boolean allows( FuzzyKey<?> key ) { return !key.isBlacklist() && key instanceof IRandomKey<?>; }
     },
     
     /** The keys are iterated through to do something for each element; e.g., list iterators. */
     ITERATE {
-        /** @return True if the key is allowed for this usage. */
+        /** @return True if the unwrapped key is allowed for this usage. */
         @Override
-        public boolean allowsKey( FuzzyKey<?> key ) {
+        protected boolean allows( FuzzyKey<?> key ) {
             return !key.isBlacklist() && !key.isDefault() && (key instanceof IReverseKey<?> || key instanceof IMultiKey<?>);
         }
     };
     
+    
+    /** @return The key if it is allowed for this usage; null otherwise. */
+    @Nullable
+    public <T, K extends FuzzyKey<T>> K ifAllowed( @Nullable K key ) { return key != null && allowsKey( key ) ? key : null; }
+    
     /** @return True if the key is allowed for this usage. */
-    public abstract boolean allowsKey( FuzzyKey<?> key );
+    public boolean allowsKey( FuzzyKey<?> key ) { return allows( key.unwrap() ); }
+    
+    
+    /** @return True if the unwrapped key is allowed for this usage. */
+    @ApiStatus.Internal
+    protected abstract boolean allows( FuzzyKey<?> key );
 }

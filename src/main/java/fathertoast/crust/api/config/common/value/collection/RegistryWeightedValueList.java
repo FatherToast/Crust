@@ -1,8 +1,8 @@
 package fathertoast.crust.api.config.common.value.collection;
 
 
-import fathertoast.crust.api.config.common.value.collection.key.RegObjKey;
 import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
+import fathertoast.crust.api.config.common.value.collection.key.RegObjKey;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
 import fathertoast.crust.api.config.common.value.collection.value.WeightedEntry;
 import net.minecraft.core.Registry;
@@ -22,6 +22,7 @@ import java.util.Collection;
  * @param <V> The value type.
  * @see net.minecraftforge.registries.ForgeRegistries
  * @see net.minecraft.core.registries.Registries
+ * @see net.minecraftforge.common.Tags
  * @see RegObjKey
  * @see IValueCodec
  * @see fathertoast.crust.api.config.common.field.collection.RegistryWeightedValueListField
@@ -101,16 +102,25 @@ public class RegistryWeightedValueList<T, V> extends FuzzyWeightedValueList<T, V
         // ---- Basic Keys ---- //
         
         /** Adds a key-value pair based on the resource location. */
+        public B put( int weight, String resLoc, V value ) { return put( weight, RegObjKey.of( registry, resLoc, false ), value ); }
+        
+        /** Adds a key-value pair based on the resource location. */
         public B put( int weight, ResourceLocation resLoc, V value ) { return put( weight, RegObjKey.of( registry, resLoc, false ), value ); }
         
         /** Adds a key-value pair based on the registry object. */
         public B put( int weight, RegistryObject<? extends T> regObj, V value ) { return put( weight, RegObjKey.of( registry, regObj, false ), value ); }
+        
+        /** Adds a key-value pair based on the resource key. */
+        public B put( int weight, ResourceKey<? extends T> resKey, V value ) { return put( weight, RegObjKey.of( registry, resKey, false ), value ); }
         
         /** Adds a key-value pair based on the registered object. Only suitable for vanilla stuff. */
         public B put( int weight, T obj, V value ) { return put( weight, RegObjKey.of( registry, obj, false ), value ); }
         
         
         // ---- Tag Keys ---- //
+        
+        /** Adds a tag key-value pair based on the resource location. Tag keys return a uniform random element from the tag's contents when picked. */
+        public B putTag( int weight, String resLoc, V value ) { return put( weight, RegObjKey.ofTag( registry, resLoc, false ), value ); }
         
         /** Adds a tag key-value pair based on the resource location. Tag keys return a uniform random element from the tag's contents when picked. */
         public B putTag( int weight, ResourceLocation resLoc, V value ) { return put( weight, RegObjKey.ofTag( registry, resLoc, false ), value ); }

@@ -20,6 +20,7 @@ import java.util.Collection;
  * @param <T> The type to match against (i.e., the registry type).
  * @see net.minecraftforge.registries.ForgeRegistries
  * @see net.minecraft.core.registries.Registries
+ * @see net.minecraftforge.common.Tags
  * @see RegObjKey
  * @see fathertoast.crust.api.config.common.field.collection.RegistrySetField
  * @see RegistryMap CrustRegistryMap - A similar collection that allows values
@@ -95,6 +96,12 @@ public class RegistrySet<T> extends FuzzySet<T> {
         // ---- Basic Keys ---- //
         
         /** Adds a key based on the resource location. Matches only the provided object. */
+        public B add( String resLoc ) { return add( RegObjKey.of( registry, resLoc, false ) ); }
+        
+        /** Adds a blacklist key based on the resource location. Matches only the provided object. */
+        public B addBlacklist( String resLoc ) { return add( RegObjKey.of( registry, resLoc, true ) ); }
+        
+        /** Adds a key based on the resource location. Matches only the provided object. */
         public B add( ResourceLocation resLoc ) { return add( RegObjKey.of( registry, resLoc, false ) ); }
         
         /** Adds a blacklist key based on the resource location. Matches only the provided object. */
@@ -105,6 +112,12 @@ public class RegistrySet<T> extends FuzzySet<T> {
         
         /** Adds a blacklist key based on the registry object. Matches only the provided object. */
         public B addBlacklist( RegistryObject<? extends T> regObj ) { return add( RegObjKey.of( registry, regObj, true ) ); }
+        
+        /** Adds a key based on the resource key. Matches only the provided object. */
+        public B add( ResourceKey<? extends T> resKey ) { return add( RegObjKey.of( registry, resKey, false ) ); }
+        
+        /** Adds a blacklist key based on the resource key. Matches only the provided object. */
+        public B addBlacklist( ResourceKey<? extends T> resKey ) { return add( RegObjKey.of( registry, resKey, true ) ); }
         
         /** Adds a key based on the registered object. Only suitable for vanilla stuff. Matches only the provided object. */
         public B add( T obj ) { return add( RegObjKey.of( registry, obj, false ) ); }
@@ -135,6 +148,12 @@ public class RegistrySet<T> extends FuzzySet<T> {
         
         
         // ---- Tag Keys ---- //
+        
+        /** Adds a tag key based on the resource location. Matches everything in the tag. */
+        public B addTag( String resLoc ) { return add( RegObjKey.ofTag( registry, resLoc, false ) ); }
+        
+        /** Adds a blacklist tag key based on the resource location. Matches everything in the tag. */
+        public B addTagBlacklist( String resLoc ) { return add( RegObjKey.ofTag( registry, resLoc, true ) ); }
         
         /** Adds a tag key based on the resource location. Matches everything in the tag. */
         public B addTag( ResourceLocation resLoc ) { return add( RegObjKey.ofTag( registry, resLoc, false ) ); }

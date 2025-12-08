@@ -33,6 +33,9 @@ public interface IValueCodec<V> {
      */
     V parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value );
     
+    /** @return This codec's default value; basically, shorthand for loading a missing value. */
+    default V getDefaultValue() { return parseTomlString( null, "", null ); }
+    
     
     /** @return The string, split into an array of arguments. */
     static String[] getArgs( @Nullable String value ) {

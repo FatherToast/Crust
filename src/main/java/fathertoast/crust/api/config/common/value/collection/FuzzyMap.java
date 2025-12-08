@@ -130,8 +130,7 @@ public class FuzzyMap<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<T, V>>
     @Override
     @Nullable
     public FuzzyEntry<T, V> loadLine( @Nullable AbstractConfigField field, String line ) {
-        FuzzyEntry<T, V> loaded = FuzzyEntry.parseLine( keyParser, valueCodec, field, line );
-        return loaded != null && keyUsage().allowsKey( loaded.getKey() ) ? loaded : null;
+        return keyUsage().ifAllowed( FuzzyEntry.parseLine( keyParser, valueCodec, field, line ) );
     }
     
     
@@ -156,8 +155,8 @@ public class FuzzyMap<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<T, V>>
         /** Adds a pre-constructed key. */
         @Override
         public B add( FuzzyEntry<T, V> key ) {
-            if( KeyUsage.MATCH.allowsKey( key.getKey() ) ) return super.add( key );
-            throw new IllegalArgumentException( "Key type not allowed for this usage!" );
+            if( KeyUsage.MATCH.allowsKey( key ) ) return super.add( key );
+            throw new IllegalArgumentException( "Key type not allowed for this usage! " + key.unwrap() );
         }
     }
     

@@ -82,8 +82,7 @@ public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<
     @Override
     @Nullable
     public FuzzyEntry<T, V> loadLine( @Nullable AbstractConfigField field, String line ) {
-        FuzzyEntry<T, V> loaded = FuzzyEntry.parseLine( keyParser, valueCodec, field, line );
-        return loaded != null && keyUsage().allowsKey( loaded.getKey() ) ? loaded : null;
+        return keyUsage().ifAllowed( FuzzyEntry.parseLine( keyParser, valueCodec, field, line ) );
     }
     
     
@@ -109,8 +108,8 @@ public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<
         /** Adds a pre-constructed key. */
         @Override
         public B add( FuzzyEntry<T, V> key ) {
-            if( KeyUsage.ITERATE.allowsKey( key.getKey() ) ) return super.add( key );
-            throw new IllegalArgumentException( "Key type not allowed for this usage! " + key.getKey() );
+            if( KeyUsage.ITERATE.allowsKey( key ) ) return super.add( key );
+            throw new IllegalArgumentException( "Key type not allowed for this usage! " + key.unwrap() );
         }
     }
     
@@ -193,9 +192,9 @@ public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<
             do {
                 FuzzyEntry<T, V> entry = keyIterator.next();
                 // See if we should open a new sub-iterator
-                if( entry.getKey() instanceof IMultiKey<?> ) {
+                if( entry.unwrap() instanceof IMultiKey<?> ) {
                     @SuppressWarnings( "unchecked" )
-                    Iterator<T> sub = ((IMultiKey<T>) entry.getKey()).getValueIterator();
+                    Iterator<T> sub = ((IMultiKey<T>) entry.wrappedKey()).getValueIterator();
                     if( sub != null && sub.hasNext() ) {
                         subIterator = sub;
                         subValue = entry.get();
@@ -215,7 +214,7 @@ public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<
             T k;
             try {
                 //noinspection unchecked
-                k = ((IReverseKey<T>) entry.getKey()).asValue();
+                k = ((IReverseKey<T>) entry.wrappedKey()).asValue();
             }
             catch( ClassCastException ex ) {
                 ConfigUtil.LOG.error( "Somehow, an invalid iteration key was iterated! Entry: \"{}\", Fuzzy value list: {}",

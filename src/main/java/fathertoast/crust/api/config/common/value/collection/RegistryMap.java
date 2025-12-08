@@ -22,6 +22,7 @@ import java.util.Collection;
  * @param <V> The value type.
  * @see net.minecraftforge.registries.ForgeRegistries
  * @see net.minecraft.core.registries.Registries
+ * @see net.minecraftforge.common.Tags
  * @see RegObjKey
  * @see IValueCodec
  * @see fathertoast.crust.api.config.common.field.collection.RegistryMapField
@@ -101,6 +102,12 @@ public class RegistryMap<T, V> extends FuzzyMap<T, V> {
         // ---- Basic Keys ---- //
         
         /** Adds a key-value pair based on the resource location. Matches only the provided object. */
+        public B put( String resLoc, V value ) { return put( RegObjKey.of( registry, resLoc, false ), value ); }
+        
+        /** Adds a blacklist key based on the resource location. Matches only the provided object. */
+        public B putBlacklist( String resLoc ) { return putBlacklist( RegObjKey.of( registry, resLoc, true ) ); }
+        
+        /** Adds a key-value pair based on the resource location. Matches only the provided object. */
         public B put( ResourceLocation resLoc, V value ) { return put( RegObjKey.of( registry, resLoc, false ), value ); }
         
         /** Adds a blacklist key based on the resource location. Matches only the provided object. */
@@ -111,6 +118,12 @@ public class RegistryMap<T, V> extends FuzzyMap<T, V> {
         
         /** Adds a blacklist key based on the registry object. Matches only the provided object. */
         public B putBlacklist( RegistryObject<? extends T> regObj ) { return putBlacklist( RegObjKey.of( registry, regObj, true ) ); }
+        
+        /** Adds a key-value pair based on the resource key. Matches only the provided object. */
+        public B put( ResourceKey<? extends T> resKey, V value ) { return put( RegObjKey.of( registry, resKey, false ), value ); }
+        
+        /** Adds a blacklist key based on the resource key. Matches only the provided object. */
+        public B putBlacklist( ResourceKey<? extends T> resKey ) { return putBlacklist( RegObjKey.of( registry, resKey, true ) ); }
         
         /** Adds a key-value pair based on the registered object. Only suitable for vanilla stuff. Matches only the provided object. */
         public B put( T obj, V value ) { return put( RegObjKey.of( registry, obj, false ), value ); }
@@ -141,6 +154,12 @@ public class RegistryMap<T, V> extends FuzzyMap<T, V> {
         
         
         // ---- Tag Keys ---- //
+        
+        /** Adds a tag key-value pair based on the resource location. Matches everything in the tag. */
+        public B putTag( String resLoc, V value ) { return put( RegObjKey.ofTag( registry, resLoc, false ), value ); }
+        
+        /** Adds a blacklist tag key based on the resource location. Matches everything in the tag. */
+        public B putTagBlacklist( String resLoc ) { return putBlacklist( RegObjKey.ofTag( registry, resLoc, true ) ); }
         
         /** Adds a tag key-value pair based on the resource location. Matches everything in the tag. */
         public B putTag( ResourceLocation resLoc, V value ) { return put( RegObjKey.ofTag( registry, resLoc, false ), value ); }

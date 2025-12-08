@@ -53,7 +53,7 @@ public class WeightedEntry<T, V> extends FuzzyEntry<T, V> {
         int weight;
         String keyWithValue;
         if( keyAndWeight.length < 2 ) {
-            weight = IntValueCodec.NON_NEGATIVE.parseTomlString( field, line, null );
+            weight = IntValueCodec.NON_NEGATIVE.getDefaultValue();
             keyWithValue = keyAndWeight[0];
         }
         else {
@@ -71,6 +71,9 @@ public class WeightedEntry<T, V> extends FuzzyEntry<T, V> {
             }
             return ofNull( weight );
         }
+        if( key.equalsIgnoreCase( NULL_KEY ) ) {
+            return ofNull( weight );
+        }
         V value;
         if( keyAndValue.length > 1 ) {
             if( keyAndValue[1].equalsIgnoreCase( BLACKLIST_VALUE ) ) {
@@ -84,7 +87,7 @@ public class WeightedEntry<T, V> extends FuzzyEntry<T, V> {
             value = codec.parseTomlString( field, line, keyAndValue[1].trim() );
         }
         else {
-            value = codec.parseTomlString( field, line, null );
+            value = codec.getDefaultValue();
             if( field != null ) {
                 ConfigUtil.warnFor( field );
                 ConfigUtil.LOG.warn( "Key-value pair must include a value! Assigning fallback value of {}. Entry: {}",
@@ -93,11 +96,11 @@ public class WeightedEntry<T, V> extends FuzzyEntry<T, V> {
         }
         
         // Finally, parse the key
-        return key.equalsIgnoreCase( DEFAULT_KEY ) ? ofNull( weight ) :
-                of( weight, parser.parseKeyStringNonNull( field, line, key, false ), value, codec );
+        return of( weight, parser.parseKeyStringNonNull( field, line, key, false ), value, codec );
     }
     
     
+    /** @see #getWeight() */
     private final int weight;
     
     /** Constructs a key from the loaded string definition. */
@@ -128,13 +131,6 @@ public class WeightedEntry<T, V> extends FuzzyEntry<T, V> {
     @Override
     public IValueCodec<V> getCodec() { return super.getCodec(); } // Just overridden to change the javadoc
     
-    
-    /**
-     * @return True if this key is a blacklist type; in other words, when this is the best match,
-     * the containing set/map should treat it as if no match was found.
-     */
-    @Override
-    public boolean isBlacklist() { return false; }
     
     /** @return This value, converted to a single-line string. */
     @Override // ITomlStringValue

@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  * no-argument constructor or override {@link #duplicate()}.
  * <p>
  * In the body of the class, declare the sub-values you want in exactly the order you want them to be
- * defined in config files by calling {@link #value(IValueCodec)} and storing the results in final
+ * defined in config files by calling {@link #subValue(IValueCodec)} and storing the results in final
  * fields. Do NOT access these supplier fields from any instances you create to use as codecs.
  * <p>
  * The values loaded by multi-value codecs will also be instances of the same codec. However, codecs
@@ -37,19 +37,15 @@ import java.util.function.Supplier;
  */
 @ApiStatus.Experimental
 public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements IValueCodec<V> {
-    /** List of all value entries that have been defined via {@link #value(IValueCodec)}. */
-    final List<Entry<?>> entries = new ArrayList<>();
-    
     /**
      * Call this to define a sub-value for this multi-value codec.
      * Should only be called during instantiation; either in field definitions or in the constructor.
      * Just store a reference to it so you can access the sub-value from the loaded multi-value.
      *
      * @param codec The sub-value's codec (read/write instructions).
-     * @return A supplier that provides the loaded sub-value, or throws a null pointer exception when
-     * used from a codec that wasn't returned as a loaded multi-value.
+     * @return A sub-value holder.
      */
-    protected <T> Supplier<T> value( IValueCodec<T> codec ) { return value( codec, null ); }
+    protected <T> SubValue<T> subValue( IValueCodec<T> codec ) { return subValue( codec, null ); }
     
     /**
      * Call this to define a sub-value for this multi-value codec with a custom format hint.
@@ -62,10 +58,10 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
      * @return A supplier that provides the loaded sub-value, or throws a null pointer exception when
      * used from a codec that wasn't returned as a loaded multi-value.
      */
-    protected <T> Supplier<T> value( IValueCodec<T> codec, @Nullable String format ) {
-        Entry<T> entry = new Entry<>( codec, format );
-        entries.add( entry );
-        return entry;
+    protected <T> SubValue<T> subValue( IValueCodec<T> codec, @Nullable String format ) {
+        SubValue<T> v = new SubValue<>( codec, format );
+        subValues.add( v );
+        return v;
     }
     
     /** @return A copy of this multi-value codec, with no values loaded. */
@@ -85,10 +81,7 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
     public String getFormat() {
         validate();
         StringBuilder str = new StringBuilder();
-        for( Entry<?> entry : entries ) {
-            str.append( FuzzyKey.ARG_SEPARATOR )
-                    .append( entry.formatOverride == null ? entry.valueCodec.getFormat() : entry.formatOverride );
-        }
+        for( SubValue<?> v : subValues ) str.append( FuzzyKey.ARG_SEPARATOR ).append( v.getFormat() );
         return str.substring( FuzzyKey.ARG_SEPARATOR.length() );
     }
     
@@ -97,13 +90,8 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
     public String toTomlString( V value ) {
         value.validate();
         final StringBuilder str = new StringBuilder();
-        for( Entry<?> entry : value.entries ) str.append( FuzzyKey.ARG_SEPARATOR ).append( entry.toTomlString() );
+        for( SubValue<?> v : value.subValues ) str.append( FuzzyKey.ARG_SEPARATOR ).append( v.toTomlString() );
         return str.substring( FuzzyKey.ARG_SEPARATOR.length() );
-    }
-    
-    /** Called to help with error detection. */
-    void validate() {
-        if( entries.isEmpty() ) throw new IllegalStateException( "Multi-value codec is malformed! (Has no values)" );
     }
     
     /**
@@ -118,7 +106,7 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
         int actualArgs = args.length;
         
         // Validate argument count
-        int expectedArgs = entries.size();
+        int expectedArgs = subValues.size();
         if( field != null ) {
             if( actualArgs < expectedArgs ) {
                 ConfigUtil.warnFor( field );
@@ -134,20 +122,33 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
         
         // Parse the arguments
         V clone = duplicate();
-        for( int i = 1; i < expectedArgs; i++ ) {
-            clone.entries.get( i ).load( field, line, i < args.length ? args[i] : null );
+        for( int i = 0; i < expectedArgs; i++ ) {
+            clone.subValues.get( i ).load( field, line, i < args.length ? args[i] : null );
         }
         return clone;
     }
     
+    /** List of all sub-values that have been defined via {@link #subValue(IValueCodec)}. */
+    @ApiStatus.Internal
+    final List<SubValue<?>> subValues = new ArrayList<>();
     
-    /** A field-like implementation of a generic value codec. */
-    private static final class Entry<V> implements Supplier<V>, ITomlStringValue {
+    /** Called to help with error detection. */
+    @ApiStatus.Internal
+    void validate() {
+        if( subValues.isEmpty() ) throw new IllegalStateException( "Multi-value codec is malformed! (Has no values)" );
+    }
+    
+    
+    /**
+     * A field-like implementation of a generic value codec.
+     * Holds the sub-value's
+     */
+    public static final class SubValue<V> implements Supplier<V>, ITomlStringValue {
         /** This entry's read/write logic. */
-        public final IValueCodec<V> valueCodec;
+        private final IValueCodec<V> valueCodec;
         /** The format hint override. */
         @Nullable
-        public final String formatOverride;
+        private final String formatOverride;
         
         /**
          * The loaded value.
@@ -156,21 +157,37 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
         @Nullable
         private V value;
         
-        public Entry( IValueCodec<V> codec, @Nullable String format ) {
+        public SubValue( IValueCodec<V> codec, @Nullable String format ) {
             valueCodec = codec;
             formatOverride = format;
         }
         
-        /** @return The loaded value. Don't call this from codecs you create, only on codecs loaded as a value. */
+        /** Sets the value. Use this for creating default values. */
+        public void set( V v ) { value = v; }
+        
+        /** @return The loaded sub-value. Call this from codecs loaded as a value. */
         @Override // Supplier
         public V get() { return Objects.requireNonNull( value ); }
         
-        /** @return This value, converted to a single-line string. */
+        /** @return This sub-value, converted to a single-line string. */
         @Override // ITomlStringValue
-        public String toTomlString() { return valueCodec.toTomlString( get() ); }
+        public String toTomlString() {
+            return valueCodec.toTomlString( value == null ?
+                    // Handle case of using unloaded codecs as default values
+                    valueCodec.getDefaultValue() : value );
+        }
         
-        /** Loads the entry's value based on the argument string. Called when a codec is being loaded as a value. */
-        public void load( @Nullable AbstractConfigField field, String line, @Nullable String arg ) {
+        /** @return This sub-value, converted to a single-line string. */
+        @Override
+        public String toString() { return toTomlString(); }
+        
+        /** @return The sub-value format (for example, {@literal "<Number (Any Value)>"}). */
+        @ApiStatus.Internal
+        String getFormat() { return formatOverride == null ? valueCodec.getFormat() : formatOverride; }
+        
+        /** Loads the entry's sub-value based on the argument string. Called when a codec is being loaded as a value. */
+        @ApiStatus.Internal
+        void load( @Nullable AbstractConfigField field, String line, @Nullable String arg ) {
             value = valueCodec.parseTomlString( field, line, arg );
         }
     }
