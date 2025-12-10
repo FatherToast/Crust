@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.config.common.value.ITomlStringValue;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -23,7 +23,10 @@ public interface IValueCodec<V> {
     String getFormat();
     
     /** @return The value, converted to a single-line string. */
-    default String toTomlString( V value ) { return TomlHelper.toLiteral( value ); }
+    default String toTomlString( V value ) {
+        // Note: The default implementation only works for ITomlStringValues, Booleans, and Numbers
+        return value instanceof ITomlStringValue ts ? ts.toTomlString() : value.toString();
+    }
     
     /**
      * @param field The config field we are loading for, or null if error reporting should be suppressed.

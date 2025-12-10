@@ -1,7 +1,6 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
@@ -59,11 +58,8 @@ public class StringValueCodec implements IValueCodec<String> {
     public String getFormat() { return corrector.getFormat(); }
     
     /** @return The value, converted to a single-line string. */
-    @Override
-    public String toTomlString( String value ) {
-        // The empty string doesn't work very nicely as a value
-        return value.isEmpty() ? FuzzyKey.NULL_KEY : TomlHelper.escapeString( value );
-    }
+    @Override // The empty string doesn't work very nicely as a value
+    public String toTomlString( String value ) { return value.isEmpty() ? FuzzyKey.NULL_KEY : value; }
     
     /**
      * @param field The config field we are loading for, or null if error reporting should be suppressed.

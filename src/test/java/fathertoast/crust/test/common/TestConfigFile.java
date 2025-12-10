@@ -69,7 +69,7 @@ public class TestConfigFile extends AbstractConfigFile {
      * Category for testing configs.
      */
     public static class General extends AbstractConfigCategory<TestConfigFile> {
-        
+        // Primitives
         public final BooleanField booleanField;
         public final IntField intField;
         public final ColorIntField colorIntField;
@@ -77,27 +77,27 @@ public class TestConfigFile extends AbstractConfigFile {
         public final DoubleField doubleField;
         public final ScaledDoubleField scaledDoubleField;
         public final SqrDoubleField sqrDoubleField;
-        
+        // Simple objects
         public final StringField stringField;
         public final EnumField<BiomeCategory> enumField;
-        
+        // Fuzzy collections
         public final EntitySetField entitySetField;
         public final EntityMapField<Double[]> entityMapField;
         public final RegistrySetField<EntityType<?>> registrySetField;
         public final RegistryMapField<EntityType<?>, Integer> registryMapField;
-        public final RegistryListField<Item> registryListField;
-        public final RegistryListField<Instrument> registryListField2;
-        public final RegistryValueListField<DamageType, String> registryValueListField;
+        public final RegistryListField<Item> registryListFieldFg;
+        public final RegistryListField<Instrument> registryListFieldVn;
+        public final RegistryValueListField<DamageType, String> registryValueListFieldDn;
         public final RegistryWeightedListField<ConfiguredFeature<?, ?>> registryWeightedListField;
         public final RegistryWeightedValueListField<MobEffect, MobEffectStats> registryWeightedValueListField;
-        
+        // Misc collections
         public final AttributeListField attributeListField;
         public final EnvironmentListField environmentListField;
         public final StringListField stringListField;
         public final PredicateStringListField predicateStringListField;
-        
+        // Misc tests
         public final BooleanField longCommentField;
-        
+        // Deprecated
         //        public final BlockListField blockListField;
         //        public final EntityListField entityListField;
         //        public final RegistryEntryListField<EntityType<?>> registryEntryListField;
@@ -203,39 +203,40 @@ public class TestConfigFile extends AbstractConfigFile {
                             .putWildcard( "minecraft", "ender", 3 )
                             .buildWithDefault( -1 ) ), General::testCallback ) ).field();
             
-            registryListField = SPEC.define( new InjectionWrapperField<>(
-                    new RegistryListField<>( "registry_list_field", new RegistryList
+            // We can test iterator usage (lists) via callback log outputs
+            registryListFieldFg = SPEC.define( new InjectionWrapperField<>(
+                    new RegistryListField<>( "registry_list_field_f", new RegistryList
                             .Builder<>( ForgeRegistries.ITEMS )
                             .add( Items.ANVIL ).add( MISSING_FEATURE ).add( "apple" )
                             .addTag( Tags.Items.CROPS ).addTag( "forge:sandstone" ).addTag( MISSING_FEATURE )
                             .build() ), General::testCallback ) ).field();
             SPEC.callback( () -> {
                 StringBuilder str = new StringBuilder();
-                for( Item item : registryListField.entries() ) {
+                for( Item item : registryListFieldFg.entries() ) {
                     if( item != null ) {
                         str.append( ", " ).append( item.getDescriptionId() );
                     }
                 }
                 TestCrust.LOG.info( str.length() > 2 ? "    " + str.substring( 2 ) : str.toString() );
             } );
-            registryListField2 = SPEC.define( new InjectionWrapperField<>(
-                    new RegistryListField<>( "registry_list_field_2", new RegistryList
+            registryListFieldVn = SPEC.define( new InjectionWrapperField<>(
+                    new RegistryListField<>( "registry_list_field_v", new RegistryList
                             .Builder<>( BuiltInRegistries.INSTRUMENT )
                             .add( Instruments.FEEL_GOAT_HORN ).add( "sing_goat_horn" ).add( MISSING_FEATURE )
                             .addTag( InstrumentTags.SCREAMING_GOAT_HORNS ).addTag( MISSING_FEATURE )
                             .build() ), General::testCallback ) ).field();
             SPEC.callback( () -> {
                 StringBuilder str = new StringBuilder();
-                for( Instrument instrument : registryListField2.entries() ) {
+                for( Instrument instrument : registryListFieldVn.entries() ) {
                     if( instrument != null ) {
                         //noinspection DataFlowIssue
-                        str.append( ", " ).append( registryListField2.getRegistry().getKey( instrument ).getPath() );
+                        str.append( ", " ).append( registryListFieldVn.getRegistry().getKey( instrument ).getPath() );
                     }
                 }
                 TestCrust.LOG.info( str.length() > 2 ? "    " + str.substring( 2 ) : str.toString() );
             } );
-            registryValueListField = SPEC.define( new InjectionWrapperField<>(
-                    new RegistryValueListField<>( "registry_value_list_field", new RegistryValueList
+            registryValueListFieldDn = SPEC.define( new InjectionWrapperField<>(
+                    new RegistryValueListField<>( "registry_value_list_field_d", new RegistryValueList
                             .Builder<>( Registries.DAMAGE_TYPE, StringValueCodec.of( 16 ) )
                             .put( DamageTypes.CACTUS, "`~!@#$%^&()_+-=*" ).put( MISSING_FEATURE, "???" )
                             .putTag( MISSING_FEATURE, "*wah" ).putTag( DamageTypeTags.BYPASSES_ARMOR, "^yikes!" )
@@ -243,7 +244,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             .build() ), General::testCallback ) ).field();
             SPEC.callback( () -> {
                 StringBuilder str = new StringBuilder();
-                for( FuzzyValueList.Pair<DamageType, String> pair : registryValueListField.entries() ) {
+                for( FuzzyValueList.Pair<DamageType, String> pair : registryValueListFieldDn.entries() ) {
                     if( pair != null ) {
                         str.append( ", (" ).append( pair.key().msgId() ).append( "=" ).append( pair.value() ).append( ")" );
                     }

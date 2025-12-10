@@ -312,7 +312,7 @@ public final class TomlHelper {
         else if( value instanceof Enum<?> enumValue ) {
             return toBasicStringLiteral( enumToString( enumValue ), forComment );
         }
-        // TOML special float values do not match java's Double#toString() - We do not support these
+        // TOML special float values do not match java's Double#toString() - We do not currently support these anyway
         //else if( value instanceof Double || value instanceof Float ) {
         //    double doubleValue = ((Number) value).doubleValue();
         //    if( Double.isInfinite( doubleValue ) ) return doubleValue > 0.0 ? "inf" : "-inf";
@@ -326,7 +326,7 @@ public final class TomlHelper {
     }
     
     /** @return The enum value's string representation, as used by configs. */
-    public static String enumToString( Enum<?> value ) { return value.name().toLowerCase(); }
+    public static String enumToString( Enum<?> value ) { return value.name().toLowerCase( Locale.ROOT ); }
     
     /** @return The value as a basic TOML string (surrounded by double quotes). */
     public static String toBasicStringLiteral( @Nullable String value, boolean forComment ) {
