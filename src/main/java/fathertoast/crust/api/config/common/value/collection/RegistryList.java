@@ -110,6 +110,7 @@ public class RegistryList<T> extends FuzzyList<T> {
         /** Adds a key based on the registered object. Only suitable for vanilla stuff. */
         public B add( T obj ) { return add( RegObjKey.of( registry, obj, false ) ); }
         
+        
         // ---- Tag Keys ---- //
         
         /** Adds a tag key based on the resource location. Tag keys add the tag's entire contents to the iterator. */

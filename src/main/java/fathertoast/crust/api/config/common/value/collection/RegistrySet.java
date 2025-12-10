@@ -23,7 +23,7 @@ import java.util.Collection;
  * @see net.minecraftforge.common.Tags
  * @see RegObjKey
  * @see fathertoast.crust.api.config.common.field.collection.RegistrySetField
- * @see RegistryMap CrustRegistryMap - A similar collection that allows values
+ * @see RegistryMap RegistryMap - A similar collection that allows values
  */
 @ApiStatus.Experimental
 public class RegistrySet<T> extends FuzzySet<T> {
