@@ -79,7 +79,7 @@ public class BlockStateWeightedValueList<V> extends FuzzyWeightedValueList<Block
         public B put( int weight, ResourceKey<? extends Block> resKey, BlockStatePropertyMap properties, V value ) { return put( weight, BlockStateKey.of( resKey, properties, false ), value ); }
         
         /** Adds a key-value pair based on the block. Only suitable for vanilla stuff. Matches only the provided block with the appropriate block state properties. */
-        public B put( int weight, Block obj, BlockStatePropertyMap properties, V value ) { return put( weight, BlockStateKey.of( obj, properties, false ), value ); }
+        public B put( int weight, Block block, BlockStatePropertyMap properties, V value ) { return put( weight, BlockStateKey.of( block, properties, false ), value ); }
         
         
         // ---- Tag Keys ---- //

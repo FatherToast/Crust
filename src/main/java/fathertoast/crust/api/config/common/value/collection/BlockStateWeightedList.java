@@ -70,7 +70,7 @@ public class BlockStateWeightedList extends FuzzyWeightedList<BlockState> {
         public B add( int weight, ResourceKey<? extends Block> resKey, BlockStatePropertyMap properties ) { return add( weight, BlockStateKey.of( resKey, properties, false ) ); }
         
         /** Adds a key based on the block. Only suitable for vanilla stuff. Matches only the provided block with the appropriate block state properties. */
-        public B add( int weight, Block obj, BlockStatePropertyMap properties ) { return add( weight, BlockStateKey.of( obj, properties, false ) ); }
+        public B add( int weight, Block block, BlockStatePropertyMap properties ) { return add( weight, BlockStateKey.of( block, properties, false ) ); }
         
         
         // ---- Tag Keys ---- //

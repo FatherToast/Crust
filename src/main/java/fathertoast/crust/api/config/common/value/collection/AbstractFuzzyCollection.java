@@ -5,8 +5,6 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
-import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
-import fathertoast.crust.api.config.common.value.collection.value.WeightedEntry;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;

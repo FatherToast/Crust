@@ -97,10 +97,10 @@ public class BlockStateSet extends FuzzySet<BlockState> {
         public B addBlacklist( ResourceKey<? extends Block> resKey, BlockStatePropertyMap properties ) { return add( BlockStateKey.of( resKey, properties, true ) ); }
         
         /** Adds a key based on the block. Only suitable for vanilla stuff. Matches only the provided block with the appropriate block state properties. */
-        public B add( Block obj, BlockStatePropertyMap properties ) { return add( BlockStateKey.of( obj, properties, false ) ); }
+        public B add( Block block, BlockStatePropertyMap properties ) { return add( BlockStateKey.of( block, properties, false ) ); }
         
         /** Adds a blacklist key based on the block. Only suitable for vanilla stuff. Matches only the provided block with the appropriate block state properties. */
-        public B addBlacklist( Block obj, BlockStatePropertyMap properties ) { return add( BlockStateKey.of( obj, properties, true ) ); }
+        public B addBlacklist( Block block, BlockStatePropertyMap properties ) { return add( BlockStateKey.of( block, properties, true ) ); }
         
         
         // ---- Wildcard Keys ---- //

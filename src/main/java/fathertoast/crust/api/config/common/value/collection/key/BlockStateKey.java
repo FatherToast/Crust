@@ -38,7 +38,7 @@ public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey
     
     /** @return A new key based on the resource location and block state properties. */
     public static Basic of( String resLocAndProperties, boolean blacklist ) {
-        String[] keys = split( resLocAndProperties );
+        String[] keys = BlockStatePropertyMap.split( resLocAndProperties );
         return of( RegObjKey.of( REGISTRY, keys[0], blacklist ),
                 BlockStatePropertyMap.of( keys[1] ) );
     }
@@ -64,12 +64,21 @@ public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey
     }
     
     /**
-     * @return A new key based on the registered object and block state properties, or throws
-     * an exception if the object is not registered. When building default config values, this
-     * is only suitable for vanilla objects.
+     * @return A new key based on the block and block state properties.
+     * When building default config values, this is only suitable for vanilla blocks unless you
+     * hold off config initialization until after the blocks registry is populated.
      */
     public static Basic of( Block block, BlockStatePropertyMap properties, boolean blacklist ) {
         return of( RegObjKey.of( REGISTRY, block, blacklist ), properties );
+    }
+    
+    /**
+     * @return A new key based on the block state. Will only match the provided state exactly.
+     * When building default config values, this is only suitable for vanilla blocks unless you
+     * hold off config initialization until after the blocks registry is populated.
+     */
+    public static Basic of( BlockState blockState, boolean blacklist ) {
+        return of( blockState.getBlock(), BlockStatePropertyMap.of( blockState ), blacklist );
     }
     
     /** @return A new key based on the block registry object key and block state properties. */
@@ -99,7 +108,7 @@ public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey
     
     /** @return A new tag key based on the tag resource location and block state properties. */
     public static Tag ofTag( String resLocAndProperties, boolean blacklist ) {
-        String[] keys = split( resLocAndProperties );
+        String[] keys = BlockStatePropertyMap.split( resLocAndProperties );
         return ofTag( RegObjKey.ofTag( REGISTRY, keys[0], blacklist ),
                 BlockStatePropertyMap.of( keys[1] ) );
     }
@@ -130,7 +139,7 @@ public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey
     /** @return A new key, parsed from a key string, or null if the key was invalid. */
     @Nullable
     public static BlockStateKey<?> parse( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
-        String[] keyAndProps = split( key );
+        String[] keyAndProps = BlockStatePropertyMap.split( key );
         BlockStatePropertyMap properties = BlockStatePropertyMap.of( keyAndProps[1] );
         if( keyAndProps[0].isEmpty() ) return new PropsOnly( blacklist, properties );
         FuzzyKey<Block> loadedKey = REG_PARSER.parseKeyString( field, line, keyAndProps[0], blacklist );
@@ -145,13 +154,6 @@ public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey
     
     protected static final IRegWrapper<Block> REGISTRY = IRegWrapper.of( ForgeRegistries.BLOCKS );
     protected static final IFuzzyKeyParser<Block> REG_PARSER = REGISTRY.getParser();
-    
-    /** @return Splits a block state key string into a registry object key string and a block state properties key string. */
-    private static String[] split( String key ) {
-        int startIndex = key.indexOf( BlockStatePropertyMap.START_CHAR );
-        if( startIndex < 0 ) return new String[] { key, "" };
-        return new String[] { key.substring( 0, startIndex ), key.substring( startIndex ) };
-    }
     
     /** This is null for PropsOnly keys. */
     protected final K regObjKey;

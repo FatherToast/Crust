@@ -79,7 +79,7 @@ public class BlockStateValueList<V> extends FuzzyValueList<BlockState, V> {
         public B put( ResourceKey<? extends Block> resKey, BlockStatePropertyMap properties, V value ) { return put( BlockStateKey.of( resKey, properties, false ), value ); }
         
         /** Adds a key-value pair based on the block. Only suitable for vanilla stuff. Matches only the provided block with the appropriate block state properties. */
-        public B put( Block obj, BlockStatePropertyMap properties, V value ) { return put( BlockStateKey.of( obj, properties, false ), value ); }
+        public B put( Block block, BlockStatePropertyMap properties, V value ) { return put( BlockStateKey.of( block, properties, false ), value ); }
         
         
         // ---- Tag Keys ---- //

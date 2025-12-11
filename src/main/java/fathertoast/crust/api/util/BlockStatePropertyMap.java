@@ -8,6 +8,7 @@ import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -15,11 +16,26 @@ import net.minecraft.world.level.block.state.StateHolder;
 import net.minecraft.world.level.block.state.predicate.BlockStatePredicate;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
+ * A mapping of block state property=value pairs used to represent block states entirely
+ * separated from blocks. This allows more generalized property definition and does not
+ * need the block registry to be populated to be built and used.
+ * <p>
+ * The downside to this approach is that error-checking is very difficult, as we do not
+ * always know what states are allowed for the block we want to use. When the block is
+ * available, use the actual Property parameter methods.
+ * <p>
+ * This is generally intended for config use, so its focus is on immutability; however,
+ * it does offer a mutable version that exposes a modifiable underlying Map.
+ *
  * @see Property
  * @see NbtUtils#readBlockState(HolderGetter, CompoundTag)
  * @see NbtUtils#writeBlockState(BlockState)
@@ -36,19 +52,25 @@ public record BlockStatePropertyMap( Map<String, String> map ) implements
     public static final char END_CHAR = ']';
     private static final String EMPTY_STRING = String.valueOf( START_CHAR ) + END_CHAR;
     
-    /** An empty, immutable block state properties map. */
+    /** An empty, immutable block state property map. */
     public static final BlockStatePropertyMap EMPTY = new BlockStatePropertyMap( Collections.emptyMap() );
     
-    /** The standard block state properties map codec. Defaults to an empty map. */
+    /** The standard block state property map codec. Defaults to an empty map. */
     public static final IValueCodec<BlockStatePropertyMap> CODEC = EMPTY; // lol
     
-    /** @return An immutable block state properties map parsed from the provided string. */
+    /** @return An immutable block state property map parsed from the provided block state. */
+    public static BlockStatePropertyMap of( BlockState state ) { return new Builder().putAll( state ).build(); }
+    
+    /** @return An immutable block state property map parsed from the provided string. */
     public static BlockStatePropertyMap of( String properties ) {
         return properties.isEmpty() || EMPTY_STRING.equals( properties ) ? EMPTY :
                 new BlockStatePropertyMap( Collections.unmodifiableMap( extract( properties ) ) );
     }
     
-    /** @return A new mutable block state properties map parsed from the provided string. */
+    /** @return A new mutable block state property map parsed from the provided block state. */
+    public static BlockStatePropertyMap ofMutable( BlockState state ) { return new Builder().putAll( state ).buildMutable(); }
+    
+    /** @return A new mutable block state property map parsed from the provided string. */
     public static BlockStatePropertyMap ofMutable( String properties ) {
         return new BlockStatePropertyMap( extract( properties ) );
     }
@@ -132,6 +154,25 @@ public record BlockStatePropertyMap( Map<String, String> map ) implements
         return map;
     }
     
+    /**
+     * @return Splits a block state string into a registry object string (index 0) and a block state
+     * properties string (index 1). The returned array always contains 2 non-null strings.
+     */
+    public static String[] split( String s ) {
+        int startIndex = s.indexOf( START_CHAR );
+        if( startIndex < 0 ) return new String[] { s, "" };
+        return new String[] { s.substring( 0, startIndex ), s.substring( startIndex ) };
+    }
+    
+    /** @return Parses the block state string into a block state, if possible. Otherwise returns null. */
+    @Nullable
+    public static BlockState stateFrom( String s ) {
+        final String[] split = split( s );
+        ResourceLocation resLoc = ResourceLocation.tryParse( split[0] );
+        return resLoc == null ? null : BlockStatePropertyMap.of( split[1] )
+                .stateForNullable( ForgeRegistries.BLOCKS.getValue( resLoc ) );
+    }
+    
     
     // ---- Instance Methods ---- //
     
@@ -205,6 +246,10 @@ public record BlockStatePropertyMap( Map<String, String> map ) implements
     @Override // ITomlStringValue
     public String toTomlString() { return combine( map() ); }
     
+    /** @return This value, converted to a single-line string. */
+    @Override
+    public String toString() { return toTomlString(); }
+    
     /** @return The value format (for example, {@literal "<Number (Any Value)>"}). */
     @Override // IValueCodec
     public String getFormat() { return "<[property=value,...]>"; }
@@ -222,16 +267,16 @@ public record BlockStatePropertyMap( Map<String, String> map ) implements
     
     
     /**
-     * A simple builder that can be used to more easily make block state properties maps.
+     * A simple builder that can be used to more easily make block state property maps.
      */
     public static class Builder {
         /** Underlying map. */
         private final Map<String, String> map = new LinkedHashMap<>();
         
-        /** @return A new immutable block state properties map based on the current state of this builder. */
+        /** @return A new immutable block state property map based on the current state of this builder. */
         public BlockStatePropertyMap build() { return new BlockStatePropertyMap( Collections.unmodifiableMap( map ) ); }
         
-        /** @return A new mutable block state properties map. Further changes to this builder will affect the map. */
+        /** @return A new mutable block state property map. Further changes to this builder will affect the map. */
         public BlockStatePropertyMap buildMutable() { return new BlockStatePropertyMap( map ); }
         
         /** Adds a property=value pair to the map. */
