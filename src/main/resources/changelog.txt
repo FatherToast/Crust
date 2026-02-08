@@ -1,5 +1,7 @@
 1.20.1-4.10.18
     - Fixed an issue with entities using config-driven attribute maps not retaining them if default attributes were changed during EntityAttributeModificationEvent.
+    - Made ConfigDrivenAttributeModifierMap#FIELD publicly visible via getter "getField()".
+    - List editor screen is now compatible with all list fields.
 1.20.1-4.9.17
     - Fixed startup crash that can be caused by mod-added game rules, but like for real this time (maybe).
 1.20.1-4.9.16
