@@ -2,12 +2,13 @@ package fathertoast.crust.api.config.client.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import fathertoast.crust.api.config.client.gui.ElementOffset;
+import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import fathertoast.crust.api.config.client.gui.widget.CrustStringFieldList;
 import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
 import fathertoast.crust.api.config.client.gui.widget.field.TextWithSubtitle;
-import fathertoast.crust.api.config.common.field.PredicateStringListField;
+import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IStringListScreenEditable;
 import fathertoast.crust.api.config.common.field.StringListField;
-import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.client.ClientRegister;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
@@ -19,10 +20,9 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class EditStringListScreen extends Screen {
+public class EditStringListScreen<T extends AbstractConfigField & IStringListScreenEditable> extends Screen {
     
     /** The screen open under this one. */
     private final CrustConfigFileScreen LAST_SCREEN;
@@ -30,14 +30,15 @@ public class EditStringListScreen extends Screen {
     /** The scroll amount from the previous screen's selection list. */
     private final double LAST_SCROLL;
     
-    /** The spec of the 'opened' config file. */
-    private final CrustConfigSpec SPEC;
+    /** The providing field. */
+    private final T FIELD;
+    /** The field component (widget "row" from previous screen's selection list). */
+    private final CrustConfigFieldList.FieldEntry LIST_ENTRY;
     
-    /** The string list field to edit. */
-    private final StringListField FIELD;
-    
+    /** The value the field component had when opening this screen. */
+    private Object currentValue;
     /** The selection list for interacting with the underlying {@link StringListField}. */
-    private CrustStringFieldList selectionList;
+    private CrustStringFieldList<T> selectionList;
     
     /** The search bar for looking up entries in the underlying {@link StringListField} */
     private Searchbar searchbar;
@@ -46,26 +47,28 @@ public class EditStringListScreen extends Screen {
     @Nullable
     private EditBox focusedTextBox;
     
-    /** A button that adds a new blank entry to the underlying selection list. */
-    protected Button addEntryButton;
     /** The "open file" or "discard changes" button. */
     private Button bottomLeftButton;
     /** The "done" or "save changes" button. */
     private Button bottomRightButton;
     
     
-    public EditStringListScreen( CrustConfigFileScreen parent, StringListField field ) {
-        super( title( field, parent.SPEC ) );
+    public EditStringListScreen( CrustConfigFileScreen parent, CrustConfigFieldList.FieldEntry listEntry,
+                                 Object displayValue, T field ) {
+        super( title( listEntry ) );
         LAST_SCREEN = parent;
         LAST_SCROLL = parent.getScrollAmount();
-        SPEC = parent.SPEC;
+        LIST_ENTRY = listEntry;
         FIELD = field;
+        currentValue = displayValue;
     }
     
     /** @return The given string field's key as a more easily readable title. */
-    private static Component title( StringListField field, CrustConfigSpec spec ) {
-        String name = CrustConfigFileScreen.decodeString( field.getKey().startsWith( spec.loadingCategory ) ?
-                field.getKey().substring( spec.loadingCategory.length() ) : field.getKey() );
+    private static Component title( CrustConfigFieldList.FieldEntry listEntry ) {
+        String name = CrustConfigFileScreen.decodeString(
+                listEntry.FIELD.getKey().startsWith( listEntry.FIELD.getSpec().loadingCategory ) ?
+                        listEntry.FIELD.getKey().substring( listEntry.FIELD.getSpec().loadingCategory.length() ) :
+                        listEntry.FIELD.getKey() );
         
         return Component.literal( name );
     }
@@ -79,19 +82,11 @@ public class EditStringListScreen extends Screen {
     /** @return The current scroll position. */
     public double getScrollAmount() { return selectionList.getScrollAmount(); }
     
-    /**
-     * @return This screen's "add entry" button.
-     * This is here so the selection list has
-     * access to the button.
-     */
-    public Button getAddEntryButton() {
-        return addEntryButton;
-    }
-    
     /** Closes this screen and reopens it to hard-refresh everything. */
     public void resetScreen() {
         if( minecraft != null ) {
-            EditStringListScreen newScreen = new EditStringListScreen( LAST_SCREEN, FIELD );
+            EditStringListScreen<T> newScreen = new EditStringListScreen<>( LAST_SCREEN, LIST_ENTRY,
+                    currentValue, FIELD );
             minecraft.setScreen( newScreen );
             newScreen.setScrollAmount( getScrollAmount() );
         }
@@ -106,9 +101,9 @@ public class EditStringListScreen extends Screen {
         addRenderableWidget( TextWithSubtitle.create( this, font, width / 2, 8, true, getTitle(), null ) );
         
         // Primary screen content
-        Predicate<String> validator = FIELD instanceof PredicateStringListField pslf ? pslf.getLineValidator() : null;
         ElementOffset offset = new ElementOffset( 0, -2, -27, -2 );
-        selectionList = new CrustStringFieldList( this, minecraft, FIELD, validator, SPEC, offset );
+        selectionList = new CrustStringFieldList<>( this, minecraft, LIST_ENTRY,
+                currentValue, FIELD, offset );
         addRenderableWidget( selectionList );
         
         Searchbar.Orientation orientation = ClientRegister.CONFIG_EDITOR.SEARCHBAR.orientation.get();
@@ -121,7 +116,7 @@ public class EditStringListScreen extends Screen {
                 150, 20, Component.translatable( "menu.crust.config.open_folder" ),
                 ( button ) -> {
                     if( selectionList.isChanged() ) resetScreen();
-                    else Util.getPlatform().openFile( SPEC.getFile().getParentFile() );
+                    else Util.getPlatform().openFile( LIST_ENTRY.FIELD.getSpec().getFile().getParentFile() );
                 },
                 Supplier::get ) );
         addRenderableWidget( bottomRightButton = new Button( width / 2 - 155 + 160, height - 29,
@@ -139,6 +134,9 @@ public class EditStringListScreen extends Screen {
                 Supplier::get ) );
     }
     
+    /** Call this to change the field's pending "new" value. */
+    public void updateValue( Object value ) { currentValue = value; }
+    
     /** Called when the footer text might need to be changed. */
     public void updateFooterButtonText() {
         if( selectionList.isChanged() ) {
@@ -146,6 +144,8 @@ public class EditStringListScreen extends Screen {
                     .withStyle( ChatFormatting.RED ) );
             bottomRightButton.setMessage( Component.translatable( "menu.crust.config.save_changes" )
                     .withStyle( ChatFormatting.GREEN ) );
+            //            bottomRightButton.setMessage( Component.translatable( "menu.crust.config.confirm_changes" )
+            //                    .withStyle( ChatFormatting.AQUA ) ); //TODO change to confirm instead of save when we fix screen transition
         }
         else {
             bottomLeftButton.setMessage( Component.translatable( "menu.crust.config.open_folder" ) );

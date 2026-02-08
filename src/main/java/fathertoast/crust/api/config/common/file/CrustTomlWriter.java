@@ -7,6 +7,7 @@ import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.RestartNote;
 import fathertoast.crust.api.config.common.value.ITomlValue;
 import net.minecraft.util.StringUtil;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.io.Writer;
@@ -15,7 +16,10 @@ import java.util.List;
 
 /**
  * A simple toml writer implementation that allows the config spec to entirely define how to write.
+ * <p>
+ * For internal use only.
  */
+@ApiStatus.Internal
 public class CrustTomlWriter implements ConfigWriter {
     
     /** The total character width for comment wrapping. */

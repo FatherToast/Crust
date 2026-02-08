@@ -7,8 +7,8 @@ import fathertoast.crust.api.config.client.gui.widget.field.DeleteButton;
 import fathertoast.crust.api.config.client.gui.widget.field.ResetButton;
 import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
-import fathertoast.crust.api.config.common.field.StringListField;
-import fathertoast.crust.api.config.common.file.CrustConfigSpec;
+import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IStringListScreenEditable;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,7 +29,8 @@ import java.util.function.Supplier;
  * Widget that displays the items in a {@link fathertoast.crust.api.config.common.field.StringListField}
  * in the same order they exist in the field's internal list.
  */
-public class CrustStringFieldList extends SearchableSelectionList<CrustStringFieldList.Entry> {
+public class CrustStringFieldList<T extends AbstractConfigField & IStringListScreenEditable> extends
+        SearchableSelectionList<CrustStringFieldList.Entry<T>> {
     
     /** The total amount of space available for field widgets. */
     public static final int OVERALL_WIDTH = 310;
@@ -37,22 +38,16 @@ public class CrustStringFieldList extends SearchableSelectionList<CrustStringFie
     public static final int SCROLL_WIDTH = 10;
     
     
-    /** The config spec of the config this list's field belongs to. */
-    private final CrustConfigSpec spec;
-    
-    /**
-     * A predicate used to check if an entry's
-     * value is valid. Typically inherited from
-     * the config field.
-     */
+    /** The field to represent with this selection list. */
+    protected final T field;
+    /** The field component (widget "row" from previous screen's selection list). */
+    protected final CrustConfigFieldList.FieldEntry listEntry;
+    /** A predicate used to check if an entry's value is valid. Typically inherited from the config field. */
     @Nullable
     protected final Predicate<String> validator;
     
-    /** The {@link StringListField} to represent with this selection list. */
-    protected final StringListField field;
-    
     /** The config spec this list is displaying contents for. */
-    public final EditStringListScreen parent;
+    public final EditStringListScreen<T> parent;
     
     /** The amount of entries this list contained when first created. */
     private final int initialEntryCount;
@@ -61,21 +56,24 @@ public class CrustStringFieldList extends SearchableSelectionList<CrustStringFie
     private boolean changed;
     
     
-    public CrustStringFieldList( EditStringListScreen parent, Minecraft game, StringListField field, @Nullable Predicate<String> validator, CrustConfigSpec spec, ElementOffset highlightOffset ) {
+    public CrustStringFieldList( EditStringListScreen<T> parent, Minecraft game, CrustConfigFieldList.FieldEntry listEntry,
+                                 Object displayValue, T field, ElementOffset highlightOffset ) {
         super( game, parent.width + 45, parent.height,
                 43, parent.height - 32, 26, highlightOffset );
         this.parent = parent;
-        this.spec = spec;
         this.field = field;
-        this.validator = validator;
-        initialEntryCount = field.get().size() + 1;
+        this.listEntry = listEntry;
+        this.validator = field.getLineValidator();
+        
+        List<String> contents = field.rawToStringList( displayValue );
+        initialEntryCount = contents.size() + 1;
         
         // Create a new entry for each value in the field's list.
-        for( String value : field.get() ) {
-            addEntry( new CrustStringFieldList.Entry( this, value ) );
+        for( String value : contents ) {
+            addEntry( new CrustStringFieldList.Entry<>( this, value ) );
         }
         // Create a special entry at the end containing the "new entry" button.
-        addEntry( new AddEntry( this ) );
+        addEntry( new AddEntry<>( this ) );
     }
     
     /** @return The width for each row in the list. */
@@ -104,7 +102,7 @@ public class CrustStringFieldList extends SearchableSelectionList<CrustStringFie
         else {
             update:
             {
-                for( CrustStringFieldList.Entry child : children() ) {
+                for( CrustStringFieldList.Entry<T> child : children() ) {
                     if( child.changed ) {
                         changed = true;
                         break update;
@@ -121,19 +119,24 @@ public class CrustStringFieldList extends SearchableSelectionList<CrustStringFie
         if( changed ) {
             List<String> values = new ArrayList<>();
             
-            for( CrustStringFieldList.Entry child : children() ) {
+            for( CrustStringFieldList.Entry<T> child : children() ) {
                 if( child instanceof AddEntry ) continue;
                 
                 values.add( child.EDIT_BOX.getValue() );
             }
-            spec.getNightConfig().set( field.getKey(), values );
-            spec.onLoad();
+            
+            //TODO change to this once we fix screen transition
+            //            listEntry.updateValue( field.stringListToValue( values ) );
+            parent.updateValue( field.stringListToValue( values ) );
+            listEntry.FIELD.getSpec().getNightConfig().set( field.getKey(), values );
+            listEntry.FIELD.getSpec().onLoad();
         }
     }
     
     /** A mod display row for mod selection lists. */
-    public static class Entry extends ContainerObjectSelectionList.Entry<CrustStringFieldList.Entry> implements Searchbar.Searchable {
-        protected final CrustStringFieldList PARENT;
+    public static class Entry<T extends AbstractConfigField & IStringListScreenEditable> extends
+            ContainerObjectSelectionList.Entry<CrustStringFieldList.Entry<T>> implements Searchbar.Searchable {
+        protected final CrustStringFieldList<T> PARENT;
         
         private final EditBox EDIT_BOX;
         private final Button DELETE_BUTTON;
@@ -143,7 +146,7 @@ public class CrustStringFieldList extends SearchableSelectionList<CrustStringFie
         
         private boolean changed;
         
-        public Entry( CrustStringFieldList parent, String value ) {
+        public Entry( CrustStringFieldList<T> parent, String value ) {
             PARENT = parent;
             
             INITIAL_VALUE = value;
@@ -244,18 +247,18 @@ public class CrustStringFieldList extends SearchableSelectionList<CrustStringFie
         }
     }
     
-    private static class AddEntry extends Entry {
+    private static class AddEntry<T extends AbstractConfigField & IStringListScreenEditable> extends Entry<T> {
         
         private final Button ADD_ENTRY_BUTTON;
         
-        public AddEntry( CrustStringFieldList parent ) {
+        public AddEntry( CrustStringFieldList<T> parent ) {
             super( parent, "" );
             ADD_ENTRY_BUTTON = new Button( 0, 0, 100, 20,
                     Component.translatable( "menu.crust.config.add_entry" ),
                     ( button ) -> {
                         parent.removeEntry( this );
-                        parent.addEntry( new Entry( parent, "" ) );
-                        parent.addEntry( new AddEntry( parent ) );
+                        parent.addEntry( new Entry<>( parent, "" ) );
+                        parent.addEntry( new AddEntry<>( parent ) );
                         parent.setChanged();
                     },
                     Supplier::get );

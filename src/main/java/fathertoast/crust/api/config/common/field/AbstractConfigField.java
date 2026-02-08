@@ -17,10 +17,13 @@ import java.util.List;
 public abstract class AbstractConfigField {
     /**
      * @return A description of where to find the field, if possible. Used for error reporting/feedback.
-     * Note: Null field references should only ever exist for default values. Users should never see the 'null'
-     * message, since it means there is something wrong with a hard coded default value.
+     * Note: Null field references should only exist for default values and non-config loading contexts.
+     * Users should only ever see the 'null' message for non-config contexts, since otherwise means there
+     * is something wrong with a hard coded default value.
      */
-    public static String describeNullable( @Nullable AbstractConfigField field ) { return field == null ? "<unknown default value>" : field.describeLocation(); }
+    public static String describeNullable( @Nullable AbstractConfigField field ) {
+        return field == null ? "non-config value" : field.describeLocation();
+    }
     
     
     /** @see #getSpec() */

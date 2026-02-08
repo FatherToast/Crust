@@ -8,12 +8,16 @@ import com.electronwill.nightconfig.core.io.ParsingException;
 import com.electronwill.nightconfig.core.io.ParsingMode;
 import com.electronwill.nightconfig.toml.TomlParser;
 import fathertoast.crust.api.config.common.ConfigUtil;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.Reader;
 
 /**
  * A simple toml parser implementation that allows the config spec to perform some additional actions on load.
+ * <p>
+ * For internal use only.
  */
+@ApiStatus.Internal
 public class CrustTomlParser implements ConfigParser<CommentedConfig> {
     
     /** The actual parser. */

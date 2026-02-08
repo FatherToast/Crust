@@ -24,6 +24,28 @@ public final class TomlHelper {
         return resLoc.getNamespace() + "." + resLoc.getPath().replace( '/', '.' );
     }
     
+    /**
+     * @return The string with all characters invalid for use as a TOML bare dotted key removed or changed.
+     * Non-trailing/leading whitespace is replaced with '_', while ':', '/', and '\' are changed to '.' -
+     * all other characters are deleted.
+     */
+    public static String toBareKey( String key ) {
+        key = key.trim();
+        final StringBuilder newKey = new StringBuilder();
+        for( char c : key.toCharArray() ) {
+            if( isValidBareKeyChar( c ) ) {
+                newKey.append( c );
+            }
+            else if( Character.isWhitespace( c ) ) {
+                newKey.append( '_' );
+            }
+            else if( c == ':' || c == '/' || c == '\\' ) {
+                newKey.append( '.' );
+            }
+        }
+        return newKey.toString();
+    }
+    
     /** @return True if the string is allowed as a TOML bare dotted key (A-Za-z0-9_-.). */
     public static boolean isValidBareKey( String key ) {
         for( int i = 0; i < key.length(); i++ ) {
@@ -290,7 +312,7 @@ public final class TomlHelper {
         else if( value instanceof Enum<?> enumValue ) {
             return toBasicStringLiteral( enumToString( enumValue ), forComment );
         }
-        // TOML special float values do not match java's Double#toString() - We do not support these
+        // TOML special float values do not match java's Double#toString() - We do not currently support these anyway
         //else if( value instanceof Double || value instanceof Float ) {
         //    double doubleValue = ((Number) value).doubleValue();
         //    if( Double.isInfinite( doubleValue ) ) return doubleValue > 0.0 ? "inf" : "-inf";
@@ -304,7 +326,7 @@ public final class TomlHelper {
     }
     
     /** @return The enum value's string representation, as used by configs. */
-    public static String enumToString( Enum<?> value ) { return value.name().toLowerCase(); }
+    public static String enumToString( Enum<?> value ) { return value.name().toLowerCase( Locale.ROOT ); }
     
     /** @return The value as a basic TOML string (surrounded by double quotes). */
     public static String toBasicStringLiteral( @Nullable String value, boolean forComment ) {
@@ -318,9 +340,12 @@ public final class TomlHelper {
     }
     
     /** @return The value as a basic TOML string (surrounded by double quotes). */
-    public static String toBasicStringLiteral( @Nullable String value ) {
-        if( value == null || value.isEmpty() ) return "\"\"";
-        StringBuilder literal = new StringBuilder( "\"" );
+    public static String toBasicStringLiteral( @Nullable String value ) { return "\"" + escapeString( value ) + "\""; }
+    
+    /** @return The value escaped, for inclusion in a basic TOML string. */
+    public static String escapeString( @Nullable String value ) {
+        if( value == null || value.isEmpty() ) return "";
+        StringBuilder literal = new StringBuilder();
         for( char c : value.toCharArray() ) {
             // Escape allowable TOML escape chars (ignoring unicode), otherwise just append as normal
             switch( c ) {
@@ -349,7 +374,7 @@ public final class TomlHelper {
                     literal.append( c );
             }
         }
-        return literal.append( "\"" ).toString();
+        return literal.toString();
     }
     
     /** @return The value as a literal TOML string (surrounded by single quotes). */
@@ -418,6 +443,16 @@ public final class TomlHelper {
         return literal.toString();
     }
     
+    
+    /** @return The default field info for a fuzzy set/map field (they print the default value on a separate line). */
+    public static String fieldInfoNoDefault( String typeName, String format ) {
+        return String.format( "<%s> Format: %s", typeName, format );
+    }
+    
+    /** @return Only the default value for a fuzzy set/map field. */
+    public static String fieldInfoOnlyDefault( Object defaultValue ) {
+        return String.format( "Default: %s", toLiteralForComment( defaultValue ) );
+    }
     
     /** @return The default field info for a field that must provide its help in the field comment. */
     public static String fieldInfoNoHelp( String typeName, Object defaultValue ) {

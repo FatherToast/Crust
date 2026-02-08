@@ -4,13 +4,17 @@ import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.core.ConfigFormat;
 import com.electronwill.nightconfig.core.io.ConfigParser;
 import com.electronwill.nightconfig.core.io.ConfigWriter;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
 import java.util.function.Supplier;
 
 /**
  * The config file format used by the configs in this mod. Specifies the writer and parser for config files.
+ * <p>
+ * For internal use only.
  */
+@ApiStatus.Internal
 public class CrustConfigFormat implements ConfigFormat<CommentedConfig> {
     
     /** The file extension used by config files. */

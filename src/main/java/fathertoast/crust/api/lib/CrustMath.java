@@ -1,8 +1,37 @@
 package fathertoast.crust.api.lib;
 
 
+import fathertoast.crust.api.util.JavaRandomSource;
+import net.minecraft.util.RandomSource;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Random;
+
 @SuppressWarnings( "unused" )
 public final class CrustMath {
+    
+    // ---- RANDOM METHODS ---- //
+    
+    /**
+     * @return The result of a random roll against the value based on its type:<p>
+     * Double/Float: Treats the value as a percent chance (from 0 to 1).<p>
+     * Integer/Short/etc.: Treats the value as a 1-in-X chance (Note: long is truncated to int).<p>
+     * Non-Number types (or no value found for target): Returns false.
+     */
+    public static boolean rollChance( @Nullable Object value, Random random ) { return rollChance( value, JavaRandomSource.of( random ) ); }
+    
+    /**
+     * @return The result of a random roll against the value based on its type:<p>
+     * Double/Float: Treats the value as a percent chance (from 0 to 1).<p>
+     * Integer/Short/etc.: Treats the value as a 1-in-X chance (Note: long is truncated to int).<p>
+     * Non-Number types (or no value found for target): Returns false.
+     */
+    public static boolean rollChance( @Nullable Object value, RandomSource random ) {
+        return value instanceof Number n &&
+                (n instanceof Double || n instanceof Float ? random.nextDouble() < n.doubleValue() :
+                        n.intValue() > 0 && random.nextInt( n.intValue() ) == 0);
+    }
+    
     
     // ---- COLOR METHODS ---- //
     
@@ -54,5 +83,5 @@ public final class CrustMath {
     
     
     // Utility class
-    private CrustMath() { }
+    private CrustMath() {}
 }

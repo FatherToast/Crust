@@ -4,6 +4,7 @@
 
   "menu.crust.config.open_folder": "Open Folder",
   "menu.crust.config.save_changes": "SAVE Changes",
+  "menu.crust.config.confirm_changes": "CONFIRM Changes",
   "menu.crust.config.discard_changes": "DISCARD Changes",
   "menu.crust.config.edit": "Edit...",
   "menu.crust.config.add_entry": "Add new entry",

@@ -14,7 +14,7 @@ import java.util.List;
  * Represents a config field with a string list value.
  */
 @SuppressWarnings( "unused" )
-public class StringListField extends GenericField<List<String>> {
+public class StringListField extends GenericField<List<String>> implements IStringListScreenEditable {
     
     protected final String type;
     
@@ -56,12 +56,17 @@ public class StringListField extends GenericField<List<String>> {
     @Override
     public void writeValue( CrustTomlWriter writer, CharacterOutput output ) { writer.writeArray( get(), output ); }
     
+    /** @return This field's gui component provider. */
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider<>( this ); }
+    
+    /** Converts the displayable string list to a field value. */
+    @Override // IStringListScreenEditable
+    public Object stringListToValue( List<String> value ) { return value; } // It's already what we want
+    
     
     // Convenience methods
     
     /** @return Returns true if there are no entries in this string list. */
     public boolean isEmpty() { return get().isEmpty(); }
-    
-    @Override
-    public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider( this ); }
 }

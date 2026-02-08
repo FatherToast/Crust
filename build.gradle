@@ -98,6 +98,8 @@ dependencies {
     // Other toasty mods
     runtimeOnly fg.deobf("curse.maven:deadlyworld-60098:${dw_version}")
     runtimeOnly fg.deobf("curse.maven:specialmobs-59968:${sm_version}")
+    runtimeOnly fg.deobf("curse.maven:natural-absorption-224296:${na_version}")
+    runtimeOnly fg.deobf("curse.maven:special-ai-224301:${sai_version}")
 
     // Tinker's Construct
     runtimeOnly fg.deobf("curse.maven:tc-74072:${tc_version}")

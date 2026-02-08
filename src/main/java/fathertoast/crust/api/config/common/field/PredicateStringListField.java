@@ -75,8 +75,7 @@ public class PredicateStringListField extends StringListField {
         return strings;
     }
     
-    /** @return This field's line validator. */
-    public Predicate<String> getLineValidator() {
-        return lineValidator;
-    }
+    /** @return This field's line validator, or null if any string is allowed. */
+    @Override // IStringListScreenEditable
+    public Predicate<String> getLineValidator() { return lineValidator; }
 }

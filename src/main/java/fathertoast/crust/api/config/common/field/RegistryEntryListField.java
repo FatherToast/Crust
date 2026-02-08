@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.provider.StringListFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.RegistryEntryList;
@@ -9,6 +11,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Represents a config field with a registry entry list value.
@@ -16,7 +19,7 @@ import java.util.Set;
  * See also: {@link net.minecraftforge.registries.ForgeRegistries}
  */
 @SuppressWarnings( "unused" )
-public class RegistryEntryListField<T> extends GenericField<RegistryEntryList<T>> {
+public class RegistryEntryListField<T> extends GenericField<RegistryEntryList<T>> implements IStringListScreenEditable {
     
     /** Provides a detailed description of how to use registry entry lists. Recommended putting at the top of any file using registry entry lists. */
     public static List<String> verboseDescription() {
@@ -73,6 +76,22 @@ public class RegistryEntryListField<T> extends GenericField<RegistryEntryList<T>
             // All the actual loading is done through the objects
             value = new RegistryEntryList<>( this, valueDefault.getRegistry(), TomlHelper.parseStringList( raw ) );
         }
+    }
+    
+    /** @return This field's gui component provider. */
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider<>( this ); }
+    
+    /** Converts the displayable string list to a field value. */
+    @Override // IStringListScreenEditable
+    public Object stringListToValue( List<String> value ) {
+        return new RegistryEntryList<>( this, valueDefault.getRegistry(), value );
+    }
+    
+    /** @return This field's line validator, or null if any string is allowed. */
+    @Override // IStringListScreenEditable
+    public Predicate<String> getLineValidator() {
+        return null;//TODO
     }
     
     

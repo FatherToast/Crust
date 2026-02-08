@@ -1,3 +1,7 @@
+1.20.1-4.9.17
+    - Fixed startup crash that can be caused by mod-added game rules, but like for real this time (maybe).
+1.20.1-4.9.16
+    - Fixed startup crash that can be caused by mod-added game rules.
 1.20.1-4.9.15
     - Added a search bar to the in game config editor.
     - Added config editor GUI for field types StringListField and PredicateStringListField.

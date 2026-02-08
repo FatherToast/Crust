@@ -10,6 +10,11 @@ import java.util.List;
 
 /**
  * Represents a config field with an enum value.
+ * <p>
+ * Just like {@link fathertoast.crust.api.config.common.value.collection.value.EnumValueCodec},
+ * this uses {@link Enum#name()} for its string representations and is not case-sensitive. Therefore,
+ * you should avoid vanilla enums (due to obfuscation) and any enums with constants that share the
+ * same name when ignoring case.
  */
 @SuppressWarnings( "unused" )
 public class EnumField<T extends Enum<T>> extends GenericField<T> {

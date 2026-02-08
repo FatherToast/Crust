@@ -154,6 +154,9 @@ public class RLValueListField extends StringListField {
         value = list;
     }
     
+    
+    // Convenience methods
+    
     /** @return An iterable view of this list's entries. */
     public Iterable<ResourceLocation> iterator() {
         return ENTRIES;

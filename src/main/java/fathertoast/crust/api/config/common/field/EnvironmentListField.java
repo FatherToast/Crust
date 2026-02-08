@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.provider.StringListFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.EnvironmentEntry;
@@ -13,12 +15,13 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Represents a config field with an environment list value.
  */
 @SuppressWarnings( "unused" )
-public class EnvironmentListField extends GenericField<EnvironmentList> {
+public class EnvironmentListField extends GenericField<EnvironmentList> implements IStringListScreenEditable {
     
     /**
      * Provides a description of how to use environment lists. Recommended to put at the top of any file using environment lists.
@@ -65,13 +68,17 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
             value = (EnvironmentList) raw;
         }
         else {
-            List<String> list = TomlHelper.parseStringList( raw );
-            List<EnvironmentEntry> entryList = new ArrayList<>();
-            for( String line : list ) {
-                entryList.add( parseEntry( line ) );
-            }
-            value = new EnvironmentList( entryList );
+            value = parse( TomlHelper.parseStringList( raw ) );
         }
+    }
+    
+    /** Parses a list of entry lines. */
+    private EnvironmentList parse( List<String> list ) {
+        List<EnvironmentEntry> entryList = new ArrayList<>();
+        for( String line : list ) {
+            entryList.add( parseEntry( line ) );
+        }
+        return new EnvironmentList( entryList );
     }
     
     /** Parses a single entry line and returns the result. */
@@ -129,6 +136,22 @@ public class EnvironmentListField extends GenericField<EnvironmentList> {
         else value = args[1].trim();
         
         return CrustEnvironmentRegistry.parse( this, args[0], value );
+    }
+    
+    /** @return This field's gui component provider. */
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider<>( this ); }
+    
+    /** Converts the displayable string list to a field value. */
+    @Override // IStringListScreenEditable
+    public Object stringListToValue( List<String> value ) {
+        return parse( value );
+    }
+    
+    /** @return This field's line validator, or null if any string is allowed. */
+    @Override // IStringListScreenEditable
+    public Predicate<String> getLineValidator() {
+        return null;//TODO
     }
     
     

@@ -3,6 +3,7 @@ package fathertoast.crust.api.config.common;
 import com.electronwill.nightconfig.core.file.FileConfig;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -17,7 +18,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * A static helper class that contains some helper utilities for making pretty configs.
+ * A static helper class that contains some helper utilities for making pretty configs
+ * and provide better error reporting.
  */
 @SuppressWarnings( "unused" )
 public final class ConfigUtil {
@@ -25,11 +27,11 @@ public final class ConfigUtil {
     /** Logger instance for the Crust Config API. */
     public static final Logger LOG = LogManager.getLogger( ICrustApi.MOD_ID + "/configs" );
     
-    /** The plus or minus symbol (+/-). */
+    /** The plus or minus symbol (±). */
     public static final String PLUS_OR_MINUS = "\u00b1";
-    /** The less than or equal to symbol (<=). */
+    /** The less than or equal to symbol (≤). */
     public static final String LESS_OR_EQUAL = "\u2264";
-    /** The greater than or equal to symbol (>=). */
+    /** The greater than or equal to symbol (≥). */
     public static final String GREATER_OR_EQUAL = "\u2265";
     
     /** Prints the standard debug header for field validation issues. */
@@ -51,6 +53,16 @@ public final class ConfigUtil {
     public static void errorFor( @Nullable AbstractConfigField field ) {
         ConfigUtil.LOG.error( "Error for {}:", AbstractConfigField.describeNullable( field ) );
     }
+    
+    /** @return The resource location as a string, stripped of any characters disallowed for TOML bare dotted keys. */
+    public static String toBareKey( ResourceLocation resLoc ) { return TomlHelper.toBareKey( resLoc ); }
+    
+    /**
+     * @return The string with all characters invalid for use as a TOML bare dotted key removed or changed.
+     * Non-trailing/leading whitespace is replaced with '_', while ':', '/', and '\' are changed to '.' -
+     * all other characters are deleted.
+     */
+    public static String toBareKey( String key ) { return TomlHelper.toBareKey( key ); }
     
     /** @return The string with all spaces replaced by underscores. Useful for file names. */
     public static String toLowerCaseNoSpaces( String str ) { return noSpaces( str.toLowerCase( Locale.ROOT ) ); }
@@ -119,6 +131,7 @@ public final class ConfigUtil {
     public static String toString( @Nullable TagKey<?> tagKey ) { return tagKey == null ? "null" : ("#" + tagKey.location()); }
     
     /** @return Returns the given String as a config-recognizable namespace wildcard. */
+    //@Deprecated(forRemoval = true)
     public static String namespaceWildcard( @Nullable String namespaceWildcard ) { return namespaceWildcard == null ? "null" : (namespaceWildcard + ":*"); }
     
     /**
@@ -210,5 +223,5 @@ public final class ConfigUtil {
     }
     
     // Utility class
-    private ConfigUtil() { }
+    private ConfigUtil() {}
 }

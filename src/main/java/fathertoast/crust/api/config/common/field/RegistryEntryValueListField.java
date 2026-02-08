@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common.field;
 
+import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.provider.StringListFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.*;
@@ -15,7 +17,7 @@ import java.util.function.Predicate;
 /**
  * Represents a config field with a registry entry-value list value.
  */
-public class RegistryEntryValueListField<T> extends GenericField<RegistryEntryValueList<T>> {
+public class RegistryEntryValueListField<T> extends GenericField<RegistryEntryValueList<T>> implements IStringListScreenEditable {
     
     /** Provides a detailed description of how to use registry entry value lists. Recommended to put at the top of any file using them. */
     public static List<String> verboseDescription() {
@@ -98,42 +100,48 @@ public class RegistryEntryValueListField<T> extends GenericField<RegistryEntryVa
             }
         }
         else {
-            final List<String> list = TomlHelper.parseStringList( raw );
-            final List<RegistryValueEntry<T>> entryList = new ArrayList<>();
-            final List<RegistryValueTagEntry<T>> tagEntries = new ArrayList<>();
-            final List<NamespaceRegistryEntry> namespaceEntries = new ArrayList<>();
-            DefaultValueEntry defaultEntry = null;
+            value = parse( TomlHelper.parseStringList( raw ) );
+        }
+    }
+    
+    private RegistryEntryValueList<T> parse( List<String> list ) {
+        final List<RegistryValueEntry<T>> entryList = new ArrayList<>();
+        final List<RegistryValueTagEntry<T>> tagEntries = new ArrayList<>();
+        final List<NamespaceRegistryEntry> namespaceEntries = new ArrayList<>();
+        DefaultValueEntry defaultEntry = null;
+        
+        for( String line : list ) {
+            String[] args = line.split( " " );
             
-            for( String line : list ) {
-                String[] args = line.split( " " );
-                
-                // Check for default entry
-                if( defaultEntry == null ) {
-                    if( args[0].equals( "default" ) ) {
-                        double[] values = parseValues( line, args );
-                        defaultEntry = new DefaultValueEntry( values );
-                        continue;
-                    }
-                }
-                // Check for namespace entries
-                if( line.split( " " )[0].endsWith( "*" ) ) {
-                    NamespaceRegistryEntry entry = parseNamespaceEntry( line );
-                    if( entry != null ) namespaceEntries.add( entry );
-                }
-                // Check for entity type tags
-                else if( line.startsWith( "#" ) ) {
-                    RegistryValueTagEntry<T> entry = parseTagEntry( line );
-                    if( entry != null ) tagEntries.add( entry );
-                }
-                else {
-                    RegistryValueEntry<T> entry = parseEntry( line );
-                    if( entry != null ) entryList.add( entry );
+            // Check for default entry
+            if( defaultEntry == null ) {
+                if( args[0].equals( "default" ) ) {
+                    double[] values = parseValues( line, args );
+                    defaultEntry = new DefaultValueEntry( values );
+                    continue;
                 }
             }
-            value = new RegistryEntryValueList<>( defaultEntry, valueDefault.getRegistry(), entryList );
-            value.addNamespaceEntries( namespaceEntries );
-            value.addTagEntries( tagEntries );
+            // Check for namespace entries
+            if( line.split( " " )[0].endsWith( "*" ) ) {
+                NamespaceRegistryEntry entry = parseNamespaceEntry( line );
+                if( entry != null ) namespaceEntries.add( entry );
+            }
+            // Check for entity type tags
+            else if( line.startsWith( "#" ) ) {
+                RegistryValueTagEntry<T> entry = parseTagEntry( line );
+                if( entry != null ) tagEntries.add( entry );
+            }
+            else {
+                RegistryValueEntry<T> entry = parseEntry( line );
+                if( entry != null ) entryList.add( entry );
+            }
         }
+        
+        final RegistryEntryValueList<T> valueList = new RegistryEntryValueList<>( defaultEntry,
+                valueDefault.getRegistry(), entryList );
+        valueList.addNamespaceEntries( namespaceEntries );
+        valueList.addTagEntries( tagEntries );
+        return valueList;
     }
     
     /** Parses a single entry line and returns the result. */
@@ -273,6 +281,22 @@ public class RegistryEntryValueListField<T> extends GenericField<RegistryEntryVa
             value = valueDefault.getMaxValue();
         }
         return value;
+    }
+    
+    /** @return This field's gui component provider. */
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider<>( this ); }
+    
+    /** Converts the displayable string list to a field value. */
+    @Override // IStringListScreenEditable
+    public Object stringListToValue( List<String> value ) {
+        return parse( value );
+    }
+    
+    /** @return This field's line validator, or null if any string is allowed. */
+    @Override // IStringListScreenEditable
+    public Predicate<String> getLineValidator() {
+        return null;//TODO
     }
     
     

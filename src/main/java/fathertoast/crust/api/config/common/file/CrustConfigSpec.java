@@ -12,6 +12,7 @@ import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -318,6 +319,7 @@ public class CrustConfigSpec {
      *
      * @param comment The file comment to insert.
      */
+    @ApiStatus.Internal
     public void header( List<String> comment ) { add( new FileHeader( this, comment ) ); }
     
     /**
@@ -328,6 +330,7 @@ public class CrustConfigSpec {
      * @param name    The category name.
      * @param comment The category comment to insert.
      */
+    @ApiStatus.Internal
     public void category( String name, List<String> comment ) {
         add( new Category( this, name, comment ) );
     }
@@ -355,6 +358,7 @@ public class CrustConfigSpec {
      * <p>
      * Creates a new config spec at a specified location with only the basic 'start of file' action.
      */
+    @ApiStatus.Internal
     public CrustConfigSpec( ConfigManager cfgManager, AbstractConfigFile cfgFile, String cfgName ) {
         MANAGER = cfgManager;
         FILE = cfgFile;
@@ -418,9 +422,11 @@ public class CrustConfigSpec {
     }
     
     /** INTERNAL METHOD. The underlying Night Config. */
+    @ApiStatus.Internal
     public FileConfig getNightConfig() { return NIGHT_CONFIG_FILE; }
     
     /** INTERNAL METHOD. Called after the config is loaded to update cached values. */
+    @ApiStatus.Internal
     public void onLoad() {
         // Perform load actions
         boolean rewrite = false;
@@ -432,11 +438,13 @@ public class CrustConfigSpec {
     }
     
     /** INTERNAL METHOD. Writes the current state of the config to file. */
+    @ApiStatus.Internal
     public void write( CrustTomlWriter writer, CharacterOutput output ) {
         for( Action action : ACTIONS ) { action.write( writer, output ); }
     }
     
     /** INTERNAL METHOD. Builds the config editor widget for the config. */
+    @ApiStatus.Internal
     public void initGui( CrustConfigFieldList widget, Consumer<CrustConfigFieldList.Entry> addEntry ) {
         for( Action action : ACTIONS ) action.initGui( widget, addEntry );
     }
@@ -786,6 +794,7 @@ public class CrustConfigSpec {
     }
     
     /** Represents a spec action that reads and writes to a field. */
+    @ApiStatus.Internal
     public static class Field implements Action {
         
         /** The spec this action belongs to. */
