@@ -11,14 +11,14 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 @SuppressWarnings( "unused" )
-public class ConfigDrivenAttributeModifierMap extends AttributeSupplier {
+public class ConfigDrivenAttributeSupplier extends AttributeSupplier {
     
     private final AttributeListField FIELD;
     private final Map<Attribute, AttributeInstance> BASE_ATTRIBUTES;
     
     private AttributeSupplier underlyingMap;
     
-    public ConfigDrivenAttributeModifierMap( AttributeListField field, AttributeSupplier.Builder builder ) {
+    public ConfigDrivenAttributeSupplier( AttributeListField field, AttributeSupplier.Builder builder ) {
         super( builder.builder );
         FIELD = field;
         BASE_ATTRIBUTES = builder.builder;
