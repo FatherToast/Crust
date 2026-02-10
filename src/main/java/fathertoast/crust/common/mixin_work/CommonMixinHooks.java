@@ -1,5 +1,6 @@
 package fathertoast.crust.common.mixin_work;
 
+import fathertoast.crust.api.config.common.field.AttributeListField;
 import fathertoast.crust.api.config.common.value.ConfigDrivenAttributeModifierMap;
 import fathertoast.crust.api.event.AdvancementLoadEvent;
 import net.minecraft.advancements.Advancement;
@@ -29,13 +30,22 @@ public class CommonMixinHooks {
         list.add( newMap );
     }
     
-    public static AttributeSupplier handleModifyAttributes( Map<EntityType<? extends LivingEntity>, AttributeSupplier> forgeAttributes,
-                                                            EntityType<? extends LivingEntity> type, AttributeSupplier supplier ) {
-        AttributeSupplier originalAttributes = forgeAttributes.get( type );
-        
-        if( originalAttributes instanceof ConfigDrivenAttributeModifierMap configDrivenModMap ) {
-            return new ConfigDrivenAttributeModifierMap( configDrivenModMap.getField(), new AttributeSupplier.Builder( supplier ) );
-        }
-        return supplier;
+    public static void collectConfigDrivenTypes( Map<EntityType<? extends LivingEntity>, AttributeSupplier> forgeAttributes,
+                                                 Map<EntityType<? extends LivingEntity>, AttributeListField> configDrivenTypes ) {
+        forgeAttributes.forEach( ( entityType, attributeSupplier ) -> {
+            if( attributeSupplier instanceof ConfigDrivenAttributeModifierMap cfgDrivenSupplier ) {
+                configDrivenTypes.put( entityType, cfgDrivenSupplier.getField() );
+            }
+        } );
+    }
+    
+    /**  */
+    public static void handleModifyAttributes( Map<EntityType<? extends LivingEntity>, AttributeSupplier> forgeAttributes,
+                                               Map<EntityType<? extends LivingEntity>, AttributeListField> configDrivenTypes ) {
+        configDrivenTypes.forEach( ( entityType, field ) -> {
+            AttributeSupplier supplier = forgeAttributes.get( entityType );
+            ConfigDrivenAttributeModifierMap cfgDrivenSupplier = new ConfigDrivenAttributeModifierMap( field, new AttributeSupplier.Builder( supplier ) );
+            forgeAttributes.put( entityType, cfgDrivenSupplier );
+        } );
     }
 }
