@@ -6,12 +6,13 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Supplier;
 
 /**
  * This helper class is used to queue work to be done at the end of the server tick.
+ * It is safe to queue work from other threads.
  */
 @SuppressWarnings( "unused" )
 @Mod.EventBusSubscriber( modid = ICrustApi.MOD_ID )
@@ -37,7 +38,7 @@ public final class DeferredAction {
     // ---- Internal Methods ---- //
     
     /** All actions currently waiting to be performed at the end of the server tick. */
-    private static final List<Supplier<Boolean>> TICK_END_ACTIONS = new ArrayList<>();
+    private static final Queue<Supplier<Boolean>> TICK_END_ACTIONS = new ConcurrentLinkedQueue<>();
     
     @SubscribeEvent( priority = EventPriority.NORMAL )
     static void onServerTick( TickEvent.ServerTickEvent event ) {
