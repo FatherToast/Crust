@@ -1,3 +1,6 @@
+1.20.1-4.11.19
+    API Changes:
+    - Added some convenience methods to NBTHelper for writing/reading Forge registry entries.
 1.20.1-4.10.19
     - Fixed ForgeHooksMixin breaking outside development environment and crashing.
 1.20.1-4.10.18
