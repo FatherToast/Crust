@@ -13,9 +13,11 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.StateHolder;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -171,6 +173,61 @@ public final class NBTHelper {
         return getOrCreateCompound( getPlayerData( player, name ), subName );
     }
     
+    // ---- Forge Registry entries ---- //
+    
+    /**
+     * Convenience method for writing a registry entry's ID to NBT.<br>
+     * If anything goes wrong, an empty String is written.
+     *
+     * @param tag      The compound tag to write to.
+     * @param registry The Forge registry to check.
+     * @param name     The name of the String tag the ID will be written to.
+     * @param entry    The registry entry to get an ID for.
+     */
+    public static <T> void putRegistryEntry( CompoundTag tag, IForgeRegistry<T> registry, String name, T entry ) {
+        String value = "";
+        if( registry.containsValue( entry ) ) {
+            // noinspection ConstantConditions
+            value = registry.getKey( entry ).toString();
+        }
+        tag.putString( name, value );
+    }
+    
+    /**
+     * Convenience method for loading a registry entry from NBT.
+     *
+     * @param tag      The compound tag to read from.
+     * @param registry The Forge registry to check.
+     * @param name     The name of the String tag to look for a registry ID in.
+     * @return The registry entry that corresponds to the ID that was read.
+     * Returns null if no valid ID was read or the registry doesn't contain the ID.
+     */
+    @Nullable
+    public static <T> T getRegistryEntry( CompoundTag tag, IForgeRegistry<T> registry, String name ) {
+        if( !containsString( tag, name ) ) return null;
+        ResourceLocation id = ResourceLocation.tryParse( tag.getString( name ) );
+        
+        if( id == null )
+            return null;
+        
+        return registry.getValue( id );
+    }
+    
+    /**
+     * Convenience method for loading a registry entry from NBT.
+     * Supplies a default value that is returned if loading fails.
+     *
+     * @param tag      The compound tag to read from.
+     * @param registry The Forge registry to check.
+     * @param name     The name of the String tag to look for a registry ID in.
+     * @return The registry entry that corresponds to the ID that was read.
+     * Returns the desired default value if no valid ID was read or the registry doesn't contain the ID.
+     */
+    public static <T> T getRegEntryOrDefault( CompoundTag tag, IForgeRegistry<T> registry, String name, T defaultValue ) {
+        T value = getRegistryEntry( tag, registry, name );
+        return value == null ? defaultValue : value;
+    }
+    
     
     // ---- Block States ---- //
     
@@ -248,7 +305,7 @@ public final class NBTHelper {
             return state.setValue( property, optional.get() );
         }
         else {
-            LOG.warn( "Unable to read property: {} with value: {} for blockstate: {}", key, propertiesTag.getString( key ), blockTag.toString() );
+            LOG.warn( "Unable to read property: {} with value: {} for BlockState: {}", key, propertiesTag.getString( key ), blockTag.toString() );
             return state;
         }
     }
@@ -274,7 +331,7 @@ public final class NBTHelper {
      * Convenience method for writing a list to NBT.
      *
      * @param tag  The compound tag to write to.
-     * @param name The name of the desired block state's compound tag.
+     * @param name The name of the list tag to put the lists in.
      * @param list The list to write.
      */
     public static void putListList( CompoundTag tag, String name, List<ListTag> list ) {
@@ -310,7 +367,7 @@ public final class NBTHelper {
      * Convenience method for writing a list to NBT.
      *
      * @param tag  The compound tag to write to.
-     * @param name The name of the desired block state's compound tag.
+     * @param name The name of the desired compound list tag.
      * @param list The list to write.
      */
     public static void putCompoundList( CompoundTag tag, String name, List<CompoundTag> list ) {
@@ -346,7 +403,7 @@ public final class NBTHelper {
      * Convenience method for writing a list to NBT.
      *
      * @param tag  The compound tag to write to.
-     * @param name The name of the desired block state's compound tag.
+     * @param name The name of the list tag to put the string list in.
      * @param list The list to write.
      */
     public static void putStringList( CompoundTag tag, String name, List<String> list ) {
@@ -382,7 +439,7 @@ public final class NBTHelper {
      * Convenience method for writing a list to NBT.
      *
      * @param tag  The compound tag to write to.
-     * @param name The name of the desired block state's compound tag.
+     * @param name The name of list tag to put the boolean list in.
      * @param list The list to write.
      */
     public static void putBooleanList( CompoundTag tag, String name, List<Boolean> list ) {
@@ -411,7 +468,7 @@ public final class NBTHelper {
      * Convenience method for writing a list to NBT.
      *
      * @param tag  The compound tag to write to.
-     * @param name The name of the desired block state's compound tag.
+     * @param name The name of the list tag to put the byte list in.
      * @param list The list to write.
      */
     public static void putByteList( CompoundTag tag, String name, List<Byte> list ) {
@@ -440,7 +497,7 @@ public final class NBTHelper {
      * Convenience method for writing a list to NBT.
      *
      * @param tag  The compound tag to write to.
-     * @param name The name of the desired block state's compound tag.
+     * @param name The name of the list tag to put the short list in.
      * @param list The list to write.
      */
     public static void putShortList( CompoundTag tag, String name, List<Short> list ) {
@@ -469,7 +526,7 @@ public final class NBTHelper {
      * Convenience method for writing a list to NBT.
      *
      * @param tag  The compound tag to write to.
-     * @param name The name of the desired block state's compound tag.
+     * @param name The name of the list tag to put the integer list in.
      * @param list The list to write.
      */
     public static void putIntList( CompoundTag tag, String name, List<Integer> list ) {
@@ -498,7 +555,7 @@ public final class NBTHelper {
      * Convenience method for writing a list to NBT.
      *
      * @param tag  The compound tag to write to.
-     * @param name The name of the desired block state's compound tag.
+     * @param name The name of the list tag to put the long list in.
      * @param list The list to write.
      */
     public static void putLongList( CompoundTag tag, String name, List<Long> list ) {
@@ -527,7 +584,7 @@ public final class NBTHelper {
      * Convenience method for writing a list to NBT.
      *
      * @param tag  The compound tag to write to.
-     * @param name The name of the desired block state's compound tag.
+     * @param name The name of the list tag to put the float list in.
      * @param list The list to write.
      */
     public static void putFloatList( CompoundTag tag, String name, List<Float> list ) {
@@ -556,7 +613,7 @@ public final class NBTHelper {
      * Convenience method for writing a list to NBT.
      *
      * @param tag  The compound tag to write to.
-     * @param name The name of the desired block state's compound tag.
+     * @param name The name of the list tag to put the double list in.
      * @param list The list to write.
      */
     public static void putDoubleList( CompoundTag tag, String name, List<Double> list ) {
@@ -597,7 +654,7 @@ public final class NBTHelper {
      * Convenience method for writing a list to NBT.
      *
      * @param tag  The compound tag to write to.
-     * @param name The name of the desired block state's compound tag.
+     * @param name The name of the list tag to put the byte array list in.
      * @param list The list to write.
      */
     public static void putByteArrayList( CompoundTag tag, String name, List<byte[]> list ) {
@@ -633,7 +690,7 @@ public final class NBTHelper {
      * Convenience method for writing a list to NBT.
      *
      * @param tag  The compound tag to write to.
-     * @param name The name of the desired block state's compound tag.
+     * @param name The name of the list tag to put the int array list in.
      * @param list The list to write.
      */
     public static void putIntArrayList( CompoundTag tag, String name, List<int[]> list ) {
@@ -669,7 +726,7 @@ public final class NBTHelper {
      * Convenience method for writing a list to NBT.
      *
      * @param tag  The compound tag to write to.
-     * @param name The name of the desired block state's compound tag.
+     * @param name The name of the list tag to put the long array list in.
      * @param list The list to write.
      */
     public static void putLongArrayList( CompoundTag tag, String name, List<long[]> list ) {
