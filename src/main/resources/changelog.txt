@@ -1,4 +1,5 @@
-1.20.1-4.11.19
+1.20.1-4.11.20
+    - DeferredAction.queue() can now be called safely from other threads than the main server thread.
     API Changes:
     - Added some convenience methods to NBTHelper for writing/reading Forge registry entries.
 1.20.1-4.10.19
