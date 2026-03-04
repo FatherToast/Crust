@@ -55,7 +55,7 @@ public class TestConfigFile extends AbstractConfigFile {
      * @param cfgName    Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
      */
     TestConfigFile( ConfigManager cfgManager, String cfgName ) {
-        super( cfgManager, cfgName,
+        super( cfgManager, cfgName, true,
                 "Test config file." );
         
         GENERAL = new General( this );

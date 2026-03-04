@@ -28,6 +28,24 @@ public abstract class AbstractConfigFile {
     /** The spec used by this config that defines the file's format. */
     public final CrustConfigSpec SPEC;
     
+    /** If true, Crust will sync this config's data from server to client when required. */
+    public final boolean SYNC_ENABLED;
+    
+    /**
+     * @param cfgManager      The mod's config manager.
+     * @param cfgName         Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
+     * @param enableSync      If true, this config will sync its data from server to client when required.
+     * @param fileDescription Opening file comment to describe/summarize the contents of the file.
+     *                        Each string is printed as a separate line.
+     */
+    public AbstractConfigFile( ConfigManager cfgManager, String cfgName, boolean enableSync, String... fileDescription ) {
+        SPEC = new CrustConfigSpec( cfgManager, this, cfgName );
+        cfgManager.register( this );
+        SPEC.loadingCategory = "";
+        SPEC.header( TomlHelper.newComment( fileDescription ) );
+        SYNC_ENABLED = enableSync;
+    }
+    
     /**
      * @param cfgManager      The mod's config manager.
      * @param cfgName         Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
@@ -35,10 +53,7 @@ public abstract class AbstractConfigFile {
      *                        Each string is printed as a separate line.
      */
     public AbstractConfigFile( ConfigManager cfgManager, String cfgName, String... fileDescription ) {
-        SPEC = new CrustConfigSpec( cfgManager, this, cfgName );
-        cfgManager.register( this );
-        SPEC.loadingCategory = "";
-        SPEC.header( TomlHelper.newComment( fileDescription ) );
+        this( cfgManager, cfgName, false, fileDescription );
     }
     
     /**
@@ -52,11 +67,23 @@ public abstract class AbstractConfigFile {
         /**
          * @param cfgManager      The mod's config manager.
          * @param cfgName         Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
+         * @param enableSync      If true, this config will sync its data from server to client when required.
+         * @param fileDescription Opening file comment to describe/summarize the contents of the file.
+         *                        Each string is printed as a separate line.
+         */
+        public Simple( ConfigManager cfgManager, String cfgName, boolean enableSync, String... fileDescription ) {
+            super( cfgManager, cfgName, enableSync, fileDescription );
+            SPEC.setupSimpleFile();
+        }
+        
+        /**
+         * @param cfgManager      The mod's config manager.
+         * @param cfgName         Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
          * @param fileDescription Opening file comment to describe/summarize the contents of the file.
          *                        Each string is printed as a separate line.
          */
         public Simple( ConfigManager cfgManager, String cfgName, String... fileDescription ) {
-            super( cfgManager, cfgName, fileDescription );
+            super( cfgManager, cfgName, false, fileDescription );
             SPEC.setupSimpleFile();
         }
     }
