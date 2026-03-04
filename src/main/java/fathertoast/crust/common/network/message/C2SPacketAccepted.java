@@ -1,6 +1,5 @@
 package fathertoast.crust.common.network.message;
 
-import fathertoast.crust.common.core.Crust;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -21,7 +20,6 @@ public class C2SPacketAccepted implements IntSupplier {
     /** Handles receipt of the message. */
     public void handle( C2SPacketAccepted message, Supplier<NetworkEvent.Context> contextSupplier ) {
         NetworkEvent.Context context = contextSupplier.get();
-        Crust.LOG.info( "Acknowledged packet with login index '{}'", message.getLoginIndex() );
         context.setPacketHandled( true );
     }
     
