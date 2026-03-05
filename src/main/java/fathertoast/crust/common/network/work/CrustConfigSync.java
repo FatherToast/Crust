@@ -1,9 +1,9 @@
 package fathertoast.crust.common.network.work;
 
+import com.electronwill.nightconfig.core.CommentedConfig;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
-import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.network.message.S2CSendConfigData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -12,6 +12,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.network.NetworkEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -58,11 +59,14 @@ public final class CrustConfigSync {
      * @return The list of config sync packets to send on login.
      */
     public static List<Pair<String, S2CSendConfigData>> syncConfigs( boolean isLocal ) {
+        // Don't send configs from integrated server, configs are shared by both sides
+        if( isLocal ) return List.of();
+        
         final List<Pair<String, S2CSendConfigData>> configData = new ArrayList<>();
         
         for( String key : TRACKED_CONFIGS.keySet() ) {
             AbstractConfigFile config = TRACKED_CONFIGS.get( key );
-            byte[] data = null;
+            byte[] data;
             
             try {
                 data = Files.readAllBytes( config.SPEC.getNightConfig().getNioPath() );
@@ -70,8 +74,7 @@ public final class CrustConfigSync {
             catch( IOException e ) {
                 throw new RuntimeException( e );
             }
-            // TODO - Actually send the config file bytes, just testing for now
-            configData.add( Pair.of( key, new S2CSendConfigData( key ) ) );
+            configData.add( Pair.of( key, new S2CSendConfigData( key, data ) ) );
         }
         return configData;
     }
@@ -82,8 +85,15 @@ public final class CrustConfigSync {
      * Processes config data sent from the server.
      */
     public static void processConfigSync( S2CSendConfigData message, NetworkEvent.Context context ) {
-        // TODO - Read and apply received config data
-        Crust.LOG.info( "Processing config sync! Config file ID: {}", message.message );
+        final String configId = message.configId;
+        final byte[] configData = message.fileData;
+        
+        if( !TRACKED_CONFIGS.containsKey( configId ) ) {
+            throw new IllegalStateException( "Received bogus Crust config ID from server: '{}'. This config ID is not mapped to a syn ced config on this client!" );
+        }
+        // TODO
+        AbstractConfigFile configFile = TRACKED_CONFIGS.get( configId );
+        CommentedConfig cfg = configFile.SPEC.getFormat().createParser().parse( new ByteArrayInputStream( configData ) );
     }
     
     private CrustConfigSync() { }
