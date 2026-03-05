@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.common.file;
 
+import com.electronwill.nightconfig.core.CommentedConfig;
+import com.electronwill.nightconfig.core.ConfigFormat;
 import com.electronwill.nightconfig.core.file.FileConfig;
 import com.electronwill.nightconfig.core.file.FileWatcher;
 import com.electronwill.nightconfig.core.io.CharacterOutput;
@@ -43,6 +45,11 @@ public class CrustConfigSpec {
     
     /** @return The file this config spec loads to/from. */
     public File getFile() { return NIGHT_CONFIG_FILE.getFile(); }
+    
+    /** @return This spec's config format. */
+    public ConfigFormat<CommentedConfig> getFormat() {
+        return FORMAT;
+    }
     
     /** @return The file path, relative to the game directory, that this config spec loads to/from. */
     public String getFilePath() { return ConfigUtil.toRelativePath( getFile() ); }
@@ -339,6 +346,9 @@ public class CrustConfigSpec {
     /** The underlying NightConfig config. */
     private final FileConfig NIGHT_CONFIG_FILE;
     
+    /** The formatter implementation for this config. */
+    private final CrustConfigFormat FORMAT;
+    
     /** The list of actions to perform, in a specific order, when reading or writing the config file. */
     private final List<Action> ACTIONS = new ArrayList<>();
     /** The fields defined in this spec. */
@@ -372,9 +382,9 @@ public class CrustConfigSpec {
             ConfigUtil.LOG.error( "Failed to make config folder! Things will likely explode. " +
                     "Create the folder manually to avoid this problem in the future: {}", dir );
         }
-        
+        FORMAT = new CrustConfigFormat( this );
         // Create the underlying NightConfig object
-        NIGHT_CONFIG_FILE = FileConfig.builder( file, new CrustConfigFormat( this ) ).sync().build();
+        NIGHT_CONFIG_FILE = FileConfig.builder( file, FORMAT ).sync().build();
         
         // Make sure the file exists (an empty file is all we need at this point)
         if( !NIGHT_CONFIG_FILE.getFile().exists() ) {
