@@ -162,6 +162,7 @@ public class TestConfigFile extends AbstractConfigFile {
                     new EntitySetField( "entity_set_field", new EntitySet.Builder<>()
                             .addTagBlacklist( MISSING_FEATURE )
                             .add( EntityType.CREEPER ).add( TestCrustObjects.Obj.TEST_SKELETON )
+                            .add( EntityType.PLAYER )
                             .addWildcard( "uninstalled_mod" ).add( MISSING_FEATURE )
                             .addBlacklist( EntityType.STRAY ).addTag( EntityTypeTags.SKELETONS )
                             .addBlacklist( EntityType.ZOMBIE ).addExtends( EntityType.ZOMBIE )

@@ -13,6 +13,7 @@ public class TestGameEventHandler {
     
     @SubscribeEvent( priority = EventPriority.NORMAL )
     static void onLivingHurt( LivingHurtEvent event ) {
+        // noinspection resource
         if( event.getEntity().level().isClientSide() || !(event.getSource().getEntity() instanceof Player) ) return;
         
         // Test stuff here
