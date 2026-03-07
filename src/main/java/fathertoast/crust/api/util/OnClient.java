@@ -1,4 +1,4 @@
-package fathertoast.crust.common.util.annotations;
+package fathertoast.crust.api.util;
 
 /**
  * Purely decorative annotation used to mark classes/fields/methods as only being referenced on client

@@ -6,7 +6,7 @@ import fathertoast.crust.api.config.client.gui.widget.provider.UnsupportedWidget
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.common.util.annotations.OnClient;
+import fathertoast.crust.api.util.OnClient;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
