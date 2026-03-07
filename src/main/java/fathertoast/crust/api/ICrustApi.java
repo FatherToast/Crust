@@ -16,6 +16,13 @@ public interface ICrustApi {
     /** The mod's id. */
     String MOD_ID = "crust";
     
+    /**
+     * If Apocalypse is installed, this can be used to easily
+     * access a player's difficulty and misc. event data.
+     *
+     * @return The Apocalypse difficulty accessor, if it exists.
+     * Returns null otherwise.
+     */
     @Nullable
     IDifficultyAccessor getDifficultyAccessor();
 }

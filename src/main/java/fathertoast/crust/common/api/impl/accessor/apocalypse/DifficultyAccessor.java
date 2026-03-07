@@ -15,9 +15,7 @@ import java.util.List;
  */
 public final class DifficultyAccessor implements IDifficultyAccessor {
     
-    // Note to Toast man: I am opting for using Apocalypse's API
-    // instead of directly accessing the capability helper getters
-    // so we don't have to worry about me suddenly changing something and forgetting about it
+    // Apocalypse's provider.
     private DifficultyProvider provider;
     
     public void setDifficultyProvider( DifficultyProvider provider ) {
