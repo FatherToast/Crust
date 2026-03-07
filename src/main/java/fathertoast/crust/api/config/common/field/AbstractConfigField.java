@@ -6,6 +6,7 @@ import fathertoast.crust.api.config.client.gui.widget.provider.UnsupportedWidget
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.common.util.annotations.OnClient;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -110,5 +111,6 @@ public abstract class AbstractConfigField {
     public void writeValue( CrustTomlWriter writer, CharacterOutput output ) { writer.writeValue( getValue(), output ); }
     
     /** @return This field's gui component provider. */
+    @OnClient
     public IConfigFieldWidgetProvider getWidgetProvider() { return new UnsupportedWidgetProvider(); }
 }
