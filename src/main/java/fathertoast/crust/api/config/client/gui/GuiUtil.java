@@ -49,11 +49,8 @@ public final class GuiUtil {
             else if( pos.x + tooltipWidth > guiWidth ) {
                 pos.x = Math.max( pos.x - 24 - tooltipWidth, 4 );
             }
-            
-            if( pos.y < 10 ) {
+            if( pos.y < 10 )
                 pos.y = pos.y + 25;
-            }
-            
             return pos;
         }
     }
