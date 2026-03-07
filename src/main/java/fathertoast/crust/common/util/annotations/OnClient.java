@@ -1,8 +1,7 @@
 package fathertoast.crust.common.util.annotations;
 
 /**
- * Decorative annotation used to mark classes/fields/methods as only being referenced on client.
- * <p>
- * (This does not strip away code from ANY logical sides)
+ * Purely decorative annotation used to mark classes/fields/methods as only being referenced on client
+ * even if they are outside an expected client package.
  */
 public @interface OnClient { }
