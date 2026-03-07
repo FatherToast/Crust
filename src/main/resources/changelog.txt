@@ -1,3 +1,8 @@
+1.20.1-4.13.21
+    API Changes:
+    - Moved @OnClient annotation to API util package.
+    - Redefined the intended use of @OnClient annotation.
+    - Annotated AbstractConfigField#getWidgetProvider with @OnClient.
 1.20.1-4.12.20
     API Changes:
     - Added getOrElse getter to FuzzyMapField.
