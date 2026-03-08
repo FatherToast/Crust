@@ -10,7 +10,6 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.Slice;
 
 import java.util.Map;
 
@@ -22,9 +21,13 @@ public abstract class ServerAdvancementManagerMixin extends SimpleJsonResourceRe
     }
     
     @Redirect(
+            require = 1,
             method = "apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V",
-            slice = @Slice( from = @At( value = "INVOKE", target = "Lnet/minecraft/advancements/AdvancementList;<init>()V" ) ),
-            at = @At( value = "INVOKE", target = "Lnet/minecraft/advancements/AdvancementList;add(Ljava/util/Map;)V" )
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/advancements/AdvancementList;add(Ljava/util/Map;)V",
+                    ordinal = 0
+            )
     )
     public void crust$redirect_apply( AdvancementList instance, Map<ResourceLocation, Advancement.Builder> entry ) {
         CommonMixinHooks.handleAdvancementManagerRedirect( instance, entry );

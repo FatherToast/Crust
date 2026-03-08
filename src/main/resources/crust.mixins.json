@@ -5,13 +5,11 @@
   "minVersion": "0.8",
   "refmap": "crust.mixins.refmap.json",
   "mixins": [
-    "ForgeHooksMixin"
-  ],
-  "client": [
-  ],
-  "server": [
+    "ForgeHooksMixin",
     "ServerAdvancementManagerMixin"
   ],
+  "client": [],
+  "server": [],
   "injectors": {
     "defaultRequire": 1
   }

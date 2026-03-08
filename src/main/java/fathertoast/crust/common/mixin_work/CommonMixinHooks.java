@@ -3,6 +3,7 @@ package fathertoast.crust.common.mixin_work;
 import fathertoast.crust.api.config.common.field.AttributeListField;
 import fathertoast.crust.api.config.common.value.ConfigDrivenAttributeModifierMap;
 import fathertoast.crust.api.event.AdvancementLoadEvent;
+import fathertoast.crust.common.api.impl.event.ModifiableAdvancement;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementList;
 import net.minecraft.resources.ResourceLocation;
@@ -20,12 +21,18 @@ public class CommonMixinHooks {
         final HashMap<ResourceLocation, Advancement.Builder> newMap = new HashMap<>();
         
         map.forEach( ( id, builder ) -> {
-            AdvancementLoadEvent event = new AdvancementLoadEvent( id, builder );
+            // Create a modifiable advancement from the loaded JSON data
+            final ModifiableAdvancement modifiable = ModifiableAdvancement.copyFromBuilder( builder );
+            
+            // Create and post event for modification
+            final AdvancementLoadEvent event = new AdvancementLoadEvent( id, modifiable );
             MinecraftForge.EVENT_BUS.post( event );
             
-            // Clear requirements so they can be rebuilt
-            event.getBuilder().requirements = null;
-            newMap.put( event.getId(), event.getBuilder() );
+            // Convert resulting event data into new builder
+            final Advancement.Builder newBuilder = ModifiableAdvancement.convertToVanilla( modifiable );
+            
+            // Insert new advancement data we gathered from the event
+            newMap.put( id, newBuilder );
         } );
         list.add( newMap );
     }
@@ -39,7 +46,6 @@ public class CommonMixinHooks {
         } );
     }
     
-    /**  */
     public static void handleModifyAttributes( Map<EntityType<? extends LivingEntity>, AttributeSupplier> forgeAttributes,
                                                Map<EntityType<? extends LivingEntity>, AttributeListField> configDrivenTypes ) {
         configDrivenTypes.forEach( ( entityType, field ) -> {
