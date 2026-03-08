@@ -74,12 +74,16 @@ public class ModifiableDisplayInfo implements IModifiableDisplayInfo {
         this.y = displayInfo.getY();
     }
     
+    /**
+     * Creates a "blank" instance that is
+     * technically usable and safe.
+     */
     protected ModifiableDisplayInfo() {
-        this.title = null;
-        this.description = null;
+        this.title = Component.empty();
+        this.description = Component.empty();
         this.icon = ItemStack.EMPTY;
         this.background = null;
-        this.frame = FrameType.GOAL;
+        this.frame = FrameType.TASK;
         this.showToast = false;
         this.announceChat = false;
         this.hidden = false;
