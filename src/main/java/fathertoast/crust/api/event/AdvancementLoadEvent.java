@@ -6,7 +6,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
 
 /**
- * Fired when advancements are loaded from json.
+ * Fired when advancements are loaded from JSON.
  * This event provides an {@link IModifiableAdvancement} instance
  * containing the original advancement data, making it easier to modify
  * most properties of the advancement before it is built.
