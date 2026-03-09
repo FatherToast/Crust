@@ -86,18 +86,4 @@ public interface IModifiableDisplayInfo {
     
     /** Sets the "hidden" property for this display info. */
     void setHidden( boolean hidden );
-    
-    
-    /** @return The X-position of the advancement in the advancement tree. */
-    float getX();
-    
-    /** Sets the X-position for this display info. */
-    void setX( float x );
-    
-    
-    /** @return The Y-position of the advancement in the advancement tree. */
-    float getY();
-    
-    /** Sets the Y-position for this display info. */
-    void setY( float y );
 }

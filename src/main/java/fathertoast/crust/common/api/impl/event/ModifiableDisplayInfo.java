@@ -34,8 +34,8 @@ public class ModifiableDisplayInfo implements IModifiableDisplayInfo {
     
     
     /**
-     * @return A new ModifiableReward instance with all the
-     * reward data from the specified AdvancementRewards object copied over,
+     * @return A new ModifiableDisplayInfo instance with all the
+     * display info data from the specified DisplayInfo object copied over,
      * or null if we are copying from null.
      */
     @Nullable
@@ -45,10 +45,14 @@ public class ModifiableDisplayInfo implements IModifiableDisplayInfo {
     }
     
     /**
-     * @return A new AdvancementRewards instance with all the
-     * reward data from the specified ModifiableReward object copied over.
+     * @return A new DisplayInfo instance with all the
+     * display info data from the specified IModifiableDisplayInfo object copied over,
+     * or null if we are converting null.
      */
-    public static DisplayInfo convertToVanilla( IModifiableDisplayInfo modifiableDisplayInfo ) {
+    @Nullable
+    public static DisplayInfo convertToVanilla( @Nullable IModifiableDisplayInfo modifiableDisplayInfo ) {
+        if( modifiableDisplayInfo == null ) return null;
+        
         return new DisplayInfo(
                 modifiableDisplayInfo.getIconItem(),
                 modifiableDisplayInfo.getTitle(),
@@ -82,8 +86,8 @@ public class ModifiableDisplayInfo implements IModifiableDisplayInfo {
         this.title = Component.empty();
         this.description = Component.empty();
         this.icon = ItemStack.EMPTY;
-        this.background = null;
         this.frame = FrameType.TASK;
+        this.background = null;
         this.showToast = false;
         this.announceChat = false;
         this.hidden = false;
@@ -126,7 +130,7 @@ public class ModifiableDisplayInfo implements IModifiableDisplayInfo {
     @Override
     public void setIconItem( Item iconItem ) {
         Objects.requireNonNull( iconItem );
-        this.icon = new ItemStack( iconItem );
+        setIconItem( new ItemStack( iconItem ) );
     }
     
     @Override
@@ -181,23 +185,11 @@ public class ModifiableDisplayInfo implements IModifiableDisplayInfo {
         this.hidden = hidden;
     }
     
-    @Override
     public float getX() {
         return x;
     }
     
-    @Override
-    public void setX( float x ) {
-        this.x = x;
-    }
-    
-    @Override
     public float getY() {
         return y;
-    }
-    
-    @Override
-    public void setY( float y ) {
-        this.y = y;
     }
 }

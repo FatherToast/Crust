@@ -41,7 +41,7 @@ public class TestGameEventHandler {
         final ResourceLocation advancementId = event.getId();
         
         ///  Test for modifying criteria.
-        ///  Expected required criteria:
+        ///  Expected result:
         ///      - Instead of any seed, ALL seeds must be planted.
         ///      - "Cobbletoast" block must also be placed.
         if( advancementId.equals( ResourceLocation.withDefaultNamespace( "husbandry/plant_seed" ) ) ) {
@@ -74,7 +74,8 @@ public class TestGameEventHandler {
         ///      - Replace icon with barrier block.
         ///      - Becomes hidden.
         ///      - Frame type gets set to {@link FrameType.CHALLENGE}.
-        else if( advancementId.equals( ResourceLocation.withDefaultNamespace( "husbandry/tactical_fishing" ) ) ) {
+        ///      - X and Y pos offset by 2 each.
+        else if( advancementId.equals( ResourceLocation.withDefaultNamespace( "nether/brew_potion" ) ) ) {
             final IModifiableAdvancement advancement = event.getAdvancement();
             final IModifiableDisplayInfo displayInfo = advancement.getOrCreateDisplayInfo();
             
