@@ -3,6 +3,13 @@
     - Moved @OnClient annotation to API util package.
     - Redefined the intended use of @OnClient annotation.
     - Annotated AbstractConfigField#getWidgetProvider with @OnClient.
+    - Overhauled AdvancementLoadEvent:
+        - Now actually fires like intended on both client and dedicated server dist.
+        - New abstraction layer to help modify most advancement data.
+    - Added new config field types:
+        - BlockStateField (singular state)
+        - FuzzyKeyField
+        - ValueCodecField
 1.20.1-4.12.20
     API Changes:
     - Added getOrElse getter to FuzzyMapField.
