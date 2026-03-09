@@ -10,9 +10,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * A generic field implementation that allows use of a value codec to handle its value.
- * The automatic field info provided by value codecs is a little different format and
- * less descriptive than that of a typical field.
+ * A generic string field implementation that allows use of a value codec to handle its value.
+ * The automatic field info provided by value codecs is a little different format and less
+ * descriptive than that of a typical field.
  */
 @ApiStatus.Experimental
 public class ValueCodecField<T> extends GenericField<T> {

@@ -31,8 +31,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.item.Instrument;
 import net.minecraft.world.item.Instruments;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -80,12 +80,20 @@ public class TestConfigFile extends AbstractConfigFile {
         // Simple objects
         public final StringField stringField;
         public final EnumField<BiomeCategory> enumField;
+        //        public final BlockStateField blockStateField;
+        //        public final FuzzyKeyField<String> fuzzyKeyField;
+        //        public final ValueCodecField<MobEffectStats> valueCodecField;
         // Fuzzy collections
         public final EntitySetField entitySetField;
         public final EntityMapField<Double[]> entityMapField;
+        //        public final BlockStateSetField blockStateSetField;
+        //        public final BlockStateMapField<BiomeCategory> blockStateMapField;
+        public final BlockStateListField blockStateListField;
+        //        public final BlockStateValueListField<Double> blockStateValueListField;
+        //        public final BlockStateWeightedListField blockStateWeightedListField;
+        //        public final BlockStateWeightedValueListField<Double> blockStateWeightedValueListField;
         public final RegistrySetField<EntityType<?>> registrySetField;
         public final RegistryMapField<EntityType<?>, Integer> registryMapField;
-        public final RegistryListField<Item> registryListFieldFg;
         public final RegistryListField<Instrument> registryListFieldVn;
         public final RegistryValueListField<DamageType, String> registryValueListFieldDn;
         public final RegistryWeightedListField<ConfiguredFeature<?, ?>> registryWeightedListField;
@@ -151,11 +159,10 @@ public class TestConfigFile extends AbstractConfigFile {
             /// Note: To fully test {@link fathertoast.crust.api.config.common.value.collection.key.RegObjKey}, we
             ///     want to use each {@link fathertoast.crust.api.config.common.value.collection.key.IRegWrapper} type
             ///     (using registries that have tags) with each {@link KeyUsage}.
-            /// Forge reg:      {@link ForgeRegistries#ITEMS};          tags: {@link Tags.Items}
+            /// Forge reg:      {@link ForgeRegistries#BLOCKS};         tags: {@link Tags.Blocks}   (BlockState collections)
             /// Vanilla reg:    {@link BuiltInRegistries#INSTRUMENT};   tags: {@link InstrumentTags}
             /// Dynamic reg:    {@link Registries#DAMAGE_TYPE};         tags: {@link DamageTypeTags}
             //TODO implement the above in various registry collection fields
-            //  Forge reg tests should be covered by block state and entity collections
             ResourceLocation MISSING_FEATURE = ResourceLocation.fromNamespaceAndPath( "missing", "resource_.-/location" );
             
             entitySetField = SPEC.define( new InjectionWrapperField<>(
@@ -183,6 +190,21 @@ public class TestConfigFile extends AbstractConfigFile {
                             .putWildcard( "minecraft", "ender", new Double[] { 0.1, 0.2, 0.3 } )
                             .buildWithDefault( new Double[3] ) ), General::testCallback ) ).field();
             
+            blockStateListField = SPEC.define( new InjectionWrapperField<>(//TODO
+                    new BlockStateListField( "block_state_list_field", new BlockStateList.Builder<>()
+                            .add( Blocks.ANVIL ).add( MISSING_FEATURE ).add( "oak_log[axis=y]" )
+                            .addTag( Tags.Blocks.CHESTS ).addTag( "forge:sandstone" ).addTag( MISSING_FEATURE )
+                            .build() ), General::testCallback ) ).field();
+            SPEC.callback( () -> {
+                StringBuilder str = new StringBuilder();
+                for( BlockState state : blockStateListField.entries() ) {
+                    if( state != null ) {
+                        str.append( ", " ).append( state );
+                    }
+                }
+                TestCrust.LOG.info( str.length() > 2 ? "    " + str.substring( 2 ) : str.toString() );
+            } );
+            
             registrySetField = SPEC.define( new InjectionWrapperField<>(
                     new RegistrySetField<>( "registry_set_field", new RegistrySet
                             .Builder<>( ForgeRegistries.ENTITY_TYPES )
@@ -205,21 +227,6 @@ public class TestConfigFile extends AbstractConfigFile {
                             .buildWithDefault( -1 ) ), General::testCallback ) ).field();
             
             // We can test iterator usage (lists) via callback log outputs
-            registryListFieldFg = SPEC.define( new InjectionWrapperField<>(
-                    new RegistryListField<>( "registry_list_field_f", new RegistryList
-                            .Builder<>( ForgeRegistries.ITEMS )
-                            .add( Items.ANVIL ).add( MISSING_FEATURE ).add( "apple" )
-                            .addTag( Tags.Items.CROPS ).addTag( "forge:sandstone" ).addTag( MISSING_FEATURE )
-                            .build() ), General::testCallback ) ).field();
-            SPEC.callback( () -> {
-                StringBuilder str = new StringBuilder();
-                for( Item item : registryListFieldFg.entries() ) {
-                    if( item != null ) {
-                        str.append( ", " ).append( item.getDescriptionId() );
-                    }
-                }
-                TestCrust.LOG.info( str.length() > 2 ? "    " + str.substring( 2 ) : str.toString() );
-            } );
             registryListFieldVn = SPEC.define( new InjectionWrapperField<>(
                     new RegistryListField<>( "registry_list_field_v", new RegistryList
                             .Builder<>( BuiltInRegistries.INSTRUMENT )

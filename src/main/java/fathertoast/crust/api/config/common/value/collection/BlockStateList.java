@@ -60,17 +60,32 @@ public class BlockStateList extends FuzzyList<BlockState> {
         /** Adds a key based on the resource location. Matches only the provided block with the appropriate block state properties. */
         public B add( String resLocAndProperties ) { return add( BlockStateKey.of( resLocAndProperties, false ) ); }
         
+        /** Adds a key based on the resource location. Matches only the provided block with any block state properties. */
+        public B add( ResourceLocation resLoc ) { return add( resLoc, BlockStatePropertyMap.EMPTY ); }
+        
         /** Adds a key based on the resource location. Matches only the provided block with the appropriate block state properties. */
         public B add( ResourceLocation resLoc, BlockStatePropertyMap properties ) { return add( BlockStateKey.of( resLoc, properties, false ) ); }
+        
+        /** Adds a key based on the registry object. Matches only the provided block with any block state properties. */
+        public B add( RegistryObject<? extends Block> regObj ) { return add( regObj, BlockStatePropertyMap.EMPTY ); }
         
         /** Adds a key based on the registry object. Matches only the provided block with the appropriate block state properties. */
         public B add( RegistryObject<? extends Block> regObj, BlockStatePropertyMap properties ) { return add( BlockStateKey.of( regObj, properties, false ) ); }
         
+        /** Adds a key based on the resource key. Matches only the provided block with any block state properties. */
+        public B add( ResourceKey<? extends Block> resKey ) { return add( resKey, BlockStatePropertyMap.EMPTY ); }
+        
         /** Adds a key based on the resource key. Matches only the provided block with the appropriate block state properties. */
         public B add( ResourceKey<? extends Block> resKey, BlockStatePropertyMap properties ) { return add( BlockStateKey.of( resKey, properties, false ) ); }
         
+        /** Adds a key based on the block. Only suitable for vanilla stuff. Matches only the provided block with any block state properties. */
+        public B add( Block block ) { return add( block, BlockStatePropertyMap.EMPTY ); }
+        
         /** Adds a key based on the block. Only suitable for vanilla stuff. Matches only the provided block with the appropriate block state properties. */
         public B add( Block block, BlockStatePropertyMap properties ) { return add( BlockStateKey.of( block, properties, false ) ); }
+        
+        /** Adds a key based on the block state. Only suitable for vanilla stuff. Matches only the provided block state. */
+        public B add( BlockState blockState ) { return add( blockState.getBlock(), BlockStatePropertyMap.of( blockState ) ); }
         
         
         // ---- Tag Keys ---- //
@@ -78,8 +93,14 @@ public class BlockStateList extends FuzzyList<BlockState> {
         /** Adds a tag key based on the resource location. Matches every block in the tag with the appropriate block state properties. */
         public B addTag( String resLocAndProperties ) { return add( BlockStateKey.ofTag( resLocAndProperties, false ) ); }
         
+        /** Adds a tag key based on the resource location. Matches every block in the tag with any block state properties. */
+        public B addTag( ResourceLocation resLoc ) { return addTag( resLoc, BlockStatePropertyMap.EMPTY ); }
+        
         /** Adds a tag key based on the resource location. Matches every block in the tag with the appropriate block state properties. */
         public B addTag( ResourceLocation resLoc, BlockStatePropertyMap properties ) { return add( BlockStateKey.ofTag( resLoc, properties, false ) ); }
+        
+        /** Adds a tag key based on the tag. Matches every block in the tag with any block state properties. */
+        public B addTag( TagKey<Block> tag ) { return addTag( tag, BlockStatePropertyMap.EMPTY ); }
         
         /** Adds a tag key based on the tag. Matches every block in the tag with the appropriate block state properties. */
         public B addTag( TagKey<Block> tag, BlockStatePropertyMap properties ) { return add( BlockStateKey.ofTag( tag, properties, false ) ); }
