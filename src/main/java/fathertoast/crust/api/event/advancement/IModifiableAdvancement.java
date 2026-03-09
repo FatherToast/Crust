@@ -19,7 +19,7 @@ public interface IModifiableAdvancement {
     
     /**
      * @return True if the advancement should send a telemetry data event.
-     * Usually indicates that the advancement is originally a recipe-unlock advancement.
+     * Normally this is only the case for non-recipe advancements.
      */
     boolean sendsTelemetryEvent();
     
