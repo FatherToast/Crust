@@ -1,6 +1,5 @@
-package fathertoast.crust.api.event;
+package fathertoast.crust.api.event.advancement;
 
-import fathertoast.crust.api.advancement.IModifiableAdvancement;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;

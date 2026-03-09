@@ -1,6 +1,6 @@
 package fathertoast.crust.common.api.impl.event;
 
-import fathertoast.crust.api.advancement.IModifiableDisplayInfo;
+import fathertoast.crust.api.event.advancement.IModifiableDisplayInfo;
 import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.advancements.FrameType;
 import net.minecraft.network.chat.Component;

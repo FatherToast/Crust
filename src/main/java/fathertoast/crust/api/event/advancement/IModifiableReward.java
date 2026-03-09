@@ -1,4 +1,4 @@
-package fathertoast.crust.api.advancement;
+package fathertoast.crust.api.event.advancement;
 
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
