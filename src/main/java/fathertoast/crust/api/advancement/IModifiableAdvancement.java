@@ -24,14 +24,12 @@ public interface IModifiableAdvancement {
      */
     boolean sendsTelemetryEvent();
     
-    
     /** @return The ID of the underlying advancement's parent, or null if no parent exists. */
     @Nullable
     ResourceLocation getParentId();
     
     /** Sets the parent for the advancement being built. Setting this to null is safe. */
     void setParentId( @Nullable ResourceLocation parentId );
-    
     
     /**
      * @return A modifiable view of the display info for the advancement being built, if it exists.
@@ -42,10 +40,8 @@ public interface IModifiableAdvancement {
     /** Sets this advancement's display info to null. */
     void noDisplayInfo();
     
-    
     /** @return A modifiable view of the reward properties for the advancement being built. */
     IModifiableReward getReward();
-    
     
     /**
      * Adds the specified criterion to the underlying advancement's map of criteria.
@@ -68,7 +64,6 @@ public interface IModifiableAdvancement {
      * @see IModifiableAdvancement#removeCriterion(String)
      */
     Map<String, Criterion> getCriteria();
-    
     
     /**
      * @return The requirements strategy type to be used when building
