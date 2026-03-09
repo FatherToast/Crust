@@ -1,6 +1,6 @@
-@MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package fathertoast.crust.client.button;
+@MethodsReturnNonnullByDefault
+package fathertoast.crust.api.event.advancement;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

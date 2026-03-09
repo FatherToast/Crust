@@ -8,7 +8,7 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 
 /**
- * Interface for accessing Apocalypse Rebooted difficulty data.
+ * Interface for accessing Apocalypse difficulty data.
  */
 public interface IDifficultyAccessor {
     

@@ -1,3 +1,23 @@
+1.20.1-4.13.21
+    API Changes:
+    - Moved @OnClient annotation to API util package.
+    - Redefined the intended use of @OnClient annotation.
+    - Annotated AbstractConfigField#getWidgetProvider with @OnClient.
+1.20.1-4.12.20
+    API Changes:
+    - Added getOrElse getter to FuzzyMapField.
+1.20.1-4.11.20
+    - DeferredAction.queue() can now be called safely from other threads than the main server thread.
+    API Changes:
+    - Added some convenience methods to NBTHelper for writing/reading Forge registry entries.
+1.20.1-4.10.19
+    - Fixed ForgeHooksMixin breaking outside development environment and crashing.
+1.20.1-4.10.18
+    - Fixed an issue with entities using config-driven attribute maps not retaining them if default attributes were changed during EntityAttributeModificationEvent.
+    - List editor screen is now compatible with all list fields.
+    API Changes:
+    - Made ConfigDrivenAttributeModifierMap#FIELD publicly visible via getter "getField()".
+    - Added a bunch of experimental config features (not quite ready yet).
 1.20.1-4.9.17
     - Fixed startup crash that can be caused by mod-added game rules, but like for real this time (maybe).
 1.20.1-4.9.16

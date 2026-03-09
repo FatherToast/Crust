@@ -1,9 +1,7 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-@OnClient
-package fathertoast.crust.test.client;
 
-import fathertoast.crust.common.util.annotations.OnClient;
+package fathertoast.crust.test.client;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

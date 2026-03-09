@@ -25,6 +25,11 @@ public class ConfigDrivenAttributeModifierMap extends AttributeSupplier {
         field.linkedAttributeMap = this;
     }
     
+    /** @return The field associated with this modifier map. */
+    public AttributeListField getField() {
+        return FIELD;
+    }
+    
     /** Called when the config field is loaded to force reload. */
     public void invalidate() { underlyingMap = null; }
     

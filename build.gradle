@@ -95,13 +95,24 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:apocalypse-229199:${apocalypse_version}")
     compileOnly fg.deobf("curse.maven:apocalypse_api-229199:${apocalypse_api_version}")
 
-    runtimeOnly fg.deobf("curse.maven:deadly-world-60098:${deadly_world_version}")
+    // Other toasty mods
+    runtimeOnly fg.deobf("curse.maven:deadlyworld-60098:${dw_version}")
+    //runtimeOnly fg.deobf("curse.maven:specialmobs-59968:${sm_version}")
+    runtimeOnly fg.deobf("curse.maven:natural-absorption-224296:${na_version}")
+    runtimeOnly fg.deobf("curse.maven:special-ai-224301:${sai_version}")
 
-    runtimeOnly fg.deobf("curse.maven:natural-absorption-224296:${natural_absorption_version}")
+    // Tinker's Construct
+    runtimeOnly fg.deobf("curse.maven:tc-74072:${tc_version}")
+    runtimeOnly fg.deobf("curse.maven:mantle-74924:${mantle_version}")
 
-    runtimeOnly fg.deobf("curse.maven:special-ai-224301:${special_ai_version}")
+    // Jade
+    runtimeOnly fg.deobf("curse.maven:jade-324717:${jade_version}")
 
-    runtimeOnly fg.deobf("curse.maven:special-mobs-59968:${special_mobs_version}")
+    // MixinExtras
+    // compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
+    // implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixinextras_version}")) {
+    //     jarJar.ranged(it, "[${mixinextras_version},)")
+    // }
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

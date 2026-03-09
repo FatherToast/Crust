@@ -63,6 +63,12 @@ public class FuzzyMapField<T, V, F extends FuzzyMap<T, V>> extends AbstractFuzzy
     @Nullable
     public V get( T target ) { return get().get( target ); }
     
+    /** @return The value for the given target, or the provided default value if the target is not contained in this map. */
+    public V getOrElse( T target, V defaultValue ) {
+        V val = get( target );
+        return val == null ? defaultValue : val;
+    }
+    
     /**
      * @return Gets the value for the given target and returns the result of a random roll
      * against it based on this map's value type:<p>
