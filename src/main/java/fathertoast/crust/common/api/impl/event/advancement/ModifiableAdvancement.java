@@ -1,9 +1,9 @@
-package fathertoast.crust.common.api.impl.event;
+package fathertoast.crust.common.api.impl.event.advancement;
 
 import com.google.common.collect.ImmutableMap;
-import fathertoast.crust.api.advancement.IModifiableAdvancement;
-import fathertoast.crust.api.advancement.IModifiableDisplayInfo;
-import fathertoast.crust.api.advancement.IModifiableReward;
+import fathertoast.crust.api.event.advancement.IModifiableAdvancement;
+import fathertoast.crust.api.event.advancement.IModifiableDisplayInfo;
+import fathertoast.crust.api.event.advancement.IModifiableReward;
 import net.minecraft.advancements.*;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;

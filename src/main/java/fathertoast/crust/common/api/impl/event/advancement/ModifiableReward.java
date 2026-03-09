@@ -1,6 +1,6 @@
-package fathertoast.crust.common.api.impl.event;
+package fathertoast.crust.common.api.impl.event.advancement;
 
-import fathertoast.crust.api.advancement.IModifiableReward;
+import fathertoast.crust.api.event.advancement.IModifiableReward;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.commands.CommandFunction;
 import net.minecraft.resources.ResourceLocation;

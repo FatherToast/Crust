@@ -1,10 +1,10 @@
 package fathertoast.crust.test.common;
 
 import fathertoast.crust.api.ICrustApi;
-import fathertoast.crust.api.advancement.IModifiableAdvancement;
-import fathertoast.crust.api.advancement.IModifiableDisplayInfo;
-import fathertoast.crust.api.advancement.IModifiableReward;
-import fathertoast.crust.api.event.AdvancementLoadEvent;
+import fathertoast.crust.api.event.advancement.AdvancementLoadEvent;
+import fathertoast.crust.api.event.advancement.IModifiableAdvancement;
+import fathertoast.crust.api.event.advancement.IModifiableDisplayInfo;
+import fathertoast.crust.api.event.advancement.IModifiableReward;
 import net.minecraft.advancements.FrameType;
 import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger;

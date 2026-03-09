@@ -2,8 +2,8 @@ package fathertoast.crust.common.mixin_work;
 
 import fathertoast.crust.api.config.common.field.AttributeListField;
 import fathertoast.crust.api.config.common.value.ConfigDrivenAttributeModifierMap;
-import fathertoast.crust.api.event.AdvancementLoadEvent;
-import fathertoast.crust.common.api.impl.event.ModifiableAdvancement;
+import fathertoast.crust.api.event.advancement.AdvancementLoadEvent;
+import fathertoast.crust.common.api.impl.event.advancement.ModifiableAdvancement;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementList;
 import net.minecraft.resources.ResourceLocation;
