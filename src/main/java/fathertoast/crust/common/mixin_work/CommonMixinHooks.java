@@ -21,17 +21,10 @@ public class CommonMixinHooks {
         final HashMap<ResourceLocation, Advancement.Builder> newMap = new HashMap<>();
         
         map.forEach( ( id, builder ) -> {
-            // Create a modifiable advancement from the loaded JSON data
             final ModifiableAdvancement modifiable = ModifiableAdvancement.copyFromBuilder( builder );
-            
-            // Create and post event for modification
             final AdvancementLoadEvent event = new AdvancementLoadEvent( id, modifiable );
             MinecraftForge.EVENT_BUS.post( event );
-            
-            // Convert resulting event data into new builder
             final Advancement.Builder newBuilder = ModifiableAdvancement.convertToVanilla( modifiable );
-            
-            // Insert new advancement data we gathered from the event
             newMap.put( id, newBuilder );
         } );
         list.add( newMap );
