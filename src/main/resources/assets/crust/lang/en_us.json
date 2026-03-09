@@ -1,4 +1,6 @@
 {
+  "block.crust.feature_placer": "Feature Placer",
+
   "effect.crust.vulnerability": "Vulnerability",
   "effect.crust.weight": "Weight",
 

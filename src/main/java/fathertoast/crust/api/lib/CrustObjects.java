@@ -11,6 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryObject;
@@ -34,6 +36,14 @@ public final class CrustObjects {
         
         RegistryObject<PortalBuilder> NETHER = portal( "nether_portal" );
         RegistryObject<PortalBuilder> END = portal( "end_portal" );
+    }
+    
+    public interface Blocks {
+        RegistryObject<Block> FEATURE_PLACER = block( "feature_placer" );
+    }
+    
+    public interface BlockEntities {
+        RegistryObject<BlockEntityType<?>> FEATURE_PLACER = blockEntity( "feature_placer" );
     }
     
     /** The mob effects provided by Crust. */
@@ -74,6 +84,14 @@ public final class CrustObjects {
     
     /** @return An object holder for a mob effect. */
     private static RegistryObject<MobEffect> effect( String name ) { return ro( name, ForgeRegistries.MOB_EFFECTS ); }
+    
+    /** @return An object holder for a block. */
+    @SuppressWarnings( "SameParameterValue" )
+    private static RegistryObject<Block> block( String name ) { return ro( name, ForgeRegistries.BLOCKS ); }
+    
+    /** @return An object holder for a block entity type. */
+    @SuppressWarnings( "SameParameterValue" )
+    private static RegistryObject<BlockEntityType<?>> blockEntity( String name ) { return ro( name, ForgeRegistries.BLOCK_ENTITY_TYPES ); }
     
     /** @return An object holder for an entity type. */
     @SuppressWarnings( "SameParameterValue" )

@@ -84,6 +84,7 @@ public class TestCrustObjects {
         Obj.TEST_BLOCK.getId(); // Load class
     }
     
+    @SuppressWarnings( "SameParameterValue" )
     private static <T> DeferredRegister<T> reg( ResourceKey<? extends Registry<T>> reg ) {
         return DeferredRegister.create( reg, ICrustApi.MOD_ID );
     }
@@ -92,15 +93,18 @@ public class TestCrustObjects {
         return DeferredRegister.create( reg, ICrustApi.MOD_ID );
     }
     
+    @SuppressWarnings( "SameParameterValue" )
     private static CreativeTabRegObj registerTab( String name, Supplier<CreativeModeTab> supplier ) {
         return new CreativeTabRegObj( Reg.CREATIVE_TABS.register( name, supplier ),
                 ResourceKey.create( Registries.CREATIVE_MODE_TAB, Crust.rl( name ) ) );
     }
     
+    @SuppressWarnings( "SameParameterValue" )
     private static <T extends Entity> RegistryObject<EntityType<T>> registerEntity( String name, EntityType.Builder<T> builder ) {
         return Reg.ENTITIES.register( name, () -> builder.build( name ) );
     }
     
+    @SuppressWarnings( "SameParameterValue" )
     private static <T extends Mob> RegistryObject<ForgeSpawnEggItem> registerSpawnEgg(
             RegistryObject<EntityType<T>> entityType, int eggBaseColor, int eggSpotsColor ) {
         final String name = Objects.requireNonNull( entityType.getId() ).getPath() + "_spawn_egg";
