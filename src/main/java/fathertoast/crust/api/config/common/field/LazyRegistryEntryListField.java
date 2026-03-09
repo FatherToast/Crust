@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
  * See also: {@link net.minecraftforge.registries.ForgeRegistries}
  */
 @SuppressWarnings( "unused" )
+@Deprecated( forRemoval = true )
 public class LazyRegistryEntryListField<T> extends RegistryEntryListField<T> {
     
     /** Creates a new field. */

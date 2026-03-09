@@ -7,42 +7,41 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
+@Deprecated( forRemoval = true )
 public class RegistryValueTagEntry<T> {
-
+    
     /** The field containing this entry. We save a reference to help improve error/warning reports. */
     private final AbstractConfigField FIELD;
-
+    
     /** The entity type tag this entry holds. */
     public final TagKey<T> TAG;
-
+    
     /** The values given to this entry. Null for comparison objects. */
     public final double[] VALUES;
-
-
-
+    
+    
     /** Creates an entry with the specified values. Used for creating default configs. */
-    public RegistryValueTagEntry( ResourceKey<Registry<T>> registryKey, @Nonnull ResourceLocation tagLocation, double... values ) {
+    public RegistryValueTagEntry( ResourceKey<Registry<T>> registryKey, ResourceLocation tagLocation, double... values ) {
         this( null, new TagKey<>( registryKey, tagLocation ), values );
     }
-
+    
     /** Creates an entry with the specified values. Used for creating default configs. */
-    public RegistryValueTagEntry( @Nonnull TagKey<T> tagKey, double... values ) {
+    public RegistryValueTagEntry( TagKey<T> tagKey, double... values ) {
         this( null, tagKey, values );
     }
-
+    
     /** Creates an entry with the specified values. */
-    public RegistryValueTagEntry( @Nullable AbstractConfigField field, @Nonnull TagKey<T> tagKey, double... values ) {
+    public RegistryValueTagEntry( @Nullable AbstractConfigField field, TagKey<T> tagKey, double... values ) {
         Objects.requireNonNull( tagKey );
-
+        
         FIELD = field;
         TAG = tagKey;
         VALUES = values;
     }
-
+    
     /**
      * @return The string representation of this registry value tag entry, as it would appear in a config file.
      * <p>
@@ -52,7 +51,7 @@ public class RegistryValueTagEntry<T> {
     public String toString() {
         // Start with the tag
         StringBuilder str = new StringBuilder( ConfigUtil.toString( TAG ) );
-
+        
         // Append values array
         if( VALUES != null ) {
             for( double value : VALUES ) {

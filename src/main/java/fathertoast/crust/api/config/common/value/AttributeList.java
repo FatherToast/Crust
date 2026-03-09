@@ -13,6 +13,8 @@ import java.util.List;
  * See also {@link ConfigDrivenAttributeModifierMap}
  */
 @SuppressWarnings( "unused" )
+
+@Deprecated( forRemoval = true )
 public class AttributeList implements IStringArray {
     
     /** The attribute-operation-value entries in this list. */

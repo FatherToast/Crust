@@ -19,6 +19,8 @@ import java.util.function.Predicate;
  * See also: {@link net.minecraftforge.registries.ForgeRegistries}
  */
 @SuppressWarnings( "unused" )
+
+@Deprecated( forRemoval = true )
 public class LazyRegistryEntryList<T> extends RegistryEntryList<T> {
     
     /** The field containing this list. We save a reference to help improve error/warning reports. */

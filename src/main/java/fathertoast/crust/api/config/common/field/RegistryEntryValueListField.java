@@ -17,6 +17,7 @@ import java.util.function.Predicate;
 /**
  * Represents a config field with a registry entry-value list value.
  */
+@Deprecated( forRemoval = true )
 public class RegistryEntryValueListField<T> extends GenericField<RegistryEntryValueList<T>> implements IStringListScreenEditable {
     
     /** Provides a detailed description of how to use registry entry value lists. Recommended to put at the top of any file using them. */

@@ -15,6 +15,7 @@ import java.util.function.Predicate;
  * Represents a config field with a block list value.
  */
 @SuppressWarnings( "unused" )
+@Deprecated( forRemoval = true )
 public class BlockListField extends GenericField<BlockList> implements IStringListScreenEditable {
     
     /** Provides a detailed description of how to use block lists. Recommended putting at the top of any file using block lists. */

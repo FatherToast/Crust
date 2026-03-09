@@ -15,6 +15,8 @@ import java.util.Objects;
  * One entity-value entry in an entity list. Uses a 'lazy' implementation so the entity type registry is
  * not polled until this entry is actually used.
  */
+
+@Deprecated( forRemoval = true )
 @SuppressWarnings( "unused" )
 public class EntityEntry {
     

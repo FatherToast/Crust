@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
+@Deprecated( forRemoval = true )
 public class WeightedPotionList extends RegistryEntryValueList<MobEffect> {
     
     /** The entity-value entries in this list. */

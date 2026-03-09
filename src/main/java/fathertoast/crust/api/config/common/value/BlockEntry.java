@@ -17,6 +17,8 @@ import java.util.*;
  * One block state entry in a block list.
  */
 @SuppressWarnings( "unused" )
+
+@Deprecated( forRemoval = true )
 public class BlockEntry implements Cloneable {
     
     /** The block to match. */

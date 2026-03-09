@@ -17,6 +17,8 @@ import java.util.*;
  * Creates a config field for each item so weights can be defined by the user.
  */
 @SuppressWarnings( "unused" )
+
+@Deprecated( forRemoval = true )
 public class WeightedList<T extends WeightedList.Value> {
     
     /** The weighted entries in this list. */

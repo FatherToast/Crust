@@ -14,6 +14,8 @@ import java.util.List;
  * A list of entity-value entries used to link one or more numbers to specific entity types.
  */
 @SuppressWarnings( "unused" )
+
+@Deprecated( forRemoval = true )
 public class EntityList implements IStringArray {
     
     /** The entity-value entries in this list. */

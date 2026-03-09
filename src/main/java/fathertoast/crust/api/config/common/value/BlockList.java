@@ -17,6 +17,8 @@ import java.util.*;
  * A list of block entries used to match specific block states.
  */
 @SuppressWarnings( "unused" )
+
+@Deprecated( forRemoval = true )
 public class BlockList implements IStringArray {
     
     /** The block-value entries in this list. */

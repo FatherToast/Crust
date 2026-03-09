@@ -21,6 +21,8 @@ import java.util.function.Predicate;
  * Represents a config field with an environment list value.
  */
 @SuppressWarnings( "unused" )
+
+@Deprecated( forRemoval = true )
 public class EnvironmentListField extends GenericField<EnvironmentList> implements IStringListScreenEditable {
     
     /**

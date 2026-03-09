@@ -7,6 +7,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 import javax.annotation.Nullable;
 
+@Deprecated( forRemoval = true )
 public class RegistryValueEntry<T> {
     
     /** The field containing this entry. We save a reference to help improve error/warning reports. */

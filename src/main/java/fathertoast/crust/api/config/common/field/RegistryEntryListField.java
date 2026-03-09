@@ -19,6 +19,7 @@ import java.util.function.Predicate;
  * See also: {@link net.minecraftforge.registries.ForgeRegistries}
  */
 @SuppressWarnings( "unused" )
+@Deprecated( forRemoval = true )
 public class RegistryEntryListField<T> extends GenericField<RegistryEntryList<T>> implements IStringListScreenEditable {
     
     /** Provides a detailed description of how to use registry entry lists. Recommended putting at the top of any file using registry entry lists. */

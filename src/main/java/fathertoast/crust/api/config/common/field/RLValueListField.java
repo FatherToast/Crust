@@ -18,6 +18,7 @@ import java.util.Objects;
  * Actual pairs of ResourceLocations and values are stored in the field itself,
  * so calling getters from super only returns the raw list of Strings.
  */
+@Deprecated( forRemoval = true )
 public class RLValueListField extends StringListField {
     
     /** The resource location entries in this list. */

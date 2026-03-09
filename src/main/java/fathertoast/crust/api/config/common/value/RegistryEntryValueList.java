@@ -18,6 +18,8 @@ import java.util.function.Supplier;
  * For entity types it is recommended to use {@link EntityList},
  * as it offers more conditions specific to entities.
  */
+
+@Deprecated( forRemoval = true )
 public class RegistryEntryValueList<T> implements IStringArray {
     
     /** The registry object-value entries in this list. */

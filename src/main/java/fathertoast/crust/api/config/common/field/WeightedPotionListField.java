@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated( forRemoval = true )
 public class WeightedPotionListField extends RegistryEntryValueListField<MobEffect> {
     
     public static WeightedPotionList fromNBT( ListTag tag, int reqValues, double minVal, double maxVal ) {

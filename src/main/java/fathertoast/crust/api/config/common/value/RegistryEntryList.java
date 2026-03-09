@@ -17,6 +17,8 @@ import java.util.function.Predicate;
  * See also: {@link net.minecraftforge.registries.ForgeRegistries}
  */
 @SuppressWarnings( "unused" )
+
+@Deprecated( forRemoval = true )
 public class RegistryEntryList<T> implements IStringArray {
     
     /** The registry this list acts as a subset of. */

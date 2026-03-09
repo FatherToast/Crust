@@ -19,6 +19,8 @@ import javax.annotation.Nullable;
  * See also {@link ConfigDrivenAttributeModifierMap}
  */
 @SuppressWarnings( "unused" )
+
+@Deprecated( forRemoval = true )
 public class AttributeEntry {
     
     /** The field containing this entry. We save a reference to help improve error/warning reports. */

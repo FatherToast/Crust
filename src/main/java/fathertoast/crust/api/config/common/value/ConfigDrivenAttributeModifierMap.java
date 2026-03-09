@@ -11,6 +11,8 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 @SuppressWarnings( "unused" )
+
+@Deprecated( forRemoval = true )
 public class ConfigDrivenAttributeModifierMap extends AttributeSupplier {
     
     private final AttributeListField FIELD;

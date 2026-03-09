@@ -20,6 +20,7 @@ import java.util.function.Predicate;
  * Represents a config field with an entity list value.
  */
 @SuppressWarnings( "unused" )
+@Deprecated( forRemoval = true )
 public class EntityListField extends GenericField<EntityList> implements IStringListScreenEditable {
     
     /** Provides a detailed description of how to use entity lists. Recommended to put at the top of any file using entity lists. */

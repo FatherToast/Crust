@@ -13,6 +13,8 @@ import java.util.List;
  * A list of condition-value entries used to link one number to specific environments.
  */
 @SuppressWarnings( "unused" )
+
+@Deprecated( forRemoval = true )
 public class EnvironmentList implements IStringArray {
     
     /** The condition-value entries in this list. */
