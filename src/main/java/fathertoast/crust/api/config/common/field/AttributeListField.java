@@ -168,9 +168,34 @@ public class AttributeListField extends GenericField<AttributeList> implements I
     /** @return This field's line validator, or null if any string is allowed. */
     @Override // IStringListScreenEditable
     public Predicate<String> getLineValidator() {
-        return null;//TODO
+        return ( line ) -> {
+            // Parse the line into space-divided arguments.
+            final String[] args = line.split( " " );
+            // Ensure we have the expected amount of arguments.
+            if( args.length != 3 ) {
+                return false;
+            }
+            // Check if first argument is a valid ResourceLocation.
+            if( ResourceLocation.tryParse( args[0].trim() ) == null ) {
+                return false;
+            }
+            // Make sure the second argument is a valid operator.
+            final String operator = args[1];
+            if( !operator.equals( "*" ) && !operator.equals( "+" ) && !operator.equals( "-" ) ) {
+                return false;
+            }
+            // Try to parse the value
+            else {
+                try {
+                    Double.parseDouble( args[2] );
+                }
+                catch( NumberFormatException ex ) {
+                    return false;
+                }
+            }
+            return true;
+        };
     }
-    
     
     // Convenience methods
     
