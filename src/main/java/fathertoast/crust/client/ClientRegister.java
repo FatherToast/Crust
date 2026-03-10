@@ -14,12 +14,14 @@ import fathertoast.crust.api.util.shape.SphereShape;
 import fathertoast.crust.client.config.CfgEditorCrustConfig;
 import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
 import fathertoast.crust.client.config.RenderSettingsCrustConfig;
+import fathertoast.crust.common.core.registry.CrustItems;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -81,6 +83,11 @@ public final class ClientRegister {
         DebugShapeRenderManager.register( CircleShape::new, new CircleShapeRenderer() );
         DebugShapeRenderManager.register( SphereShape::new, new SphereShapeRenderer() );
         DebugShapeRenderManager.register( CylinderShape::new, new CylinderShapeRenderer() );
+    }
+    
+    @SubscribeEvent
+    public static void buildCreativeContents( BuildCreativeModeTabContentsEvent event ) {
+        CrustItems.buildCreativeContents( event );
     }
     
     // Static listener, no instantiation

@@ -2,8 +2,10 @@ package fathertoast.crust.common.core.registry;
 
 import fathertoast.crust.api.ICrustApi;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -31,6 +33,19 @@ public class CrustItems {
     protected static void registerBlockItem( RegistryObject<Block> regObj ) {
         REGISTRY.register( Objects.requireNonNull( regObj.getId() ).getPath(), () -> new BlockItem( regObj.get(), new Item.Properties() ) );
     }
+    
+    /**
+     * Called from {@link fathertoast.crust.client.ClientRegister#buildCreativeContents(BuildCreativeModeTabContentsEvent)}
+     * when it is time to populate creative tabs on the client.
+     */
+    public static void buildCreativeContents( BuildCreativeModeTabContentsEvent event ) {
+        if( event.getTabKey() == CreativeModeTabs.SEARCH ) {
+            for( RegistryObject<Item> item : REGISTRY.getEntries() ) {
+                event.accept( item.get() );
+            }
+        }
+    }
+    
     
     // Utility class
     private CrustItems() { }
