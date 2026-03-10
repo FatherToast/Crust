@@ -17,6 +17,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -43,7 +44,7 @@ public final class CrustObjects {
     }
     
     public interface BlockEntities {
-        RegistryObject<BlockEntityType<?>> FEATURE_PLACER = blockEntity( "feature_placer" );
+        RegistryObject<BlockEntityType<?>> FEATURE_PLACER = blockEntity( Blocks.FEATURE_PLACER );
     }
     
     /** The mob effects provided by Crust. */
@@ -92,6 +93,15 @@ public final class CrustObjects {
     /** @return An object holder for a block entity type. */
     @SuppressWarnings( "SameParameterValue" )
     private static RegistryObject<BlockEntityType<?>> blockEntity( String name ) { return ro( name, ForgeRegistries.BLOCK_ENTITY_TYPES ); }
+    
+    /**
+     * @return An object holder for a block entity type,
+     * using the same ID as the given block registry object.
+     */
+    @SuppressWarnings( "SameParameterValue" )
+    private static RegistryObject<BlockEntityType<?>> blockEntity( RegistryObject<Block> regObj ) {
+        return blockEntity( Objects.requireNonNull( regObj.getId() ).getPath() );
+    }
     
     /** @return An object holder for an entity type. */
     @SuppressWarnings( "SameParameterValue" )
