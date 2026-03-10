@@ -2,11 +2,11 @@ package fathertoast.crust.client;
 
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
-import fathertoast.crust.client.button.ButtonInfo;
-import fathertoast.crust.client.button.ExtraInventoryButton;
-import fathertoast.crust.client.button.ExtraMenuButton;
 import fathertoast.crust.client.config.CfgEditorCrustConfig;
 import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
+import fathertoast.crust.client.screen.widget.button.ButtonInfo;
+import fathertoast.crust.client.screen.widget.button.ExtraInventoryButton;
+import fathertoast.crust.client.screen.widget.button.ExtraMenuButton;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.PauseScreen;

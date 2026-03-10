@@ -1,6 +1,6 @@
-@MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package fathertoast.crust.client.button;
+@MethodsReturnNonnullByDefault
+package fathertoast.crust.client.screen;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

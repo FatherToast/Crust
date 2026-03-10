@@ -1,4 +1,4 @@
-package fathertoast.crust.client.button;
+package fathertoast.crust.client.screen.widget.button;
 
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;

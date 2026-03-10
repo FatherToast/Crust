@@ -1,4 +1,4 @@
-package fathertoast.crust.client.button;
+package fathertoast.crust.client.screen.widget.button;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import fathertoast.crust.api.ICrustApi;
