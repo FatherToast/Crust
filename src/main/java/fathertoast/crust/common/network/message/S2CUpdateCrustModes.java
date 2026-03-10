@@ -8,6 +8,7 @@ import net.minecraftforge.network.NetworkEvent;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
+@SuppressWarnings( "ClassCanBeRecord" )
 public class S2CUpdateCrustModes {
     
     public final CompoundTag CRUST_MODES_TAG;
