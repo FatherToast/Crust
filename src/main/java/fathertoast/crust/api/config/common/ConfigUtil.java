@@ -21,7 +21,7 @@ import java.util.Locale;
  * A static helper class that contains some helper utilities for making pretty configs
  * and provide better error reporting.
  */
-@SuppressWarnings( "unused" )
+@SuppressWarnings( { "unused", "UnnecessaryUnicodeEscape" } )
 public final class ConfigUtil {
     
     /** Logger instance for the Crust Config API. */
@@ -223,5 +223,5 @@ public final class ConfigUtil {
     }
     
     // Utility class
-    private ConfigUtil() {}
+    private ConfigUtil() { }
 }
