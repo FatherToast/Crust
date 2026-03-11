@@ -7,6 +7,7 @@ import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.portal.EndPortalBuilder;
 import fathertoast.crust.common.portal.NetherPortalBuilder;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.NewRegistryEvent;
 import net.minecraftforge.registries.RegistryBuilder;
@@ -18,7 +19,7 @@ import java.util.function.Supplier;
 public final class CrustPortals {
     
     /** Deferred register used to initialize the portal registry and populate vanilla portals. */
-    private static final DeferredRegister<PortalBuilder> PORTAL_REGISTER = DeferredRegister.create( CrustObjects.Portals.REGISTRY_KEY, ICrustApi.MOD_ID );
+    private static final DeferredRegister<PortalBuilder> REGISTRY = DeferredRegister.create( CrustObjects.Portals.REGISTRY_KEY, ICrustApi.MOD_ID );
     
     static {
         register( CrustObjects.Portals.NETHER, NetherPortalBuilder::new );
@@ -26,13 +27,18 @@ public final class CrustPortals {
     }
     
     /** Called to register this class. */
-    public static void register( IEventBus bus ) { PORTAL_REGISTER.register( bus ); }
+    public static void register( IEventBus bus ) { REGISTRY.register( bus ); }
     
     /** Registers a portal builder to the deferred register. */
     private static void register( RegistryObject<PortalBuilder> regObj, Supplier<? extends PortalBuilder> factory ) {
-        PORTAL_REGISTER.register( Objects.requireNonNull( regObj.getId() ).getPath(), factory );
+        REGISTRY.register( Objects.requireNonNull( regObj.getId() ).getPath(), factory );
     }
     
+    /**
+     * Called when new custom registries are to be created.
+     * <br><br>
+     * Added as listener from {@link Crust#Crust(FMLJavaModLoadingContext)}.
+     */
     public static void onRegistryCreate( NewRegistryEvent event ) {
         RegistryBuilder<PortalBuilder> builder = new RegistryBuilder<>();
         builder.setName( Crust.rl( "portal_builder" ) );
