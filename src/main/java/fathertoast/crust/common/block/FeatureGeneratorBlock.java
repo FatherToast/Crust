@@ -1,0 +1,71 @@
+package fathertoast.crust.common.block;
+
+import fathertoast.crust.common.block.entity.FeatureGeneratorBlockEntity;
+import fathertoast.crust.common.network.CrustPacketHandler;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.BiConsumer;
+
+public class FeatureGeneratorBlock extends Block implements EntityBlock {
+    
+    public FeatureGeneratorBlock() {
+        super( BlockBehaviour.Properties.of()
+                .strength( -1.0F, 3600000.0F )
+                .sound( SoundType.AMETHYST )
+                .noLootTable()
+        );
+    }
+    
+    @Override
+    @SuppressWarnings( "deprecation" )
+    public InteractionResult use( BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult ) {
+        // Do nothing if player is not in creative
+        if( !player.isCreative() ) return InteractionResult.PASS;
+        
+        if( level.getExistingBlockEntity( pos ) instanceof FeatureGeneratorBlockEntity featureGenerator ) {
+            // Test generation code if player has debug stick and is sneaking.
+            if( player.getItemInHand( hand ).getItem() == Items.DEBUG_STICK ) {
+                return featureGenerator.generate() ? InteractionResult.sidedSuccess( level.isClientSide ) : InteractionResult.PASS;
+            }
+            else if( player instanceof ServerPlayer serverPlayer ) {
+                // Open editor screen
+                getScreenOpener().accept( serverPlayer, featureGenerator );
+            }
+            return InteractionResult.sidedSuccess( level.isClientSide );
+        }
+        return InteractionResult.FAIL;
+    }
+    
+    /** @return A BiConsumer that requests opening X screen for Y player. */
+    protected BiConsumer<ServerPlayer, BlockEntity> getScreenOpener() {
+        return CrustPacketHandler::openFeatureGeneratorScreen;
+    }
+    
+    @Override
+    @Nullable
+    public BlockEntity newBlockEntity( BlockPos pos, BlockState state ) {
+        return new FeatureGeneratorBlockEntity( pos, state );
+    }
+    
+    @Override
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker( Level level, BlockState state, BlockEntityType<T> type ) {
+        return null;
+    }
+}

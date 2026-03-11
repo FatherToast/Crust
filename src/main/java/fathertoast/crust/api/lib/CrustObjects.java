@@ -40,11 +40,11 @@ public final class CrustObjects {
     }
     
     public interface Blocks {
-        RegistryObject<Block> FEATURE_PLACER = block( "feature_placer" );
+        RegistryObject<Block> FEATURE_GENERATOR = block( "feature_generator" );
     }
     
     public interface BlockEntities {
-        RegistryObject<BlockEntityType<?>> FEATURE_PLACER = blockEntity( Blocks.FEATURE_PLACER );
+        RegistryObject<BlockEntityType<?>> FEATURE_GENERATOR = blockEntity( Blocks.FEATURE_GENERATOR );
     }
     
     /** The mob effects provided by Crust. */

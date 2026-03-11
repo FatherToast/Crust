@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "crust:block/feature_generator"
+    }
+  }
+}

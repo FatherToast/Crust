@@ -2,7 +2,7 @@ package fathertoast.crust.common.core.registry;
 
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.lib.CrustObjects;
-import fathertoast.crust.common.block.entity.FeaturePlacerBlockEntity;
+import fathertoast.crust.common.block.entity.FeatureGeneratorBlockEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -20,7 +20,7 @@ public final class CrustBlockEntities {
     
     static {
         // noinspection ConstantConditions
-        register( CrustObjects.BlockEntities.FEATURE_PLACER, FeaturePlacerBlockEntity::new, List.of( CrustObjects.Blocks.FEATURE_PLACER ) );
+        register( CrustObjects.BlockEntities.FEATURE_GENERATOR, FeatureGeneratorBlockEntity::new, List.of( CrustObjects.Blocks.FEATURE_GENERATOR ) );
     }
     
     /** Called to register this class. */

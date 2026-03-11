@@ -2,7 +2,7 @@ package fathertoast.crust.common.core.registry;
 
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.lib.CrustObjects;
-import fathertoast.crust.common.block.FeaturePlacerBlock;
+import fathertoast.crust.common.block.FeatureGeneratorBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -17,7 +17,7 @@ public final class CrustBlocks {
     private static final DeferredRegister<Block> REGISTRY = DeferredRegister.create( ForgeRegistries.BLOCKS, ICrustApi.MOD_ID );
     
     static {
-        register( CrustObjects.Blocks.FEATURE_PLACER, FeaturePlacerBlock::new );
+        register( CrustObjects.Blocks.FEATURE_GENERATOR, FeatureGeneratorBlock::new );
     }
     
     /** Called to register this class. */
