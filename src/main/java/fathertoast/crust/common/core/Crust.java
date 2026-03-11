@@ -119,6 +119,7 @@ public class Crust {
         CrustEffects.register( modBus );
         CrustEntities.register( modBus );
         CrustArgumentTypes.register( modBus );
+        CrustStructureProcessors.register( modBus );
         
         modBus.addListener( this::onCommonSetup );
     }

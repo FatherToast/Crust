@@ -13,7 +13,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Objects;
 
-public class CrustEntities {
+public final class CrustEntities {
     
     private static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create( ForgeRegistries.ENTITY_TYPES, ICrustApi.MOD_ID );
     
@@ -30,4 +30,8 @@ public class CrustEntities {
         final String name = Objects.requireNonNull( regObj.getId() ).getPath();
         REGISTRY.register( name, () -> builder.build( name ) );
     }
+    
+    
+    // Utility class
+    private CrustEntities() { }
 }

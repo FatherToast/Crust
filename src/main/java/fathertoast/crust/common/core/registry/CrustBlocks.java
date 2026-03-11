@@ -24,7 +24,7 @@ public final class CrustBlocks {
     public static void register( IEventBus bus ) { REGISTRY.register( bus ); }
     
     /** Registers a block with no block item to the deferred register. */
-    @SuppressWarnings( "SameParameterValue" )
+    @SuppressWarnings( { "SameParameterValue", "unused" } )
     private static void registerNoItem( RegistryObject<Block> regObj, Supplier<Block> supplier ) {
         REGISTRY.register( Objects.requireNonNull( regObj.getId() ).getPath(), supplier );
     }
@@ -35,6 +35,7 @@ public final class CrustBlocks {
         REGISTRY.register( Objects.requireNonNull( regObj.getId() ).getPath(), supplier );
         CrustItems.registerBlockItem( regObj );
     }
+    
     
     // Utility class
     private CrustBlocks() { }

@@ -37,7 +37,7 @@ public final class CrustBlockEntities {
         // Sanity checks
         Objects.requireNonNull( blocks );
         if( blocks.isEmpty() ) {
-            throw new IllegalArgumentException( "Attempted to convert empty block registry object list into a block array! Boo." );
+            throw new IllegalArgumentException( "Attempted to convert empty list of block registry objects into block array! Boo." );
         }
         // Collect in array and return
         Block[] blockArray = new Block[blocks.size()];

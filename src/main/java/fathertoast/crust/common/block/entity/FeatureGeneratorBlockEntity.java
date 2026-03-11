@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -55,23 +56,28 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
         this.data = Objects.requireNonNull( data );
     }
     
+    
     /**
-     * Attempts to generate a feature using the current generation data.
+     * Attempts to generate a feature in the world using the given feature data.
      *
+     * @param level The level to generate the feature in.
+     * @param pos   The block position where the feature is generating from.
+     * @param data  The feature data to generate from.
+     * @param debug True if this generation call is a test.
      * @return True if placing the feature succeeded.
      */
-    public boolean generate() {
-        // Don't do anything on client or without level.
-        if( level == null || level.isClientSide )
-            return false;
+    public static boolean generate( LevelReader level, BlockPos pos, FeatureData data, boolean debug ) {
+        Objects.requireNonNull( level );
+        
+        // Don't do anything on client.
+        if( !(level instanceof ServerLevel serverLevel) ) return false;
         
         // Neither feature ID nor tag is present, nothing to generate!
         if( data.getConfiguredFeatureId() == null && data.getTag() == null )
             return false;
         
         try {
-            final ServerLevel serverLevel = (ServerLevel) level;
-            final RandomSource random = level.getRandom();
+            final RandomSource random = serverLevel.getRandom();
             final Registry<ConfiguredFeature<?, ?>> featureReg = serverLevel.registryAccess().registryOrThrow( Registries.CONFIGURED_FEATURE );
             
             ConfiguredFeature<?, ?> feature = featureReg.get( data.getConfiguredFeatureId() );
@@ -91,28 +97,32 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
             }
             // No feature, we can't proceed!
             if( feature == null ) {
-                Crust.LOG.warn( "Feature generator tried generating with null feature. Feature ID and tag key are both invalid or empty." );
+                if( debug ) {
+                    Crust.LOG.warn( "Feature generator tried generating with null feature! Feature ID and tag key are both invalid or empty." );
+                }
                 return false;
             }
             final int yOffset = data.getYOffset();
-            final int yPos = getBlockPos().getY() + yOffset;
+            final int yPos = pos.getY() + yOffset;
             
             // If Y position ends up out of bounds, log a warning and give up
             if( yPos < level.getMinBuildHeight() || yPos > level.getMaxBuildHeight() ) {
-                Crust.LOG.warn( "Feature generator at '{}' in dimension '{}' is trying to generate out of bounds! Generator's Y-offset: '{}'",
-                        getBlockPos(), level.dimension().location(), yOffset );
+                if( debug ) {
+                    Crust.LOG.warn( "Feature generator at '{}' in dimension '{}' is trying to generate out of bounds! Generator's Y-offset: '{}'",
+                            pos, serverLevel.dimension().location(), yOffset );
+                }
                 return false;
             }
             
-            // Replace self with configured state
-            level.setBlock( worldPosition, data.turnsInto, SaplingBlock.UPDATE_CLIENTS );
+            // Replace self with configured state, if debug is true
+            if( debug ) serverLevel.setBlock( pos, data.turnsInto, SaplingBlock.UPDATE_CLIENTS );
             // Try generating!
-            feature.place( serverLevel, serverLevel.getChunkSource().getGenerator(), random, getBlockPos().atY( yPos ) );
+            feature.place( serverLevel, serverLevel.getChunkSource().getGenerator(), random, pos.atY( yPos ) );
             return true;
         }
         catch( Exception e ) {
             Crust.LOG.warn( "Feature generator at '{}' in dimension '{}' failed to generate its feature!",
-                    getBlockPos(), level.dimension().location() );
+                    pos, serverLevel.dimension().location() );
             // noinspection CallToPrintStackTrace
             e.printStackTrace();
             return false;

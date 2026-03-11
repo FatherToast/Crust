@@ -41,7 +41,9 @@ public class FeatureGeneratorBlock extends Block implements EntityBlock {
         if( level.getExistingBlockEntity( pos ) instanceof FeatureGeneratorBlockEntity featureGenerator ) {
             // Test generation code if player has debug stick and is sneaking.
             if( player.getItemInHand( hand ).getItem() == Items.DEBUG_STICK ) {
-                return featureGenerator.generate() ? InteractionResult.sidedSuccess( level.isClientSide ) : InteractionResult.PASS;
+                return FeatureGeneratorBlockEntity.generate( level, featureGenerator.getBlockPos(), featureGenerator.getData(), true )
+                        ? InteractionResult.sidedSuccess( level.isClientSide )
+                        : InteractionResult.PASS;
             }
             else if( player instanceof ServerPlayer serverPlayer ) {
                 // Open editor screen

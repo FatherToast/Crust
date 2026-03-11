@@ -1,0 +1,19 @@
+{
+  "name": "crust:amazing_house/start_pool",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "crust:amazing_house/house",
+        "processors": [
+          {
+            "processor_type": "crust:feature_gen_activator"
+          }
+        ],
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}
