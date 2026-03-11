@@ -26,7 +26,7 @@ import java.util.Optional;
 public class FeatureGeneratorBlockEntity extends BlockEntity {
     
     /** The feature generator data to use when generating. */
-    private FeatureData data = FeatureData.createDefault();
+    private FeatureData data = FeatureData.newEmpty();
     
     
     public FeatureGeneratorBlockEntity( BlockPos pos, BlockState state ) {
@@ -57,7 +57,6 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
     
     /**
      * Attempts to generate a feature using the current generation data.
-     * <p></p>
      *
      * @return True if placing the feature succeeded.
      */
@@ -67,14 +66,13 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
             return false;
         
         // Neither feature ID nor tag is present, nothing to generate!
-        if( data.configuredFeatureId == null && data.tag == null )
+        if( data.getConfiguredFeatureId() == null && data.getTag() == null )
             return false;
         
         try {
             final ServerLevel serverLevel = (ServerLevel) level;
-            final RandomSource random = level.random;
+            final RandomSource random = level.getRandom();
             final Registry<ConfiguredFeature<?, ?>> featureReg = serverLevel.registryAccess().registryOrThrow( Registries.CONFIGURED_FEATURE );
-            final FeatureData data = getData();
             
             ConfiguredFeature<?, ?> feature = featureReg.get( data.getConfiguredFeatureId() );
             TagKey<ConfiguredFeature<?, ?>> tagKey = data.getTag();
@@ -92,17 +90,29 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
                 }
             }
             // No feature, we can't proceed!
-            if( feature == null )
-                throw new IllegalArgumentException( "Feature generator tried generating with null feature. Feature ID and tag key are both invalid or empty." );
+            if( feature == null ) {
+                Crust.LOG.warn( "Feature generator tried generating with null feature. Feature ID and tag key are both invalid or empty." );
+                return false;
+            }
+            final int yOffset = data.getYOffset();
+            final int yPos = getBlockPos().getY() + yOffset;
+            
+            // If Y position ends up out of bounds, log a warning and give up
+            if( yPos < level.getMinBuildHeight() || yPos > level.getMaxBuildHeight() ) {
+                Crust.LOG.warn( "Feature generator at '{}' in dimension '{}' is trying to generate out of bounds! Generator's Y-offset: '{}'",
+                        getBlockPos(), level.dimension().location(), yOffset );
+                return false;
+            }
             
             // Replace self with configured state
             level.setBlock( worldPosition, data.turnsInto, SaplingBlock.UPDATE_CLIENTS );
             // Try generating!
-            feature.place( serverLevel, serverLevel.getChunkSource().getGenerator(), random, worldPosition );
+            feature.place( serverLevel, serverLevel.getChunkSource().getGenerator(), random, getBlockPos().atY( yPos ) );
             return true;
         }
         catch( Exception e ) {
-            Crust.LOG.warn( "Feature generator at '{}' in dimension '{}' failed to generate its feature!", getBlockPos(), level.dimension().location() );
+            Crust.LOG.warn( "Feature generator at '{}' in dimension '{}' failed to generate its feature!",
+                    getBlockPos(), level.dimension().location() );
             // noinspection CallToPrintStackTrace
             e.printStackTrace();
             return false;
@@ -123,20 +133,26 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
         /** The block state the feature generator should turn into before generating. */
         private BlockState turnsInto;
         
+        /** The Y-offset of the block position to generate at. */
+        private int yOffset;
+        
         
         //---------------------- NBT keys ----------------------
         
         public static final String TAG_FEATURE_ID = "FeatureId";
         public static final String TAG_FEATURE_TAG = "FeatureTag";
         public static final String TAG_TURNS_INTO = "TurnsIntoState";
+        public static final String TAG_Y_OFFSET = "YOffset";
         
         
         public FeatureData( @Nullable ResourceLocation configuredFeatureId,
                             @Nullable TagKey<ConfiguredFeature<?, ?>> tag,
-                            BlockState turnsInto ) {
+                            BlockState turnsInto,
+                            int yOffset ) {
             this.configuredFeatureId = configuredFeatureId;
             this.tag = tag;
             this.turnsInto = turnsInto;
+            this.yOffset = yOffset;
         }
         
         @Nullable
@@ -153,7 +169,11 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
             return turnsInto;
         }
         
-        /** Saves this feature generator data to NBT. */
+        public int getYOffset() {
+            return yOffset;
+        }
+        
+        /** Saves this instance's data to NBT. */
         public void saveTo( CompoundTag saveTag ) {
             if( configuredFeatureId != null ) {
                 saveTag.putString( TAG_FEATURE_ID, configuredFeatureId.toString() );
@@ -164,9 +184,10 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
             if( turnsInto != null ) {
                 NBTHelper.putBlockState( saveTag, TAG_TURNS_INTO, turnsInto );
             }
+            saveTag.putInt( TAG_Y_OFFSET, yOffset );
         }
         
-        /** Loads a FeatureData instance from NBT and returns it. */
+        /** Loads data from NBT and applies it to this instance. */
         public void loadFrom( CompoundTag loadTag ) {
             if( NBTHelper.containsString( loadTag, TAG_FEATURE_ID ) ) {
                 ResourceLocation id = ResourceLocation.tryParse( loadTag.getString( TAG_FEATURE_ID ) );
@@ -177,11 +198,12 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
                 if( id != null ) tag = TagKey.create( Registries.CONFIGURED_FEATURE, id );
             }
             turnsInto = NBTHelper.getBlockState( loadTag, TAG_TURNS_INTO );
+            yOffset = loadTag.getInt( TAG_Y_OFFSET );
         }
         
         /** @return A new empty / default FeatureData instance. */
-        public static FeatureData createDefault() {
-            return new FeatureData( null, null, Blocks.AIR.defaultBlockState() );
+        public static FeatureData newEmpty() {
+            return new FeatureData( null, null, Blocks.AIR.defaultBlockState(), 0 );
         }
     }
 }

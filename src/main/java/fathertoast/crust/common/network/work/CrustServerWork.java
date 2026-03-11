@@ -24,7 +24,7 @@ public final class CrustServerWork {
         final BlockEntity blockEntity = level.getExistingBlockEntity( pos );
         
         if( blockEntity instanceof FeatureGeneratorBlockEntity featureGenerator ) {
-            FeatureGeneratorBlockEntity.FeatureData data = FeatureGeneratorBlockEntity.FeatureData.createDefault();
+            FeatureGeneratorBlockEntity.FeatureData data = FeatureGeneratorBlockEntity.FeatureData.newEmpty();
             data.loadFrom( message.DATA_TAG );
             featureGenerator.setData( data );
         }

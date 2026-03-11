@@ -4,8 +4,9 @@
   "effect.crust.vulnerability": "Vulnerability",
   "effect.crust.weight": "Weight",
 
-  "menu.crust.feature_generator.edit_box.feature": "Feature ID / Feature Tag",
+  "menu.crust.feature_generator.edit_box.feature": "Feature ID / Feature tag",
   "menu.crust.feature_generator.edit_box.turns_into": "Turns into",
+  "menu.crust.feature_generator.edit_box.y_offset": "Y-offset",
 
   "menu.crust.config.open_folder": "Open Folder",
   "menu.crust.config.save_changes": "SAVE Changes",
