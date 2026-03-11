@@ -43,7 +43,7 @@ import java.util.Objects;
  * @see BlockStateProperties
  * @see BlockStatePredicate
  */
-public record BlockStatePropertyMap( Map<String, String> map ) implements
+public record BlockStatePropertyMap(Map<String, String> map) implements
         ITomlStringValue, IValueCodec<BlockStatePropertyMap> {
     
     public static final char VALUE_SEPARATOR = '=';
@@ -164,7 +164,7 @@ public record BlockStatePropertyMap( Map<String, String> map ) implements
         return new String[] { s.substring( 0, startIndex ), s.substring( startIndex ) };
     }
     
-    /** @return Parses the block state string into a block state, if possible. Otherwise returns null. */
+    /** @return Parses the block state string into a block state, if possible. Returns null otherwise. */
     @Nullable
     public static BlockState stateFrom( String s ) {
         final String[] split = split( s );
@@ -173,6 +173,30 @@ public record BlockStatePropertyMap( Map<String, String> map ) implements
                 .stateForNullable( ForgeRegistries.BLOCKS.getValue( resLoc ) );
     }
     
+    /**
+     * @return The same result as {@link BlockStatePropertyMap#stateFrom(String)},
+     * except the first part of the string <br>
+     * (ID / resource location) MUST be a complete resource location
+     * with namespace included.
+     * <br><br>
+     * For example, <strong>"coolmod:epic_stone[epic=true]"</strong> will parse,
+     * <br>
+     * but <strong>"stupid_block[uncool=true]"</strong> will not.
+     */
+    @Nullable
+    public static BlockState strictStateFrom( String s ) {
+        final String[] split = split( s );
+        final String id = split[0];
+        
+        // We want both the namespace and path, no partial
+        if( id.split( ":" ).length != 2 )
+            return null;
+        
+        ResourceLocation resLoc = ResourceLocation.tryParse( id );
+        
+        return resLoc == null ? null : BlockStatePropertyMap.of( split[1] )
+                .stateForNullable( ForgeRegistries.BLOCKS.getValue( resLoc ) );
+    }
     
     // ---- Instance Methods ---- //
     
