@@ -193,6 +193,7 @@ public class TestConfigFile extends AbstractConfigFile {
             blockStateListField = SPEC.define( new InjectionWrapperField<>(//TODO
                     new BlockStateListField( "block_state_list_field", new BlockStateList.Builder<>()
                             .add( Blocks.ANVIL ).add( MISSING_FEATURE ).add( "oak_log[axis=y]" )
+                            .add( Blocks.ACACIA_STAIRS.defaultBlockState() )
                             .addTag( Tags.Blocks.CHESTS ).addTag( "forge:sandstone" ).addTag( MISSING_FEATURE )
                             .build() ), General::testCallback ) ).field();
             SPEC.callback( () -> {

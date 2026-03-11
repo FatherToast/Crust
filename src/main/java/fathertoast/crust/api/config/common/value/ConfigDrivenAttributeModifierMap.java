@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 @SuppressWarnings( "unused" )
 
-@Deprecated( forRemoval = true )
+@Deprecated
 public class ConfigDrivenAttributeModifierMap extends AttributeSupplier {
     
     private final AttributeListField FIELD;

@@ -22,7 +22,7 @@ import java.util.function.Predicate;
  */
 @SuppressWarnings( "unused" )
 
-@Deprecated( forRemoval = true )
+@Deprecated
 public class EnvironmentListField extends GenericField<EnvironmentList> implements IStringListScreenEditable {
     
     /**

@@ -22,7 +22,7 @@ import java.util.function.Predicate;
  * @see ConfigDrivenAttributeModifierMap
  */
 
-@Deprecated( forRemoval = true )
+@Deprecated
 public class AttributeListField extends GenericField<AttributeList> implements IStringListScreenEditable {
     
     /** Provides a detailed description of how to use attribute lists. Recommended to put at the top of any file using attribute lists. */

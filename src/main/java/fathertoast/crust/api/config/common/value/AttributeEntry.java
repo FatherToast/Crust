@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
  */
 @SuppressWarnings( "unused" )
 
-@Deprecated( forRemoval = true )
+@Deprecated
 public class AttributeEntry {
     
     /** The field containing this entry. We save a reference to help improve error/warning reports. */

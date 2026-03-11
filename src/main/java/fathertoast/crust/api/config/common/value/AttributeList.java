@@ -14,7 +14,7 @@ import java.util.List;
  */
 @SuppressWarnings( "unused" )
 
-@Deprecated( forRemoval = true )
+@Deprecated
 public class AttributeList implements IStringArray {
     
     /** The attribute-operation-value entries in this list. */
