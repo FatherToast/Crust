@@ -25,8 +25,8 @@ import org.apache.logging.log4j.Logger;
 public class Crust {
     
     /* Feature List:
-     * (KEY: - = complete in current version, o = incomplete feature from previous version,
-     *       + = incomplete new feature, ? = feature to consider adding)
+     * (KEY: '-' = complete in current version, 'o' = incomplete feature from previous version,
+     *       '+' = incomplete new feature, '?' = feature to consider adding)
      *  - configs
      *      - config button opens config folder or in-game editor
      *      - in-game config editor
@@ -40,13 +40,14 @@ public class Crust {
      *              + environment list
      *              + reg entry list
      *              + dimension ID based sub-lists
-     *  - helpers
+     *  - events
      *      - advancement load event
+     *      + structure generating event
+     *  - helpers
      *      - shape renderer (block entity, entity)
      *      - portal registry
      *      - data gen
      *          - loot table
-     *      - set block flags
      *      - nbt
      *      - entity/level events
      *      - math library
@@ -69,6 +70,9 @@ public class Crust {
      *      - configure default game rules
      *      - configure default 'modes' (see below)
      *      ? in-game nbt editor gui (does the mod still exist?)
+     *      + feature generator blocks
+     *          + structure gen variant (with processor)
+     *          + proximity variant
      *  - modes
      *      - magnet - pulls nearby items toward you
      *      ? multi-mine - break multiple blocks at once; perhaps compat to an existing mod instead (like "Ore Excavation")
