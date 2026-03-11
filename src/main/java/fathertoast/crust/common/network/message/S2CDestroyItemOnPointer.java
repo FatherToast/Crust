@@ -6,7 +6,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class S2CDestroyItemOnPointer {
+public final class S2CDestroyItemOnPointer {
     
     @SuppressWarnings( "all" )
     public static final S2CDestroyItemOnPointer INSTANCE = new S2CDestroyItemOnPointer();
