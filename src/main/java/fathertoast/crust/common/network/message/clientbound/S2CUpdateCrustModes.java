@@ -1,4 +1,4 @@
-package fathertoast.crust.common.network.message;
+package fathertoast.crust.common.network.message.clientbound;
 
 import fathertoast.crust.common.network.work.CrustClientWork;
 import net.minecraft.nbt.CompoundTag;

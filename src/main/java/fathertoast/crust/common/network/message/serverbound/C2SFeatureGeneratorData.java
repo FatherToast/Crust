@@ -1,4 +1,4 @@
-package fathertoast.crust.common.network.message;
+package fathertoast.crust.common.network.message.serverbound;
 
 import fathertoast.crust.common.network.work.CrustServerWork;
 import net.minecraft.core.BlockPos;

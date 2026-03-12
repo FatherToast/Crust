@@ -2,7 +2,7 @@ package fathertoast.crust.common.network.work;
 
 import fathertoast.crust.common.block.entity.FeatureGeneratorBlockEntity;
 import fathertoast.crust.common.core.Crust;
-import fathertoast.crust.common.network.message.C2SFeatureGeneratorData;
+import fathertoast.crust.common.network.message.serverbound.C2SFeatureGeneratorData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
