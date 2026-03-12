@@ -3,6 +3,10 @@
     {
       "structure": "crust:amazing_house",
       "weight": 1
+    },
+    {
+      "structure": "crust:amazing_garden",
+      "weight": 1
     }
   ],
   "placement": {

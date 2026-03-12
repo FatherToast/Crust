@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.common.block.entity.FeatureGeneratorBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
@@ -22,18 +23,13 @@ public class FeatureGeneratorProcessor extends StructureProcessor {
     public StructureTemplate.StructureBlockInfo process( LevelReader level, BlockPos pos, BlockPos pos2,
                                                          StructureTemplate.StructureBlockInfo info, StructureTemplate.StructureBlockInfo blockInfo,
                                                          StructurePlaceSettings settings, @Nullable StructureTemplate template ) {
-        // If block is not a feature generator or NBT is null we return early
-        if( blockInfo.nbt() == null || !blockInfo.state().is( CrustObjects.Blocks.FEATURE_GENERATOR.get() ) )
-            return blockInfo;
-        
-        // TODO - Test if it is safe to generate like this, or if we should
-        //        delay the generation until the block entity has been created
-        //        and its first tick runs.
-        FeatureGeneratorBlockEntity.FeatureData data = FeatureGeneratorBlockEntity.FeatureData.newEmpty();
-        data.loadFrom( blockInfo.nbt() );
-        FeatureGeneratorBlockEntity.generate( level, pos, data, false );
-        
-        return new StructureTemplate.StructureBlockInfo( blockInfo.pos(), data.getTurnsInto(), null );
+        // Check if block is a feature generator and has NBT
+        if( blockInfo.nbt() != null && blockInfo.state().is( CrustObjects.Blocks.FEATURE_GENERATOR.get() ) ) {
+            CompoundTag tag = blockInfo.nbt();
+            tag.putBoolean( FeatureGeneratorBlockEntity.KEY_READY_FOR_GENERATION, true );
+            return new StructureTemplate.StructureBlockInfo( blockInfo.pos(), blockInfo.state(), blockInfo.nbt() );
+        }
+        return blockInfo;
     }
     
     @Override
