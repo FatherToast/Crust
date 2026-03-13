@@ -2,7 +2,6 @@ package fathertoast.crust.client.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import fathertoast.crust.api.config.common.value.collection.key.BlockStateKey;
-import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.api.util.BlockStatePropertyMap;
 import fathertoast.crust.common.block.entity.FeatureGeneratorBlockEntity;
 import fathertoast.crust.common.network.CrustPacketHandler;
@@ -34,20 +33,35 @@ public class FeatureGeneratorScreen extends Screen {
     private final FeatureGeneratorBlockEntity featureGenerator;
     /** The initial feature ID / tag key value. */
     private final String originalFeatureId;
+    /** The initial fallback feature ID. */
+    private final String originalFallbackId;
     /** The initial "turns into" block state. */
     private final String originalTurnsInto;
     /** The initial Y-offset. */
     private final String originalYOffset;
+    /** The initial generation chance. */
+    private final String originalChance;
+    /** The initial "force generation" flag value. */
+    private final String originalForceGen;
     
     /** Edit box for feature ID and/or feature tag key. */
     private EditBox featureEdit;
+    /** Edit box for fallback feature ID. */
+    private EditBox fallbackEdit;
     /** Edit box the block state the feature generator turns into. */
     private EditBox turnsIntoEdit;
     /** Edit box for the Y-offset of the generation position. */
     private EditBox yOffsetEdit;
+    /** Edit box for the generation chance. */
+    private EditBox chanceEdit;
     
     /** The done button! Wild technology. */
     private Button doneButton;
+    /** Toggles the "force gen" flag. */
+    private Button toggleForceGenButton;
+    
+    /** True if the "force generation" flag should be enabled. */
+    boolean forceGeneration;
     
     
     public FeatureGeneratorScreen( FeatureGeneratorBlockEntity featureGenerator ) {
@@ -56,21 +70,34 @@ public class FeatureGeneratorScreen extends Screen {
         
         final FeatureGeneratorBlockEntity.FeatureData data = featureGenerator.getData();
         
-        this.originalFeatureId = featureStringFromData( data );
+        this.originalFeatureId = featureStringFromData( data, false );
+        this.originalFallbackId = featureStringFromData( data, true );
         this.originalTurnsInto = stateStringFromData( data );
         this.originalYOffset = yOffsetFromData( data );
+        this.originalChance = chanceFromData( data );
+        this.originalForceGen = forceGenFromData( data );
+        
+        forceGeneration = data.forceGeneration();
     }
     
     /** Called to set up the screen before displaying it. */
     @Override
     protected void init() {
         // Feature ID / tag edit
-        featureEdit = new EditBox( font, width / 2 - 152, 85, 300, 20,
+        featureEdit = new EditBox( font, width / 2 - 152, 45, 300, 20,
                 Component.empty() );
         featureEdit.setMaxLength( 128 );
         featureEdit.setValue( originalFeatureId );
         featureEdit.setResponder( responderFor( featureEdit, FeatureGeneratorScreen::isFeatureValid ) );
         addRenderableWidget( featureEdit );
+        
+        // Fallback feature ID
+        fallbackEdit = new EditBox( font, width / 2 - 152, 85, 300, 20,
+                Component.empty() );
+        fallbackEdit.setMaxLength( 128 );
+        fallbackEdit.setValue( originalFallbackId );
+        fallbackEdit.setResponder( responderFor( fallbackEdit, FeatureGeneratorScreen::isFallbackValid ) );
+        addRenderableWidget( fallbackEdit );
         
         // Result state edit
         turnsIntoEdit = new EditBox( font, width / 2 - 152, 125, 300, 20,
@@ -81,12 +108,29 @@ public class FeatureGeneratorScreen extends Screen {
         addRenderableWidget( turnsIntoEdit );
         
         // Y-offset edit
-        yOffsetEdit = new EditBox( font, width / 2 - 152, 165, 100, 20,
+        yOffsetEdit = new EditBox( font, width / 2 - 152, 165, 95, 20,
                 Component.empty() );
         yOffsetEdit.setMaxLength( 5 );
         yOffsetEdit.setValue( originalYOffset );
         yOffsetEdit.setResponder( responderFor( yOffsetEdit, FeatureGeneratorScreen::isYOffsetValid ) );
         addRenderableWidget( yOffsetEdit );
+        
+        // Y-offset edit
+        chanceEdit = new EditBox( font, width / 2 - 48, 165, 95, 20,
+                Component.empty() );
+        chanceEdit.setMaxLength( 10 );
+        chanceEdit.setValue( originalChance );
+        chanceEdit.setResponder( responderFor( chanceEdit, FeatureGeneratorScreen::isChanceValid ) );
+        addRenderableWidget( chanceEdit );
+        
+        // Toggle "force generation" button
+        toggleForceGenButton = new Button.Builder(
+                Component.translatable( "menu.crust.feature_generator.button.force_generation", forceGeneration ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF ),
+                ( button ) -> onToggleForceGen() )
+                .pos( width / 2 + 54, 164 )
+                .size( 95, 22 )
+                .build();
+        addRenderableWidget( toggleForceGenButton );
         
         // Done button
         doneButton = new Button.Builder( CommonComponents.GUI_DONE, ( button ) -> onDone() )
@@ -94,11 +138,10 @@ public class FeatureGeneratorScreen extends Screen {
                 .size( 150, 20 )
                 .build();
         doneButton.active = false;
-        
         addRenderableWidget( doneButton );
         
         // Cancel button
-        addRenderableWidget( new Button.Builder( CommonComponents.GUI_CANCEL, ( button ) -> onCancel() )
+        addRenderableWidget( new Button.Builder( CommonComponents.GUI_CANCEL, ( button ) -> onClose() )
                 .pos( width / 2 + 4, 210 )
                 .size( 150, 20 )
                 .build() );
@@ -111,24 +154,31 @@ public class FeatureGeneratorScreen extends Screen {
         minecraft.setScreen( null );
     }
     
-    /** Called when the "Cancel" button is pressed. */
-    private void onCancel() {
-        // noinspection ConstantConditions
-        minecraft.setScreen( null );
+    /** Called when the "force generation" button is pressed. */
+    private void onToggleForceGen() {
+        forceGeneration = !forceGeneration;
+        toggleForceGenButton.setMessage(
+                Component.translatable( "menu.crust.feature_generator.button.force_generation", forceGeneration
+                        ? CommonComponents.OPTION_ON
+                        : CommonComponents.OPTION_OFF ) );
+        checkCanSend();
     }
     
     /** Called each tick to update animations. */
     @Override
     public void tick() {
         featureEdit.tick();
+        fallbackEdit.tick();
         turnsIntoEdit.tick();
         yOffsetEdit.tick();
+        chanceEdit.tick();
     }
     
     /** Called to close the screen. */
     @Override
     public void onClose() {
-        this.onCancel();
+        // noinspection ConstantConditions
+        minecraft.setScreen( null );
     }
     
     /**
@@ -161,18 +211,18 @@ public class FeatureGeneratorScreen extends Screen {
     public void render( GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks ) {
         renderBackground( guiGraphics );
         
-        // Draw "title"
-        guiGraphics.drawCenteredString( font, Component.translatable( CrustObjects.Blocks.FEATURE_GENERATOR.get().getDescriptionId() ),
-                width / 2, (height / 2) - 90, DEFAULT_TEXT_COLOR );
-        
         // Draw field names
-        guiGraphics.drawString( font, Component.translatable( "menu.crust.feature_generator.edit_box.feature" ), width / 2 - 152, (height / 2) - 53, DEFAULT_TEXT_COLOR );
-        guiGraphics.drawString( font, Component.translatable( "menu.crust.feature_generator.edit_box.turns_into" ), width / 2 - 152, (height / 2) - 13, DEFAULT_TEXT_COLOR );
-        guiGraphics.drawString( font, Component.translatable( "menu.crust.feature_generator.edit_box.y_offset" ), width / 2 - 152, (height / 2) + 27, DEFAULT_TEXT_COLOR );
+        guiGraphics.drawString( font, Component.translatable( "menu.crust.feature_generator.edit_box.feature" ), width / 2 - 152, 33, DEFAULT_TEXT_COLOR );
+        guiGraphics.drawString( font, Component.translatable( "menu.crust.feature_generator.edit_box.fallback" ), width / 2 - 152, 73, DEFAULT_TEXT_COLOR );
+        guiGraphics.drawString( font, Component.translatable( "menu.crust.feature_generator.edit_box.turns_into" ), width / 2 - 152, 113, DEFAULT_TEXT_COLOR );
+        guiGraphics.drawString( font, Component.translatable( "menu.crust.feature_generator.edit_box.y_offset" ), width / 2 - 152, 153, DEFAULT_TEXT_COLOR );
+        guiGraphics.drawString( font, Component.translatable( "menu.crust.feature_generator.edit_box.chance" ), width / 2 - 48, 153, DEFAULT_TEXT_COLOR );
         
         featureEdit.render( guiGraphics, mouseX, mouseY, partialTicks );
+        fallbackEdit.render( guiGraphics, mouseX, mouseY, partialTicks );
         turnsIntoEdit.render( guiGraphics, mouseX, mouseY, partialTicks );
         yOffsetEdit.render( guiGraphics, mouseX, mouseY, partialTicks );
+        chanceEdit.render( guiGraphics, mouseX, mouseY, partialTicks );
         
         super.render( guiGraphics, mouseX, mouseY, partialTicks );
     }
@@ -188,13 +238,19 @@ public class FeatureGeneratorScreen extends Screen {
      * <br><br>
      * If both feature ID and tag key are present, feature ID takes priority.
      */
-    private static String featureStringFromData( FeatureGeneratorBlockEntity.FeatureData data ) {
+    private static String featureStringFromData( FeatureGeneratorBlockEntity.FeatureData data, boolean fallback ) {
         String value = "";
         
-        if( data.getConfiguredFeatureId() != null )
-            value = data.getConfiguredFeatureId().toString();
-        else if( data.getTag() != null )
-            value = "#" + data.getTag().location();
+        if( fallback ) {
+            if( data.getFallbackId() != null )
+                value = data.getFallbackId().toString();
+        }
+        else {
+            if( data.getConfiguredFeatureId() != null )
+                value = data.getConfiguredFeatureId().toString();
+            else if( data.getTagKey() != null )
+                value = "#" + data.getTagKey().location();
+        }
         return value;
     }
     
@@ -211,6 +267,16 @@ public class FeatureGeneratorScreen extends Screen {
         return String.valueOf( data.getYOffset() );
     }
     
+    /** @return A String representing the "generation chance" of the given FeatureData instance. */
+    private static String chanceFromData( FeatureGeneratorBlockEntity.FeatureData data ) {
+        return String.valueOf( data.getChance() );
+    }
+    
+    /** @return A String representing the "force generation" flag of the given FeatureData instance. */
+    private static String forceGenFromData( FeatureGeneratorBlockEntity.FeatureData data ) {
+        return String.valueOf( data.forceGeneration() );
+    }
+    
     /**
      * @return True if the given String is considered a valid value
      * for the {@link FeatureGeneratorScreen#featureEdit} edit box.
@@ -219,6 +285,15 @@ public class FeatureGeneratorScreen extends Screen {
         if( value.isEmpty() ) return false;
         // Allow '#' as starting character, indicates a tag key.
         value = value.startsWith( "#" ) ? value.substring( 1 ) : value;
+        return ResourceLocation.isValidResourceLocation( value );
+    }
+    
+    /**
+     * @return True if the given String is considered a valid value
+     * for the {@link FeatureGeneratorScreen#fallbackEdit} edit box.
+     */
+    private static boolean isFallbackValid( String value ) {
+        if( value.isEmpty() ) return false;
         return ResourceLocation.isValidResourceLocation( value );
     }
     
@@ -238,6 +313,20 @@ public class FeatureGeneratorScreen extends Screen {
         try {
             int offset = Integer.parseInt( value );
             return offset >= -999 && offset <= 999;
+        }
+        catch( NumberFormatException e ) {
+            return false;
+        }
+    }
+    
+    /**
+     * @return True if the given String is considered a valid value
+     * for the {@link FeatureGeneratorScreen#chanceEdit} edit box.
+     */
+    private static boolean isChanceValid( String value ) {
+        try {
+            double chance = Double.parseDouble( value );
+            return chance >= 0.0 && chance <= 1.0;
         }
         catch( NumberFormatException e ) {
             return false;
@@ -269,8 +358,11 @@ public class FeatureGeneratorScreen extends Screen {
         
         doneButton.active = areValuesValid && (
                 !featureEdit.getValue().equals( originalFeatureId )
+                        || !fallbackEdit.getValue().equals( originalFallbackId )
                         || !turnsIntoEdit.getValue().equals( originalTurnsInto )
                         || !yOffsetEdit.getValue().equals( originalYOffset )
+                        || !chanceEdit.getValue().equals( originalChance )
+                        || !String.valueOf( forceGeneration ).equals( originalForceGen )
         );
     }
     
@@ -279,8 +371,10 @@ public class FeatureGeneratorScreen extends Screen {
     private void sendToServer() {
         if( minecraft.player != null ) {
             final String featureOrTagId = featureEdit.getValue();
+            final String fallbackId = fallbackEdit.getValue();
             final String turnsInto = turnsIntoEdit.getValue();
             final String yOffset = yOffsetEdit.getValue();
+            final String chance = chanceEdit.getValue();
             
             FeatureGeneratorBlockEntity.FeatureData newData = new FeatureGeneratorBlockEntity.FeatureData(
                     featureOrTagId.startsWith( "#" )
@@ -289,8 +383,11 @@ public class FeatureGeneratorScreen extends Screen {
                     featureOrTagId.startsWith( "#" )
                             ? TagKey.create( Registries.CONFIGURED_FEATURE, ResourceLocation.parse( featureOrTagId.substring( 1 ) ) )
                             : null,
+                    ResourceLocation.parse( fallbackId ),
                     BlockStatePropertyMap.strictStateFrom( turnsInto ),
-                    Integer.parseInt( yOffset )
+                    Integer.parseInt( yOffset ),
+                    Double.parseDouble( chance ),
+                    forceGeneration
             );
             featureGenerator.setData( newData );
             CrustPacketHandler.sendFeatureGeneratorData( featureGenerator );

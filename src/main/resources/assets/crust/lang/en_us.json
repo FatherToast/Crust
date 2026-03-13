@@ -6,7 +6,10 @@
 
   "menu.crust.feature_generator.edit_box.feature": "Feature ID / Feature tag",
   "menu.crust.feature_generator.edit_box.turns_into": "Turns into",
+  "menu.crust.feature_generator.edit_box.fallback": "Fallback ID",
   "menu.crust.feature_generator.edit_box.y_offset": "Y-offset",
+  "menu.crust.feature_generator.edit_box.chance": "Chance",
+  "menu.crust.feature_generator.button.force_generation": "Force gen: %s",
 
   "menu.crust.config.open_folder": "Open Folder",
   "menu.crust.config.save_changes": "SAVE Changes",

@@ -18,15 +18,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -138,8 +134,7 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
      * @param pos   The block position where the feature is generating from.
      * @param data  The feature data to generate from.
      * @param debug True if this generation call is a test.
-     * @return True if nothing went wrong and {@link net.minecraft.world.level.levelgen.feature.Feature#place(FeatureConfiguration, WorldGenLevel, ChunkGenerator, RandomSource, BlockPos)}
-     * returned true for the feature that was attempted to place.
+     * @return True if either primary feature or fallback feature was placed.
      */
     public static boolean generate( LevelReader level, BlockPos pos, FeatureData data, boolean debug ) {
         Objects.requireNonNull( level );
@@ -148,15 +143,15 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
         if( !(level instanceof ServerLevel serverLevel) ) return false;
         
         // Neither feature ID nor tag is present, nothing to generate!
-        if( data.getConfiguredFeatureId() == null && data.getTag() == null )
+        if( data.configuredFeatureId == null && data.tagKey == null )
             return false;
         
         try {
             final RandomSource random = serverLevel.getRandom();
             final Registry<ConfiguredFeature<?, ?>> featureReg = serverLevel.registryAccess().registryOrThrow( Registries.CONFIGURED_FEATURE );
             
-            ConfiguredFeature<?, ?> feature = featureReg.get( data.getConfiguredFeatureId() );
-            TagKey<ConfiguredFeature<?, ?>> tagKey = data.getTag();
+            ConfiguredFeature<?, ?> feature = featureReg.get( data.configuredFeatureId );
+            TagKey<ConfiguredFeature<?, ?>> tagKey = data.tagKey;
             
             // Is feature ID not present? Try to grab random element from tag, if possible.
             if( feature == null && tagKey != null ) {
@@ -170,30 +165,56 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
                         feature = optionalFeature.get().get();
                 }
             }
-            // No feature, we can't proceed!
+            // Does the feature exist? If not, try fetching fallback!
+            if( feature == null && data.fallbackId != null ) {
+                if( debug ) {
+                    Crust.LOG.debug( "Feature generator at '{}' in dimension '{}' has no feature ID! Checking fallback feature...",
+                            pos, serverLevel.dimension().location() );
+                }
+                feature = featureReg.get( data.fallbackId );
+            }
             if( feature == null ) {
                 if( debug ) {
-                    Crust.LOG.warn( "Feature generator tried generating with null feature! Feature ID and tag key are both invalid or empty." );
+                    Crust.LOG.debug( "Feature generator at '{}' in dimension '{}' failed to generate anything!",
+                            pos, serverLevel.dimension().location() );
                 }
                 return false;
             }
-            final int yPos = pos.getY() + data.getYOffset();
+            final int yPos = pos.getY() + data.yOffset;
             
             // If Y position ends up out of bounds, log a warning and give up
             if( yPos < level.getMinBuildHeight() || yPos > level.getMaxBuildHeight() ) {
                 if( debug ) {
-                    Crust.LOG.warn( "Feature generator at '{}' in dimension '{}' is trying to generate out of bounds! Generator's Y-offset: '{}'",
-                            pos, serverLevel.dimension().location(), data.getYOffset() );
+                    Crust.LOG.debug( "Feature generator at '{}' in dimension '{}' is trying to generate out of bounds! Generator's Y-offset: '{}'",
+                            pos, serverLevel.dimension().location(), data.yOffset );
                 }
                 return false;
             }
-            // Set to air first so we don't mess with generation
-            serverLevel.setBlock( pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_NONE );
-            // Try generating!
-            boolean generated = feature.place( serverLevel, serverLevel.getChunkSource().getGenerator(), random, pos.atY( yPos ) );
+            boolean generated = false;
             
+            // Roll placement chance!
+            if( random.nextDouble() <= data.chance ) {
+                // Set to air first so we don't mess with generation
+                serverLevel.setBlock( pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_NONE );
+                // Try generating!
+                generated = feature.place( serverLevel, serverLevel.getChunkSource().getGenerator(), random, pos.atY( yPos ) );
+                
+                // Check if we should and can generate fallback feature
+                if( !generated && data.getFallbackId() != null ) {
+                    if( debug ) {
+                        Crust.LOG.debug( "Feature generator failed first placement attempt! Trying to place fallback..." );
+                    }
+                    feature = featureReg.get( data.fallbackId );
+                    
+                    // Don't try generating a second time if we were already trying the fallback!
+                    // noinspection ConstantConditions
+                    if( feature != null && !featureReg.getKey( feature ).equals( data.fallbackId ) ) {
+                        generated = feature.place( serverLevel, serverLevel.getChunkSource().getGenerator(), random, pos.atY( yPos ) );
+                    }
+                }
+            }
             // Replace generator with final "turns into" state.
-            serverLevel.setBlock( pos, data.getTurnsInto(), SaplingBlock.UPDATE_CLIENTS );
+            serverLevel.setBlock( pos, data.turnsInto, Block.UPDATE_CLIENTS );
             return generated;
         }
         // Something spooky happened!
@@ -209,37 +230,50 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
     /** Wrapper for the data used when generating a feature. */
     public static final class FeatureData {
         
-        /** The optional ID of the feature to place. */
+        /** The optional ID of the feature to place. This can be null, as long as "tag" is specified. */
         @Nullable
         private ResourceLocation configuredFeatureId;
-        
-        /** An optional tag of configured features to pick from. */
+        /** An optional tag of configured features to pick from. This can be null, as long as "configuredFeatureId" is specified. */
         @Nullable
-        private TagKey<ConfiguredFeature<?, ?>> tag;
-        
+        private TagKey<ConfiguredFeature<?, ?>> tagKey;
+        /** An optional ID of a fallback feature to try and generate if the original placement failed.z */
+        @Nullable
+        private ResourceLocation fallbackId;
         /** The block state the feature generator should turn into before generating. */
         private BlockState turnsInto;
-        
         /** The Y-offset of the block position to generate at. */
         private int yOffset;
+        /** The chance for attempting the placement. */
+        private double chance;
+        /**
+         * If true, the feature will be force placed.
+         * Currently only works for feature from DeadlyWorld.
+         */
+        private boolean forceGeneration;
         
         
         //---------------------- NBT keys ----------------------
         
         public static final String TAG_FEATURE_ID = "FeatureId";
+        public static final String TAG_FALLBACK_ID = "FallbackId";
         public static final String TAG_FEATURE_TAG = "FeatureTag";
         public static final String TAG_TURNS_INTO = "TurnsIntoState";
         public static final String TAG_Y_OFFSET = "YOffset";
+        public static final String TAG_CHANCE = "Chance";
+        public static final String TAG_FORCE_GENERATION = "ForceGeneration";
         
         
         public FeatureData( @Nullable ResourceLocation configuredFeatureId,
                             @Nullable TagKey<ConfiguredFeature<?, ?>> tag,
-                            BlockState turnsInto,
-                            int yOffset ) {
+                            @Nullable ResourceLocation fallbackId,
+                            BlockState turnsInto, int yOffset, double chance, boolean forceGeneration ) {
             this.configuredFeatureId = configuredFeatureId;
-            this.tag = tag;
+            this.tagKey = tag;
+            this.fallbackId = fallbackId;
             this.turnsInto = turnsInto;
             this.yOffset = yOffset;
+            this.chance = chance;
+            this.forceGeneration = forceGeneration;
         }
         
         @Nullable
@@ -248,8 +282,13 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
         }
         
         @Nullable
-        public TagKey<ConfiguredFeature<?, ?>> getTag() {
-            return tag;
+        public TagKey<ConfiguredFeature<?, ?>> getTagKey() {
+            return tagKey;
+        }
+        
+        @Nullable
+        public ResourceLocation getFallbackId() {
+            return fallbackId;
         }
         
         public BlockState getTurnsInto() {
@@ -260,18 +299,31 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
             return yOffset;
         }
         
+        public double getChance() {
+            return chance;
+        }
+        
+        public boolean forceGeneration() {
+            return forceGeneration;
+        }
+        
         /** Saves this instance's data to NBT. */
         public void saveTo( CompoundTag saveTag ) {
             if( configuredFeatureId != null ) {
                 saveTag.putString( TAG_FEATURE_ID, configuredFeatureId.toString() );
             }
-            if( tag != null ) {
-                saveTag.putString( TAG_FEATURE_TAG, tag.location().toString() );
+            if( tagKey != null ) {
+                saveTag.putString( TAG_FEATURE_TAG, tagKey.location().toString() );
+            }
+            if( fallbackId != null ) {
+                saveTag.putString( TAG_FALLBACK_ID, fallbackId.toString() );
             }
             if( turnsInto != null ) {
                 NBTHelper.putBlockState( saveTag, TAG_TURNS_INTO, turnsInto );
             }
             saveTag.putInt( TAG_Y_OFFSET, yOffset );
+            saveTag.putDouble( TAG_CHANCE, chance );
+            saveTag.putBoolean( TAG_FORCE_GENERATION, forceGeneration );
         }
         
         /** Loads data from NBT and applies it to this instance. */
@@ -282,15 +334,29 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
             }
             if( NBTHelper.containsString( loadTag, TAG_FEATURE_TAG ) ) {
                 ResourceLocation id = ResourceLocation.tryParse( loadTag.getString( TAG_FEATURE_TAG ) );
-                if( id != null ) tag = TagKey.create( Registries.CONFIGURED_FEATURE, id );
+                if( id != null ) tagKey = TagKey.create( Registries.CONFIGURED_FEATURE, id );
+            }
+            if( NBTHelper.containsString( loadTag, TAG_FALLBACK_ID ) ) {
+                ResourceLocation id = ResourceLocation.tryParse( loadTag.getString( TAG_FALLBACK_ID ) );
+                if( id != null ) fallbackId = id;
             }
             turnsInto = NBTHelper.getBlockState( loadTag, TAG_TURNS_INTO );
-            yOffset = loadTag.getInt( TAG_Y_OFFSET );
+            
+            if( NBTHelper.containsNumber( loadTag, TAG_Y_OFFSET ) ) {
+                yOffset = loadTag.getInt( TAG_Y_OFFSET );
+            }
+            if( NBTHelper.containsNumber( loadTag, TAG_CHANCE ) ) {
+                chance = loadTag.getDouble( TAG_CHANCE );
+            }
+            if( NBTHelper.containsNumber( loadTag, TAG_FORCE_GENERATION ) ) {
+                forceGeneration = loadTag.getBoolean( TAG_FORCE_GENERATION );
+            }
         }
         
         /** @return A new empty / default FeatureData instance. */
         public static FeatureData newEmpty() {
-            return new FeatureData( null, null, Blocks.AIR.defaultBlockState(), 0 );
+            return new FeatureData( null, null, null,
+                    Blocks.AIR.defaultBlockState(), 1, 1.0, false );
         }
     }
 }
