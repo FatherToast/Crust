@@ -21,6 +21,10 @@ public final class CrustServerWork {
             return;
         }
         final BlockPos pos = message.POS.pos();
+        
+        // Make sure we are in a loaded chunk
+        if( !level.isLoaded( pos ) ) return;
+        
         final BlockEntity blockEntity = level.getExistingBlockEntity( pos );
         
         if( blockEntity instanceof FeatureGeneratorBlockEntity featureGenerator ) {

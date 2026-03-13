@@ -52,10 +52,11 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
      */
     @Override
     public void onLoad() {
+        if( level == null ) return;
+        
         // Check if we should try generating.
         if( isReadyForGen() ) {
-            // noinspection ConstantConditions
-            generate( getLevel(), getBlockPos(), getData(), false );
+            generate( level, getBlockPos(), getData(), false );
         }
     }
     

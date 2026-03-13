@@ -48,23 +48,27 @@ public final class CrustPacketHandler {
         sendToClient( player, new S2CUpdateCrustModes( CrustModesData.of( player ).getSaveTag() ) );
     }
     
+    /** Requests opening the Feature Generator GUI on the client for the specified player. */
     public static void openFeatureGeneratorScreen( ServerPlayer player, BlockEntity blockEntity ) {
         sendToClient( player, new S2COpenFeatureGeneratorScreen( blockEntity.getBlockPos() ) );
     }
     
-    /** Sends a feature generator data update to the server for the given feature generator block entity. */
+    /**
+     * Sends a feature generator data update from client to server for the given feature generator block entity.
+     */
     public static void sendFeatureGeneratorData( FeatureGeneratorBlockEntity featureGenerator ) {
         Objects.requireNonNull( featureGenerator );
         Objects.requireNonNull( featureGenerator.getLevel() );
         
+        // Construct packet
         final CompoundTag tag = new CompoundTag();
         featureGenerator.getData().saveTo( tag );
-        
-        CHANNEL.sendToServer( new C2SFeatureGeneratorData(
+        C2SFeatureGeneratorData packet = new C2SFeatureGeneratorData(
                 tag,
                 featureGenerator.getLevel(),
                 featureGenerator.getBlockPos()
-        ) );
+        );
+        CHANNEL.sendToServer( packet );
     }
     
     /**
@@ -85,7 +89,7 @@ public final class CrustPacketHandler {
         registerMessage( S2CDestroyItemOnPointer.class, S2CDestroyItemOnPointer::encode, S2CDestroyItemOnPointer::decode, S2CDestroyItemOnPointer::handle );
         registerMessage( S2COpenFeatureGeneratorScreen.class, S2COpenFeatureGeneratorScreen::encode, S2COpenFeatureGeneratorScreen::decode, S2COpenFeatureGeneratorScreen::handle );
         
-        // Client -> Server
+        // Bidirectional
         registerMessage( C2SFeatureGeneratorData.class, C2SFeatureGeneratorData::encode, C2SFeatureGeneratorData::decode, C2SFeatureGeneratorData::handle );
     }
     
