@@ -22,6 +22,9 @@ public final class CrustConfig {
     /** File for configuring modes. */
     public static final CrustModesConfigFile MODES = new CrustModesConfigFile(
             ConfigManager.getRequired( ICrustApi.MOD_ID ), "modes" );
+    /** File for configuring misc utilities. */
+    public static final CrustUtilitiesConfigFile UTILITIES = new CrustUtilitiesConfigFile(
+            ConfigManager.getRequired( ICrustApi.MOD_ID ), "utilities" );
     
     /**
      * Called to load all the common config files. The files are pretty simple, so we don't really need
@@ -30,5 +33,6 @@ public final class CrustConfig {
     public static void initialize() {
         CrustConfig.DEFAULT_GAME_RULES.SPEC.initialize();
         CrustConfig.MODES.SPEC.initialize();
+        CrustConfig.UTILITIES.SPEC.initialize();
     }
 }

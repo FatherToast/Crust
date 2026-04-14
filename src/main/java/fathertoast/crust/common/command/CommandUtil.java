@@ -26,6 +26,8 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.Collection;
 import java.util.Locale;
 
+// TODO - Maybe split off the utility stuff in a nice way so that
+//        other mods can make use of it in its entirety?
 @Mod.EventBusSubscriber( modid = ICrustApi.MOD_ID )
 public final class CommandUtil {
     
@@ -105,11 +107,11 @@ public final class CommandUtil {
     /** @return True if the source is allowed to cheat (op level 2+). */
     public static boolean canCheat( CommandSourceStack source ) { return source.hasPermission( PERMISSION_CHEAT ); }
     
-    ///** @return True if the source is a moderator (op level 3+). */
-    //public static boolean isModerator( CommandSource source ) { return source.hasPermission( PERMISSION_MODERATOR ); }
+    /// ** @return True if the source is a moderator (op level 3+). */
+    public static boolean isModerator( CommandSourceStack source ) { return source.hasPermission( PERMISSION_MODERATE ); }
     
-    ///** @return True if the source is a server operator (op level 4). */
-    //public static boolean isServerOp( CommandSource source ) { return source.hasPermission( PERMISSION_SERVER ); }
+    /// ** @return True if the source is a server operator (op level 4). */
+    public static boolean isServerOp( CommandSourceStack source ) { return source.hasPermission( PERMISSION_SERVER_OP ); }
     
     
     // ---- Argument Parsers ---- //

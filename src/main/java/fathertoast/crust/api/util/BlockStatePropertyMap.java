@@ -175,9 +175,8 @@ public record BlockStatePropertyMap(Map<String, String> map) implements
     
     /**
      * @return The same result as {@link BlockStatePropertyMap#stateFrom(String)},
-     * except the first part of the string <br>
-     * (ID / resource location) MUST be a complete resource location
-     * with namespace included.
+     * except the first part of the String, before the initial '[' bracket, MUST be a complete resource location
+     * with namespace included, following the expected format "namespace:path".
      * <br><br>
      * For example, <strong>"coolmod:epic_stone[epic=true]"</strong> will parse,
      * <br>
@@ -186,14 +185,7 @@ public record BlockStatePropertyMap(Map<String, String> map) implements
     @Nullable
     public static BlockState strictStateFrom( String s ) {
         final String[] split = split( s );
-        final String id = split[0];
-        
-        // We want both the namespace and path, no partial
-        if( id.split( ":" ).length != 2 )
-            return null;
-        
-        ResourceLocation resLoc = ResourceLocation.tryParse( id );
-        
+        ResourceLocation resLoc = ResourceLocationUtils.strictTryParse( split[0] );
         return resLoc == null ? null : BlockStatePropertyMap.of( split[1] )
                 .stateForNullable( ForgeRegistries.BLOCKS.getValue( resLoc ) );
     }

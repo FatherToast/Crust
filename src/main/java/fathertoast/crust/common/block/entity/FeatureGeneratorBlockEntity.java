@@ -2,6 +2,8 @@ package fathertoast.crust.common.block.entity;
 
 import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.api.lib.NBTHelper;
+import fathertoast.crust.api.util.ResourceLocationUtils;
+import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -17,7 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -45,14 +47,19 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
     /**
      * Called when this block entity is added to the world, right before
      * the first tick when the chunk is generated or loaded from disk.
+     * <br><br>
+     * It is possible for this to be called before the underlying chunk
+     * is fully promoted and has started ticking.
      */
     @Override
     public void onLoad() {
-        if( level == null ) return;
+        super.onLoad();
         
-        // Check if we should try generating.
-        if( isReadyForGen() ) {
-            generate( level, getBlockPos(), getData(), false );
+        if( level == null || level.isClientSide ) return;
+        
+        // Schedule placement in a later block tick
+        if( !level.getBlockTicks().hasScheduledTick( worldPosition, getBlockState().getBlock() ) ) {
+            level.scheduleTick( worldPosition, getBlockState().getBlock(), 1 );
         }
     }
     
@@ -133,18 +140,25 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
      * @param level The level to generate the feature in.
      * @param pos   The block position where the feature is generating from.
      * @param data  The feature data to generate from.
-     * @param debug True if this generation call is a test.
      * @return True if either primary feature or fallback feature was placed.
      */
-    public static boolean generate( LevelReader level, BlockPos pos, FeatureData data, boolean debug ) {
-        Objects.requireNonNull( level );
+    public static boolean generate( @Nullable LevelAccessor level, @Nullable BlockPos pos, @Nullable FeatureData data ) {
+        if( level == null || pos == null || data == null ) return false;
         
         // Don't do anything on client.
         if( !(level instanceof ServerLevel serverLevel) ) return false;
         
+        final boolean debug = CrustConfig.UTILITIES.FEATURE_GEN.debugMode.get();
+        
         // Neither feature ID nor tag is present, nothing to generate!
-        if( data.configuredFeatureId == null && data.tagKey == null )
+        if( data.configuredFeatureId == null && data.tagKey == null ) {
+            if( debug ) {
+                Crust.LOG.debug( "Feature generator at '{}' in dimension '{}' was flagged as ready for placement " +
+                                "but had no feature ID or tag specified!",
+                        pos, serverLevel.dimension().location() );
+            }
             return false;
+        }
         
         try {
             final RandomSource random = serverLevel.getRandom();
@@ -166,44 +180,36 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
                 }
             }
             // Does the feature exist? If not, try fetching fallback!
-            if( feature == null && data.fallbackId != null ) {
-                if( debug ) {
-                    Crust.LOG.debug( "Feature generator at '{}' in dimension '{}' has no feature ID! Checking fallback feature...",
-                            pos, serverLevel.dimension().location() );
-                }
+            if( feature == null && !ResourceLocationUtils.isEmpty( data.fallbackId ) ) {
+                debugMsg( debug, "Feature generator at '{}' in dimension '{}' has no feature ID! Checking fallback feature...",
+                        pos, serverLevel.dimension().location() );
                 feature = featureReg.get( data.fallbackId );
             }
             if( feature == null ) {
-                if( debug ) {
-                    Crust.LOG.debug( "Feature generator at '{}' in dimension '{}' failed to generate anything!",
-                            pos, serverLevel.dimension().location() );
-                }
+                debugMsg( debug, "Feature generator at '{}' in dimension '{}' failed to generate anything!",
+                        pos, serverLevel.dimension().location() );
                 return false;
             }
             final int yPos = pos.getY() + data.yOffset;
             
             // If Y position ends up out of bounds, log a warning and give up
             if( yPos < level.getMinBuildHeight() || yPos > level.getMaxBuildHeight() ) {
-                if( debug ) {
-                    Crust.LOG.debug( "Feature generator at '{}' in dimension '{}' is trying to generate out of bounds! Generator's Y-offset: '{}'",
-                            pos, serverLevel.dimension().location(), data.yOffset );
-                }
+                debugMsg( debug, "Feature generator at '{}' in dimension '{}' is trying to generate out of bounds! Generator's Y-offset: '{}'",
+                        pos, serverLevel.dimension().location(), data.yOffset );
                 return false;
             }
             boolean generated = false;
             
             // Roll placement chance!
             if( random.nextDouble() <= data.chance ) {
-                // Set to air first so we don't mess with generation
+                // Set to air first so we don't accidentally block the placement.
                 serverLevel.setBlock( pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_NONE );
                 // Try generating!
                 generated = feature.place( serverLevel, serverLevel.getChunkSource().getGenerator(), random, pos.atY( yPos ) );
                 
                 // Check if we should and can generate fallback feature
                 if( !generated && data.getFallbackId() != null ) {
-                    if( debug ) {
-                        Crust.LOG.debug( "Feature generator failed first placement attempt! Trying to place fallback..." );
-                    }
+                    debugMsg( debug, "Feature generator failed first placement attempt! Trying to place fallback..." );
                     feature = featureReg.get( data.fallbackId );
                     
                     // Don't try generating a second time if we were already trying the fallback!
@@ -227,6 +233,11 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
         }
     }
     
+    /** Convenience method for logging a debug message during placement. */
+    private static void debugMsg( boolean debug, String msg, Object... args ) {
+        if( debug ) Crust.LOG.debug( msg, args );
+    }
+    
     /** Wrapper for the data used when generating a feature. */
     public static final class FeatureData {
         
@@ -236,7 +247,7 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
         /** An optional tag of configured features to pick from. This can be null, as long as "configuredFeatureId" is specified. */
         @Nullable
         private TagKey<ConfiguredFeature<?, ?>> tagKey;
-        /** An optional ID of a fallback feature to try and generate if the original placement failed.z */
+        /** An optional ID of a fallback feature to try and generate if the original placement failed. */
         @Nullable
         private ResourceLocation fallbackId;
         /** The block state the feature generator should turn into before generating. */
@@ -247,7 +258,7 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
         private double chance;
         /**
          * If true, the feature will be force placed.
-         * Currently only works for feature from DeadlyWorld.
+         * Currently only works for features from DeadlyWorld.
          */
         private boolean forceGeneration;
         
@@ -307,7 +318,7 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
             return forceGeneration;
         }
         
-        /** Saves this instance's data to NBT. */
+        /** Saves this instance's data to the given compound tag. */
         public void saveTo( CompoundTag saveTag ) {
             if( configuredFeatureId != null ) {
                 saveTag.putString( TAG_FEATURE_ID, configuredFeatureId.toString() );
@@ -326,7 +337,7 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
             saveTag.putBoolean( TAG_FORCE_GENERATION, forceGeneration );
         }
         
-        /** Loads data from NBT and applies it to this instance. */
+        /** Loads data from the given compound tag and applies it to this instance. */
         public void loadFrom( CompoundTag loadTag ) {
             if( NBTHelper.containsString( loadTag, TAG_FEATURE_ID ) ) {
                 ResourceLocation id = ResourceLocation.tryParse( loadTag.getString( TAG_FEATURE_ID ) );
@@ -356,7 +367,7 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
         /** @return A new empty / default FeatureData instance. */
         public static FeatureData newEmpty() {
             return new FeatureData( null, null, null,
-                    Blocks.AIR.defaultBlockState(), 1, 1.0, false );
+                    Blocks.AIR.defaultBlockState(), 0, 1.0, false );
         }
     }
 }

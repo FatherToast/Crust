@@ -3,7 +3,9 @@ package fathertoast.crust.common.block;
 import fathertoast.crust.common.block.entity.FeatureGeneratorBlockEntity;
 import fathertoast.crust.common.network.CrustPacketHandler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -13,13 +15,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.function.BiConsumer;
 
 public class FeatureGeneratorBlock extends Block implements EntityBlock {
@@ -41,7 +41,7 @@ public class FeatureGeneratorBlock extends Block implements EntityBlock {
         if( level.getExistingBlockEntity( pos ) instanceof FeatureGeneratorBlockEntity featureGenerator ) {
             // Test generation code if player has debug stick and is sneaking.
             if( player.getItemInHand( hand ).getItem() == Items.DEBUG_STICK ) {
-                return FeatureGeneratorBlockEntity.generate( level, featureGenerator.getBlockPos(), featureGenerator.getData(), true )
+                return FeatureGeneratorBlockEntity.generate( level, featureGenerator.getBlockPos(), featureGenerator.getData() )
                         ? InteractionResult.sidedSuccess( level.isClientSide )
                         : InteractionResult.PASS;
             }
@@ -54,6 +54,15 @@ public class FeatureGeneratorBlock extends Block implements EntityBlock {
         return InteractionResult.FAIL;
     }
     
+    @Override
+    @SuppressWarnings( "deprecation" )
+    public void tick( BlockState state, ServerLevel serverLevel, BlockPos pos, RandomSource random ) {
+        if( serverLevel.getExistingBlockEntity( pos ) instanceof FeatureGeneratorBlockEntity featureGenerator ) {
+            if( featureGenerator.isReadyForGen() )
+                FeatureGeneratorBlockEntity.generate( serverLevel, featureGenerator.getBlockPos(), featureGenerator.getData() );
+        }
+    }
+    
     /** @return A BiConsumer that requests opening X screen for Y player. */
     protected BiConsumer<ServerPlayer, BlockEntity> getScreenOpener() {
         return CrustPacketHandler::openFeatureGeneratorScreen;
@@ -63,11 +72,5 @@ public class FeatureGeneratorBlock extends Block implements EntityBlock {
     @Nullable
     public BlockEntity newBlockEntity( BlockPos pos, BlockState state ) {
         return new FeatureGeneratorBlockEntity( pos, state );
-    }
-    
-    @Override
-    @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker( Level level, BlockState state, BlockEntityType<T> type ) {
-        return null;
     }
 }

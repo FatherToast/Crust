@@ -3,6 +3,7 @@ package fathertoast.crust.client.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import fathertoast.crust.api.config.common.value.collection.key.BlockStateKey;
 import fathertoast.crust.api.util.BlockStatePropertyMap;
+import fathertoast.crust.api.util.ResourceLocationUtils;
 import fathertoast.crust.common.block.entity.FeatureGeneratorBlockEntity;
 import fathertoast.crust.common.network.CrustPacketHandler;
 import net.minecraft.ChatFormatting;
@@ -70,8 +71,8 @@ public class FeatureGeneratorScreen extends Screen {
         
         final FeatureGeneratorBlockEntity.FeatureData data = featureGenerator.getData();
         
-        this.originalFeatureId = featureStringFromData( data, false );
-        this.originalFallbackId = featureStringFromData( data, true );
+        this.originalFeatureId = featureStringFromData( data );
+        this.originalFallbackId = fallbackStringFromData( data );
         this.originalTurnsInto = stateStringFromData( data );
         this.originalYOffset = yOffsetFromData( data );
         this.originalChance = chanceFromData( data );
@@ -238,20 +239,24 @@ public class FeatureGeneratorScreen extends Screen {
      * <br><br>
      * If both feature ID and tag key are present, feature ID takes priority.
      */
-    private static String featureStringFromData( FeatureGeneratorBlockEntity.FeatureData data, boolean fallback ) {
+    private static String featureStringFromData( FeatureGeneratorBlockEntity.FeatureData data ) {
         String value = "";
         
-        if( fallback ) {
-            if( data.getFallbackId() != null )
-                value = data.getFallbackId().toString();
-        }
-        else {
-            if( data.getConfiguredFeatureId() != null )
-                value = data.getConfiguredFeatureId().toString();
-            else if( data.getTagKey() != null )
-                value = "#" + data.getTagKey().location();
-        }
+        if( data.getConfiguredFeatureId() != null )
+            value = data.getConfiguredFeatureId().toString();
+        else if( data.getTagKey() != null )
+            value = "#" + data.getTagKey().location();
         return value;
+    }
+    
+    /**
+     * @return A String representing the "fallback" feature ID of the given FeatureData instance.
+     * If null, an empty String is returned instead.
+     */
+    private static String fallbackStringFromData( FeatureGeneratorBlockEntity.FeatureData data ) {
+        if( !ResourceLocationUtils.isEmpty( data.getFallbackId() ) )
+            return data.getFallbackId().toString();
+        return "";
     }
     
     /**
@@ -285,7 +290,7 @@ public class FeatureGeneratorScreen extends Screen {
         if( value.isEmpty() ) return false;
         // Allow '#' as starting character, indicates a tag key.
         value = value.startsWith( "#" ) ? value.substring( 1 ) : value;
-        return ResourceLocation.isValidResourceLocation( value );
+        return ResourceLocationUtils.strictIsValid( value );
     }
     
     /**
@@ -293,8 +298,9 @@ public class FeatureGeneratorScreen extends Screen {
      * for the {@link FeatureGeneratorScreen#fallbackEdit} edit box.
      */
     private static boolean isFallbackValid( String value ) {
-        if( value.isEmpty() ) return false;
-        return ResourceLocation.isValidResourceLocation( value );
+        // Allow empty
+        if( value.isEmpty() ) return true;
+        return ResourceLocationUtils.strictIsValid( value );
     }
     
     /**
@@ -383,7 +389,7 @@ public class FeatureGeneratorScreen extends Screen {
                     featureOrTagId.startsWith( "#" )
                             ? TagKey.create( Registries.CONFIGURED_FEATURE, ResourceLocation.parse( featureOrTagId.substring( 1 ) ) )
                             : null,
-                    ResourceLocation.parse( fallbackId ),
+                    ResourceLocationUtils.parseOrDefault( fallbackId, ResourceLocationUtils.EMPTY ),
                     BlockStatePropertyMap.strictStateFrom( turnsInto ),
                     Integer.parseInt( yOffset ),
                     Double.parseDouble( chance ),
