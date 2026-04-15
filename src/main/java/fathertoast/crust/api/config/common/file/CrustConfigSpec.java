@@ -12,6 +12,9 @@ import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
+import fathertoast.crust.common.core.Crust;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
@@ -75,6 +78,12 @@ public class CrustConfigSpec {
             hasErrors = true;
         }
         
+        // Crash dedicated servers if a parsing error occurred.
+        if( hasErrors && FMLEnvironment.dist == Dist.DEDICATED_SERVER ) {
+            Crust.LOG.error( "The config '{}' is broken or malformed, and the game likely can't persist safely!", getFilePath() );
+            throw new IllegalStateException( "Encountered broken or malformed config: " + getFilePath() );
+        }
+        
         try {
             FileWatcher.defaultInstance().addWatch( NIGHT_CONFIG_FILE.getFile(), this::onFileChanged );
             ConfigUtil.LOG.info( "Started watching config file {} for updates", getFilePath() );
@@ -84,7 +93,6 @@ public class CrustConfigSpec {
                     getFilePath(), ex );
             hasErrors = true;
         }
-        
         initialized = !hasErrors;
     }
     
