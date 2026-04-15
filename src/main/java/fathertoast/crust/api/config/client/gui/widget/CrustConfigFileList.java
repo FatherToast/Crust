@@ -2,6 +2,7 @@ package fathertoast.crust.api.config.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
 import fathertoast.crust.api.config.client.gui.ElementOffset;
+import fathertoast.crust.api.config.client.gui.GuiUtil;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigFileScreen;
 import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
@@ -18,6 +19,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -137,7 +139,12 @@ public class CrustConfigFileList extends SearchableSelectionList<CrustConfigFile
                     Component.literal( ">" ),
                     ( button ) -> PARENT.minecraft.setScreen(
                             new CrustConfigFileScreen( PARENT.minecraft.screen, SPEC ) ),
-                    SPEC.isInitialized() ? Supplier::get : ( supplier ) -> specError );
+                    SPEC.isInitialized() ? Supplier::get : ( supplier ) -> specError ) {
+                @Override
+                protected ClientTooltipPositioner createTooltipPositioner() {
+                    return GuiUtil.TooltipPositioner.STANDARD;
+                }
+            };
             
             if( !SPEC.isInitialized() ) {
                 OPEN_BUTTON.active = false;
