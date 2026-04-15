@@ -15,9 +15,11 @@ import net.minecraftforge.fml.ModList;
  */
 public class CfgEditorCrustConfig extends AbstractConfigFile {
     
+    
     public final Button MAIN_BUTTON;
     public final Button PAUSE_BUTTON;
     public final Searchbars SEARCHBAR;
+    public final Misc MISC;
     
     /**
      * @param cfgManager The mod's config manager.
@@ -34,6 +36,7 @@ public class CfgEditorCrustConfig extends AbstractConfigFile {
                 "Options to modify the in-game config editor button on the main menu.",
                 -56, buttonConflict,
                 "Set this to false to hide the config editor button on the main menu." );
+        
         PAUSE_BUTTON = new Button( this, "pause_menu_button",
                 "Options to modify the in-game config editor button on the pause menu.",
                 -44, buttonConflict,
@@ -43,7 +46,11 @@ public class CfgEditorCrustConfig extends AbstractConfigFile {
         SEARCHBAR = new Searchbars( this, "searchbar_properties",
                 "Contains settings for the search bar added by Crust that appears " +
                         "in the config file selection screen and the config field browser screen." );
+        
+        MISC = new Misc( this, "misc",
+                "Contains settings that don't fit in other categories." );
     }
+    
     
     /**
      * Category for config editor buttons.
@@ -103,6 +110,21 @@ public class CfgEditorCrustConfig extends AbstractConfigFile {
             showSearchHighlights = SPEC.define( new BooleanField( "show_search_highlights", true,
                     "If true, search results found by the searchbar will be highlighted.",
                     "The searchbar will still auto-scroll to the first match even if this is disabled." ) );
+        }
+    }
+    
+    /**
+     * Category for settings that don't fit elsewhere.
+     */
+    public static class Misc extends AbstractConfigCategory<CfgEditorCrustConfig> {
+        
+        public final BooleanField ignoreBrokenConfigs;
+        
+        Misc( CfgEditorCrustConfig parent, String category, String categoryDescription ) {
+            super( parent, category, categoryDescription );
+            
+            ignoreBrokenConfigs = SPEC.define( new BooleanField( "ignore_broken_configs", false,
+                    "If true, the \"broken configs\" screen will not open when trying to load a world if any Crust-based configs are broken." ) );
         }
     }
 }

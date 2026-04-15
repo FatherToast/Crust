@@ -8,7 +8,9 @@
     "ForgeHooksMixin",
     "ServerAdvancementManagerMixin"
   ],
-  "client": [],
+  "client": [
+    "WorldOpenFlowsMixin"
+  ],
   "server": [],
   "injectors": {
     "defaultRequire": 1

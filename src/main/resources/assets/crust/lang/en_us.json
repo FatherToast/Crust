@@ -28,6 +28,10 @@
 
   "menu.crust.config.search_bar.hint": "Search...",
 
+  "menu.crust.broken_configs.title": "Broken configs detected!",
+  "menu.crust.broken_configs.message": "The configs listed below failed to load and are likely malformed. Things may not work as expected and the game may even crash.",
+  "menu.crust.broken_configs.proceed": "Proceed",
+
   "inventory.buttons.fullheal.tooltip": "Full recover",
   "inventory.buttons.cleareffects.tooltip": "Clear all potion effects",
   "inventory.buttons.destroyonpointer.tooltip": "Destroy item on cursor",
