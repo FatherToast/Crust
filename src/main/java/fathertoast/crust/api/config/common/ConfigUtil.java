@@ -7,6 +7,9 @@ import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModLoadingStage;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +36,25 @@ public final class ConfigUtil {
     public static final String LESS_OR_EQUAL = "\u2264";
     /** The greater than or equal to symbol (≥). */
     public static final String GREATER_OR_EQUAL = "\u2265";
+    
+    
+    /**
+     * Convenience method for enqueuing initializing configs on the main thread.
+     *
+     * @param mod     The mod container of the mod that is enqueuing work.
+     * @param stage   The mod loading stage to get a deferred work queue from.
+     * @param configs The configs to enqueue for initialization.
+     */
+    public static void initializeAtStage( ModContainer mod, ModLoadingStage stage, AbstractConfigFile... configs ) {
+        if( stage.ordinal() < mod.getCurrentState().ordinal() && !FMLEnvironment.production ) {
+            throw new IllegalStateException( "Attempted to enqueue config initialization for already completed mod loading stage!" );
+        }
+        stage.getDeferredWorkQueue().enqueueWork( mod, () -> {
+            for( AbstractConfigFile config : configs ) {
+                config.SPEC.initialize();
+            }
+        } );
+    }
     
     /** Prints the standard debug header for field validation issues. */
     public static void debugFor( @Nullable AbstractConfigField field ) {
