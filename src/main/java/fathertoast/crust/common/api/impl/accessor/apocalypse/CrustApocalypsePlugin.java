@@ -8,21 +8,21 @@ import fathertoast.crust.common.core.Crust;
 
 import javax.annotation.Nullable;
 
-@ApocalypsePlugin(modid = CrustApi.MOD_ID)
+@ApocalypsePlugin( modid = CrustApi.MOD_ID )
 public class CrustApocalypsePlugin implements IApocalypsePlugin {
-
+    
     /** Instance of Apocalypse's API. */
     @Nullable
     public static IApocalypseApi api;
-
-    @SuppressWarnings("ConstantConditions")
+    
+    @SuppressWarnings( "ConstantConditions" )
     @Override
-    public void load(IApocalypseApi iApocalypseApi) {
+    public void load( IApocalypseApi iApocalypseApi ) {
         api = iApocalypseApi;
         // Passes Apocalypse's difficulty provider to Crust's difficulty accessor
-        ((DifficultyAccessor) Crust.INSTANCE.apiInstance.getDifficultyAccessor()).setDifficultyProvider( api.getDifficultyProvider() );
+        ((DifficultyAccessor) Crust.INSTANCE.API.getDifficultyAccessor()).setDifficultyProvider( api.getDifficultyProvider() );
     }
-
+    
     @Override
     public String getPluginId() {
         return "crust_plugin";

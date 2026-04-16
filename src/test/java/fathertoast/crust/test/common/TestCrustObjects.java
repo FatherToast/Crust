@@ -73,7 +73,7 @@ public class TestCrustObjects {
     /** Called when the mod is constructed. */
     @SubscribeEvent
     static void onConstructMod( FMLConstructModEvent event ) {
-        IEventBus bus = Crust.INSTANCE.container.getEventBus();
+        IEventBus bus = Crust.INSTANCE.CONTAINER.getEventBus();
         Reg.CREATIVE_TABS.register( bus );
         Reg.BLOCKS.register( bus );
         Reg.ITEMS.register( bus );

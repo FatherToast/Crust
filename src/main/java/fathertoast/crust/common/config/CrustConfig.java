@@ -4,7 +4,7 @@ import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.common.ConfigManager;
 
 /**
- * The config manager that determines the mod's config folder is created in the Crust mod's constructor
+ * The config manager that determines the mod's config folder is created on the main thread during the mod construct loading stage.
  * ({@link fathertoast.crust.common.core.Crust#Crust(net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext)}). You may create this wherever you want, as long as it exists
  * before you initialize any of your config files.
  * <p>
@@ -27,8 +27,7 @@ public final class CrustConfig {
             ConfigManager.getRequired( ICrustApi.MOD_ID ), "utilities" );
     
     /**
-     * Called to load all the common config files. The files are pretty simple, so we don't really need
-     * them at any specific time. This is called from Crust's constructor.
+     * Called to load all the common config files.
      */
     public static void initialize() {
         CrustConfig.DEFAULT_GAME_RULES.SPEC.initialize();
