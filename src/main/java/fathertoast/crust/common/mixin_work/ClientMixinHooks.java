@@ -1,9 +1,9 @@
 package fathertoast.crust.common.mixin_work;
 
-import fathertoast.crust.api.config.client.gui.screen.BrokenConfigsScreen;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.client.ClientRegister;
+import fathertoast.crust.client.screen.BrokenConfigsScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.WorldOpenFlows;

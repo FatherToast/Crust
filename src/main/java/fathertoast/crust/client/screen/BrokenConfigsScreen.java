@@ -1,4 +1,4 @@
-package fathertoast.crust.api.config.client.gui.screen;
+package fathertoast.crust.client.screen;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.ChatFormatting;
