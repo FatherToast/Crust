@@ -21,8 +21,12 @@ public class ClientMixinHooks {
      * and informs the user about it before world loading.
      */
     public static void handleOnLoadLevel( WorldOpenFlows wof, Screen screen, String worldId, CallbackInfo ci ) {
-        // Check if we should even open the screen
-        if( alreadyWarnedBrokenCfgs || ClientRegister.CONFIG_EDITOR.MISC.ignoreBrokenConfigs.get() ) return;
+        if( alreadyWarnedBrokenCfgs )
+            // Only warn the first time the user tries loading a world
+            return;
+        if( ClientRegister.CONFIG_EDITOR.SPEC.isInitialized() && ClientRegister.CONFIG_EDITOR.MISC.ignoreBrokenConfigs.get() )
+            // Don't warn if configured not to
+            return;
         
         final List<String> brokenConfigs = new ArrayList<>();
         
