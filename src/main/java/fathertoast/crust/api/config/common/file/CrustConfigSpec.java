@@ -78,7 +78,7 @@ public class CrustConfigSpec {
             hasErrors = true;
         }
         
-        // Crash dedicated servers if a parsing error occurred.
+        // Crash dedicated servers if any parsing errors occurred.
         if( hasErrors && FMLEnvironment.dist == Dist.DEDICATED_SERVER ) {
             Crust.LOG.error( "The config '{}' is broken or malformed, and the game likely can't persist safely!", getFilePath() );
             throw new IllegalStateException( "Encountered broken or malformed config: " + getFilePath() );
