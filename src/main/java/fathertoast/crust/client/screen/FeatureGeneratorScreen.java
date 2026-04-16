@@ -23,6 +23,8 @@ import java.util.function.Predicate;
 
 // TODO - Maybe utilize ResourceKeyArgument or a similar implementation
 //        to show the user a suggestion list of feature IDs or tags.
+
+/** Screen that allows the player to interact with a Feature Generator block entity's settings. */
 public class FeatureGeneratorScreen extends Screen {
     
     /** Default GUI text color. */
@@ -65,18 +67,18 @@ public class FeatureGeneratorScreen extends Screen {
     boolean forceGeneration;
     
     
-    public FeatureGeneratorScreen( FeatureGeneratorBlockEntity featureGenerator ) {
+    public FeatureGeneratorScreen( FeatureGeneratorBlockEntity featureGen ) {
         super( GameNarrator.NO_TITLE );
-        this.featureGenerator = featureGenerator;
+        featureGenerator = featureGen;
         
-        final FeatureGeneratorBlockEntity.FeatureData data = featureGenerator.getData();
+        final FeatureGeneratorBlockEntity.FeatureData data = featureGen.getData();
         
-        this.originalFeatureId = featureStringFromData( data );
-        this.originalFallbackId = fallbackStringFromData( data );
-        this.originalTurnsInto = stateStringFromData( data );
-        this.originalYOffset = yOffsetFromData( data );
-        this.originalChance = chanceFromData( data );
-        this.originalForceGen = forceGenFromData( data );
+        originalFeatureId = featureStringFromData( data );
+        originalFallbackId = fallbackStringFromData( data );
+        originalTurnsInto = stateStringFromData( data );
+        originalYOffset = yOffsetFromData( data );
+        originalChance = chanceFromData( data );
+        originalForceGen = forceGenFromData( data );
         
         forceGeneration = data.forceGeneration();
     }
@@ -219,6 +221,7 @@ public class FeatureGeneratorScreen extends Screen {
         guiGraphics.drawString( font, Component.translatable( "menu.crust.feature_generator.edit_box.y_offset" ), width / 2 - 152, 153, DEFAULT_TEXT_COLOR );
         guiGraphics.drawString( font, Component.translatable( "menu.crust.feature_generator.edit_box.chance" ), width / 2 - 48, 153, DEFAULT_TEXT_COLOR );
         
+        // Render edit boxes
         featureEdit.render( guiGraphics, mouseX, mouseY, partialTicks );
         fallbackEdit.render( guiGraphics, mouseX, mouseY, partialTicks );
         turnsIntoEdit.render( guiGraphics, mouseX, mouseY, partialTicks );
