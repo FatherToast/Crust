@@ -13,6 +13,7 @@ import fathertoast.crust.common.network.CrustPacketHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingStage;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -92,24 +93,27 @@ public class Crust {
     
     /** Mod instance. */
     public static Crust INSTANCE;
-    
+    /** Mod container. */
+    public final FMLModContainer CONTAINER;
     /** API instance. */
-    public final FMLModContainer container;
-    /** API instance. */
-    public final CrustApi apiInstance;
+    public final CrustApi API;
     
     
     public Crust( FMLJavaModLoadingContext context ) {
         INSTANCE = this;
-        container = context.getContainer();
-        apiInstance = new CrustApi();
-        ApocalypseDifficultyEnvironment.register( apiInstance );
+        CONTAINER = context.getContainer();
+        API = new CrustApi();
+        ApocalypseDifficultyEnvironment.register( API );
         CrustPacketHandler.registerMessages();
         
-        // Crust's config manager; defines the mod config folder
-        ConfigManager.create( "Crust", ICrustApi.MOD_ID );
+        ModLoadingStage.CONSTRUCT.getDeferredWorkQueue().enqueueWork( CONTAINER, () -> {
+            // Crust's config manager; defines the mod config folder
+            ConfigManager.create( "Crust", ICrustApi.MOD_ID );
+            // Perform first-time loading of the common configs for this mod
+            CrustConfig.initialize();
+        } );
         
-        IEventBus modBus = context.getModEventBus();
+        final IEventBus modBus = context.getModEventBus();
         
         modBus.addListener( CrustPortals::onRegistryCreate );
         CrustBlocks.register( modBus );
@@ -125,12 +129,7 @@ public class Crust {
     }
     
     private void onCommonSetup( FMLCommonSetupEvent event ) {
-        event.enqueueWork( () -> {
-            // Perform first-time loading of the common configs for this mod
-            CrustConfig.initialize();
-            
-            processPlugins();
-        } );
+        event.enqueueWork( this::processPlugins );
     }
     
     @SuppressWarnings( "all" )
@@ -145,7 +144,7 @@ public class Crust {
                             
                             if( ICrustPlugin.class.isAssignableFrom( pluginClass ) ) {
                                 ICrustPlugin plugin = (ICrustPlugin) pluginClass.getDeclaredConstructor().newInstance();
-                                plugin.onLoad( apiInstance );
+                                plugin.onLoad( API );
                                 LOG.info( "Found Crust plugin at {} with plugin ID: {}",
                                         annotationData.memberName(), plugin.getId() );
                             }
