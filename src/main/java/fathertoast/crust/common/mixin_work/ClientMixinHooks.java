@@ -28,13 +28,13 @@ public class ClientMixinHooks {
             // Don't warn if configured not to
             return;
         
-        final List<String> brokenConfigs = new ArrayList<>();
+        final List<AbstractConfigFile> brokenConfigs = new ArrayList<>();
         
         // Collect names/paths of broken configs from all config managers
         for( ConfigManager cfgManager : ConfigManager.getAll() ) {
             for( AbstractConfigFile config : cfgManager.getConfigs() ) {
                 if( !config.SPEC.isInitialized() ) {
-                    brokenConfigs.add( config.SPEC.getFilePath() );
+                    brokenConfigs.add( config );
                 }
             }
         }

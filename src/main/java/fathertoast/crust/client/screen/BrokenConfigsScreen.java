@@ -1,7 +1,8 @@
 package fathertoast.crust.client.screen;
 
-import com.google.common.collect.ImmutableList;
+import fathertoast.crust.api.config.common.AbstractConfigFile;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
@@ -12,6 +13,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Screen that informs the user of any broken Crust-based configs that failed to load.
@@ -27,11 +29,11 @@ public class BrokenConfigsScreen extends Screen {
     
     /** The callback to run when the "proceed" button is pressed. */
     private final Runnable callback;
-    /** The list of config file paths to display as "broken". */
-    private final List<String> brokenConfigs;
+    /** The list of config files that are considered "broken". */
+    private final List<AbstractConfigFile> brokenConfigs;
     
     
-    public BrokenConfigsScreen( Runnable callback, List<String> brokenConfigs ) {
+    public BrokenConfigsScreen( Runnable callback, List<AbstractConfigFile> brokenConfigs ) {
         super( Component.translatable( "menu.crust.broken_configs.title" ).withStyle( ChatFormatting.RED ) );
         this.callback = callback;
         this.brokenConfigs = brokenConfigs;
@@ -64,7 +66,7 @@ public class BrokenConfigsScreen extends Screen {
         final int topY = height / 8 + 55;
         final int bottomY = height - 50;
         // noinspection ConstantConditions
-        StringList list = new StringList( minecraft, width, 60, topY, bottomY, 18 );
+        ConfigList list = new ConfigList( minecraft, width + 45, height, topY, bottomY, 20 );
         brokenConfigs.forEach( list::add );
         return list;
     }
@@ -84,60 +86,73 @@ public class BrokenConfigsScreen extends Screen {
         return false;
     }
     
-    /** A simple selection list implementation that displays string entries. */
-    public static class StringList extends ContainerObjectSelectionList<StringList.Entry> {
+    /**
+     * A simple selection list implementation that contains entries
+     * that display a config path and a button to open said config on the system.
+     */
+    public static class ConfigList extends ContainerObjectSelectionList<ConfigList.Entry> {
         
-        public StringList( Minecraft minecraft, int width, int height, int topY, int bottomY, int itemHeight ) {
+        private int maxNameWidth;
+        
+        public ConfigList( Minecraft minecraft, int width, int height, int topY, int bottomY, int itemHeight ) {
             super( minecraft, width, height, topY, bottomY, itemHeight );
-            centerListVertically = true;
         }
         
-        /** Adds the given string as an entry. */
-        public void add( String entry ) {
-            addEntry( new Entry( this, entry ) );
+        /** Adds the given config as an entry. */
+        public void add( AbstractConfigFile config ) {
+            addEntry( new Entry( this, config ) );
         }
         
         protected static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
             
-            /**
-             * Only here for convenience so we don't have to return a new empty list
-             * object every time {@link Entry#children()} or {@link Entry#narratables()} is called.
-             */
-            private static final List<AbstractWidget> emptyList = ImmutableList.of();
-            
-            /** The {@link StringList} this entry belongs to. */
-            final StringList parent;
+            /** The {@link ConfigList} this entry belongs to. */
+            final ConfigList PARENT;
             /** The component to display. */
-            final Component value;
+            final Component VALUE;
+            /** The button that opens the config file on the system. */
+            final AbstractWidget OPEN_BUTTON;
             /** The width of the value String, as determined by the used font. */
-            final int width;
+            final int WIDTH;
+            
+            /** List of subcomponents in this entry. */
+            final List<AbstractWidget> CHILDREN;
             
             
-            private Entry( StringList parent, String value ) {
-                this.parent = parent;
-                this.value = Component.literal( value ).withStyle( ChatFormatting.GRAY );
-                this.width = parent.minecraft.font.width( value );
+            private Entry( ConfigList parent, AbstractConfigFile config ) {
+                PARENT = parent;
+                VALUE = Component.literal( config.SPEC.getFilePath() ).withStyle( ChatFormatting.GRAY );
+                WIDTH = parent.minecraft.font.width( VALUE );
+                OPEN_BUTTON = new Button( 0, 0, 20, 20,
+                        Component.literal( ">" ),
+                        ( button ) -> Util.getPlatform().openFile( config.SPEC.getFile() ), Supplier::get );
+                
+                CHILDREN = List.of( OPEN_BUTTON );
+                
+                // Update the list's max name width
+                if( WIDTH > PARENT.maxNameWidth ) PARENT.maxNameWidth = WIDTH;
             }
             
             @Override
             public void render( GuiGraphics graphics, int index, int rowTop, int rowLeft, int rowWidth, int rowHeight,
                                 int mouseX, int mouseY, boolean mouseOver, float partialTicks ) {
                 // noinspection ConstantConditions
-                graphics.drawString( parent.minecraft.font, value,
-                        parent.minecraft.screen.width - width >> 1,
+                graphics.drawString( PARENT.minecraft.font, VALUE,
+                        PARENT.minecraft.screen.width - WIDTH >> 1,
                         rowTop + rowHeight - 9 - 1, 0xFFFFFF );
+                
+                OPEN_BUTTON.setX( (PARENT.minecraft.screen.width + PARENT.maxNameWidth + 60 >> 1) - 20 );
+                OPEN_BUTTON.setY( rowTop );
+                OPEN_BUTTON.render( graphics, mouseX, mouseY, partialTicks );
             }
             
             @Override
             public List<? extends GuiEventListener> children() {
-                // No children.
-                return emptyList;
+                return CHILDREN;
             }
             
             @Override
             public List<? extends NarratableEntry> narratables() {
-                // No narratables.
-                return emptyList;
+                return List.of();
             }
         }
     }
