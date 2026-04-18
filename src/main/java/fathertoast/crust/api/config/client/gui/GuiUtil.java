@@ -66,10 +66,10 @@ public final class GuiUtil {
                 Vector2i pos = (new Vector2i( x, y ));
                 
                 // Modify X
-                if( (pos.x - tooltipWidth) - 14 < 0 )
-                    pos.x = pos.x + 15;
+                if( (pos.x + tooltipWidth) + 14 > guiWidth )
+                    pos.x -= tooltipWidth + 10;
                 else
-                    pos.x = (pos.x - tooltipWidth) - 10;
+                    pos.x += 10;
                 
                 // Modify Y
                 pos.y = pos.y - tooltipHeight / 2;
