@@ -15,7 +15,9 @@
         - FuzzyKeyField
         - ValueCodecField
     - Added a new utility class related to ResourceLocations.
-    - Fixed GuiUtil.TooltipPositioner#CENTERED having weird Y-offset sometimes.
+    - Reworked GuiUtil.TooltipPositioner(s) and refactored them into:
+        - CENTER_Y (centers tooltip on Y position).
+        - CENTER_X (centers tooltip on X position).
 1.20.1-4.12.20
     API Changes:
     - Added getOrElse getter to FuzzyMapField.
