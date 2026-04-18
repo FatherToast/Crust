@@ -19,6 +19,7 @@
         - CENTER_Y (centers tooltip on Y position).
         - CENTER_X (centers tooltip on X position).
     - Removed createTooltipPositioner() override in SimpleTextureButton.
+    - Some fields in TextWithSubtitle have been renamed for consistency.
 1.20.1-4.12.20
     API Changes:
     - Added getOrElse getter to FuzzyMapField.

@@ -27,10 +27,10 @@ import java.util.Objects;
 public class TextWithSubtitle extends AbstractWidget {
     
     private final Component TEXT;
+    private final boolean CENTER_X;
     
-    private final boolean centerText;
-    private final Screen screen;
-    private final Font font;
+    private final Screen SCREEN;
+    private final Font FONT;
     
     
     /**
@@ -57,10 +57,9 @@ public class TextWithSubtitle extends AbstractWidget {
     private TextWithSubtitle( Screen screen, Font font, int x, int y, int width, int height, boolean centerText, Component text, @Nullable Component subtitle ) {
         super( x, y, width, height, Component.literal( "" ) );
         Objects.requireNonNull( text );
-        this.font = font;
-        this.centerText = centerText;
-        this.screen = screen;
-        
+        FONT = font;
+        CENTER_X = centerText;
+        SCREEN = screen;
         TEXT = text;
         
         if( subtitle != null )
@@ -78,12 +77,12 @@ public class TextWithSubtitle extends AbstractWidget {
         if( !isHovered && Minecraft.getInstance().getLastInputType().isKeyboard() )
             return new MenuTooltipPositioner( this );
         
-        return centerText ? GuiUtil.TooltipPositioner.CENTERED_Y : GuiUtil.TooltipPositioner.CENTERED_X;
+        return CENTER_X ? GuiUtil.TooltipPositioner.CENTERED_X : GuiUtil.TooltipPositioner.CENTERED_Y;
     }
     
     @Override
     protected void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTick ) {
-        graphics.drawString( font, TEXT, getX(), getY(), 0xFFFFFF );
+        graphics.drawString( FONT, TEXT, getX(), getY(), 0xFFFFFF );
     }
     
     @Override
@@ -105,7 +104,7 @@ public class TextWithSubtitle extends AbstractWidget {
         // in the parent screen's widget list.
         boolean returnNext = false;
         
-        for( GuiEventListener listener : screen.children() ) {
+        for( GuiEventListener listener : SCREEN.children() ) {
             if( listener == this ) {
                 returnNext = true;
                 continue;
