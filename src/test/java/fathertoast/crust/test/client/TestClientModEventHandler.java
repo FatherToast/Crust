@@ -19,13 +19,13 @@ public class TestClientModEventHandler {
     
     /** Called after common setup to perform client-side-only setup. */
     @SubscribeEvent
-    static void onClientSetup( FMLClientSetupEvent event ) {
+    public static void onClientSetup( FMLClientSetupEvent event ) {
         TestClientForgeEventHandler.register();
     }
     
     /** Registers this mod's additional key bindings. */
     @SubscribeEvent
-    static void onRegisterKeyMappings( RegisterKeyMappingsEvent event ) {
+    public static void onRegisterKeyMappings( RegisterKeyMappingsEvent event ) {
         TestClientForgeEventHandler.registerKeyBindings( event );
     }
     

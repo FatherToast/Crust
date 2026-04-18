@@ -74,7 +74,6 @@ public class TestGameEventHandler {
         ///      - Replace icon with barrier block.
         ///      - Becomes hidden.
         ///      - Frame type gets set to {@link FrameType.CHALLENGE}.
-        ///      - X and Y pos offset by 2 each.
         else if( advancementId.equals( ResourceLocation.withDefaultNamespace( "nether/brew_potion" ) ) ) {
             final IModifiableAdvancement advancement = event.getAdvancement();
             final IModifiableDisplayInfo displayInfo = advancement.getOrCreateDisplayInfo();
