@@ -17,8 +17,8 @@ import org.apache.logging.log4j.Logger;
 import org.joml.Matrix4f;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
@@ -140,7 +140,7 @@ public final class DebugShapeRenderManager {
     private static final Logger LOG = LogManager.getLogger( ICrustApi.MOD_ID + "/shapes" );
     
     /** Holds all registered factories and renderers. */
-    private static final Map<ResourceLocation, Holder<?, ?>> REGISTER = new HashMap<>();
+    private static final Map<ResourceLocation, Holder<?, ?>> REGISTER = new ConcurrentHashMap<>();
     
     static {
         register( NullShape::getInstance, NullShapeRenderer.getInstance() );

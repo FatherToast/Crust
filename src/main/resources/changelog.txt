@@ -3,6 +3,7 @@
     - Dedicated servers are now forcibly crashed if Crust detects any broken/malformed configs.
     - Users now get prompted when trying to load a world from disk if any Crust-based configs are broken/malformed.
         - Can be disabled in clientside configs.
+    - Calling DebugShapeRenderManager.register() is now thread-safe.
     API Changes:
     - Moved @OnClient annotation to API util package.
     - Redefined the intended use of @OnClient annotation.
