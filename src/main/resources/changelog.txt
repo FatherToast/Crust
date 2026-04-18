@@ -3,7 +3,7 @@
     - Dedicated servers are now forcibly crashed if Crust detects any broken/malformed configs.
     - Users now get prompted when trying to load a world from disk if any Crust-based configs are broken/malformed.
         - Can be disabled in clientside configs.
-    - Calling DebugShapeRenderManager.register() is now thread-safe.
+    - Searchbar highlight color is now configurable client-side.
     API Changes:
     - Moved @OnClient annotation to API util package.
     - Redefined the intended use of @OnClient annotation.
@@ -23,6 +23,8 @@
     - Removed createTooltipPositioner() override in SimpleTextureButton.
     - Some fields in TextWithSubtitle have been renamed for consistency.
     - Deprecated and marked some convenience methods in ClientConfigUtil for removal.
+    - Calling DebugShapeRenderManager.register() is now thread-safe.
+    - Added IClientConfigAccessor (accessible via API instance) which exposes some useful config values from Crust's client configs.
 1.20.1-4.12.20
     API Changes:
     - Added getOrElse getter to FuzzyMapField.
