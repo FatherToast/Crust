@@ -1,6 +1,6 @@
 package fathertoast.crust.test.client;
 
-import fathertoast.crust.api.config.client.gui.GuiUtil;
+import fathertoast.crust.api.client.util.GuiUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;

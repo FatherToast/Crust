@@ -15,6 +15,7 @@
         - FuzzyKeyField
         - ValueCodecField
     - Added a new utility class related to ResourceLocations.
+    - Moved GuiUtil from config client API package to client util package.
     - Reworked GuiUtil.TooltipPositioner(s) and refactored them into:
         - CENTER_Y (centers tooltip on Y position).
         - CENTER_X (centers tooltip on X position).

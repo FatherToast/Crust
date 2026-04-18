@@ -1,8 +1,8 @@
 package fathertoast.crust.api.config.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
+import fathertoast.crust.api.client.util.GuiUtil;
 import fathertoast.crust.api.config.client.gui.ElementOffset;
-import fathertoast.crust.api.config.client.gui.GuiUtil;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigFileScreen;
 import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
 import fathertoast.crust.api.config.common.AbstractConfigFile;

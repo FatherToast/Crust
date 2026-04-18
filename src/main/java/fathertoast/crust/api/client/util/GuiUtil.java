@@ -1,4 +1,4 @@
-package fathertoast.crust.api.config.client.gui;
+package fathertoast.crust.api.client.util;
 
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import org.joml.Vector2i;

@@ -1,6 +1,6 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
-import fathertoast.crust.api.config.client.gui.GuiUtil;
+import fathertoast.crust.api.client.util.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
