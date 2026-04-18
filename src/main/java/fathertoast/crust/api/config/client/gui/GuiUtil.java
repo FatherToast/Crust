@@ -4,59 +4,84 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositione
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 
-import javax.annotation.Nonnull;
-
 public final class GuiUtil {
     
     
-    public record TooltipPositioner(boolean centered) implements ClientTooltipPositioner {
+    public static class TooltipPositioner {
         
         /**
-         * Positions tooltip same as {@link net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner},
-         * except measures are taken to prevent tooltips from going off-screen on the Y-axis by
-         * putting them below the cursor.
+         * Centers the tooltip's X position and puts it above the cursor when possible.
+         * Attempts to always make the tooltip fit inside the screen.
          */
-        public static final TooltipPositioner STANDARD = new TooltipPositioner( false );
-        /**
-         * Similar to {@link TooltipPositioner#STANDARD}, except tooltip gets centered
-         * on the X-axis when possible without going off-screen.
-         */
-        public static final TooltipPositioner CENTERED = new TooltipPositioner( true );
-        
-        
-        /**
-         * @param guiWidth      The width of the GUI
-         * @param guiHeight     The height of the GUI
-         * @param x             The tooltip's unmodified X-position
-         * @param y             The tooltip's unmodified Y-position
-         * @param tooltipWidth  The width of the tooltip
-         * @param tooltipHeight The height of the tooltip
-         * @return A vector containing the new X and Y positions of the tooltip.
-         */
-        @Override
-        @Nonnull
-        public Vector2ic positionTooltip( int guiWidth, int guiHeight, int x, int y, int tooltipWidth, int tooltipHeight ) {
-            Vector2i pos = (new Vector2i( x, y )).add( centered ? 0 : 12, -14 );
+        public static final ClientTooltipPositioner CENTERED_X = new ClientTooltipPositioner() {
             
-            if( centered ) {
+            /**
+             * @param guiWidth      The width of the GUI
+             * @param guiHeight     The height of the GUI
+             * @param x             The tooltip's unmodified X-position
+             * @param y             The tooltip's unmodified Y-position
+             * @param tooltipWidth  The width of the tooltip
+             * @param tooltipHeight The height of the tooltip
+             * @return A vector containing the new X and Y positions of the tooltip.
+             */
+            @Override
+            public Vector2ic positionTooltip( int guiWidth, int guiHeight, int x, int y, int tooltipWidth, int tooltipHeight ) {
+                Vector2i pos = (new Vector2i( x, y ));
+                
+                // Modify X
                 pos.x = pos.x - tooltipWidth / 2;
                 
                 if( pos.x < 4 )
                     pos.x = 4;
                 else if( pos.x > (guiWidth - tooltipWidth) - 4 )
                     pos.x = (guiWidth - tooltipWidth) - 4;
+                
+                // Modify Y
+                if( (pos.y - tooltipHeight) - 14 < 0 )
+                    pos.y = pos.y + 15;
+                else
+                    pos.y = (pos.y - tooltipHeight) - 10;
+                
+                return pos;
             }
-            else if( pos.x + tooltipWidth > guiWidth ) {
-                pos.x = Math.max( pos.x - 24 - tooltipWidth, 4 );
+        };
+        
+        /**
+         * Centers the tooltip's Y position and puts it to the right of the cursor when possible.
+         * Attempts to always make the tooltip fit inside the screen.
+         */
+        public static final ClientTooltipPositioner CENTERED_Y = new ClientTooltipPositioner() {
+            
+            /**
+             * @param guiWidth      The width of the GUI
+             * @param guiHeight     The height of the GUI
+             * @param x             The tooltip's unmodified X-position
+             * @param y             The tooltip's unmodified Y-position
+             * @param tooltipWidth  The width of the tooltip
+             * @param tooltipHeight The height of the tooltip
+             * @return A vector containing the new X and Y positions of the tooltip.
+             */
+            @Override
+            public Vector2ic positionTooltip( int guiWidth, int guiHeight, int x, int y, int tooltipWidth, int tooltipHeight ) {
+                Vector2i pos = (new Vector2i( x, y ));
+                
+                // Modify X
+                if( (pos.x - tooltipWidth) - 14 < 0 )
+                    pos.x = pos.x + 15;
+                else
+                    pos.x = (pos.x - tooltipWidth) - 10;
+                
+                // Modify Y
+                pos.y = pos.y - tooltipHeight / 2;
+                
+                if( pos.y < 4 )
+                    pos.y = 4;
+                else if( pos.y > (guiHeight - tooltipHeight) - 4 )
+                    pos.y = (guiHeight - tooltipHeight) - 4;
+                
+                return pos;
             }
-            if( pos.y < 10 ) {
-                pos.y = pos.y + 25;
-            }
-            else if( centered ) {
-                pos.y -= 12;
-            }
-            return pos;
-        }
+        };
     }
     
     // Utility class

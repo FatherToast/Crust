@@ -34,7 +34,7 @@ public class SimpleTextureButton extends Button {
     
     @Override
     protected ClientTooltipPositioner createTooltipPositioner() {
-        return GuiUtil.TooltipPositioner.CENTERED;
+        return GuiUtil.TooltipPositioner.CENTERED_Y;
     }
     
     @Override

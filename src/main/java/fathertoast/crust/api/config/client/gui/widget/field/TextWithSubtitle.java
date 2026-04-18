@@ -78,7 +78,7 @@ public class TextWithSubtitle extends AbstractWidget {
         if( !isHovered && Minecraft.getInstance().getLastInputType().isKeyboard() )
             return new MenuTooltipPositioner( this );
         
-        return centerText ? GuiUtil.TooltipPositioner.CENTERED : GuiUtil.TooltipPositioner.STANDARD;
+        return centerText ? GuiUtil.TooltipPositioner.CENTERED_Y : GuiUtil.TooltipPositioner.CENTERED_X;
     }
     
     @Override
