@@ -1,11 +1,9 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import fathertoast.crust.api.config.client.gui.GuiUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
@@ -30,11 +28,6 @@ public class SimpleTextureButton extends Button {
         if( tooltip != null ) {
             setTooltip( Tooltip.create( tooltip ) );
         }
-    }
-    
-    @Override
-    protected ClientTooltipPositioner createTooltipPositioner() {
-        return GuiUtil.TooltipPositioner.CENTERED_Y;
     }
     
     @Override

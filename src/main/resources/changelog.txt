@@ -18,6 +18,7 @@
     - Reworked GuiUtil.TooltipPositioner(s) and refactored them into:
         - CENTER_Y (centers tooltip on Y position).
         - CENTER_X (centers tooltip on X position).
+    - Removed createTooltipPositioner() override in SimpleTextureButton.
 1.20.1-4.12.20
     API Changes:
     - Added getOrElse getter to FuzzyMapField.
