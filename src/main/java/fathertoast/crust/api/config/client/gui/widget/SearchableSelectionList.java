@@ -60,10 +60,15 @@ public abstract class SearchableSelectionList<T extends ContainerObjectSelection
                 int width = (getLeft() + ((getWidth() + rowWidth) / 2) - 3) + highlightOffset.getWidth();
                 int height = (rowTop + itemHeight + 3) + highlightOffset.getHeight();
                 
-                // TODO - Maybe make highlight color configurable
                 // noinspection ConstantConditions
                 if( searchbar.getElementByCandidateIndexes().inverse().get( itemIndex ) == searchbar.getFocusedIndex() ) {
-                    graphics.fillGradient( x, y, width, height, 0x70_EDDB38, 0x90_EDDB38 );
+                    int color = ClientRegister.CONFIG_EDITOR.SEARCHBAR.highlightColor.get();
+                    
+                    if( (color >>> 24) == 0 ) {
+                        // Force the color to be solid if it is fully transparent.
+                        color |= 0xFF000000;
+                    }
+                    graphics.fill( x, y, width, height, color );
                 }
                 else {
                     graphics.fillGradient( x, y, width, height, 0x40_878787, 0x50_878787 );

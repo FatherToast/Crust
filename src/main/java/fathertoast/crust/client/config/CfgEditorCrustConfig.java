@@ -5,6 +5,7 @@ import fathertoast.crust.api.config.common.AbstractConfigCategory;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.BooleanField;
+import fathertoast.crust.api.config.common.field.ColorIntField;
 import fathertoast.crust.api.config.common.field.EnumField;
 import fathertoast.crust.api.config.common.field.IntField;
 import fathertoast.crust.api.config.common.value.CrustAnchor;
@@ -98,6 +99,7 @@ public class CfgEditorCrustConfig extends AbstractConfigFile {
         public final EnumField<Searchbar.Orientation> orientation;
         
         public final BooleanField showSearchHighlights;
+        public final ColorIntField highlightColor;
         
         Searchbars( CfgEditorCrustConfig parent, String category, String categoryDescription ) {
             super( parent, category, categoryDescription );
@@ -110,6 +112,10 @@ public class CfgEditorCrustConfig extends AbstractConfigFile {
             showSearchHighlights = SPEC.define( new BooleanField( "show_search_highlights", true,
                     "If true, search results found by the searchbar will be highlighted.",
                     "The searchbar will still auto-scroll to the first match even if this is disabled." ) );
+            
+            // noinspection ConstantConditions
+            highlightColor = SPEC.define( new ColorIntField( "highlight_color", 0x45FFFF5D, true,
+                    "If the above setting is enabled, this field determines the highlight color for search results." ) );
         }
     }
     
