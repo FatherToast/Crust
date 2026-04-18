@@ -1,5 +1,7 @@
 package fathertoast.crust.api;
 
+import fathertoast.crust.api.client.accessor.IClientConfigAccessor;
+import fathertoast.crust.api.util.OnClient;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import javax.annotation.Nullable;
@@ -25,4 +27,16 @@ public interface ICrustApi {
      */
     @Nullable
     IDifficultyAccessor getDifficultyAccessor();
+    
+    /**
+     * @return Crust's client configs wrapped in an easy-to-read
+     * interface to read their values.
+     * <br><br>
+     * If called on dedicated server or before
+     * Crust's client configs have been initialized (during {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent}),
+     * this will return null.
+     */
+    @OnClient
+    @Nullable
+    IClientConfigAccessor getClientConfigAccessor();
 }

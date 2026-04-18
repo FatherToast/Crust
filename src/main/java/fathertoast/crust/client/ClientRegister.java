@@ -1,6 +1,7 @@
 package fathertoast.crust.client;
 
 import fathertoast.crust.api.ICrustApi;
+import fathertoast.crust.api.client.accessor.IClientConfigAccessor;
 import fathertoast.crust.api.client.renderer.CrustFishingHookRenderer;
 import fathertoast.crust.api.client.util.shape.*;
 import fathertoast.crust.api.config.client.ClientConfigUtil;
@@ -12,8 +13,10 @@ import fathertoast.crust.api.util.shape.CylinderShape;
 import fathertoast.crust.api.util.shape.QuadShape;
 import fathertoast.crust.api.util.shape.SphereShape;
 import fathertoast.crust.client.config.CfgEditorCrustConfig;
+import fathertoast.crust.client.config.ClientConfigAccessorImpl;
 import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
 import fathertoast.crust.client.config.RenderSettingsCrustConfig;
+import fathertoast.crust.common.api.impl.CrustApi;
 import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.core.registry.CrustItems;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -36,6 +39,12 @@ public final class ClientRegister {
     public static ExtraInvButtonsCrustConfig EXTRA_INV_BUTTONS;
     /** File for misc rendering settings. */
     public static RenderSettingsCrustConfig RENDER_SETTINGS;
+    /**
+     * Client config accessor instance for the API.
+     *
+     * @see CrustApi#getClientConfigAccessor()
+     */
+    public static IClientConfigAccessor CONFIG_ACCESSOR = null;
     
     
     /** Called after common setup to perform client-side-only setup. */
@@ -51,6 +60,8 @@ public final class ClientRegister {
         CONFIG_EDITOR.SPEC.initialize();
         EXTRA_INV_BUTTONS.SPEC.initialize();
         RENDER_SETTINGS.SPEC.initialize();
+        
+        CONFIG_ACCESSOR = new ClientConfigAccessorImpl();
         
         // Inject our own fishing rod animation
         if( RENDER_SETTINGS.fancyFishing.get() ) {
