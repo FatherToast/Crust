@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModLoadingContext;
 
 /**
@@ -17,14 +18,22 @@ import net.minecraftforge.fml.ModLoadingContext;
 public final class ClientConfigUtil {
     
     /**
+     * Deprecated, use the method below instead.
+     */
+    @Deprecated( forRemoval = true )
+    public static void registerConfigButtonAsEditScreen() {
+        ModLoadingContext ctx = ModLoadingContext.get();
+        registerConfigButtonAsEditScreen( ctx.getContainer() );
+    }
+    
+    /**
      * Call this during client setup event to allow users to open your mod's edit config screen from the mods
      * screen by pressing the "Config" button.
      *
      * @see net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
      */
-    public static void registerConfigButtonAsEditScreen() {
-        ModLoadingContext ctx = ModLoadingContext.get();
-        String modId = ctx.getActiveNamespace();
+    public static void registerConfigButtonAsEditScreen( ModContainer modContainer ) {
+        String modId = modContainer.getNamespace();
         ConfigManager cfgManager = ConfigManager.get( modId );
         
         //noinspection LoggingSimilarMessage
@@ -32,21 +41,30 @@ public final class ClientConfigUtil {
             ConfigUtil.LOG.warn( "Mod '{}' attempted to assign a config button action, but has no config!", modId );
         }
         else {
-            ctx.registerExtensionPoint( ConfigScreenHandler.ConfigScreenFactory.class,
+            modContainer.registerExtensionPoint( ConfigScreenHandler.ConfigScreenFactory.class,
                     () -> new ConfigScreenHandler.ConfigScreenFactory( ( mc, parent ) -> new CrustConfigSelectScreen( null, cfgManager ) ) );
         }
+    }
+    
+    /**
+     * Deprecated, use the method below instead.
+     */
+    @Deprecated( forRemoval = true )
+    @SuppressWarnings( "unused" )
+    public static void registerConfigButtonAsOpenFolder() {
+        ModLoadingContext ctx = ModLoadingContext.get();
+        registerConfigButtonAsOpenFolder( ctx.getContainer() );
     }
     
     /**
      * Call this during client setup event to allow users to open your mod's config directory from the mods
      * screen by pressing the "Config" button.
      *
+     * @param modContainer The Forge mod wrapper for the mod calling this method.
      * @see net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
      */
-    @SuppressWarnings( "unused" )
-    public static void registerConfigButtonAsOpenFolder() {
-        ModLoadingContext ctx = ModLoadingContext.get();
-        String modId = ctx.getActiveNamespace();
+    public static void registerConfigButtonAsOpenFolder( ModContainer modContainer ) {
+        String modId = modContainer.getNamespace();
         ConfigManager cfgManager = ConfigManager.get( modId );
         
         if( cfgManager == null ) {
@@ -54,7 +72,7 @@ public final class ClientConfigUtil {
             ConfigUtil.LOG.warn( "Mod '{}' attempted to assign a config button action, but has no config!", modId );
         }
         else {
-            ctx.registerExtensionPoint( ConfigScreenHandler.ConfigScreenFactory.class,
+            modContainer.registerExtensionPoint( ConfigScreenHandler.ConfigScreenFactory.class,
                     () -> new ConfigScreenHandler.ConfigScreenFactory( ( mc, parent ) -> new OpenFolderScreen( cfgManager ) ) );
             
             MinecraftForge.EVENT_BUS.addListener( new OpenFolderHandler( cfgManager )::onGuiOpen );
@@ -65,6 +83,7 @@ public final class ClientConfigUtil {
     // ---- Internal Methods ---- //
     
     /** Watches opening screens to actually open the config folder when it detects the right screen. */
+    @SuppressWarnings( "ClassCanBeRecord" )
     private static class OpenFolderHandler {
         
         final ConfigManager CFG_MANAGER;

@@ -14,6 +14,7 @@ import fathertoast.crust.api.util.shape.SphereShape;
 import fathertoast.crust.client.config.CfgEditorCrustConfig;
 import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
 import fathertoast.crust.client.config.RenderSettingsCrustConfig;
+import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.core.registry.CrustItems;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
@@ -61,7 +62,7 @@ public final class ClientRegister {
         registerShapeRenderers();
         
         // Tell Forge to open the config editor when our mod's "Config" button is clicked in the Mods screen
-        ClientConfigUtil.registerConfigButtonAsEditScreen();
+        ClientConfigUtil.registerConfigButtonAsEditScreen( Crust.INSTANCE.CONTAINER );
     }
     
     /** Registers this mod's additional key bindings. */
