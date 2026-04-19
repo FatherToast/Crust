@@ -1,6 +1,7 @@
 package fathertoast.crust.client.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import fathertoast.crust.api.client.util.GuiUtil;
 import fathertoast.crust.api.config.common.value.collection.key.BlockStateKey;
 import fathertoast.crust.api.util.BlockStatePropertyMap;
 import fathertoast.crust.api.util.ResourceLocationUtils;
@@ -11,7 +12,9 @@ import net.minecraft.client.GameNarrator;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -20,6 +23,7 @@ import net.minecraft.tags.TagKey;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 // TODO - Maybe utilize ResourceKeyArgument or a similar implementation
 //        to show the user a suggestion list of feature IDs or tags.
@@ -127,12 +131,16 @@ public class FeatureGeneratorScreen extends Screen {
         addRenderableWidget( chanceEdit );
         
         // Toggle "force generation" button
-        toggleForceGenButton = new Button.Builder(
+        toggleForceGenButton = new Button( width / 2 + 54, 164, 95, 22,
                 Component.translatable( "menu.crust.feature_generator.button.force_generation", forceGeneration ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF ),
-                ( button ) -> onToggleForceGen() )
-                .pos( width / 2 + 54, 164 )
-                .size( 95, 22 )
-                .build();
+                ( button ) -> onToggleForceGen(), Supplier::get ) {
+            @Override
+            protected ClientTooltipPositioner createTooltipPositioner() {
+                return GuiUtil.getOrForMenu( this, GuiUtil.TooltipPositioner.CENTERED_X );
+            }
+        };
+        toggleForceGenButton.setTooltip( Tooltip.create( Component.translatable( "menu.crust.feature_generator.button.force_generation.tooltip" ) ) );
+        toggleForceGenButton.setTooltipDelay( 750 );
         addRenderableWidget( toggleForceGenButton );
         
         // Done button

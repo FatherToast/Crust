@@ -3,6 +3,7 @@ package fathertoast.crust.common.block.entity;
 import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.api.lib.NBTHelper;
 import fathertoast.crust.api.util.ResourceLocationUtils;
+import fathertoast.crust.api.worldgen.DummyFeature;
 import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.core.BlockPos;
@@ -24,7 +25,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -142,6 +145,7 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
      * @param data  The feature data to generate from.
      * @return True if either primary feature or fallback feature was placed.
      */
+    @SuppressWarnings( { "unchecked", "rawtypes", "ConstantConditions" } )
     public static boolean generate( @Nullable LevelAccessor level, @Nullable BlockPos pos, @Nullable FeatureData data ) {
         if( level == null || pos == null || data == null ) return false;
         
@@ -204,9 +208,17 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
             if( random.nextDouble() <= data.chance ) {
                 // Set to air first so we don't accidentally block the placement.
                 serverLevel.setBlock( pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_NONE );
-                // Try generating!
-                generated = feature.place( serverLevel, serverLevel.getChunkSource().getGenerator(), random, pos.atY( yPos ) );
+                final ChunkGenerator chunkGenerator = serverLevel.getChunkSource().getGenerator();
                 
+                // Check if we are force generating (for a DW feature)
+                if( data.forceGeneration ) {
+                    FeaturePlaceContext context = new FeaturePlaceContext( Optional.of( DummyFeature.CONFIGURED_INSTANCE ), serverLevel, chunkGenerator, random, pos.atY( yPos ), feature.config() );
+                    generated = feature.feature().place( context );
+                }
+                // Otherwise, normal generation logic
+                else {
+                    generated = feature.place( serverLevel, serverLevel.getChunkSource().getGenerator(), random, pos.atY( yPos ) );
+                }
                 // Check if we should and can generate fallback feature
                 if( !generated && data.getFallbackId() != null ) {
                     debugMsg( debug, "Feature generator failed first placement attempt! Trying to place fallback..." );

@@ -10,6 +10,7 @@
   "menu.crust.feature_generator.edit_box.y_offset": "Y-offset",
   "menu.crust.feature_generator.edit_box.chance": "Chance",
   "menu.crust.feature_generator.button.force_generation": "Force gen: %s",
+  "menu.crust.feature_generator.button.force_generation.tooltip": "This is primarily used to force features from the Deadly World mod to force-generate without doing any placement checks. If the feature this Feature Generator tries to generate is not a Deadly World feature, enabling this setting will likely not do anything.",
 
   "menu.crust.config.open_folder": "Open Folder",
   "menu.crust.config.save_changes": "SAVE Changes",
