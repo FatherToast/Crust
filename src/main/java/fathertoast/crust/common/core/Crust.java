@@ -43,7 +43,7 @@ public class Crust {
      *              + dimension ID based sub-lists
      *  - events
      *      - advancement load event
-     *      + structure generating event
+     *      ? structure generating event
      *  - helpers
      *      - shape renderer (block entity, entity)
      *      - portal registry
@@ -71,9 +71,8 @@ public class Crust {
      *      - configure default game rules
      *      - configure default 'modes' (see below)
      *      ? in-game nbt editor gui (does the mod still exist?)
-     *      + feature generator blocks
-     *          + structure gen variant (with processor)
-     *          + proximity variant
+     *      - feature generator blocks
+     *          - structure gen variant (with processor)
      *  - modes
      *      - magnet - pulls nearby items toward you
      *      ? multi-mine - break multiple blocks at once; perhaps compat to an existing mod instead (like "Ore Excavation")
