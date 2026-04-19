@@ -12,12 +12,10 @@ import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.client.ClientRegister;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
-import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -282,30 +280,6 @@ public class CrustConfigFileScreen extends Screen {
         }
         return super.charTyped( codePoint, mods );
     }
-    
-    // TODO - check out how this actually works
-    @Nullable
-    @Override
-    public ComponentPath nextFocusPath( FocusNavigationEvent event ) {
-        return super.nextFocusPath( event );
-    }
-    
-    /* *
-     * Called when focus change is requested (for example, tab or shift+tab).
-     *
-     * @param forward Whether focus should move forward. Typically, forward means left-to-right then top-to-bottom.
-     * @return This gui's new focus state.
-     */
-    /*
-    @Override
-    public boolean changeFocus( boolean forward ) {
-        if( popupWidget != null ) {
-            if( !changeFocus( forward ) ) popupWidget = null;
-            return true;
-        }
-        return super.changeFocus( forward );
-    }
-     */
     
     /** Called each tick to update animations. */
     @Override

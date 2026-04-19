@@ -3,7 +3,8 @@
     - Dedicated servers are now forcibly crashed if Crust detects any broken/malformed configs.
     - Users now get prompted when trying to load a world from disk if any Crust-based configs are broken/malformed.
         - Can be disabled in clientside configs.
-    - Searchbar highlight color is now configurable client-side.
+    - Config Editor searchbar highlight color is now configurable client-side.
+    - Config Editor searchbar now supports using the up & down arrow keys to navigate search matches.
     API Changes:
     - Moved @OnClient annotation to API util package.
     - Redefined the intended use of @OnClient annotation.

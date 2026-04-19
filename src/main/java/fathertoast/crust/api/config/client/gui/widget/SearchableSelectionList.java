@@ -54,14 +54,14 @@ public abstract class SearchableSelectionList<T extends ContainerObjectSelection
                                int itemIndex, int rowLeft, int rowTop, int rowWidth, int itemHeight ) {
         // Check if highlights are enabled in the config.
         if( searchbar != null && ClientRegister.CONFIG_EDITOR.SEARCHBAR.showSearchHighlights.get() ) {
-            if( searchbar.getElementByCandidateIndexes().inverse().containsKey( itemIndex ) ) {
+            if( searchbar.getElementByMatchIndexes().inverse().containsKey( itemIndex ) ) {
                 int x = (getLeft() + ((getWidth() - rowWidth) / 2)) + highlightOffset.getX();
                 int y = rowTop + highlightOffset.getY();
                 int width = (getLeft() + ((getWidth() + rowWidth) / 2) - 3) + highlightOffset.getWidth();
                 int height = (rowTop + itemHeight + 3) + highlightOffset.getHeight();
                 
                 // noinspection ConstantConditions
-                if( searchbar.getElementByCandidateIndexes().inverse().get( itemIndex ) == searchbar.getFocusedIndex() ) {
+                if( searchbar.getElementByMatchIndexes().inverse().get( itemIndex ) == searchbar.getFocusedIndex() ) {
                     int color = ClientRegister.CONFIG_EDITOR.SEARCHBAR.highlightColor.get();
                     
                     if( (color >>> 24) == 0 ) {

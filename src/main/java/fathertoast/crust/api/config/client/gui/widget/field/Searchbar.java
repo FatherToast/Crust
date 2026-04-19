@@ -2,6 +2,7 @@ package fathertoast.crust.api.config.client.gui.widget.field;
 
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableMap;
+import com.mojang.blaze3d.platform.InputConstants;
 import fathertoast.crust.api.config.client.gui.widget.SearchableSelectionList;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.common.core.Crust;
@@ -34,20 +35,22 @@ public class Searchbar extends EditBox {
     /** The default search matcher predicate. */
     public static final BiPredicate<String, String> DEFAULT_MATCHER = StringUtils::containsIgnoreCase;
     
+    /** The screen this search bar belongs to. */
+    private final Screen PARENT_SCREEN;
     /** The selection list tied to this searchbar. */
-    private final SearchableSelectionList<? extends Searchable> selectionList;
+    private final SearchableSelectionList<? extends Searchable> SEARCHABLE_LIST;
     /** The search matcher predicate used by this searchbar. */
-    private final BiPredicate<String, String> matchPredicate;
-    /** A bidirectional map that maps search candidate indexes to selection list element indexes. */
-    private ImmutableBiMap<Integer, Integer> elementByCandidateIndexes = ImmutableBiMap.of();
+    private final BiPredicate<String, String> MATCH_PREDICATE;
     
-    /** Navigation button for going to the next search candidate. */
-    private final Button previousCandidate;
-    /** Navigation button for going to the previous search candidate. */
-    private final Button nextCandidate;
+    /** A bidirectional map that maps search match indexes to selection list element indexes. */
+    private ImmutableBiMap<Integer, Integer> elementByMatchIndexes = ImmutableBiMap.of();
+    /** Navigation button for going to the next search match. */
+    private final Button previousMatchButton;
+    /** Navigation button for going to the previous search match. */
+    private final Button nextMatchButton;
     
-    /** The current map of search candidates and element indexes. Refreshed on search. */
-    private ImmutableMap<Integer, Searchable> searchCandidates = ImmutableMap.of();
+    /** The current map of search matches and element indexes. Refreshed on search. */
+    private ImmutableMap<Integer, Searchable> searchMatches = ImmutableMap.of();
     /** The index of the currently "focused" search candidate. */
     private int focusedIndex = -1;
     /** The last String that was searched. */
@@ -61,11 +64,11 @@ public class Searchbar extends EditBox {
     public static Searchbar create( Screen parentScreen, SearchableSelectionList<? extends Searchable> selectionList, Orientation orientation,
                                     Font font, int x, int y, int width, BiPredicate<String, String> matchPredicate ) {
         Objects.requireNonNull( parentScreen );
-        Searchbar searchBar = new Searchbar( selectionList, orientation, font, x, y, width, 16, matchPredicate );
+        Searchbar searchBar = new Searchbar( parentScreen, selectionList, orientation, font, x, y, width, 16, matchPredicate );
         
         addWidgetToScreen( parentScreen, searchBar );
-        addWidgetToScreen( parentScreen, searchBar.previousCandidate );
-        addWidgetToScreen( parentScreen, searchBar.nextCandidate );
+        addWidgetToScreen( parentScreen, searchBar.previousMatchButton );
+        addWidgetToScreen( parentScreen, searchBar.nextMatchButton );
         
         return searchBar;
     }
@@ -76,74 +79,58 @@ public class Searchbar extends EditBox {
         screen.narratables.add( widget );
     }
     
-    private Searchbar( SearchableSelectionList<? extends Searchable> selectionList, Orientation orientation, Font font, int x, int y,
-                       int width, int height, BiPredicate<String, String> matchPredicate ) {
+    private Searchbar( Screen parentScreen, SearchableSelectionList<? extends Searchable> searchableList, Orientation orientation, Font font, int x, int y,
+                       int width, int height, BiPredicate<String, String> matcher ) {
         super( font, x, y, width, height, Component.literal( "" ) );
         // Make sure these things are present
-        Objects.requireNonNull( selectionList );
+        Objects.requireNonNull( parentScreen );
+        Objects.requireNonNull( searchableList );
         Objects.requireNonNull( orientation );
-        Objects.requireNonNull( matchPredicate );
-        this.selectionList = selectionList;
-        this.matchPredicate = matchPredicate;
-        setHint( Component.translatable( "menu.crust.config.search_bar.hint" )
-                .withStyle( ChatFormatting.ITALIC, ChatFormatting.GRAY ) );
+        Objects.requireNonNull( matcher );
+        PARENT_SCREEN = parentScreen;
+        SEARCHABLE_LIST = searchableList;
+        MATCH_PREDICATE = matcher;
+        setHint( Component.translatable( "menu.crust.config.search_bar.hint" ).withStyle( ChatFormatting.ITALIC, ChatFormatting.GRAY ) );
         setResponder( ( value ) -> search( value, false ) );
         
         // Create navigation buttons
         final int buttonX = orientation == Orientation.RIGHT
                 ? x + width + 4
                 : x - 15;
-        previousCandidate = new ImageButton(
-                buttonX,
-                y,
-                11,
-                7,
-                11,
-                0,
-                7,
+        
+        previousMatchButton = new ImageButton( buttonX, y, 11, 7, 11, 0, 7,
                 SEARCH_BAR_ICONS,
                 ( button ) -> {
                     if( focusedIndex == 0 ) {
-                        setFocusedIndex( searchCandidates.size() - 1 );
+                        setFocusedIndex( searchMatches.size() - 1 );
                     }
                     else {
                         setFocusedIndex( --focusedIndex );
                     }
                     // noinspection ConstantConditions
-                    scrollToIndex( elementByCandidateIndexes.get( focusedIndex ) );
+                    scrollToIndex( elementByMatchIndexes.get( focusedIndex ) );
                     button.setFocused( false );
                 } );
-        nextCandidate = new ImageButton(
-                buttonX,
-                (y + height / 2) + 1,
-                11,
-                7,
-                0,
-                0,
-                7,
+        nextMatchButton = new ImageButton( buttonX, (y + height / 2) + 1, 11, 7, 0, 0, 7,
                 SEARCH_BAR_ICONS,
                 ( button ) -> {
-                    if( focusedIndex == searchCandidates.size() - 1 ) {
+                    if( focusedIndex == searchMatches.size() - 1 ) {
                         setFocusedIndex( 0 );
                     }
                     else {
                         setFocusedIndex( ++focusedIndex );
                     }
                     // noinspection ConstantConditions
-                    scrollToIndex( elementByCandidateIndexes.get( focusedIndex ) );
+                    scrollToIndex( elementByMatchIndexes.get( focusedIndex ) );
                     button.setFocused( false );
                 } );
-        
-        previousCandidate.active = false;
-        previousCandidate.visible = false;
-        nextCandidate.active = false;
-        nextCandidate.visible = false;
+        setNavButtonsState( false );
     }
     
     /**
      * Performs a name-comparison search on all the elements
      * in the searchbar's underlying selection list.<br>
-     * Valid candidates are added to {@link Searchbar#searchCandidates}
+     * Valid candidates are added to {@link Searchbar#searchMatches}
      * for easy scroll navigation later.<br><br>
      * Scrolls to the first found candidate, if any.
      */
@@ -156,14 +143,11 @@ public class Searchbar extends EditBox {
         // Update last search.
         lastSearch = value;
         
-        previousCandidate.active = false;
-        previousCandidate.visible = false;
-        nextCandidate.active = false;
-        nextCandidate.visible = false;
+        setNavButtonsState( false );
         
         // Clear indexes and search candidates.
-        searchCandidates = ImmutableMap.of();
-        elementByCandidateIndexes = ImmutableBiMap.of();
+        searchMatches = ImmutableMap.of();
+        elementByMatchIndexes = ImmutableBiMap.of();
         
         // Reset scroll if empty.
         if( value.isEmpty() ) {
@@ -173,35 +157,32 @@ public class Searchbar extends EditBox {
             final Map<Integer, Searchable> candidates = new HashMap<>();
             final Map<Integer, Integer> elementByCandidates = new HashMap<>();
             boolean foundFirst = false;
-            int mapKey = 0;
+            int key = 0;
             
             // Loop through the elements in the selection list.
-            for( int elementIndex = 0; elementIndex < selectionList.children().size(); elementIndex++ ) {
-                Searchable searchable = selectionList.children().get( elementIndex );
+            for( int elementIndex = 0; elementIndex < SEARCHABLE_LIST.children().size(); elementIndex++ ) {
+                Searchable searchable = SEARCHABLE_LIST.children().get( elementIndex );
                 String lookupName = searchable.getLookupName();
                 
                 // Check if the element is a valid candidate.
-                if( matchPredicate.test( lookupName, value ) ) {
+                if( MATCH_PREDICATE.test( lookupName, value ) ) {
                     // Scroll to the first candidate, if any.
                     if( !foundFirst ) {
                         foundFirst = true;
-                        setFocusedIndex( mapKey );
+                        setFocusedIndex( key );
                         scrollToIndex( elementIndex );
                     }
-                    candidates.put( mapKey, searchable );
-                    elementByCandidates.put( mapKey, elementIndex );
-                    ++mapKey;
+                    candidates.put( key, searchable );
+                    elementByCandidates.put( key, elementIndex );
+                    ++key;
                 }
             }
-            searchCandidates = ImmutableMap.copyOf( candidates );
-            elementByCandidateIndexes = ImmutableBiMap.copyOf( elementByCandidates );
+            searchMatches = ImmutableMap.copyOf( candidates );
+            elementByMatchIndexes = ImmutableBiMap.copyOf( elementByCandidates );
             
             // Update navigation buttons.
-            if( !searchCandidates.isEmpty() ) {
-                nextCandidate.active = searchCandidates.size() > 1;
-                nextCandidate.visible = nextCandidate.active;
-                previousCandidate.active = nextCandidate.active;
-                previousCandidate.visible = nextCandidate.active;
+            if( !searchMatches.isEmpty() ) {
+                setNavButtonsState( searchMatches.size() > 1 );
                 setTextColor( IConfigFieldWidgetProvider.DEFAULT_COLOR );
             }
             else {
@@ -210,23 +191,31 @@ public class Searchbar extends EditBox {
         }
     }
     
+    /** Updates the visibility and "active" state of the match navigation buttons. */
+    private void setNavButtonsState( boolean active ) {
+        nextMatchButton.active = active;
+        nextMatchButton.visible = active;
+        previousMatchButton.active = active;
+        previousMatchButton.visible = active;
+    }
+    
     /** Tells this searchbar's selection list to scroll to the element at the given index. */
     private void scrollToIndex( int index ) {
-        final int listSize = selectionList.children().size();
+        final int listSize = SEARCHABLE_LIST.children().size();
         
         // Negative index, assume it is intentional
         // for defocusing the focused search candidate.
         if( index < 0 ) {
-            selectionList.setScrollAmount( 0.0 );
+            SEARCHABLE_LIST.setScrollAmount( 0.0 );
         }
         // Out of bounds
         else if( index > listSize - 1 ) {
             throw new IndexOutOfBoundsException( "Attempted to scroll to an out-of-bounds index in a selection list!" );
         }
-        final int bottom = selectionList.getBottom();
-        final int top = selectionList.getTop();
-        final int itemHeight = selectionList.itemHeight;
-        selectionList.setScrollAmount( index * itemHeight + (double) (itemHeight / 2) - (double) ((bottom - top) / 2) );
+        final int bottom = SEARCHABLE_LIST.getBottom();
+        final int top = SEARCHABLE_LIST.getTop();
+        final int itemHeight = SEARCHABLE_LIST.itemHeight;
+        SEARCHABLE_LIST.setScrollAmount( index * itemHeight + (double) (itemHeight / 2) - (double) ((bottom - top) / 2) );
     }
     
     /** Sets focused search match index for self and the underlying selection list. */
@@ -240,29 +229,51 @@ public class Searchbar extends EditBox {
     }
     
     /** @return An unmodifiable view of the searchbar's current search candidates. */
-    public ImmutableMap<Integer, Searchable> getSearchCandidates() {
-        return searchCandidates;
+    public ImmutableMap<Integer, Searchable> getSearchMatches() {
+        return searchMatches;
     }
     
     /** @return An unmodifiable view of the searchbar's element-by-candidate indexes. */
-    public ImmutableBiMap<Integer, Integer> getElementByCandidateIndexes() { return elementByCandidateIndexes; }
+    public ImmutableBiMap<Integer, Integer> getElementByMatchIndexes() { return elementByMatchIndexes; }
     
-    @Override
-    public void tick() {
-        super.tick();
-    }
-    
+    /** Called each frame to draw this component. */
     @Override
     public void render( GuiGraphics graphics, int mouseX, int mouseY, float partialTick ) {
         super.render( graphics, mouseX, mouseY, partialTick );
         
         // Draws a string above the searchbar displaying
         // current index over total matches
-        if( !searchCandidates.isEmpty() ) {
-            Component indexOverMatches = Component.literal( (focusedIndex + 1) + " / " + searchCandidates.size() )
+        if( !searchMatches.isEmpty() ) {
+            Component indexOverMatches = Component.literal( (focusedIndex + 1) + " / " + searchMatches.size() )
                     .withStyle( ChatFormatting.GRAY );
             graphics.drawCenteredString( font, indexOverMatches, getX() + width / 2, getY() - getHeight() + 5, 0xFFFFFF );
         }
+    }
+    
+    /**
+     * Called when a keyboard key is pressed.
+     *
+     * @param key      The keyboard key that was pressed (see {@link InputConstants.Type#KEYSYM}).
+     * @param scancode The system-specific scancode of the key (see {@link InputConstants.Type#SCANCODE}).
+     * @param mods     Bitfield describing which modifier keys were held down.
+     * @return True if the event has been handled.
+     * @see org.lwjgl.glfw.GLFWKeyCallbackI#invoke(long, int, int, int, int)
+     */
+    @Override
+    public boolean keyPressed( int key, int scancode, int mods ) {
+        // If any matches exist, allow using the up & down arrow keys
+        // to navigate matches without the search bar losing focus.
+        if( !getSearchMatches().isEmpty() ) {
+            if( key == InputConstants.getKey( "key.keyboard.up" ).getValue() ) {
+                previousMatchButton.onPress();
+                return true;
+            }
+            else if( key == InputConstants.getKey( "key.keyboard.down" ).getValue() ) {
+                nextMatchButton.onPress();
+                return true;
+            }
+        }
+        return super.keyPressed( key, scancode, mods );
     }
     
     /** Represents an element that can be looked up by name. */
