@@ -70,7 +70,7 @@ public class TestScreen extends Screen {
         Button button = new Button( x, y, width, height, Component.literal( label ), b -> { }, Supplier::get ) {
             @Override
             protected ClientTooltipPositioner createTooltipPositioner() {
-                return positioner;
+                return GuiUtil.getOrForMenu( this, positioner );
             }
         };
         button.setTooltip( Tooltip.create( Component.literal( tooltip ) ) );

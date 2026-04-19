@@ -1,14 +1,26 @@
 package fathertoast.crust.api.client.util;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.gui.screens.inventory.tooltip.MenuTooltipPositioner;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 
 public final class GuiUtil {
     
+    /**
+     * @return The provided tooltip positioner UNLESS the last input type was a keyboard key, in
+     * which case a new instance of {@link MenuTooltipPositioner} is returned instead.
+     */
+    public static ClientTooltipPositioner getOrForMenu( AbstractWidget widget, ClientTooltipPositioner positioner ) {
+        if( !widget.isHovered() && Minecraft.getInstance().getLastInputType().isKeyboard() )
+            return new MenuTooltipPositioner( widget );
+        return positioner;
+    }
+    
     
     public static class TooltipPositioner {
-        
         /**
          * Centers the tooltip's X position and puts it above the cursor when possible.
          * Attempts to always make the tooltip fit inside the screen.

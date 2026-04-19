@@ -1,7 +1,6 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
 import fathertoast.crust.api.client.util.GuiUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,7 +12,6 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import net.minecraft.client.gui.screens.inventory.tooltip.MenuTooltipPositioner;
 import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
@@ -74,10 +72,10 @@ public class TextWithSubtitle extends AbstractWidget {
     
     @Override
     protected ClientTooltipPositioner createTooltipPositioner() {
-        if( !isHovered && Minecraft.getInstance().getLastInputType().isKeyboard() )
-            return new MenuTooltipPositioner( this );
-        
-        return CENTER_X ? GuiUtil.TooltipPositioner.CENTERED_X : GuiUtil.TooltipPositioner.CENTERED_Y;
+        return GuiUtil.getOrForMenu( this, CENTER_X
+                ? GuiUtil.TooltipPositioner.CENTERED_X
+                : GuiUtil.TooltipPositioner.CENTERED_Y
+        );
     }
     
     @Override

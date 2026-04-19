@@ -142,7 +142,7 @@ public class CrustConfigFileList extends SearchableSelectionList<CrustConfigFile
                     SPEC.isInitialized() ? Supplier::get : ( supplier ) -> specError ) {
                 @Override
                 protected ClientTooltipPositioner createTooltipPositioner() {
-                    return GuiUtil.TooltipPositioner.CENTERED_Y;
+                    return GuiUtil.getOrForMenu( this, GuiUtil.TooltipPositioner.CENTERED_Y );
                 }
             };
             
