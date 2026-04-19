@@ -213,7 +213,7 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
             // Roll placement chance!
             if( random.nextDouble() <= data.chance ) {
                 // Set to air first so we don't accidentally block the placement.
-                serverLevel.setBlock( pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_NONE );
+                serverLevel.setBlock( pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS );
                 final ChunkGenerator chunkGenerator = serverLevel.getChunkSource().getGenerator();
                 
                 // Check if we are force generating (for a DW feature)
@@ -237,8 +237,10 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
                     }
                 }
             }
-            // Replace generator with final "turns into" state.
-            serverLevel.setBlock( pos, data.turnsInto, Block.UPDATE_CLIENTS );
+            // Replace generator with final "turns into" state, unless it is air.
+            if( !data.turnsInto.is( Blocks.AIR ) ) {
+                serverLevel.setBlock( pos, data.turnsInto, Block.UPDATE_CLIENTS );
+            }
             return generated;
         }
         // Something spooky happened!
