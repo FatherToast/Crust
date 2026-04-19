@@ -6,6 +6,7 @@ import fathertoast.crust.api.util.ResourceLocationUtils;
 import fathertoast.crust.api.worldgen.DummyFeature;
 import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.core.Crust;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -13,6 +14,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -20,6 +22,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -30,6 +35,7 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -253,6 +259,13 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
     /** Wrapper for the data used when generating a feature. */
     public static final class FeatureData {
         
+        /**
+         * Static empty instance used to check against when determining
+         * if another instance is also empty.
+         */
+        private static final FeatureData EMPTY = FeatureData.newEmpty();
+        
+        
         /** The optional ID of the feature to place. This can be null, as long as "tag" is specified. */
         @Nullable
         private ResourceLocation configuredFeatureId;
@@ -374,6 +387,49 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
             if( NBTHelper.containsNumber( loadTag, TAG_FORCE_GENERATION ) ) {
                 forceGeneration = loadTag.getBoolean( TAG_FORCE_GENERATION );
             }
+        }
+        
+        /**
+         * Creates a text component from each property in this feature data instance
+         * and adds it to the given list of components.
+         * <br><br>
+         * Used in {@link fathertoast.crust.common.block.FeatureGeneratorBlock#appendHoverText(ItemStack, BlockGetter, List, TooltipFlag)}.
+         */
+        public static void appendHoverText( FeatureData instance, List<Component> components, TooltipFlag tooltipFlag ) {
+            if( instance.isEmpty() ) return;
+            
+            String idOrTag = "null";
+            
+            if( instance.configuredFeatureId != null ) {
+                idOrTag = instance.configuredFeatureId.toString();
+            }
+            else if( instance.tagKey != null ) {
+                idOrTag = "#" + instance.tagKey.location();
+            }
+            components.add( Component.literal( "Feature ID / Tag: " ).withStyle( ChatFormatting.GRAY ).append( Component.literal( idOrTag ).withStyle( ChatFormatting.YELLOW ) ) );
+            
+            if( tooltipFlag.isAdvanced() ) {
+                components.add( Component.literal( "" ) );
+                components.add( Component.literal( "Fallback ID: " + (instance.fallbackId == null ? "null" : instance.fallbackId.toString()) ).withStyle( ChatFormatting.GRAY ) );
+                components.add( Component.literal( "Turns into: " + (instance.turnsInto == null ? "null" : instance.turnsInto.toString()) ).withStyle( ChatFormatting.GRAY ) );
+                components.add( Component.literal( "Y-offset: " + instance.yOffset ).withStyle( ChatFormatting.GRAY ) );
+                components.add( Component.literal( "Chance: " + instance.chance ).withStyle( ChatFormatting.GRAY ) );
+                components.add( Component.literal( "Force-gen: " + instance.forceGeneration ).withStyle( ChatFormatting.GRAY ) );
+            }
+        }
+        
+        /**
+         * @return True if this feature data instance's properties
+         * are all equal to the default values.
+         */
+        public boolean isEmpty() {
+            return EMPTY.configuredFeatureId == configuredFeatureId
+                    && EMPTY.tagKey == tagKey
+                    && EMPTY.fallbackId == fallbackId
+                    && EMPTY.turnsInto == turnsInto
+                    && EMPTY.yOffset == yOffset
+                    && EMPTY.chance == chance
+                    && EMPTY.forceGeneration == forceGeneration;
         }
         
         /** @return A new empty / default FeatureData instance. */
