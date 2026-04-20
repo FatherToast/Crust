@@ -4,8 +4,9 @@ import fathertoast.crust.api.config.client.gui.ElementOffset;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFileList;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigModList;
 import fathertoast.crust.api.config.client.gui.widget.SearchableSelectionList;
-import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
 import fathertoast.crust.api.config.client.gui.widget.field.TextWithSubtitle;
+import fathertoast.crust.api.config.client.gui.widget.field.searchbar.ISearchable;
+import fathertoast.crust.api.config.client.gui.widget.field.searchbar.Searchbar;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.client.ClientRegister;
@@ -53,7 +54,7 @@ public class CrustConfigSelectScreen extends Screen {
     private final Component SUBTITLE;
     
     /** A list containing entries for every mod's config manager. */
-    private SearchableSelectionList<? extends Searchbar.Searchable> selectionList;
+    private SearchableSelectionList<? extends ISearchable> selectionList;
     
     private final boolean createSearchBar;
     /** The search bar for looking up entries in {@link CrustConfigSelectScreen#selectionList}. */
@@ -103,10 +104,10 @@ public class CrustConfigSelectScreen extends Screen {
         ElementOffset offset = new ElementOffset( 0, 0, 15, 0 );
         
         if( CFG_MANAGER == null ) {
-            selectionList = new CrustConfigModList( this, minecraft, offset );
+            selectionList = new CrustConfigModList( this, minecraft );
         }
         else {
-            selectionList = new CrustConfigFileList( this, minecraft, CFG_MANAGER, offset );
+            selectionList = new CrustConfigFileList( this, minecraft, CFG_MANAGER );
         }
         addWidget( selectionList );
         

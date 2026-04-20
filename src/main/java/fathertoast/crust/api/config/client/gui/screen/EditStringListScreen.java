@@ -1,10 +1,9 @@
 package fathertoast.crust.api.config.client.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import fathertoast.crust.api.config.client.gui.ElementOffset;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import fathertoast.crust.api.config.client.gui.widget.CrustStringFieldList;
-import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
+import fathertoast.crust.api.config.client.gui.widget.field.searchbar.Searchbar;
 import fathertoast.crust.api.config.client.gui.widget.field.TextWithSubtitle;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.IStringListScreenEditable;
@@ -101,9 +100,8 @@ public class EditStringListScreen<T extends AbstractConfigField & IStringListScr
         addRenderableWidget( TextWithSubtitle.create( this, font, width / 2, 8, true, getTitle(), null ) );
         
         // Primary screen content
-        ElementOffset offset = new ElementOffset( 0, -2, -27, -2 );
         selectionList = new CrustStringFieldList<>( this, minecraft, LIST_ENTRY,
-                currentValue, FIELD, offset );
+                currentValue, FIELD );
         addRenderableWidget( selectionList );
         
         Searchbar.Orientation orientation = ClientRegister.CONFIG_EDITOR.SEARCHBAR.orientation.get();

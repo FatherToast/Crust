@@ -1,6 +1,6 @@
 package fathertoast.crust.client.config;
 
-import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
+import fathertoast.crust.api.config.client.gui.widget.field.searchbar.Searchbar;
 import fathertoast.crust.api.config.common.AbstractConfigCategory;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;

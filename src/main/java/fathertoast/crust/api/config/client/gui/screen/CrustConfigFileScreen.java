@@ -1,10 +1,9 @@
 package fathertoast.crust.api.config.client.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import fathertoast.crust.api.config.client.gui.ElementOffset;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import fathertoast.crust.api.config.client.gui.widget.field.IPopupWidget;
-import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
+import fathertoast.crust.api.config.client.gui.widget.field.searchbar.Searchbar;
 import fathertoast.crust.api.config.client.gui.widget.field.TextWithSubtitle;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustConfigFormat;
@@ -119,7 +118,7 @@ public class CrustConfigFileScreen extends Screen {
         addRenderableWidget( TextWithSubtitle.create( this, font, width / 2, 8, true, getTitle(), SUBTITLE ) );
         
         // Primary screen content
-        fieldList = new CrustConfigFieldList( this, minecraft, SPEC, ElementOffset.NONE );
+        fieldList = new CrustConfigFieldList( this, minecraft, SPEC );
         addRenderableWidget( fieldList );
         
         Searchbar.Orientation orientation = ClientRegister.CONFIG_EDITOR.SEARCHBAR.orientation.get();

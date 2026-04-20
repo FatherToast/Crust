@@ -1,3 +1,9 @@
+1.20.1-4.14.22
+    - The config editor searchbar now draws highlights a bit prettier.
+    API Changes:
+    - Refactored Searchbar.Searchable into a separate interface entirely called ISearchable.
+    - SearchableSelectionList highlight rendering is now handled per ISearchable entry rather than by the list itself.
+    - Moved searchbar-related classes to new sub-package 'widget/field/searchbar'.
 1.20.1-4.13.21
     - Added new structure utility block called "Feature Generator".
     - Dedicated servers are now forcibly crashed if Crust detects any broken/malformed configs.

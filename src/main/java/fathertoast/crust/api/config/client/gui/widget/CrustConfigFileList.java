@@ -2,9 +2,8 @@ package fathertoast.crust.api.config.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
 import fathertoast.crust.api.client.util.GuiUtil;
-import fathertoast.crust.api.config.client.gui.ElementOffset;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigFileScreen;
-import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
+import fathertoast.crust.api.config.client.gui.widget.field.searchbar.ISearchable;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
@@ -41,9 +40,9 @@ public class CrustConfigFileList extends SearchableSelectionList<CrustConfigFile
     
     private int maxNameWidth;
     
-    public CrustConfigFileList( Screen parent, Minecraft game, ConfigManager cfgManager, ElementOffset highlightOffset ) {
+    public CrustConfigFileList( Screen parent, Minecraft game, ConfigManager cfgManager ) {
         super( game, parent.width + 45, parent.height,
-                43, parent.height - 32, 20, highlightOffset );
+                43, parent.height - 32, 20 );
         // Gather all managed config files and sort
         Path rootPath = cfgManager.DIR.toPath();
         ArrayList<SortableFile> cfgFiles = new ArrayList<>();
@@ -74,7 +73,7 @@ public class CrustConfigFileList extends SearchableSelectionList<CrustConfigFile
     
     /** The base entry for config file selection lists. */
     public abstract static class Entry extends ContainerObjectSelectionList.Entry<CrustConfigFileList.Entry>
-            implements Searchbar.Searchable { }
+            implements ISearchable { }
     
     /** A file directory header for config file selection lists. */
     public static class CategoryEntry extends Entry {
@@ -115,6 +114,18 @@ public class CrustConfigFileList extends SearchableSelectionList<CrustConfigFile
         @Override
         public String getLookupName() {
             return NAME.getString();
+        }
+        
+        @Override
+        public void renderHighlight( GuiGraphics graphics, boolean isFocused, int scrollbarPos, int mouseX, int mouseY,
+                                     float partialTick, int itemIndex, int rowLeft, int rowTop, int rowWidth, int itemHeight ) {
+            int textWidth = Minecraft.getInstance().font.width( NAME.getString() );
+            //noinspection ConstantConditions
+            int x = (PARENT.minecraft.screen.width - WIDTH >> 1) - 8;
+            int width = Math.min( x + textWidth + 15, x + scrollbarPos );
+            int height = rowTop + itemHeight + 3;
+            
+            ISearchable.drawDefaultHighlight( graphics, isFocused, x, rowTop, width, height );
         }
     }
     
@@ -186,6 +197,18 @@ public class CrustConfigFileList extends SearchableSelectionList<CrustConfigFile
         @Override
         public String getLookupName() {
             return NAME.getString();
+        }
+        
+        @Override
+        public void renderHighlight( GuiGraphics graphics, boolean isFocused, int scrollbarPos, int mouseX, int mouseY,
+                                     float partialTick, int itemIndex, int rowLeft, int rowTop, int rowWidth, int itemHeight ) {
+            // noinspection ConstantConditions
+            int openButtonX = OPEN_BUTTON.getX();
+            int x = rowLeft + 14;
+            int width = Math.min( scrollbarPos, openButtonX );
+            int height = rowTop + itemHeight + 3;
+            
+            ISearchable.drawDefaultHighlight( graphics, isFocused, x, rowTop, width, height );
         }
     }
     

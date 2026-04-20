@@ -1,9 +1,8 @@
 package fathertoast.crust.api.config.client.gui.widget;
 
-import fathertoast.crust.api.config.client.gui.ElementOffset;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigFileScreen;
 import fathertoast.crust.api.config.client.gui.widget.field.ResetButton;
-import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
+import fathertoast.crust.api.config.client.gui.widget.field.searchbar.ISearchable;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
@@ -35,6 +34,7 @@ import java.util.List;
  * The layout of this screen is largely driven by the spec itself, while
  * each field decides how it displays its own info.
  */
+@SuppressWarnings( "resource" )
 public class CrustConfigFieldList extends SearchableSelectionList<CrustConfigFieldList.Entry> {
     
     /** The maximum width for text lines in tooltips. */
@@ -58,9 +58,9 @@ public class CrustConfigFieldList extends SearchableSelectionList<CrustConfigFie
     /** True if any fields have been changed since opening. */
     private boolean changed;
     
-    public CrustConfigFieldList( CrustConfigFileScreen parent, Minecraft game, CrustConfigSpec spec, ElementOffset offset ) {
+    public CrustConfigFieldList( CrustConfigFileScreen parent, Minecraft game, CrustConfigSpec spec ) {
         super( game, parent.width, parent.height,
-                43, parent.height - 32, IConfigFieldWidgetProvider.VALUE_HEIGHT + 1, offset );
+                43, parent.height - 32, IConfigFieldWidgetProvider.VALUE_HEIGHT + 1 );
         PARENT = parent;
         SPEC = spec;
         
@@ -173,7 +173,7 @@ public class CrustConfigFieldList extends SearchableSelectionList<CrustConfigFie
     }
     
     
-    public static abstract class Entry extends ContainerObjectSelectionList.Entry<Entry> implements Searchbar.Searchable {
+    public static abstract class Entry extends ContainerObjectSelectionList.Entry<Entry> implements ISearchable {
         
         public Minecraft minecraft() { return Minecraft.getInstance(); }
         
@@ -337,6 +337,18 @@ public class CrustConfigFieldList extends SearchableSelectionList<CrustConfigFie
         @Nullable
         public String getLookupName() {
             return TEXT.getString();
+        }
+        
+        @Override
+        public void renderHighlight( GuiGraphics graphics, boolean isFocused, int scrollbarPos, int mouseX, int mouseY,
+                                     float partialTick, int itemIndex, int rowLeft, int rowTop, int rowWidth, int itemHeight ) {
+            int textWidth = Minecraft.getInstance().font.width( TEXT.getString() );
+            //noinspection ConstantConditions
+            int x = (minecraft().screen.width - WIDTH >> 1) - 8;
+            int width = Math.min( x + textWidth + 10, x + scrollbarPos );
+            int height = rowTop + itemHeight + 2;
+            
+            ISearchable.drawDefaultHighlight( graphics, isFocused, x, rowTop, width, height );
         }
     }
     

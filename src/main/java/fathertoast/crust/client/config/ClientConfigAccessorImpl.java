@@ -1,7 +1,7 @@
 package fathertoast.crust.client.config;
 
 import fathertoast.crust.api.client.accessor.IClientConfigAccessor;
-import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
+import fathertoast.crust.api.config.client.gui.widget.field.searchbar.Searchbar;
 
 import static fathertoast.crust.client.ClientRegister.CONFIG_EDITOR;
 import static fathertoast.crust.client.ClientRegister.RENDER_SETTINGS;

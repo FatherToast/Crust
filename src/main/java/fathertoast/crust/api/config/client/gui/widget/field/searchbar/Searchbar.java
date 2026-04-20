@@ -1,4 +1,4 @@
-package fathertoast.crust.api.config.client.gui.widget.field;
+package fathertoast.crust.api.config.client.gui.widget.field.searchbar;
 
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableMap;
@@ -18,7 +18,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -38,7 +37,7 @@ public class Searchbar extends EditBox {
     /** The screen this search bar belongs to. */
     private final Screen PARENT_SCREEN;
     /** The selection list tied to this searchbar. */
-    private final SearchableSelectionList<? extends Searchable> SEARCHABLE_LIST;
+    private final SearchableSelectionList<? extends ISearchable> SEARCHABLE_LIST;
     /** The search matcher predicate used by this searchbar. */
     private final BiPredicate<String, String> MATCH_PREDICATE;
     
@@ -50,7 +49,7 @@ public class Searchbar extends EditBox {
     private final Button nextMatchButton;
     
     /** The current map of search matches and element indexes. Refreshed on search. */
-    private ImmutableMap<Integer, Searchable> searchMatches = ImmutableMap.of();
+    private ImmutableMap<Integer, ISearchable> searchMatches = ImmutableMap.of();
     /** The index of the currently "focused" search candidate. */
     private int focusedIndex = -1;
     /** The last String that was searched. */
@@ -61,7 +60,7 @@ public class Searchbar extends EditBox {
      * and adds it to the parent screen's widget list,
      * including the searchbar's child components.
      */
-    public static Searchbar create( Screen parentScreen, SearchableSelectionList<? extends Searchable> selectionList, Orientation orientation,
+    public static Searchbar create( Screen parentScreen, SearchableSelectionList<? extends ISearchable> selectionList, Orientation orientation,
                                     Font font, int x, int y, int width, BiPredicate<String, String> matchPredicate ) {
         Objects.requireNonNull( parentScreen );
         Searchbar searchBar = new Searchbar( parentScreen, selectionList, orientation, font, x, y, width, 16, matchPredicate );
@@ -79,7 +78,7 @@ public class Searchbar extends EditBox {
         screen.narratables.add( widget );
     }
     
-    private Searchbar( Screen parentScreen, SearchableSelectionList<? extends Searchable> searchableList, Orientation orientation, Font font, int x, int y,
+    private Searchbar( Screen parentScreen, SearchableSelectionList<? extends ISearchable> searchableList, Orientation orientation, Font font, int x, int y,
                        int width, int height, BiPredicate<String, String> matcher ) {
         super( font, x, y, width, height, Component.literal( "" ) );
         // Make sure these things are present
@@ -154,14 +153,14 @@ public class Searchbar extends EditBox {
             scrollToIndex( -1 );
         }
         else {
-            final Map<Integer, Searchable> candidates = new HashMap<>();
+            final Map<Integer, ISearchable> candidates = new HashMap<>();
             final Map<Integer, Integer> elementByCandidates = new HashMap<>();
             boolean foundFirst = false;
             int key = 0;
             
             // Loop through the elements in the selection list.
             for( int elementIndex = 0; elementIndex < SEARCHABLE_LIST.children().size(); elementIndex++ ) {
-                Searchable searchable = SEARCHABLE_LIST.children().get( elementIndex );
+                ISearchable searchable = SEARCHABLE_LIST.children().get( elementIndex );
                 String lookupName = searchable.getLookupName();
                 
                 // Check if the element is a valid candidate.
@@ -229,7 +228,7 @@ public class Searchbar extends EditBox {
     }
     
     /** @return An unmodifiable view of the searchbar's current search candidates. */
-    public ImmutableMap<Integer, Searchable> getSearchMatches() {
+    public ImmutableMap<Integer, ISearchable> getSearchMatches() {
         return searchMatches;
     }
     
@@ -274,14 +273,6 @@ public class Searchbar extends EditBox {
             }
         }
         return super.keyPressed( key, scancode, mods );
-    }
-    
-    /** Represents an element that can be looked up by name. */
-    public interface Searchable {
-        
-        /** @return An identifying String to be looked up by a {@link Searchbar} */
-        @Nullable
-        String getLookupName();
     }
     
     /**

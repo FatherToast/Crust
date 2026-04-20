@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.client.gui.widget;
 
-import fathertoast.crust.api.config.client.gui.ElementOffset;
-import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
+import fathertoast.crust.api.config.client.gui.widget.field.searchbar.ISearchable;
+import fathertoast.crust.api.config.client.gui.widget.field.searchbar.Searchbar;
 import fathertoast.crust.client.ClientRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -12,19 +12,15 @@ import org.jetbrains.annotations.Nullable;
  * A selection list implementation designed to
  * work in conjunction with a {@link Searchbar} widget.
  */
-public abstract class SearchableSelectionList<T extends ContainerObjectSelectionList.Entry<T>> extends ContainerObjectSelectionList<T> {
-    
-    /** Offsets to be applied to element highlights. */
-    private final ElementOffset highlightOffset;
+public abstract class SearchableSelectionList<T extends ContainerObjectSelectionList.Entry<T> & ISearchable> extends ContainerObjectSelectionList<T> {
     
     /** The searchbar this list "communicates" with. */
     @Nullable
     private Searchbar searchbar;
     
     
-    public SearchableSelectionList( Minecraft minecraft, int width, int height, int topY, int bottomY, int itemHeight, ElementOffset highlightOffset ) {
+    public SearchableSelectionList( Minecraft minecraft, int width, int height, int topY, int bottomY, int itemHeight ) {
         super( minecraft, width, height, topY, bottomY, itemHeight );
-        this.highlightOffset = highlightOffset;
     }
     
     /**
@@ -55,24 +51,12 @@ public abstract class SearchableSelectionList<T extends ContainerObjectSelection
         // Check if highlights are enabled in the config.
         if( searchbar != null && ClientRegister.CONFIG_EDITOR.SEARCHBAR.showSearchHighlights.get() ) {
             if( searchbar.getElementByMatchIndexes().inverse().containsKey( itemIndex ) ) {
-                int x = (getLeft() + ((getWidth() - rowWidth) / 2)) + highlightOffset.getX();
-                int y = rowTop + highlightOffset.getY();
-                int width = (getLeft() + ((getWidth() + rowWidth) / 2) - 3) + highlightOffset.getWidth();
-                int height = (rowTop + itemHeight + 3) + highlightOffset.getHeight();
-                
+                ISearchable searchable = children().get( itemIndex );
                 // noinspection ConstantConditions
-                if( searchbar.getElementByMatchIndexes().inverse().get( itemIndex ) == searchbar.getFocusedIndex() ) {
-                    int color = ClientRegister.CONFIG_EDITOR.SEARCHBAR.highlightColor.get();
-                    
-                    if( (color >>> 24) == 0 ) {
-                        // Force the color to be solid if it is fully transparent.
-                        color |= 0xFF000000;
-                    }
-                    graphics.fill( x, y, width, height, color );
-                }
-                else {
-                    graphics.fillGradient( x, y, width, height, 0x40_878787, 0x50_878787 );
-                }
+                boolean isFocusedItem = searchbar.getElementByMatchIndexes().inverse().get( itemIndex ) == searchbar.getFocusedIndex();
+                
+                searchable.renderHighlight( graphics, isFocusedItem, getScrollbarPosition(), mouseX, mouseY, partialTick,
+                        itemIndex, rowLeft, rowTop, rowWidth, itemHeight );
             }
         }
         super.renderItem( graphics, mouseX, mouseY, partialTick, itemIndex, rowLeft, rowTop, rowWidth, itemHeight );

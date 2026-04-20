@@ -1,6 +1,6 @@
 package fathertoast.crust.api.client.accessor;
 
-import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
+import fathertoast.crust.api.config.client.gui.widget.field.searchbar.Searchbar;
 
 /**
  * Exposes some of Crust's client configs' values for reading only (no write access).

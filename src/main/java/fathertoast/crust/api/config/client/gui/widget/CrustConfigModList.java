@@ -1,9 +1,8 @@
 package fathertoast.crust.api.config.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
-import fathertoast.crust.api.config.client.gui.ElementOffset;
 import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
-import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
+import fathertoast.crust.api.config.client.gui.widget.field.searchbar.ISearchable;
 import fathertoast.crust.api.config.common.ConfigManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -28,9 +27,9 @@ public class CrustConfigModList extends SearchableSelectionList<CrustConfigModLi
     
     private int maxNameWidth;
     
-    public CrustConfigModList( Screen parent, Minecraft game, ElementOffset highlightOffset ) {
+    public CrustConfigModList( Screen parent, Minecraft game ) {
         super( game, parent.width + 45, parent.height,
-                43, parent.height - 32, 20, highlightOffset );
+                43, parent.height - 32, 20 );
         // Gather all mod config managers and sort
         ArrayList<ConfigManager> cfgManagers = new ArrayList<>( ConfigManager.getAll() );
         cfgManagers.sort( Comparator.comparing( ( cfgManager ) -> cfgManager.MOD_ID ) );
@@ -47,7 +46,7 @@ public class CrustConfigModList extends SearchableSelectionList<CrustConfigModLi
     }
     
     /** A mod display row for mod selection lists. */
-    public static class Entry extends ContainerObjectSelectionList.Entry<CrustConfigModList.Entry> implements Searchbar.Searchable {
+    public static class Entry extends ContainerObjectSelectionList.Entry<CrustConfigModList.Entry> implements ISearchable {
         
         private final CrustConfigModList PARENT;
         private final ConfigManager CFG_MANAGER;

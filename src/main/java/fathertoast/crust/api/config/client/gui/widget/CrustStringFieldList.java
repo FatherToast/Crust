@@ -1,11 +1,10 @@
 package fathertoast.crust.api.config.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
-import fathertoast.crust.api.config.client.gui.ElementOffset;
 import fathertoast.crust.api.config.client.gui.screen.EditStringListScreen;
 import fathertoast.crust.api.config.client.gui.widget.field.DeleteButton;
 import fathertoast.crust.api.config.client.gui.widget.field.ResetButton;
-import fathertoast.crust.api.config.client.gui.widget.field.Searchbar;
+import fathertoast.crust.api.config.client.gui.widget.field.searchbar.ISearchable;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.IStringListScreenEditable;
@@ -57,9 +56,9 @@ public class CrustStringFieldList<T extends AbstractConfigField & IStringListScr
     
     
     public CrustStringFieldList( EditStringListScreen<T> parent, Minecraft game, CrustConfigFieldList.FieldEntry listEntry,
-                                 Object displayValue, T field, ElementOffset highlightOffset ) {
+                                 Object displayValue, T field ) {
         super( game, parent.width + 45, parent.height,
-                43, parent.height - 32, 26, highlightOffset );
+                43, parent.height - 32, 26 );
         this.parent = parent;
         this.field = field;
         this.listEntry = listEntry;
@@ -135,7 +134,7 @@ public class CrustStringFieldList<T extends AbstractConfigField & IStringListScr
     
     /** A mod display row for mod selection lists. */
     public static class Entry<T extends AbstractConfigField & IStringListScreenEditable> extends
-            ContainerObjectSelectionList.Entry<CrustStringFieldList.Entry<T>> implements Searchbar.Searchable {
+            ContainerObjectSelectionList.Entry<CrustStringFieldList.Entry<T>> implements ISearchable {
         protected final CrustStringFieldList<T> PARENT;
         
         private final EditBox EDIT_BOX;
@@ -244,6 +243,17 @@ public class CrustStringFieldList<T extends AbstractConfigField & IStringListScr
         @Nullable
         public String getLookupName() {
             return EDIT_BOX.getValue();
+        }
+        
+        @Override
+        public void renderHighlight( GuiGraphics graphics, boolean isFocused, int scrollbarPos, int mouseX, int mouseY,
+                                     float partialTick, int itemIndex, int rowLeft, int rowTop, int rowWidth, int itemHeight ) {
+            int x = rowLeft - 4;
+            int y = rowTop - 1;
+            int width = RESET_BUTTON.getX() + RESET_BUTTON.getWidth() + 5;
+            int height = y + itemHeight + 3;
+            
+            ISearchable.drawDefaultHighlight( graphics, isFocused, x, y, width, height );
         }
     }
     
