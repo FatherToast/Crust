@@ -5,8 +5,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.client.util.shape.DebugShapeRenderManager;
 import fathertoast.crust.api.util.IBlockEntityBBProvider;
-import fathertoast.crust.api.util.IDebugShapeProvider;
 import fathertoast.crust.api.util.IDebugShape;
+import fathertoast.crust.api.util.IDebugShapeProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -32,7 +32,7 @@ public final class RenderEvents {
     /**
      * Attempts to draw any shapes in the list at the provided position.
      */
-    public static void renderShapes( @Nullable List<IDebugShape> shapes, Vec3 pos, RenderLevelStageEvent event ) {
+    public static void renderShapes( @Nullable List<IDebugShape> shapes, @Nullable Vec3 pos, RenderLevelStageEvent event ) {
         if( shapes != null && !shapes.isEmpty() ) {
             final PoseStack poseStack = event.getPoseStack();
             final Vec3 cameraPos = event.getCamera().getPosition();
@@ -81,7 +81,7 @@ public final class RenderEvents {
         // Loop through all entities to check for shape providers
         for( Entity entity : level.entitiesForRendering() ) {
             if( player.distanceToSqr( entity ) < radiusSqr && entity instanceof IDebugShapeProvider shapeProvider ) {
-                renderShapes( shapeProvider.getDebugShapes(), entity.position(), event );
+                renderShapes( shapeProvider.getDebugShapes(), shapeProvider.useWorldPosition() ? entity.position() : null, event );
             }
         }
     }
@@ -123,7 +123,7 @@ public final class RenderEvents {
         if( level.hasChunk( chunkX, chunkZ ) ) {
             for( BlockEntity blockEntity : level.getChunk( chunkX, chunkZ ).getBlockEntities().values() ) {
                 if( blockEntity instanceof IDebugShapeProvider shapeProvider ) {
-                    renderShapes( shapeProvider.getDebugShapes(), blockEntity.getBlockPos().getCenter(), event );
+                    renderShapes( shapeProvider.getDebugShapes(), shapeProvider.useWorldPosition() ? blockEntity.getBlockPos().getCenter() : null, event );
                 }
                 
                 // TODO Remove when updating beyond 1.20.1

@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -41,12 +42,29 @@ public class TestBlockEntity extends BlockEntity implements IDebugShapeProvider 
             //putCircles( debugShapes );
             putSpheres( debugShapes );
             //putCylinders( debugShapes );
+            //putAABBBs( debugShapes, this );
         }
         return debugShapes;
     }
     
+    @Override
+    public boolean useWorldPosition() {
+        return IDebugShapeProvider.super.useWorldPosition();
+        //return false;
+    }
+    
     private static void putBoxes( List<IDebugShape> debugShapes ) {
         debugShapes.add( new BoxShape( 3.0, 5.0 ).withColor( 0x7FFF00FF ) );
+    }
+    
+    /// Note: these AABBs are moved to the block entity's position!
+    private static void putAABBBs( List<IDebugShape> debugShapes, BlockEntity blockEntity ) {
+        debugShapes.add( new BoxShape( new AABB( -3, -3, -3, 4, 4, 4 )
+                .move( blockEntity.getBlockPos() ) )
+                .withColor( 0x7FFF00FF ) );
+        debugShapes.add( new BoxShape( new AABB( -5, -5, -5, 6, 6, 6 )
+                .move( blockEntity.getBlockPos() ) )
+                .withColor( 0x00FF00 ) );
     }
     
     private static void putQuads( List<IDebugShape> debugShapes ) {
