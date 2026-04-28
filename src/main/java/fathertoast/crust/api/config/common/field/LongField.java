@@ -1,14 +1,10 @@
 package fathertoast.crust.api.config.common.field;
 
-import com.electronwill.nightconfig.core.io.CharacterOutput;
-import fathertoast.crust.api.config.client.gui.widget.provider.HexIntFieldWidgetProvider;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.client.gui.widget.provider.NumberFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
-import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.api.config.common.value.HexIntWrapper;
 import fathertoast.crust.api.util.JavaRandomSource;
 import net.minecraft.util.RandomSource;
 
@@ -16,28 +12,32 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
+// TODO - Make random-related methods that utilize RandomSource?
+//        RandomSource is a little annoying and does not
+//        have a getter method for retrieving the seed.
+
 /**
- * Represents a config field with an integer value.
+ * Represents a config field with a long value.
  */
-public class IntField extends AbstractConfigField {
+public class LongField extends AbstractConfigField {
     
     /** The default field value. */
-    private final int valueDefault;
+    private final long valueDefault;
     /** The minimum field value. */
-    private final int valueMin;
+    private final long valueMin;
     /** The maximum field value. */
-    private final int valueMax;
+    private final long valueMax;
     
     /** The underlying field value. */
-    private int value;
+    private long value;
     
     /** Creates a new field that accepts a common range of values. */
-    public IntField( String key, int defaultValue, Range range, @Nullable String... description ) {
+    public LongField( String key, long defaultValue, LongField.Range range, @Nullable String... description ) {
         this( key, defaultValue, range.MIN, range.MAX, description );
     }
     
     /** Creates a new field that accepts a specialized range of values. */
-    public IntField( String key, int defaultValue, int min, int max, @Nullable String... description ) {
+    public LongField( String key, long defaultValue, long min, long max, @Nullable String... description ) {
         super( key, description );
         valueDefault = defaultValue;
         valueMin = min;
@@ -53,25 +53,19 @@ public class IntField extends AbstractConfigField {
     }
     
     /** @return Returns the config field's value. */
-    public int get() { return value; }
+    public long get() { return value; }
     
-    /** @return Returns the config field's value cast down to a short. */
-    public short getShort() { return (short) get(); }
-    
-    /** @return Returns the config field's value cast down to a byte. */
-    public byte getByte() { return (byte) get(); }
+    /** @return Returns the config field's value cast down to a 32-bit integer. */
+    public int getInt() { return (int) get(); }
     
     /** @return Treats the config field's value as a 1-in-X chance and returns the result of a single roll. */
-    public boolean rollChance( Random random ) { return rollChance( JavaRandomSource.of( random ) ); }
-    
-    /** @return Treats the config field's value as a 1-in-X chance and returns the result of a single roll. */
-    public boolean rollChance( RandomSource random ) { return get() > 0 && random.nextInt( get() ) == 0; }
+    public boolean rollChance( Random random ) { return get() > 0 && random.nextLong( get() ) == 0; }
     
     /** @return Returns the minimum value allowed by this field. */
-    public int minValue() { return valueMin; }
+    public long minValue() { return valueMin; }
     
     /** @return Returns the maximum value allowed by this field. */
-    public int maxValue() { return valueMax; }
+    public long maxValue() { return valueMax; }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
@@ -91,13 +85,13 @@ public class IntField extends AbstractConfigField {
         if( newValue == null ) {
             if( raw != null ) {
                 ConfigUtil.warnFor( this );
-                ConfigUtil.LOG.warn( "Invalid integer! Falling back to default ({}). Invalid value: {}",
+                ConfigUtil.LOG.warn( "Invalid long! Falling back to default ({}). Invalid value: {}",
                         valueDefault, raw );
             }
             value = valueDefault;
         }
         else {
-            int castValue = newValue.intValue();
+            long castValue = newValue.longValue();
             if( castValue < valueMin ) {
                 ConfigUtil.warnFor( this );
                 ConfigUtil.LOG.warn( "Value is below the minimum! Adjusting from {} to {}.", raw, valueMin );
@@ -121,17 +115,17 @@ public class IntField extends AbstractConfigField {
     
     /** @return The value that should be assigned to this field in the config file. */
     @Override
-    public Integer getValue() { return value; }
+    public Long getValue() { return value; }
     
     /** @return The default value of this field. */
     @Override
-    public Integer getDefaultValue() { return valueDefault; }
+    public Long getDefaultValue() { return valueDefault; }
     
     /** @return This field's gui component provider. */
     @Override
     public IConfigFieldWidgetProvider getWidgetProvider() {
-        return new NumberFieldWidgetProvider( this, Number::intValue,
-                ( number ) -> valueMin <= number.intValue() && number.intValue() <= valueMax );
+        return new NumberFieldWidgetProvider( this, Number::longValue,
+                ( number ) -> number.longValue() >= valueMin && number.longValue() <= valueMax );
     }
     
     
@@ -139,78 +133,22 @@ public class IntField extends AbstractConfigField {
     public enum Range {
         
         /** Accepts any value. */
-        ANY( Integer.MIN_VALUE, Integer.MAX_VALUE ),
+        ANY( Long.MIN_VALUE, Long.MAX_VALUE ),
         /** Accepts any positive value (> 0). */
-        POSITIVE( 1, Integer.MAX_VALUE ),
+        POSITIVE( 1, Long.MAX_VALUE ),
         /** Accepts any non-negative value (>= 0). */
-        NON_NEGATIVE( 0, Integer.MAX_VALUE ),
+        NON_NEGATIVE( 0, Long.MAX_VALUE ),
         /** Accepts any non-negative value and -1 (>= -1). */
-        TOKEN_NEGATIVE( -1, Integer.MAX_VALUE );
+        TOKEN_NEGATIVE( -1, Long.MAX_VALUE );
         
-        public final int MIN;
-        public final int MAX;
+        public final long MIN;
+        public final long MAX;
         
-        Range( int min, int max ) {
+        Range( long min, long max ) {
             MIN = min;
             MAX = max;
         }
     }
-    
-    
-    /**
-     * Represents a config field with an integer value that displays values in hexadecimal.
-     */
-    public static class Hex extends IntField {
-        
-        /** Minimum hex digits to output. */
-        private final int minDigits;
-        
-        /**
-         * Creates a new field that accepts a specialized range of values and prints a minimum number of digits.
-         * Since hex is unsigned, negatives are not supported unless using Range.ANY.
-         */
-        public Hex( String key, int defaultValue, int digitsMin, int min, int max, @Nullable String... description ) {
-            super( key, defaultValue, min, max, description );
-            minDigits = digitsMin;
-            if( (min < 0 || max < 0) && (min != Range.ANY.MIN || max != Range.ANY.MAX) ) {
-                throw new IllegalArgumentException( "Negatives are unsupported by hex int unless allowing any value!" );
-            }
-        }
-        
-        /**
-         * Creates a new field that accepts a specialized range of values.
-         * Since hex is unsigned, negatives are not supported unless using Range.ANY.
-         */
-        public Hex( String key, int defaultValue, int min, int max, @Nullable String... description ) {
-            this( key, defaultValue, 1, min, max, description );
-        }
-        
-        /** @return The minimum number of digits this field prints. */
-        public int getMinDigits() { return minDigits; }
-        
-        /** @return The value in an appropriate hex wrapper. */
-        public HexIntWrapper wrap( int value ) { return new HexIntWrapper( value, getMinDigits() ); }
-        
-        /** Adds info about the field type, format, and bounds to the end of a field's description. */
-        @Override
-        public void appendFieldInfo( List<String> comment ) {
-            comment.add( TomlHelper.fieldInfoRange( wrap( (int) getDefaultValue() ),
-                    wrap( minValue() ), wrap( maxValue() ) ) );
-        }
-        
-        /** Writes this field's value to file. */
-        @Override
-        public void writeValue( CrustTomlWriter writer, CharacterOutput output ) {
-            writer.writeValue( wrap( get() ), output );
-        }
-        
-        /** @return This field's gui component provider. */
-        @Override
-        public IConfigFieldWidgetProvider getWidgetProvider() {
-            return new HexIntFieldWidgetProvider( this, ( number ) -> minValue() <= number && number <= maxValue() );
-        }
-    }
-    
     
     /**
      * Represents two number fields, a minimum and a maximum, combined into one.
@@ -219,35 +157,35 @@ public class IntField extends AbstractConfigField {
     public static class RandomRange {
         
         /** The minimum. Defines the lower limit of the range (inclusive). */
-        private final IntField MINIMUM;
+        private final LongField MINIMUM;
         /** The maximum. Defines the upper limit of the range (inclusive). */
-        private final IntField MAXIMUM;
+        private final LongField MAXIMUM;
         
         /**
          * Links two values together as minimum and maximum.
          * <p>
-         * Helper method to automatically generate the minimum and maximum int fields and define them in the spec.
+         * Helper method to automatically generate the minimum and maximum long fields and define them in the spec.
          * Appends ".min" and ".max" to the provided key, and only supports comments on the first field.
          */
-        public RandomRange( CrustConfigSpec spec, String keyBase, int defaultMinValue, int defaultMaxValue, Range range, @Nullable String... description ) {
+        public RandomRange( CrustConfigSpec spec, String keyBase, long defaultMinValue, long defaultMaxValue, LongField.Range range, @Nullable String... description ) {
             this( spec, keyBase, defaultMinValue, defaultMaxValue, range.MIN, range.MAX, description );
         }
         
         /**
          * Links two values together as minimum and maximum.
          * <p>
-         * Helper method to automatically generate the minimum and maximum int fields and define them in the spec.
+         * Helper method to automatically generate the minimum and maximum long fields and define them in the spec.
          * Appends ".min" and ".max" to the provided key, and only supports comments on the first field.
          */
-        public RandomRange( CrustConfigSpec spec, String keyBase, int defaultMinValue, int defaultMaxValue, int min, int max, @Nullable String... description ) {
+        public RandomRange( CrustConfigSpec spec, String keyBase, long defaultMinValue, long defaultMaxValue, long min, long max, @Nullable String... description ) {
             this(
-                    spec.define( new IntField( keyBase + ".min", defaultMinValue, min, max, description ) ),
-                    spec.define( new IntField( keyBase + ".max", defaultMaxValue, min, max ) )
+                    spec.define( new LongField( keyBase + ".min", defaultMinValue, min, max, description ) ),
+                    spec.define( new LongField( keyBase + ".max", defaultMaxValue, min, max ) )
             );
         }
         
         /** Links two values together as minimum and maximum. */
-        public RandomRange( IntField minimum, IntField maximum ) {
+        public RandomRange( LongField minimum, LongField maximum ) {
             MINIMUM = minimum;
             MAXIMUM = maximum;
             if( minimum.valueDefault > maximum.valueDefault ) {
@@ -257,25 +195,36 @@ public class IntField extends AbstractConfigField {
         }
         
         /** @return The minimum value of this range. */
-        public int getMin() { return MINIMUM.get(); }
+        public long getMin() { return MINIMUM.get(); }
         
         /** @return The maximum value of this range. */
-        public int getMax() { return MAXIMUM.get(); }
+        public long getMax() { return MAXIMUM.get(); }
         
         /** @return The minimum value field. */
-        public IntField getMinField() { return MINIMUM; }
+        public LongField getMinField() { return MINIMUM; }
         
         /** @return The maximum value field. */
-        public IntField getMaxField() { return MAXIMUM; }
+        public LongField getMaxField() { return MAXIMUM; }
         
+        /**
+         * @return A random value between the minimum and the maximum (inclusive).
+         * <br><br>
+         * All this method does is try and grab the seed from the given RandomSource instance,
+         * such that it can be used to instantiate a new {@link Random} object
+         * that we can call {@link LongField.RandomRange#next(Random)} with.
+         * <br><br>
+         * If you end up needing to call this often, it is likely better to call the below method
+         * that takes a {@link Random} instance instead when possible, as {@link RandomSource} does not
+         * provide a method for generating a bounded random long.
+         */
+        public long next( RandomSource random ) {
+            return next( new Random( JavaRandomSource.getRandomSourceSeed( random ) ) );
+        }
         
         /** @return A random value between the minimum and the maximum (inclusive). */
-        public int next( Random random ) { return next( JavaRandomSource.of( random ) ); }
-        
-        /** @return A random value between the minimum and the maximum (inclusive). */
-        public int next( RandomSource random ) {
+        public long next( Random random ) {
             try {
-                return random.nextIntBetweenInclusive( getMin(), getMax() );
+                return random.nextLong( getMin(), getMax() );
             }
             catch( IllegalArgumentException ex ) {
                 ConfigUtil.warnFor( MAXIMUM );

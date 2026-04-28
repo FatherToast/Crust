@@ -72,6 +72,7 @@ public class TestConfigFile extends AbstractConfigFile {
         // Primitives
         public final BooleanField booleanField;
         public final IntField intField;
+        public final LongField longField;
         public final ColorIntField colorIntField;
         public final ColorIntField colorIntFieldAlpha;
         public final DoubleField doubleField;
@@ -129,6 +130,8 @@ public class TestConfigFile extends AbstractConfigFile {
             
             intField = SPEC.define( new InjectionWrapperField<>(
                     new IntField( "int", 1, IntField.Range.ANY ), General::testCallback ) ).field();
+            longField = SPEC.define( new InjectionWrapperField<>(
+                    new LongField( "long", Long.MAX_VALUE, LongField.Range.POSITIVE ), General::testCallback ) ).field();
             colorIntField = SPEC.define( new InjectionWrapperField<>(
                     new ColorIntField( "color_int_rgb", 0x00FFFF, false ), General::testCallback ) ).field();
             colorIntFieldAlpha = SPEC.define( new InjectionWrapperField<>(
