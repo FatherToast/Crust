@@ -5,12 +5,22 @@ import fathertoast.crust.api.util.JavaRandomSource;
 import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Random;
+import java.util.function.Function;
 
 @SuppressWarnings( "unused" )
 public final class CrustMath {
     
     // ---- RANDOM METHODS ---- //
+    
+    /**
+     * A function that returns a RandomSource implementation's seed when possible.
+     * The initial function is a placeholder and gets replaced via reflection once Crust has been constructed.
+     */
+    @SuppressWarnings( "FieldMayBeFinal" )
+    private static Function<RandomSource, Long> RANDOM_SOURCE_SEED_GETTER = RandomSource::nextLong;
+    
     
     /**
      * @return The result of a random roll against the value based on its type:<p>
@@ -30,6 +40,22 @@ public final class CrustMath {
         return value instanceof Number n &&
                 (n instanceof Double || n instanceof Float ? random.nextDouble() < n.doubleValue() :
                         n.intValue() > 0 && random.nextInt( n.intValue() ) == 0);
+    }
+    
+    /**
+     * Convenience method for getting the seed form various vanilla implementations of {@link RandomSource}.
+     *
+     * @return The seed of the given {@link RandomSource}. If the implementation is not
+     * supported or something goes wrong, a new pseudorandomly generated seed from
+     * the random source instance is returned instead.
+     */
+    public static long getRandomSourceSeed( RandomSource random ) {
+        Objects.requireNonNull( random );
+        try {
+            return RANDOM_SOURCE_SEED_GETTER.apply( random );
+        }
+        catch( Exception ignored ) { }
+        return random.nextLong();
     }
     
     
@@ -83,5 +109,5 @@ public final class CrustMath {
     
     
     // Utility class
-    private CrustMath() {}
+    private CrustMath() { }
 }

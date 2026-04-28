@@ -5,16 +5,12 @@ import fathertoast.crust.api.config.client.gui.widget.provider.NumberFieldWidget
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.api.util.JavaRandomSource;
+import fathertoast.crust.api.lib.CrustMath;
 import net.minecraft.util.RandomSource;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
-
-// TODO - Make random-related methods that utilize RandomSource?
-//        RandomSource is a little annoying and does not
-//        have a getter method for retrieving the seed.
 
 /**
  * Represents a config field with a long value.
@@ -216,9 +212,10 @@ public class LongField extends AbstractConfigField {
          * If you end up needing to call this often, it is likely better to call the below method
          * that takes a {@link Random} instance instead when possible, as {@link RandomSource} does not
          * provide a method for generating a bounded random long.
+         * @see CrustMath#getRandomSourceSeed(RandomSource)
          */
         public long next( RandomSource random ) {
-            return next( new Random( JavaRandomSource.getRandomSourceSeed( random ) ) );
+            return next( new Random( CrustMath.getRandomSourceSeed( random ) ) );
         }
         
         /** @return A random value between the minimum and the maximum (inclusive). */
