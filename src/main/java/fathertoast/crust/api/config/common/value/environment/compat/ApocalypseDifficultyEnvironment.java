@@ -27,7 +27,7 @@ public class ApocalypseDifficultyEnvironment extends CompareLongEnvironment {
     
     public ApocalypseDifficultyEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
     
-    // Min and max values should not be specified, since they are dependent on AR configs.
+    // Min and max values should not be specified, since they are dependent on Apocalypse configs.
     
     /** @return True if Apocalypse Rebooted is installed. */
     protected boolean isApocalypseInstalled() { return apiInstance.getDifficultyAccessor() != null; }
