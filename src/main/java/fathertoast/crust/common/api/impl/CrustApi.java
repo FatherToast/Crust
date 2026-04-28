@@ -75,6 +75,9 @@ public final class CrustApi implements ICrustApi {
         ModLoadingStage.CONSTRUCT.getDeferredWorkQueue().enqueueWork( Crust.INSTANCE.CONTAINER, CrustApi::injectCrustMathChanges );
     }
     
+    /**
+     * Helper method for modifying private fields in CrustMath.
+     */
     private static void injectCrustMathChanges() {
         try {
             Field field = CrustMath.class.getDeclaredField( "RANDOM_SOURCE_SEED_GETTER" );
