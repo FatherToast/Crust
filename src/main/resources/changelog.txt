@@ -2,6 +2,7 @@
     - Made some internal changes to some logger messages.
     API Changes:
     - Added new config field type LongField.
+    - ColorPreviewWidgets can now be instantiated with a custom size parameter.
 1.20.1-4.14.22
     - The config editor searchbar now draws highlights a bit prettier.
     API Changes:

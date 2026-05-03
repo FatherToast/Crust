@@ -15,12 +15,21 @@ public class ColorPreviewWidget extends AbstractWidget {
     private static final ResourceLocation BACKGROUND_TEXTURE =
             ResourceLocation.fromNamespaceAndPath( "crust", "textures/swatch.png" );
     
-    public static final int SIZE = 20;
+    public static final int DEFAULT_SIZE = 20;
     
+    private final int size;
     private int argb;
     
+    
+    /** Constructs a new color preview widget with the specified size. */
+    public ColorPreviewWidget( int x, int y, int size ) {
+        super( x, y, size, size, Component.empty() );
+        this.size = Math.max( size, 5 );
+    }
+    
+    /** Constructs a new color preview widget with the default size of 20. */
     public ColorPreviewWidget( int x, int y ) {
-        super( x, y, SIZE, SIZE, Component.empty() );
+        this( x, y, DEFAULT_SIZE );
     }
     
     /** Sets the color displayed in this swatch. */
@@ -33,14 +42,24 @@ public class ColorPreviewWidget extends AbstractWidget {
         if( !visible ) return;
         
         RenderSystem.enableDepthTest();
-        graphics.blit( BACKGROUND_TEXTURE, getX(), getY(), 0.0F, SIZE,
-                SIZE, SIZE, SIZE, SIZE );
+        graphics.blit( BACKGROUND_TEXTURE, getX(), getY(), 0.0F, size,
+                size, size, size, size );
         graphics.fill( getX() + 1, getY() + 1,
-                getX() + SIZE - 1, getY() + SIZE - 1, argb );
+                getX() + size - 1, getY() + size - 1, argb );
     }
     
     @Override
     protected void updateWidgetNarration( NarrationElementOutput output ) {
     
+    }
+    
+    @Override
+    public boolean mouseClicked( double x, double y, int mouseKey ) {
+        return false;
+    }
+    
+    /** @return The width and height of this widget. */
+    public int getSize() {
+        return size;
     }
 }
