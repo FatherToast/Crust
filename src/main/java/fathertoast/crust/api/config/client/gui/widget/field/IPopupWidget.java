@@ -6,7 +6,7 @@ import com.mojang.blaze3d.platform.InputConstants;
  * Optional interface that can be implemented by 'popup widgets' to receive additional events.
  */
 public interface IPopupWidget {
-
+    
     /**
      * Called when a mouse button is clicked out of the widget's bounds.
      *
@@ -14,7 +14,6 @@ public interface IPopupWidget {
      * @return True if the popup should be closed.
      */
     @SuppressWarnings( "unused" )
-
     default boolean mouseClickedOutOfBounds( double x, double y, int mouseKey ) { return true; }
     
     /** @return True if this popup should close when the Esc key is pressed. */
