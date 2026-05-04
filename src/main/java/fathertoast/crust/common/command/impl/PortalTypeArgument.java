@@ -39,8 +39,8 @@ public class PortalTypeArgument implements ArgumentType<PortalBuilder> {
     
     @Override
     public PortalBuilder parse( StringReader reader ) throws CommandSyntaxException {
-        ResourceLocation resourceLocation = ResourceLocation.read( reader );
-        PortalBuilder portalBuilder = CrustObjects.PORTAL_REGISTRY.get().getValue( resourceLocation );
+        final ResourceLocation id = ResourceLocation.read( reader );
+        final PortalBuilder portalBuilder = CrustObjects.PORTAL_REGISTRY.get().getValue( id );
         
         if( portalBuilder == null )
             throw INVALID_PORTAL_TYPE.create();
