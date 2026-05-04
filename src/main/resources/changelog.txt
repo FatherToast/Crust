@@ -3,6 +3,7 @@
     API Changes:
     - Added new config field type LongField.
     - ColorPreviewWidgets can now be instantiated with a custom size parameter.
+    - Moved over the PlayerVelocityWatcher utility from Special Mobs such that it can be used by other mods.
 1.20.1-4.14.22
     - The config editor searchbar now draws highlights a bit prettier.
     API Changes:

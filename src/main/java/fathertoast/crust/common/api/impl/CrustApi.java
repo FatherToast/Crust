@@ -3,6 +3,7 @@ package fathertoast.crust.common.api.impl;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.IDifficultyAccessor;
 import fathertoast.crust.api.client.accessor.IClientConfigAccessor;
+import fathertoast.crust.api.entity.IPlayerVelocityWatcher;
 import fathertoast.crust.api.lib.CrustMath;
 import fathertoast.crust.client.ClientRegister;
 import fathertoast.crust.common.api.impl.accessor.apocalypse.DifficultyAccessor;
@@ -54,6 +55,11 @@ public final class CrustApi implements ICrustApi {
         return null;
     }
     
+    @Override
+    public IPlayerVelocityWatcher getPlayerVelocityWatcher() {
+        return PlayerVelocityWatcher.INSTANCE;
+    }
+    
     
     //----------------------------------------------------------------------------
     //                           Misc external setup
@@ -72,13 +78,13 @@ public final class CrustApi implements ICrustApi {
     
     /** Enqueues various setup to happen on the main thread, for misc mod loading stages. */
     private static void enqueueSetup() {
-        ModLoadingStage.CONSTRUCT.getDeferredWorkQueue().enqueueWork( Crust.INSTANCE.CONTAINER, CrustApi::injectCrustMathChanges );
+        ModLoadingStage.CONSTRUCT.getDeferredWorkQueue().enqueueWork( Crust.INSTANCE.CONTAINER, CrustApi::injectCrustMath );
     }
     
     /**
-     * Helper method for modifying private fields in CrustMath.
+     * Helper method for modifying private fields in {@link CrustMath}.
      */
-    private static void injectCrustMathChanges() {
+    private static void injectCrustMath() {
         try {
             Field field = CrustMath.class.getDeclaredField( "RANDOM_SOURCE_SEED_GETTER" );
             field.setAccessible( true );

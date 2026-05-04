@@ -1,6 +1,7 @@
 package fathertoast.crust.api;
 
 import fathertoast.crust.api.client.accessor.IClientConfigAccessor;
+import fathertoast.crust.api.entity.IPlayerVelocityWatcher;
 import fathertoast.crust.api.util.OnClient;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
@@ -39,4 +40,10 @@ public interface ICrustApi {
     @OnClient
     @Nullable
     IClientConfigAccessor getClientConfigAccessor();
+    
+    /**
+     * @return The player velocity watcher instance from Crust.
+     * Keeps track of all players' current and last-tick position on the server.
+     */
+    IPlayerVelocityWatcher getPlayerVelocityWatcher();
 }
