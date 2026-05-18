@@ -166,7 +166,7 @@ public class TestConfigFile extends AbstractConfigFile {
             /// Vanilla reg:    {@link BuiltInRegistries#INSTRUMENT};   tags: {@link InstrumentTags}
             /// Dynamic reg:    {@link Registries#DAMAGE_TYPE};         tags: {@link DamageTypeTags}
             //TODO implement the above in various registry collection fields
-            ResourceLocation MISSING_FEATURE = ResourceLocation.fromNamespaceAndPath( "missing", "resource_.-/location" );
+            final ResourceLocation MISSING_FEATURE = ResourceLocation.fromNamespaceAndPath( "missing", "resource_.-/location" );
             
             entitySetField = SPEC.define( new InjectionWrapperField<>(
                     new EntitySetField( "entity_set_field", new EntitySet.Builder<>()
@@ -183,7 +183,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             .build() ), General::testCallback ) ).field();
             entityMapField = SPEC.define( new InjectionWrapperField<>(
                     new EntityMapField<>( "entity_map_field", new EntityMap
-                            .Builder<>( ArrayValueCodec.of( 3, DoubleValueCodec.SIGNED_PERCENT ) )
+                            .Builder<>( ArrayValueCodec.of( 3, Double.class, DoubleValueCodec.SIGNED_PERCENT ) )
                             .put( EntityType.DONKEY, new Double[] { -0.420, 0.0001, 0.42042 } )
                             .put( TestCrustObjects.Obj.TEST_SKELETON, new Double[] { 0.0, -1.0, 1.0 } )
                             .putBlacklist( EntityType.STRAY ).putBlacklist( EntityType.ZOMBIE )

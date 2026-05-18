@@ -8,7 +8,7 @@ import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
+import java.lang.reflect.Array;
 
 /**
  * An array value codec. Supports either arrays of specified length, or arrays of length >= 1.
@@ -22,30 +22,33 @@ import java.util.Arrays;
 @ApiStatus.Experimental
 public class ArrayValueCodec<V> implements IValueCodec<V[]> {
     
-    /** @param length If >0, the array value will have exactly this length. Otherwise, its length will be >=1. */
-    public static ArrayValueCodec<Double> ofDoubles( int length, double defaultValue, DoubleField.Range range ) { return of( length, DoubleValueCodec.of( defaultValue, range ) ); }
     
     /** @param length If >0, the array value will have exactly this length. Otherwise, its length will be >=1. */
-    public static ArrayValueCodec<Double> ofDoubles( int length, double defaultValue, double min, double max ) { return of( length, DoubleValueCodec.of( defaultValue, min, max ) ); }
+    public static ArrayValueCodec<Double> ofDoubles( int length, double defaultValue, DoubleField.Range range ) { return of( length, Double.class, DoubleValueCodec.of( defaultValue, range ) ); }
     
     /** @param length If >0, the array value will have exactly this length. Otherwise, its length will be >=1. */
-    public static ArrayValueCodec<Integer> ofInts( int length, int defaultValue, IntField.Range range ) { return of( length, IntValueCodec.of( defaultValue, range ) ); }
+    public static ArrayValueCodec<Double> ofDoubles( int length, double defaultValue, double min, double max ) { return of( length, Double.class, DoubleValueCodec.of( defaultValue, min, max ) ); }
     
     /** @param length If >0, the array value will have exactly this length. Otherwise, its length will be >=1. */
-    public static ArrayValueCodec<Integer> ofInts( int length, int defaultValue, int min, int max ) { return of( length, IntValueCodec.of( defaultValue, min, max ) ); }
+    public static ArrayValueCodec<Integer> ofInts( int length, int defaultValue, IntField.Range range ) { return of( length, Integer.class, IntValueCodec.of( defaultValue, range ) ); }
     
     /** @param length If >0, the array value will have exactly this length. Otherwise, its length will be >=1. */
-    public static <T> ArrayValueCodec<T> of( int length, IValueCodec<T> codec ) { return new ArrayValueCodec<>( length, codec ); }
+    public static ArrayValueCodec<Integer> ofInts( int length, int defaultValue, int min, int max ) { return of( length, Integer.class, IntValueCodec.of( defaultValue, min, max ) ); }
+    
+    /** @param length If >0, the array value will have exactly this length. Otherwise, its length will be >=1. */
+    public static <T> ArrayValueCodec<T> of( int length, Class<T> type, IValueCodec<T> codec ) { return new ArrayValueCodec<>( length, type, codec ); }
     
     
     // ---- Instance Methods ---- //
     
     public final int length;
     public final IValueCodec<V> elementCodec;
+    public final Class<V> typeClass;
     
-    private ArrayValueCodec( int len, IValueCodec<V> codec ) {
+    private ArrayValueCodec( int len, Class<V> type, IValueCodec<V> codec ) {
         length = len;
         elementCodec = codec;
+        typeClass = type;
     }
     
     /** @return The value format (for example, {@literal "<Number (Any Value)>"}). */
@@ -93,15 +96,17 @@ public class ArrayValueCodec<V> implements IValueCodec<V[]> {
         }
         
         // Parse the arguments
-        V[] v = makeArray( expectedArgs, elementCodec.parseTomlString( field, line, get( args, 0 ) ) );
+        V[] v = makeArray( expectedArgs, typeClass );
         for( int i = 1; i < expectedArgs; i++ ) {
             v[i] = elementCodec.parseTomlString( field, line, get( args, i ) );
         }
         return v;
     }
     
-    @SafeVarargs // Do some black magic to trick Java into making a generic array
-    private static <T> T[] makeArray( int length, T... a ) { return Arrays.copyOf( a, length ); }
+    private static <T> T[] makeArray( int length, Class<T> type ) {
+        // noinspection unchecked
+        return (T[]) Array.newInstance( type, length );
+    }
     
     @Nullable
     private static <T> T get( T[] a, int i ) { return i < a.length ? a[i] : null; }

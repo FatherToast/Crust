@@ -10,7 +10,6 @@ import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -22,17 +21,28 @@ public class TestGameEventHandler {
     
     @SubscribeEvent( priority = EventPriority.NORMAL )
     static void onLivingHurt( LivingHurtEvent event ) {
-        // noinspection resource
-        if( event.getEntity().level().isClientSide() || !(event.getSource().getEntity() instanceof Player) ) return;
         
-        // Test stuff here
+        
+        // noinspection resource
+        if( event.getEntity().level().isClientSide() ) return;
+        
+        // Test registry map
         EntityType<?> entityType = event.getEntity().getType();
-        Integer value = TestCrust.CONFIG.GENERAL.registryMapField.get( entityType );
-        if( value == null ) {
+        Integer intVal = TestCrust.CONFIG.GENERAL.registryMapField.get( entityType );
+        if( intVal == null ) {
             TestCrust.LOG.debug( "Entity NOT matched: {}", entityType );
         }
         else {
-            TestCrust.LOG.debug( "Value = {} for entity: {}", value, entityType );
+            TestCrust.LOG.debug( "Value = {} for entity: {}", intVal, entityType );
+        }
+        
+        // Test entity map
+        Double[] doubles = TestCrust.CONFIG.GENERAL.entityMapField.get( event.getEntity() );
+        if( doubles == null ) {
+            TestCrust.LOG.debug( "Entity NOT matched: {}", entityType );
+        }
+        else {
+            TestCrust.LOG.debug( "Values = {} for entity: {}", doubles, entityType );
         }
     }
     

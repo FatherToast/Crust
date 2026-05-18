@@ -1,3 +1,7 @@
+1.20.1-4.16.24
+    API Changes:
+    - Fixed ArrayValueCodec not creating a strongly typed array when parsing, resulting in class cast exceptions.
+    - Instantiating an ArrayValueCodec now requires a type class.
 1.20.1-4.15.23
     - Made some internal changes to some logger messages.
     API Changes:
