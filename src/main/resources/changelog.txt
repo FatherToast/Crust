@@ -1,3 +1,5 @@
+1.20.1-4.16.25
+    - Fixed ArrayValueCodec not parsing correctly after last release.
 1.20.1-4.16.24
     API Changes:
     - Fixed ArrayValueCodec not creating a strongly typed array when parsing, resulting in class cast exceptions.

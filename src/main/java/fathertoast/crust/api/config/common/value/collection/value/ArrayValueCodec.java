@@ -94,10 +94,9 @@ public class ArrayValueCodec<V> implements IValueCodec<V[]> {
                         expectedArgs, actualArgs, line );
             }
         }
-        
         // Parse the arguments
         V[] v = makeArray( expectedArgs, typeClass );
-        for( int i = 1; i < expectedArgs; i++ ) {
+        for( int i = 0; i < expectedArgs; i++ ) {
             v[i] = elementCodec.parseTomlString( field, line, get( args, i ) );
         }
         return v;
