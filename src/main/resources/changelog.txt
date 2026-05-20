@@ -1,3 +1,7 @@
+1.20.1-4.17.26
+    API Changes:
+    - Added new fuzzy key type NumberKey, which supports all primitive numeric types.
+    - Added LongValueCodec for long values.
 1.20.1-4.16.25
     - Fixed ArrayValueCodec not parsing correctly after last release.
 1.20.1-4.16.24
