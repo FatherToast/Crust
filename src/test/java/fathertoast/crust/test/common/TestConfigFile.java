@@ -10,6 +10,7 @@ import fathertoast.crust.api.config.common.value.AttributeList;
 import fathertoast.crust.api.config.common.value.EnvironmentEntry;
 import fathertoast.crust.api.config.common.value.EnvironmentList;
 import fathertoast.crust.api.config.common.value.collection.*;
+import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
 import fathertoast.crust.api.config.common.value.collection.value.*;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
 import fathertoast.crust.api.config.common.value.environment.biome.BiomeCategory;
@@ -85,6 +86,9 @@ public class TestConfigFile extends AbstractConfigFile {
         //        public final FuzzyKeyField<String> fuzzyKeyField;
         //        public final ValueCodecField<MobEffectStats> valueCodecField;
         // Fuzzy collections
+        public final FuzzyListField<Long, FuzzyList<Long>> fuzzyListField;
+        public final FuzzySetField<Byte, FuzzySet<Byte>> fuzzySetField;
+        public final FuzzyMapField<Double, String, FuzzyMap<Double, String>> fuzzyMapField;
         public final EntitySetField entitySetField;
         public final EntityMapField<Double[]> entityMapField;
         //        public final BlockStateSetField blockStateSetField;
@@ -158,6 +162,33 @@ public class TestConfigFile extends AbstractConfigFile {
             // ---- Fuzzy collections ---- //
             SPEC.callback( General::printLine );
             SPEC.newLine();
+            
+            fuzzyListField = SPEC.define( new InjectionWrapperField<>(
+                    new FuzzyListField<>( "fuzzy_list_field", new FuzzyList.Builder<>( NumberKey.longParser( LongValueCodec.ANY ) )
+                            .add( NumberKey.of( 1L ) )
+                            .add( NumberKey.of( 1234L ) )
+                            .add( NumberKey.of( 1234567890000000000L ) )
+                            .build() ), General::testCallback ) ).field();
+            
+            fuzzySetField = SPEC.define( new InjectionWrapperField<>(
+                    new FuzzySetField<>( "fuzzy_set_field", new FuzzySet.Builder<>( NumberKey.byteParser( null ) )
+                            .add( NumberKey.of( (byte) 1 ) )
+                            .add( NumberKey.of( (byte) 2 ) )
+                            .add( NumberKey.of( (byte) 4 ) )
+                            .add( NumberKey.of( (byte) 8 ) )
+                            .add( NumberKey.of( (byte) 16 ) )
+                            .build() ), General::testCallback ) ).field();
+            
+            fuzzyMapField = SPEC.define( new InjectionWrapperField<>(
+                    new FuzzyMapField<>( "fuzzy_map_field", new FuzzyMap.Builder<>(
+                            NumberKey.doubleParser( DoubleValueCodec.NON_NEGATIVE ),
+                            StringValueCodec.of( 10 ) )
+                            .put( NumberKey.of( 0.0 ), "Binky" )
+                            .put( NumberKey.of( 0.05 ), "Bonky" )
+                            .put( NumberKey.of( 0.10 ), "Spinky" )
+                            .put( NumberKey.of( 0.15 ), "Sponky" )
+                            .put( NumberKey.of( 0.20 ), "A very sad $5 sponge" )
+                            .build() ), General::testCallback ) ).field();
             
             /// Note: To fully test {@link fathertoast.crust.api.config.common.value.collection.key.RegObjKey}, we
             ///     want to use each {@link fathertoast.crust.api.config.common.value.collection.key.IRegWrapper} type
