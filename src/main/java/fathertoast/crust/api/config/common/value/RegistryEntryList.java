@@ -25,7 +25,7 @@ public class RegistryEntryList<T> implements IStringArray {
     private final IForgeRegistry<T> REGISTRY;
     
     /** The entries in this list. */
-    protected final Set<T> UNDERLYING_SET = new HashSet<>();
+    protected final Set<T> UNDERLYING_SET = new LinkedHashSet<>();
     /** The tags in this list. */
     private final List<TagKey<T>> TAGS = new ArrayList<>();
     /** Entire namespaces specified in this list. */
