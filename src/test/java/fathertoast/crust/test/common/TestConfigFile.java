@@ -351,10 +351,13 @@ public class TestConfigFile extends AbstractConfigFile {
             longCommentField = SPEC.define( new BooleanField( "long_comment", true,
                     "Oh boy, this comment sure is long! The reason it is so very very long is because of " +
                             "the sheer length of the comment, which attributes to the comment's general longness.",
+                    
                     "Now that we know how long this comment is, let us not make too lengthy commentary on the lengthness.",
                     "Thank you for your longness! So long, and we long to hear from you again! Bye. Im just gonna write " +
                             "some more just in case.",
+                    
                     "Gotta make sure the comment is long enough... okay that's enough bye!",
+                    
                     "Just kidding. Let's keep going with this long comment action - how about some really long portion " +
                             "that requires some additional wrapping, much like some kind of spaghetti wraps around the " +
                             "utensil traditionally use for spaghetti. Is it a chopstick? Quite possibly. Speaking of " +
