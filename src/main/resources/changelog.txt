@@ -1,3 +1,5 @@
+1.20.1-4.17.27
+    - RegistryEntryList now stores its entries in a LinkedHashSet to retain insertion order (PR #12, thanks pawjwp).
 1.20.1-4.17.26
     API Changes:
     - Added new fuzzy key type NumberKey, which supports all primitive numeric types.
