@@ -193,7 +193,7 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
         public boolean matches( Entity target ) {
             if( super.matches( target ) ) return true;
             checkClass( target.level() );
-            return entityClass != null && target.getClass().isAssignableFrom( entityClass );
+            return entityClass != null && entityClass.isAssignableFrom( target.getClass() );
         }
         
         /** Called before checking assignability; tries to load the entity type's class if it has not yet been loaded. */
@@ -217,6 +217,7 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
                 }
                 catch( Exception ex ) {
                     ConfigUtil.LOG.warn( "Failed to load class of entity type \"{}\"! Entry: {}", entityType, this );
+                    // noinspection CallToPrintStackTrace
                     ex.printStackTrace();
                 }
                 // If the factory doesn't work, just kill the instanceof check capability of this key
@@ -233,7 +234,7 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
     
     // ---- Parser Implementation ---- //
     
-    private record Parser( ) implements IFuzzyKeyParser<Entity> {
+    private record Parser() implements IFuzzyKeyParser<Entity> {
         
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override

@@ -1,3 +1,6 @@
+1.20.1-4.17.28
+    - Fixed EntityKey.Extends key implementation not checking class inheritance correctly,
+      leading to the key not working as intended in config fields that make use of them.
 1.20.1-4.17.27
     - RegistryEntryList now stores its entries in a LinkedHashSet to retain insertion order (PR #12, thanks pawjwp).
 1.20.1-4.17.26
