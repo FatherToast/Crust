@@ -60,32 +60,62 @@ public class EntitySet extends FuzzySet<Entity> {
         /** Adds an extends key based on the resource location. Matches the provided entity type and any entities that extend its class. */
         public B addExtends( String resLoc ) { return add( EntityKey.extending( resLoc, false ) ); }
         
+        /** Adds an extends key based on the resource location. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
+        public B addExtends( String resLoc, int hierarchySteps ) { return add( EntityKey.extending( resLoc, hierarchySteps, false ) ); }
+        
         /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend its class. */
         public B addExtendsBlacklist( String resLoc ) { return add( EntityKey.extending( resLoc, true ) ); }
+        
+        /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
+        public B addExtendsBlacklist( String resLoc, int hierarchySteps ) { return add( EntityKey.extending( resLoc, hierarchySteps, true ) ); }
         
         /** Adds an extends key based on the resource location. Matches the provided entity type and any entities that extend its class. */
         public B addExtends( ResourceLocation resLoc ) { return add( EntityKey.extending( resLoc, false ) ); }
         
+        /** Adds an extends key based on the resource location. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
+        public B addExtends( ResourceLocation resLoc, int hierarchySteps ) { return add( EntityKey.extending( resLoc, hierarchySteps, false ) ); }
+        
         /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend its class. */
         public B addExtendsBlacklist( ResourceLocation resLoc ) { return add( EntityKey.extending( resLoc, true ) ); }
+        
+        /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
+        public B addExtendsBlacklist( ResourceLocation resLoc, int hierarchySteps ) { return add( EntityKey.extending( resLoc, hierarchySteps, true ) ); }
         
         /** Adds an extends key based on the registry object. Matches the provided entity type and any entities that extend its class. */
         public B addExtends( RegistryObject<? extends EntityType<?>> regObj ) { return add( EntityKey.extending( regObj, false ) ); }
         
+        /** Adds an extends key based on the registry object. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
+        public B addExtends( RegistryObject<? extends EntityType<?>> regObj, int hierarchySteps ) { return add( EntityKey.extending( regObj, hierarchySteps, false ) ); }
+        
         /** Adds a blacklist extends key based on the registry object. Matches the provided entity type and any entities that extend its class. */
         public B addExtendsBlacklist( RegistryObject<? extends EntityType<?>> regObj ) { return add( EntityKey.extending( regObj, true ) ); }
+        
+        /** Adds a blacklist extends key based on the registry object. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
+        public B addExtendsBlacklist( RegistryObject<? extends EntityType<?>> regObj, int hierarchySteps ) { return add( EntityKey.extending( regObj, hierarchySteps, true ) ); }
         
         /** Adds an extends key based on the resource key. Matches the provided entity type and any entities that extend its class. */
         public B addExtends( ResourceKey<? extends EntityType<?>> resKey ) { return add( EntityKey.extending( resKey, false ) ); }
         
+        /** Adds an extends key based on the resource key. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
+        public B addExtends( ResourceKey<? extends EntityType<?>> resKey, int hierarchySteps ) { return add( EntityKey.extending( resKey, hierarchySteps, false ) ); }
+        
         /** Adds a blacklist extends key based on the resource key. Matches the provided entity type and any entities that extend its class. */
         public B addExtendsBlacklist( ResourceKey<? extends EntityType<?>> resKey ) { return add( EntityKey.extending( resKey, true ) ); }
+        
+        /** Adds a blacklist extends key based on the resource key. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
+        public B addExtendsBlacklist( ResourceKey<? extends EntityType<?>> resKey, int hierarchySteps ) { return add( EntityKey.extending( resKey, hierarchySteps, true ) ); }
         
         /** Adds an extends key based on the registered object. Only suitable for vanilla stuff. Matches the provided entity type and any entities that extend its class. */
         public B addExtends( EntityType<?> obj ) { return add( EntityKey.extending( obj, false ) ); }
         
+        /** Adds an extends key based on the registered object. Only suitable for vanilla stuff. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
+        public B addExtends( EntityType<?> obj, int hierarchySteps ) { return add( EntityKey.extending( obj, hierarchySteps, false ) ); }
+        
         /** Adds a blacklist extends key based on the registered object. Only suitable for vanilla stuff. Matches the provided entity type and any entities that extend its class. */
         public B addExtendsBlacklist( EntityType<?> obj ) { return add( EntityKey.extending( obj, true ) ); }
+        
+        /** Adds a blacklist extends key based on the registered object. Only suitable for vanilla stuff. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
+        public B addExtendsBlacklist( EntityType<?> obj, int hierarchySteps ) { return add( EntityKey.extending( obj, hierarchySteps, true ) ); }
         
         
         // ---- Basic Keys ---- //

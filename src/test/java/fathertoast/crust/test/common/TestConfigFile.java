@@ -205,8 +205,9 @@ public class TestConfigFile extends AbstractConfigFile {
                             .add( EntityType.CREEPER ).add( TestCrustObjects.Obj.TEST_SKELETON )
                             .add( EntityType.PLAYER )
                             .addWildcard( "uninstalled_mod" ).add( MISSING_FEATURE )
-                            .addBlacklist( EntityType.STRAY ).addTag( EntityTypeTags.SKELETONS )
-                            .addBlacklist( EntityType.ZOMBIE ).addExtends( EntityType.ZOMBIE )
+                            .addBlacklist( EntityType.STRAY ).addTag( EntityTypeTags.RAIDERS )
+                            .addBlacklist( EntityType.ZOMBIE )
+                            .addExtends( EntityType.ZOMBIE ).addExtends( EntityType.GLOW_SQUID, 1 )
                             .addTag( "deadlyworld:mini" )
                             //.add( EntityType.STRAY ) // Should crash - dupes not allowed in set/map builders
                             .addWildcard( "minecraft", "ender" )
@@ -218,8 +219,9 @@ public class TestConfigFile extends AbstractConfigFile {
                             .put( EntityType.DONKEY, new Double[] { -0.420, 0.0001, 0.42042 } )
                             .put( TestCrustObjects.Obj.TEST_SKELETON, new Double[] { 0.0, -1.0, 1.0 } )
                             .putBlacklist( EntityType.STRAY ).putBlacklist( EntityType.ZOMBIE )
-                            .putTag( EntityTypeTags.SKELETONS, new Double[] { 0.666, 0.666, 0.666 } )
+                            .putTag( EntityTypeTags.DISMOUNTS_UNDERWATER, new Double[] { 0.666, 0.666, 0.666 } )
                             .putExtends( EntityType.ZOMBIE, new Double[] { 0.9, 0.6, -0.9 } )
+                            .putExtends( EntityType.SKELETON, 1, new Double[] { -0.9, 0.6, 0.9 } )
                             //.put( EntityType.STRAY, new Double[3] ) // Should crash - dupes not allowed in set/map builders
                             .putWildcard( "minecraft", "ender", new Double[] { 0.1, 0.2, 0.3 } )
                             .buildWithDefault( new Double[3] ) ), General::testCallback ) ).field();

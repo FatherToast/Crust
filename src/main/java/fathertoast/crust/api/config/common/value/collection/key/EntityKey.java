@@ -15,6 +15,8 @@ import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * A key for fuzzy collections that test against entities. Very similar to an EntityType registry
  * object key, but compares against entities directly and allows using a tilde (~) at the start of
@@ -33,14 +35,38 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
         return extending( RegObjKey.of( REGISTRY, resLoc, blacklist ) );
     }
     
+    /**
+     * @param hierarchySteps The amount of steps to climb the entity class hierarchy by.
+     * @return A new key based on the resource location.
+     */
+    public static Extends extending( String resLoc, int hierarchySteps, boolean blacklist ) {
+        return extending( RegObjKey.of( REGISTRY, resLoc, blacklist ), hierarchySteps );
+    }
+    
     /** @return A new key based on the resource location. */
     public static Extends extending( ResourceLocation resLoc, boolean blacklist ) {
         return extending( RegObjKey.of( REGISTRY, resLoc, blacklist ) );
     }
     
+    /**
+     * @param hierarchySteps The amount of steps to climb the entity class hierarchy by.
+     * @return A new key based on the resource location.
+     */
+    public static Extends extending( ResourceLocation resLoc, int hierarchySteps, boolean blacklist ) {
+        return extending( RegObjKey.of( REGISTRY, resLoc, blacklist ), hierarchySteps );
+    }
+    
     /** @return A new key based on the registry object. */
     public static Extends extending( RegistryObject<? extends EntityType<?>> regObj, boolean blacklist ) {
         return extending( RegObjKey.of( REGISTRY, regObj, blacklist ) );
+    }
+    
+    /**
+     * @param hierarchySteps The amount of steps to climb the entity class hierarchy by.
+     * @return A new key based on the registry object.
+     */
+    public static Extends extending( RegistryObject<? extends EntityType<?>> regObj, int hierarchySteps, boolean blacklist ) {
+        return extending( RegObjKey.of( REGISTRY, regObj, blacklist ), hierarchySteps );
     }
     
     /** @return A new key based on the resource key. */
@@ -49,11 +75,39 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
     }
     
     /**
+     * @param hierarchySteps The amount of steps to climb the entity class hierarchy by.
+     * @return A new key based on the resource key.
+     */
+    public static Extends extending( ResourceKey<? extends EntityType<?>> resKey, int hierarchySteps, boolean blacklist ) {
+        return extending( RegObjKey.of( REGISTRY, resKey, blacklist ), hierarchySteps );
+    }
+    
+    /**
      * @return A new key based on the registered object, or throws an exception if the object is not registered.
      * When building default config values, this is only suitable for vanilla objects.
      */
     public static Extends extending( EntityType<?> entityType, boolean blacklist ) {
         return extending( RegObjKey.of( REGISTRY, entityType, blacklist ) );
+    }
+    
+    /**
+     * @param hierarchySteps The amount of steps to climb the entity class hierarchy by.
+     * @return A new key based on the registered object, or throws an exception if the object is not registered.
+     * When building default config values, this is only suitable for vanilla objects.
+     */
+    public static Extends extending( EntityType<?> entityType, int hierarchySteps, boolean blacklist ) {
+        return extending( RegObjKey.of( REGISTRY, entityType, blacklist ), hierarchySteps );
+    }
+    
+    /** @return A new extends key based on the basic entity type registry object key. */
+    public static Extends extending( RegObjKey.Basic<EntityType<?>> key ) { return new Extends( key ); }
+    
+    /**
+     * @param hierarchySteps The amount of steps to climb the entity class hierarchy by.
+     * @return A new extends key based on the basic entity type registry object key.
+     */
+    public static Extends extending( RegObjKey.Basic<EntityType<?>> key, int hierarchySteps ) {
+        return new Extends( key, hierarchySteps );
     }
     
     /** @return A new key based on the resource location. */
@@ -117,9 +171,6 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
     /** @return A new key based on the entity type registry object key. */
     public static Basic of( FuzzyKey<EntityType<?>> key ) { return new Basic( key ); }
     
-    /** @return A new extends key based on the basic entity type registry object key. */
-    public static Extends extending( RegObjKey.Basic<EntityType<?>> key ) { return new Extends( key ); }
-    
     
     // ---- Key Implementations ---- //
     
@@ -165,28 +216,67 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
      */
     @ApiStatus.Experimental
     public static class Extends extends Basic {
-        public static final String CODE = "~";
-        public static final String PATTERN = CODE + RegObjKey.Basic.PATTERN;
+        public static final String CODE_DEFAULT = "~";
+        public static final String CODE_CLIMB = "^";
+        public static final String PATTERN = "~ | ~x^" + RegObjKey.Basic.PATTERN;
         
         /** @return A new extends key, parsed from a key string, or null if the key was invalid. */
         @Nullable
-        public static Extends parse( String key, boolean blacklist ) {
-            RegObjKey.Basic<EntityType<?>> loadedKey = RegObjKey.Basic.parse( REGISTRY, key.substring( CODE.length() ), blacklist );
-            return loadedKey == null ? null : extending( loadedKey );
+        public static Extends parse( String key, @Nullable AbstractConfigField field, boolean blacklist ) {
+            RegObjKey.Basic<EntityType<?>> loadedKey;
+            Integer steps = null;
+            
+            // Check if this is a "special" extends key
+            // with a number of superclass steps
+            if( key.contains( "^" ) ) {
+                final String[] args = key.split( "\\^", 2 );
+                final boolean missingArg = args.length != 2;
+                
+                if( !missingArg ) {
+                    // Try and parse number of steps
+                    try {
+                        steps = Integer.parseInt( args[0].replaceFirst( "~", "" ) );
+                    }
+                    // Default to 0
+                    catch( NumberFormatException e ) {
+                        steps = 0;
+                    }
+                }
+                loadedKey = RegObjKey.Basic.parse( REGISTRY, missingArg ? args[0] : args[1], blacklist );
+            }
+            else {
+                loadedKey = RegObjKey.Basic.parse( REGISTRY, key.substring( CODE_DEFAULT.length() ), blacklist );
+            }
+            return loadedKey == null ? null : extending( loadedKey, steps == null ? 0 : steps );
         }
         
         
         protected IReverseKey<EntityType<?>> regObjReversible;
         protected Class<? extends Entity> entityClass;
+        protected int hierarchySteps;
+        
         
         protected Extends( RegObjKey.Basic<EntityType<?>> k ) {
+            this( k, 0 );
+        }
+        
+        protected Extends( RegObjKey.Basic<EntityType<?>> k, int steps ) {
             super( k );
             regObjReversible = k;
+            hierarchySteps = steps;
         }
         
         /** @return This fuzzy key's string definition. This must uniquely describe the match conditions. */
         @Override
-        public String keyString() { return CODE + regObjKey.keyString(); }
+        public String keyString() {
+            final String keyString = regObjKey.keyString();
+            
+            if( hierarchySteps > 0 ) {
+                // Should result in "~X^namespace:path"
+                return CODE_DEFAULT + hierarchySteps + CODE_CLIMB + keyString;
+            }
+            return CODE_DEFAULT + keyString;
+        }
         
         /** @return True if this key matches the target. */
         @Override
@@ -211,7 +301,14 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
                 try {
                     Entity entity = entityType.create( level );
                     if( entity != null ) {
-                        entityClass = entity.getClass();
+                        Class<? extends Entity> clazz = entity.getClass();
+                        // Check if we should climb the class hierarchy
+                        if( hierarchySteps > 0 ) {
+                            entityClass = climbHierarchy( clazz, hierarchySteps );
+                        }
+                        else {
+                            entityClass = clazz;
+                        }
                         entity.discard();
                     }
                 }
@@ -223,6 +320,39 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
                 // If the factory doesn't work, just kill the instanceof check capability of this key
                 if( entityClass == null ) entityClass = ErroredEntity.class;
             }
+        }
+        
+        /**
+         * Climbs the class hierarchy of the specified class by X steps
+         * and returns the found super class. If this method ends up climbing all the way up
+         * to the base {@link Entity} class, climbing stops and the base entity class is returned.
+         *
+         * @param entityClass The entity class whose class hierarchy should be climbed.
+         * @param steps       The amount of steps to climb. If this is 0 (or less),
+         *                    the specified <strong>entityClass</strong> parameter is returned.
+         * @return The super class at the end of the climb, OR the base {@link Entity}
+         * class if we ended up "climbing too far".
+         */
+        private static Class<? extends Entity> climbHierarchy( Class<? extends Entity> entityClass, int steps ) {
+            // If we are not climbing, just return the first parameter.
+            if( steps <= 0 ) return entityClass;
+            
+            final Class<? extends Entity> originalClass = entityClass;
+            
+            for( int i = 0; i < steps; ++i ) {
+                // Is the current "entity class" assignable from Entity.class?
+                if( Entity.class.isAssignableFrom( entityClass ) ) {
+                    // noinspection unchecked
+                    entityClass = (Class<? extends Entity>) entityClass.getSuperclass();
+                }
+                else {
+                    // We hit the top of the entity class hierarchy, return Entity.class
+                    return Entity.class;
+                }
+            }
+            // Make sure the class isn't null for whatever bizarre reason
+            // and return the original parameter if so.
+            return Objects.requireNonNullElse( entityClass, originalClass );
         }
         
         /** Just used to prevent repeated attempts to use factories that don't work for us. */
@@ -261,8 +391,8 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
         @Override
         @Nullable
         public FuzzyKey<Entity> parseKeyString( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
-            if( key.startsWith( Extends.CODE ) ) {
-                FuzzyKey<Entity> loadedKey = Extends.parse( key, blacklist );
+            if( key.startsWith( Extends.CODE_DEFAULT ) ) {
+                FuzzyKey<Entity> loadedKey = Extends.parse( key, field, blacklist );
                 if( field != null && loadedKey == null ) {
                     ConfigUtil.warnFor( field );
                     ConfigUtil.LOG.warn( "Registry entry has invalid extends key! Must follow pattern \"{}\". Skipping. Entry: {}",
