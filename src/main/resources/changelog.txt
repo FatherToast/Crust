@@ -1,5 +1,6 @@
 1.20.1-4.18.29
     - Added new entity class hierarchy-climbing functionality for the config entity `extends` key.
+    - GenericField now implements Supplier.
 1.20.1-4.17.28
     - Fixed EntityKey.Extends key implementation not checking class inheritance correctly,
       leading to the key not working as intended in config fields that make use of them.
