@@ -3,6 +3,7 @@ package fathertoast.crust.api.config.common.field;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.client.gui.widget.provider.StringListFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
+import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.EnvironmentEntry;
 import fathertoast.crust.api.config.common.value.EnvironmentList;
@@ -36,9 +37,31 @@ public class EnvironmentListField extends GenericField<EnvironmentList> implemen
         comment.add( "  Environment lists are arrays of environment entries. Each entry is a value followed by the " +
                 "environment conditions that must be satisfied for the value to be chosen. The environments are tested " +
                 "in the order listed, and the first matching entry is chosen." );
-        comment.add( "  See the bottom of this file for an explanation on each environment condition available." );
+        
+        comment.add( "See the bottom of this file for a detailed explanation on each environment condition available." );
         return comment;
     }
+    
+    /**
+     * Inserts the first part of a detailed description of how to use this field type.
+     * Recommended to include either in a README or at the start of each config that contains any field of this type.
+     * <br><br>
+     * This is NOT shown in the GUI.
+     */
+    public static void describe1of2( CrustConfigSpec spec ) {
+        spec.paddedFileOnlyComment( verboseDescription() );
+    }
+    
+    /**
+     * Inserts the second and last part of a detailed description of how to use this field type.
+     * Should go at the bottom of a config, preferably after the appendix header (if used).
+     * <br><br>
+     * This is NOT shown in the GUI.
+     */
+    public static void describe2of2( CrustConfigSpec spec ) {
+        spec.paddedFileOnlyComment( CrustEnvironmentRegistry.getDescriptions() );
+    }
+    
     
     /** Creates a new field. */
     public EnvironmentListField( String key, EnvironmentList defaultValue, @Nullable String... description ) {

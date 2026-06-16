@@ -72,14 +72,29 @@ public class BlockStateWeightedValueList<V> extends FuzzyWeightedValueList<Block
         /** Adds a key-value pair based on the resource location. Matches only the provided block with the appropriate block state properties. */
         public B put( int weight, ResourceLocation resLoc, BlockStatePropertyMap properties, V value ) { return put( weight, BlockStateKey.of( resLoc, properties, false ), value ); }
         
+        /** Adds a key-value pair based on the resource location. Matches only the provided block with any block state properties. */
+        public B put( int weight, ResourceLocation resLoc, V value ) { return put( weight, resLoc, BlockStatePropertyMap.EMPTY, value ); }
+        
         /** Adds a key-value pair based on the registry object. Matches only the provided block with the appropriate block state properties. */
         public B put( int weight, RegistryObject<? extends Block> regObj, BlockStatePropertyMap properties, V value ) { return put( weight, BlockStateKey.of( regObj, properties, false ), value ); }
+        
+        /** Adds a key-value pair based on the registry object. Matches only the provided block with any block state properties. */
+        public B put( int weight, RegistryObject<? extends Block> regObj, V value ) { return put( weight, regObj, BlockStatePropertyMap.EMPTY, value ); }
         
         /** Adds a key-value pair based on the resource key. Matches only the provided block with the appropriate block state properties. */
         public B put( int weight, ResourceKey<? extends Block> resKey, BlockStatePropertyMap properties, V value ) { return put( weight, BlockStateKey.of( resKey, properties, false ), value ); }
         
+        /** Adds a key-value pair based on the resource key. Matches only the provided block with any block state properties. */
+        public B put( int weight, ResourceKey<? extends Block> resKey, V value ) { return put( weight, resKey, BlockStatePropertyMap.EMPTY, value ); }
+        
         /** Adds a key-value pair based on the block. Only suitable for vanilla stuff. Matches only the provided block with the appropriate block state properties. */
         public B put( int weight, Block block, BlockStatePropertyMap properties, V value ) { return put( weight, BlockStateKey.of( block, properties, false ), value ); }
+        
+        /** Adds a key-value pair based on the block. Only suitable for vanilla stuff. Matches only the provided block with any block state properties. */
+        public B put( int weight, Block block, V value ) { return put( weight, block, BlockStatePropertyMap.EMPTY, value ); }
+        
+        /** Adds a key-value pair based on the block state. Only suitable for vanilla stuff. Matches only the provided block state. */
+        public B put( int weight, BlockState blockState, V value ) { return put( weight, BlockStateKey.of( blockState, false ), value ); }
         
         
         // ---- Tag Keys ---- //
@@ -90,7 +105,13 @@ public class BlockStateWeightedValueList<V> extends FuzzyWeightedValueList<Block
         /** Adds a tag key-value pair based on the resource location. Matches every block in the tag with the appropriate block state properties. */
         public B putTag( int weight, ResourceLocation resLoc, BlockStatePropertyMap properties, V value ) { return put( weight, BlockStateKey.ofTag( resLoc, properties, false ), value ); }
         
+        /** Adds a tag key-value pair based on the resource location. Matches every block in the tag with any block state properties. */
+        public B putTag( int weight, ResourceLocation resLoc, V value ) { return putTag( weight, resLoc, BlockStatePropertyMap.EMPTY, value ); }
+        
         /** Adds a tag key-value pair based on the tag. Matches every block in the tag with the appropriate block state properties. */
         public B putTag( int weight, TagKey<Block> tag, BlockStatePropertyMap properties, V value ) { return put( weight, BlockStateKey.ofTag( tag, properties, false ), value ); }
+        
+        /** Adds a tag key-value pair based on the tag. Matches every block in the tag with any block state properties. */
+        public B putTag( int weight, TagKey<Block> tag, V value ) { return putTag( weight, tag, BlockStatePropertyMap.EMPTY, value ); }
     }
 }

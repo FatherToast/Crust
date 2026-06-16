@@ -15,15 +15,13 @@ import fathertoast.crust.api.config.common.value.collection.value.*;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
 import fathertoast.crust.api.config.common.value.environment.biome.BiomeCategory;
 import fathertoast.crust.api.lib.CrustObjects;
+import fathertoast.crust.api.util.BlockStatePropertyMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BiomeTags;
-import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.tags.InstrumentTags;
+import net.minecraft.tags.*;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffect;
@@ -61,9 +59,6 @@ public class TestConfigFile extends AbstractConfigFile {
         
         GENERAL = new General( this );
         ENVIRONMENT = new Environment( this );
-        
-        SPEC.fileOnlyNewLine( 2 );
-        SPEC.describeEnvironmentListPart2of2();
     }
     
     /**
@@ -91,12 +86,12 @@ public class TestConfigFile extends AbstractConfigFile {
         public final FuzzyMapField<Double, String, FuzzyMap<Double, String>> fuzzyMapField;
         public final EntitySetField entitySetField;
         public final EntityMapField<Double[]> entityMapField;
-        //        public final BlockStateSetField blockStateSetField;
-        //        public final BlockStateMapField<BiomeCategory> blockStateMapField;
+        public final BlockStateSetField blockStateSetField;
+        public final BlockStateMapField<BiomeCategory> blockStateMapField;
         public final BlockStateListField blockStateListField;
-        //        public final BlockStateValueListField<Double> blockStateValueListField;
-        //        public final BlockStateWeightedListField blockStateWeightedListField;
-        //        public final BlockStateWeightedValueListField<Double> blockStateWeightedValueListField;
+        public final BlockStateValueListField<Double> blockStateValueListField;
+        public final BlockStateWeightedListField blockStateWeightedListField;
+        public final BlockStateWeightedValueListField<Double> blockStateWeightedValueListField;
         public final RegistrySetField<EntityType<?>> registrySetField;
         public final RegistryMapField<EntityType<?>, Integer> registryMapField;
         public final RegistryListField<Instrument> registryListFieldVn;
@@ -226,11 +221,65 @@ public class TestConfigFile extends AbstractConfigFile {
                             .putWildcard( "minecraft", "ender", new Double[] { 0.1, 0.2, 0.3 } )
                             .buildWithDefault( new Double[3] ) ), General::testCallback ) ).field();
             
-            blockStateListField = SPEC.define( new InjectionWrapperField<>(//TODO
+            blockStateSetField = SPEC.define( new InjectionWrapperField<>(
+                    new BlockStateSetField( "block_state_set_field", new BlockStateSet.Builder<>()
+                            .add( Blocks.ANVIL )
+                            .addBlacklist( Blocks.ICE )
+                            .add( MISSING_FEATURE, BlockStatePropertyMap.EMPTY ).add( "oak_log[axis=y]" ).add( Blocks.ACACIA_STAIRS.defaultBlockState() )
+                            .addTag( Tags.Blocks.CHESTS ).addTag( "forge:sandstone" )
+                            .addTagBlacklist( MISSING_FEATURE )
+                            .addWildcard( "minecraft", "oak" )
+                            .build() ), General::testCallback ) ).field();
+            // noinspection deprecation
+            blockStateMapField = SPEC.define( new InjectionWrapperField<>(
+                    new BlockStateMapField<>( "block_state_map_field", new BlockStateMap.Builder<>( EnumValueCodec.of( BiomeCategory.NONE ) )
+                            .put( Blocks.ANVIL, BiomeCategory.BADLANDS )
+                            .put( MISSING_FEATURE, BiomeCategory.THE_END )
+                            .put( "birch_log[axis=y]", BiomeCategory.THE_END )
+                            .putBlacklist( CrustObjects.Blocks.FEATURE_GENERATOR )
+                            .putTag( Tags.Blocks.CHESTS, BiomeCategory.HILLS )
+                            .putTag( "forge:sandstone", BiomeCategory.HILLS )
+                            .putTag( MISSING_FEATURE, BiomeCategory.MUSHROOM )
+                            .putTagBlacklist( BlockTags.BAMBOO_PLANTABLE_ON )
+                            .putWildcard( "deadlyworld", BiomeCategory.BEACH )
+                            .build() ), General::testCallback ) ).field();
+            blockStateListField = SPEC.define( new InjectionWrapperField<>(
                     new BlockStateListField( "block_state_list_field", new BlockStateList.Builder<>()
-                            .add( Blocks.ANVIL ).add( MISSING_FEATURE ).add( "oak_log[axis=y]" )
+                            .add( Blocks.ANVIL ).add( MISSING_FEATURE ).add( "acacia_log[axis=y]" )
+                            .add( Blocks.ANDESITE_SLAB, BlockStatePropertyMap.of( "type=top" ) )
                             .add( Blocks.ACACIA_STAIRS.defaultBlockState() )
-                            .addTag( Tags.Blocks.CHESTS ).addTag( "forge:sandstone" ).addTag( MISSING_FEATURE )
+                            .addTag( Tags.Blocks.CHESTS )
+                            .addTag( "forge:sandstone" ).addTag( MISSING_FEATURE )
+                            .build() ), General::testCallback ) ).field();
+            blockStateValueListField = SPEC.define( new InjectionWrapperField<>(
+                    new BlockStateValueListField<>( "block_state_value_list_field", new BlockStateValueList.Builder<>( DoubleValueCodec.PERCENT )
+                            .put( Blocks.BARREL, 0.0 )
+                            .put( MISSING_FEATURE, 0.03 )
+                            .put( "jungle_log[axis=y]", 1.0 )
+                            .put( Blocks.ACACIA_STAIRS.defaultBlockState(), 0.5 )
+                            .putTag( Tags.Blocks.CHESTS, 0.9 )
+                            .putTag( "forge:sandstone", 0.004 )
+                            .putTag( MISSING_FEATURE, 0.22 )
+                            .build() ), General::testCallback ) ).field();
+            blockStateWeightedListField = SPEC.define( new InjectionWrapperField<>(
+                    new BlockStateWeightedListField( "block_state_weighted_list_field", new BlockStateWeightedList.Builder<>()
+                            .add( 10, Blocks.CARTOGRAPHY_TABLE )
+                            .add( 0, MISSING_FEATURE )
+                            .add( 20, "oak_log[axis=y]" )
+                            .add( 20, Blocks.ACACIA_STAIRS.defaultBlockState() )
+                            .addTag( 90, Tags.Blocks.CHESTS )
+                            .addTag( 1000, "forge:sandstone" )
+                            .addTag( 0, MISSING_FEATURE )
+                            .build() ), General::testCallback ) ).field();
+            blockStateWeightedValueListField = SPEC.define( new InjectionWrapperField<>(
+                    new BlockStateWeightedValueListField<>( "block_state_weighted_value_list_field", new BlockStateWeightedValueList.Builder<>( DoubleValueCodec.ANY )
+                            .put( 10, Blocks.FLETCHING_TABLE, -2.0 )
+                            .put( 0, MISSING_FEATURE, -100.0 )
+                            .put( 5, "spruce_log[axis=y]", 144.4 )
+                            .put( 11, Blocks.ACACIA_STAIRS.defaultBlockState(), 0.1 )
+                            .putTag( 99, Tags.Blocks.CHESTS, -666.0 )
+                            .putTag( 2, "forge:sandstone", 1234.0 )
+                            .putTag( 0, MISSING_FEATURE, Double.MIN_VALUE )
                             .build() ), General::testCallback ) ).field();
             SPEC.callback( () -> {
                 StringBuilder str = new StringBuilder();

@@ -48,10 +48,10 @@ public class TestGameEventHandler {
     static void onAdvancementLoad( AdvancementLoadEvent event ) {
         final ResourceLocation advancementId = event.getId();
         
-        ///  Test for modifying criteria.
-        ///  Expected result:
-        ///      - Instead of any seed, ALL seeds must be planted.
-        ///      - "Cobbletoast" block must also be placed.
+        /// Test for modifying criteria.
+        /// Expected result:
+        ///    - Instead of any seed, ALL seeds must be planted.
+        ///    - "Cobbletoast" block must also be placed.
         if( advancementId.equals( ResourceLocation.withDefaultNamespace( "husbandry/plant_seed" ) ) ) {
             final IModifiableAdvancement advancement = event.getAdvancement();
             

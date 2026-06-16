@@ -63,23 +63,11 @@ public class EntitySet extends FuzzySet<Entity> {
         /** Adds an extends key based on the resource location. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
         public B addExtends( String resLoc, int hierarchySteps ) { return add( EntityKey.extending( resLoc, hierarchySteps, false ) ); }
         
-        /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend its class. */
-        public B addExtendsBlacklist( String resLoc ) { return add( EntityKey.extending( resLoc, true ) ); }
-        
-        /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
-        public B addExtendsBlacklist( String resLoc, int hierarchySteps ) { return add( EntityKey.extending( resLoc, hierarchySteps, true ) ); }
-        
         /** Adds an extends key based on the resource location. Matches the provided entity type and any entities that extend its class. */
         public B addExtends( ResourceLocation resLoc ) { return add( EntityKey.extending( resLoc, false ) ); }
         
         /** Adds an extends key based on the resource location. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
         public B addExtends( ResourceLocation resLoc, int hierarchySteps ) { return add( EntityKey.extending( resLoc, hierarchySteps, false ) ); }
-        
-        /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend its class. */
-        public B addExtendsBlacklist( ResourceLocation resLoc ) { return add( EntityKey.extending( resLoc, true ) ); }
-        
-        /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
-        public B addExtendsBlacklist( ResourceLocation resLoc, int hierarchySteps ) { return add( EntityKey.extending( resLoc, hierarchySteps, true ) ); }
         
         /** Adds an extends key based on the registry object. Matches the provided entity type and any entities that extend its class. */
         public B addExtends( RegistryObject<? extends EntityType<?>> regObj ) { return add( EntityKey.extending( regObj, false ) ); }
@@ -87,29 +75,41 @@ public class EntitySet extends FuzzySet<Entity> {
         /** Adds an extends key based on the registry object. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
         public B addExtends( RegistryObject<? extends EntityType<?>> regObj, int hierarchySteps ) { return add( EntityKey.extending( regObj, hierarchySteps, false ) ); }
         
-        /** Adds a blacklist extends key based on the registry object. Matches the provided entity type and any entities that extend its class. */
-        public B addExtendsBlacklist( RegistryObject<? extends EntityType<?>> regObj ) { return add( EntityKey.extending( regObj, true ) ); }
-        
-        /** Adds a blacklist extends key based on the registry object. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
-        public B addExtendsBlacklist( RegistryObject<? extends EntityType<?>> regObj, int hierarchySteps ) { return add( EntityKey.extending( regObj, hierarchySteps, true ) ); }
-        
         /** Adds an extends key based on the resource key. Matches the provided entity type and any entities that extend its class. */
         public B addExtends( ResourceKey<? extends EntityType<?>> resKey ) { return add( EntityKey.extending( resKey, false ) ); }
         
         /** Adds an extends key based on the resource key. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
         public B addExtends( ResourceKey<? extends EntityType<?>> resKey, int hierarchySteps ) { return add( EntityKey.extending( resKey, hierarchySteps, false ) ); }
         
-        /** Adds a blacklist extends key based on the resource key. Matches the provided entity type and any entities that extend its class. */
-        public B addExtendsBlacklist( ResourceKey<? extends EntityType<?>> resKey ) { return add( EntityKey.extending( resKey, true ) ); }
-        
-        /** Adds a blacklist extends key based on the resource key. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
-        public B addExtendsBlacklist( ResourceKey<? extends EntityType<?>> resKey, int hierarchySteps ) { return add( EntityKey.extending( resKey, hierarchySteps, true ) ); }
-        
         /** Adds an extends key based on the registered object. Only suitable for vanilla stuff. Matches the provided entity type and any entities that extend its class. */
         public B addExtends( EntityType<?> obj ) { return add( EntityKey.extending( obj, false ) ); }
         
         /** Adds an extends key based on the registered object. Only suitable for vanilla stuff. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
         public B addExtends( EntityType<?> obj, int hierarchySteps ) { return add( EntityKey.extending( obj, hierarchySteps, false ) ); }
+        
+        /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend its class. */
+        public B addExtendsBlacklist( String resLoc ) { return add( EntityKey.extending( resLoc, true ) ); }
+        
+        /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
+        public B addExtendsBlacklist( String resLoc, int hierarchySteps ) { return add( EntityKey.extending( resLoc, hierarchySteps, true ) ); }
+        
+        /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend its class. */
+        public B addExtendsBlacklist( ResourceLocation resLoc ) { return add( EntityKey.extending( resLoc, true ) ); }
+        
+        /** Adds a blacklist extends key based on the resource location. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
+        public B addExtendsBlacklist( ResourceLocation resLoc, int hierarchySteps ) { return add( EntityKey.extending( resLoc, hierarchySteps, true ) ); }
+        
+        /** Adds a blacklist extends key based on the registry object. Matches the provided entity type and any entities that extend its class. */
+        public B addExtendsBlacklist( RegistryObject<? extends EntityType<?>> regObj ) { return add( EntityKey.extending( regObj, true ) ); }
+        
+        /** Adds a blacklist extends key based on the registry object. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
+        public B addExtendsBlacklist( RegistryObject<? extends EntityType<?>> regObj, int hierarchySteps ) { return add( EntityKey.extending( regObj, hierarchySteps, true ) ); }
+        
+        /** Adds a blacklist extends key based on the resource key. Matches the provided entity type and any entities that extend its class. */
+        public B addExtendsBlacklist( ResourceKey<? extends EntityType<?>> resKey ) { return add( EntityKey.extending( resKey, true ) ); }
+        
+        /** Adds a blacklist extends key based on the resource key. Matches the provided entity type and any entities that extend the superclass X steps up in the hierarchy as specified by the {@code hierarchySteps} parameter. */
+        public B addExtendsBlacklist( ResourceKey<? extends EntityType<?>> resKey, int hierarchySteps ) { return add( EntityKey.extending( resKey, hierarchySteps, true ) ); }
         
         /** Adds a blacklist extends key based on the registered object. Only suitable for vanilla stuff. Matches the provided entity type and any entities that extend its class. */
         public B addExtendsBlacklist( EntityType<?> obj ) { return add( EntityKey.extending( obj, true ) ); }
@@ -123,29 +123,29 @@ public class EntitySet extends FuzzySet<Entity> {
         /** Adds a key based on the resource location. Matches only the provided entity type. */
         public B add( String resLoc ) { return add( EntityKey.of( resLoc, false ) ); }
         
-        /** Adds a blacklist key based on the resource location. Matches only the provided entity type. */
-        public B addBlacklist( String resLoc ) { return add( EntityKey.of( resLoc, true ) ); }
-        
         /** Adds a key based on the resource location. Matches only the provided entity type. */
         public B add( ResourceLocation resLoc ) { return add( EntityKey.of( resLoc, false ) ); }
-        
-        /** Adds a blacklist key based on the resource location. Matches only the provided entity type. */
-        public B addBlacklist( ResourceLocation resLoc ) { return add( EntityKey.of( resLoc, true ) ); }
         
         /** Adds a key based on the registry object. Matches only the provided entity type. */
         public B add( RegistryObject<? extends EntityType<?>> regObj ) { return add( EntityKey.of( regObj, false ) ); }
         
-        /** Adds a blacklist key based on the registry object. Matches only the provided entity type. */
-        public B addBlacklist( RegistryObject<? extends EntityType<?>> regObj ) { return add( EntityKey.of( regObj, true ) ); }
-        
         /** Adds a key based on the resource key. Matches only the provided entity type. */
         public B add( ResourceKey<? extends EntityType<?>> resKey ) { return add( EntityKey.of( resKey, false ) ); }
         
-        /** Adds a blacklist key based on the resource key. Matches only the provided entity type. */
-        public B addBlacklist( ResourceKey<? extends EntityType<?>> resKey ) { return add( EntityKey.of( resKey, true ) ); }
-        
         /** Adds a key based on the registered object. Only suitable for vanilla stuff. Matches only the provided entity type. */
         public B add( EntityType<?> obj ) { return add( EntityKey.of( obj, false ) ); }
+        
+        /** Adds a blacklist key based on the resource location. Matches only the provided entity type. */
+        public B addBlacklist( String resLoc ) { return add( EntityKey.of( resLoc, true ) ); }
+        
+        /** Adds a blacklist key based on the resource location. Matches only the provided entity type. */
+        public B addBlacklist( ResourceLocation resLoc ) { return add( EntityKey.of( resLoc, true ) ); }
+        
+        /** Adds a blacklist key based on the registry object. Matches only the provided entity type. */
+        public B addBlacklist( RegistryObject<? extends EntityType<?>> regObj ) { return add( EntityKey.of( regObj, true ) ); }
+        
+        /** Adds a blacklist key based on the resource key. Matches only the provided entity type. */
+        public B addBlacklist( ResourceKey<? extends EntityType<?>> resKey ) { return add( EntityKey.of( resKey, true ) ); }
         
         /** Adds a blacklist key based on the registered object. Only suitable for vanilla stuff. Matches only the provided entity type. */
         public B addBlacklist( EntityType<?> obj ) { return add( EntityKey.of( obj, true ) ); }
@@ -156,17 +156,17 @@ public class EntitySet extends FuzzySet<Entity> {
         /** Adds a wildcard key based on the partial resource location. Matches every entity type in the namespace that starts with the partial path. */
         public B addWildcard( ResourceLocation partialResLoc ) { return add( EntityKey.ofWildcard( partialResLoc, false ) ); }
         
-        /** Adds a blacklist wildcard key based on the partial resource location. Matches every entity type in the namespace that starts with the partial path. */
-        public B addWildcardBlacklist( ResourceLocation partialResLoc ) { return add( EntityKey.ofWildcard( partialResLoc, true ) ); }
-        
         /** Adds a wildcard key based on the namespace. Matches every entity type in the namespace. */
         public B addWildcard( String namespace ) { return add( EntityKey.ofWildcard( namespace, false ) ); }
         
-        /** Adds a blacklist wildcard key based on the namespace. Matches every entity type in the namespace. */
-        public B addWildcardBlacklist( String namespace ) { return add( EntityKey.ofWildcard( namespace, true ) ); }
-        
         /** Adds a wildcard key based on the namespace and partial path. Matches every entity type in the namespace that starts with the partial path. */
         public B addWildcard( String namespace, String partialPath ) { return add( EntityKey.ofWildcard( namespace, partialPath, false ) ); }
+        
+        /** Adds a blacklist wildcard key based on the partial resource location. Matches every entity type in the namespace that starts with the partial path. */
+        public B addWildcardBlacklist( ResourceLocation partialResLoc ) { return add( EntityKey.ofWildcard( partialResLoc, true ) ); }
+        
+        /** Adds a blacklist wildcard key based on the namespace. Matches every entity type in the namespace. */
+        public B addWildcardBlacklist( String namespace ) { return add( EntityKey.ofWildcard( namespace, true ) ); }
         
         /** Adds a blacklist wildcard key based on the namespace and partial path. Matches every entity type in the namespace that starts with the partial path. */
         public B addWildcardBlacklist( String namespace, String partialPath ) { return add( EntityKey.ofWildcard( namespace, partialPath, true ) ); }
@@ -177,17 +177,17 @@ public class EntitySet extends FuzzySet<Entity> {
         /** Adds a tag key based on the resource location. Matches every entity type in the tag. */
         public B addTag( String resLoc ) { return add( EntityKey.ofTag( resLoc, false ) ); }
         
-        /** Adds a blacklist tag key based on the resource location. Matches every entity type in the tag. */
-        public B addTagBlacklist( String resLoc ) { return add( EntityKey.ofTag( resLoc, true ) ); }
-        
         /** Adds a tag key based on the resource location. Matches every entity type in the tag. */
         public B addTag( ResourceLocation resLoc ) { return add( EntityKey.ofTag( resLoc, false ) ); }
         
-        /** Adds a blacklist tag key based on the resource location. Matches every entity type in the tag. */
-        public B addTagBlacklist( ResourceLocation resLoc ) { return add( EntityKey.ofTag( resLoc, true ) ); }
-        
         /** Adds a tag key based on the tag. Matches every entity type in the tag. */
         public B addTag( TagKey<EntityType<?>> tag ) { return add( EntityKey.ofTag( tag, false ) ); }
+        
+        /** Adds a blacklist tag key based on the resource location. Matches every entity type in the tag. */
+        public B addTagBlacklist( String resLoc ) { return add( EntityKey.ofTag( resLoc, true ) ); }
+        
+        /** Adds a blacklist tag key based on the resource location. Matches every entity type in the tag. */
+        public B addTagBlacklist( ResourceLocation resLoc ) { return add( EntityKey.ofTag( resLoc, true ) ); }
         
         /** Adds a blacklist tag key based on the tag. Matches every entity type in the tag. */
         public B addTagBlacklist( TagKey<EntityType<?>> tag ) { return add( EntityKey.ofTag( tag, true ) ); }

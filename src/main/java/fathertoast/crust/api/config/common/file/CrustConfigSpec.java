@@ -210,12 +210,37 @@ public class CrustConfigSpec {
     public void fileOnlyComment( String... comment ) { fileOnlyComment( TomlHelper.newComment( comment ) ); }
     
     /**
+     * Adds a comment with added space around it. Each argument is printed on a separate line, in the order given.
+     * In the GUI, this comment is NOT shown.
+     *
+     * @param comment The comment to insert.
+     */
+    public void paddedFileOnlyComment( String... comment ) {
+        fileOnlyNewLine();
+        fileOnlyComment( TomlHelper.newComment( comment ) );
+        fileOnlyNewLine();
+    }
+    
+    /**
      * Adds a comment. Each string in the list is printed on a separate line, in the order returned by iteration.
      * In the GUI, this comment is NOT shown.
      *
      * @param comment The comment to insert.
      */
     public void fileOnlyComment( List<String> comment ) { add( new FileOnlyComment( comment ) ); }
+    
+    /**
+     * Adds a comment with added space around it. Each string in the list is printed on a separate line,
+     * in the order returned by iteration.
+     * In the GUI, this comment is NOT shown.
+     *
+     * @param comment The comment to insert.
+     */
+    public void paddedFileOnlyComment( List<String> comment ) {
+        fileOnlyNewLine();
+        add( new FileOnlyComment( comment ) );
+        fileOnlyNewLine();
+    }
     
     
     /**
@@ -272,6 +297,7 @@ public class CrustConfigSpec {
      * fields.
      * This is NOT shown in the GUI; it is recommended to use {@link #fileOnlyNewLine()} to space around it.
      */
+    @Deprecated( forRemoval = true ) // Moved to field class
     public void describeRegistryEntryList() { fileOnlyComment( RegistryEntryListField.verboseDescription() ); }
     
     /**
@@ -280,6 +306,7 @@ public class CrustConfigSpec {
      * list fields.
      * This is NOT shown in the GUI; it is recommended to use {@link #fileOnlyNewLine()} to space around it.
      */
+    @Deprecated( forRemoval = true ) // Moved to field class
     public void describeRegistryEntryValueList() { fileOnlyComment( RegistryEntryValueListField.verboseDescription() ); }
     
     /**
@@ -287,6 +314,7 @@ public class CrustConfigSpec {
      * Recommended to include either in a README or at the start of each config that contains any entity list fields.
      * This is NOT shown in the GUI; it is recommended to use {@link #fileOnlyNewLine()} to space around it.
      */
+    @Deprecated( forRemoval = true ) // Moved to field class
     public void describeEntityList() { fileOnlyComment( EntityListField.verboseDescription() ); }
     
     /**
@@ -294,6 +322,7 @@ public class CrustConfigSpec {
      * Recommended to include either in a README or at the start of each config that contains any attribute list fields.
      * This is NOT shown in the GUI; it is recommended to use {@link #fileOnlyNewLine()} to space around it.
      */
+    @Deprecated( forRemoval = true ) // Moved to field class
     public void describeAttributeList() { fileOnlyComment( AttributeListField.verboseDescription() ); }
     
     /**
@@ -301,6 +330,7 @@ public class CrustConfigSpec {
      * Recommended to include either in a README or at the start of each config that contains any block list fields.
      * This is NOT shown in the GUI; it is recommended to use {@link #fileOnlyNewLine()} to space around it.
      */
+    @Deprecated( forRemoval = true ) // Moved to field class
     public void describeBlockList() { fileOnlyComment( BlockListField.verboseDescription() ); }
     
     /**
@@ -308,6 +338,7 @@ public class CrustConfigSpec {
      * Should go with the other field descriptions.
      * This is NOT shown in the GUI; it is recommended to use {@link #fileOnlyNewLine()} to space around it.
      */
+    @Deprecated( forRemoval = true ) // Moved to field class
     public void describeEnvironmentListPart1of2() { fileOnlyComment( EnvironmentListField.verboseDescription() ); }
     
     /**
@@ -315,6 +346,7 @@ public class CrustConfigSpec {
      * Should go at the bottom of the file, preferably after the appendix header (if used).
      * This is NOT shown in the GUI; it is recommended to use {@link #fileOnlyNewLine()} to space around it.
      */
+    @Deprecated( forRemoval = true ) // Moved to field class
     public void describeEnvironmentListPart2of2() { fileOnlyComment( CrustEnvironmentRegistry.getDescriptions() ); }
     
     

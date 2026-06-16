@@ -1,11 +1,14 @@
 package fathertoast.crust.api.config.common.field.collection;
 
+import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.RegistryMap;
 import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
 import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a config field with a registry map value.
@@ -27,6 +30,53 @@ import javax.annotation.Nullable;
  */
 @ApiStatus.Experimental
 public class RegistryMapField<T, V> extends FuzzyMapField<T, V, RegistryMap<T, V>> {
+    
+    /**
+     * Provides a detailed description of how to use this field type.
+     * Recommended to put at the top of any file using this field type.
+     */
+    public static List<String> verboseDescription() {
+        final List<String> comment = new ArrayList<>();
+        comment.add( "Registry Map fields: General format = [ \"namespace:path value1 value2 ...\", ... ]" );
+        comment.add( "  Registry Maps are arrays of registry keys that are linked to one or multiple values." );
+        comment.add( "  Many things in the game, such as blocks or potions, are defined by their registry key within a registry." );
+        comment.add( "  For example, all items are registered in the \"minecraft:item\" registry." );
+        comment.add( "  Which type of value and how many values are linked to each entry varies, " +
+                "so make sure to read the field description for details." );
+        
+        comment.add( "" );
+        comment.add( "An asterisk '*' can be used to define a wildcard entry. For example, 'minecraft:*' will " +
+                "match all vanilla entries, and 'minecraft:jeb*' will match all vanilla entries with names that start with 'jeb'." );
+        
+        comment.add( "" );
+        comment.add( "Tags can also be used here. To declare a tag entry, start with a '#' followed by the rest of the tag path." );
+        comment.add( "  Tag example: '#minecraft:is_cave'." );
+        
+        comment.add( "" );
+        comment.add( "Blacklist entries are supported by this field type. Any entry type (normal, tag, wildcard) can be turned into a blacklist entry " +
+                "by appending 'exclude' to the end of it." );
+        comment.add( "  Blacklist entries cannot have any values associated with them, so for example the entry 'minecraft:badlands exclude' " +
+                "is a valid blacklist entry, but 'minecraft:desert exclude 1.0' is not." );
+        
+        comment.add( "" );
+        comment.add( "A 'default' entry can also be specified to provide default values. To declare a default entry, start with 'default' " +
+                "and append the desired default value(s). Note that only ONE default entry can exist in a Registry Map." );
+        
+        comment.add( "" );
+        comment.add( "IMPORTANT: the order of entries in this list matters! Entries are always checked from top to bottom." );
+        return comment;
+    }
+    
+    /**
+     * Inserts a detailed description into the given spec of how to use this field type.
+     * Recommended to include either in a README or at the start of each config that contains any field of this type.
+     * <br><br>
+     * This is NOT shown in the GUI.
+     */
+    public static void describe( CrustConfigSpec spec ) {
+        spec.paddedFileOnlyComment( verboseDescription() );
+    }
+    
     
     /** Creates a new field. */
     public RegistryMapField( String key, RegistryMap<T, V> defaultValue, @Nullable String... description ) {

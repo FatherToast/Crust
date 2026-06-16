@@ -63,14 +63,29 @@ public class BlockStateWeightedList extends FuzzyWeightedList<BlockState> {
         /** Adds a key based on the resource location. Matches only the provided block with the appropriate block state properties. */
         public B add( int weight, ResourceLocation resLoc, BlockStatePropertyMap properties ) { return add( weight, BlockStateKey.of( resLoc, properties, false ) ); }
         
+        /** Adds a key based on the resource location. Matches only the provided block with any block state properties. */
+        public B add( int weight, ResourceLocation resLoc ) { return add( weight, resLoc, BlockStatePropertyMap.EMPTY ); }
+        
         /** Adds a key based on the registry object. Matches only the provided block with the appropriate block state properties. */
         public B add( int weight, RegistryObject<? extends Block> regObj, BlockStatePropertyMap properties ) { return add( weight, BlockStateKey.of( regObj, properties, false ) ); }
+        
+        /** Adds a key based on the registry object. Matches only the provided block with any block state properties. */
+        public B add( int weight, RegistryObject<? extends Block> regObj ) { return add( weight, regObj, BlockStatePropertyMap.EMPTY ); }
         
         /** Adds a key based on the resource key. Matches only the provided block with the appropriate block state properties. */
         public B add( int weight, ResourceKey<? extends Block> resKey, BlockStatePropertyMap properties ) { return add( weight, BlockStateKey.of( resKey, properties, false ) ); }
         
+        /** Adds a key based on the resource key. Matches only the provided block with any block state properties. */
+        public B add( int weight, ResourceKey<? extends Block> resKey ) { return add( weight, resKey, BlockStatePropertyMap.EMPTY ); }
+        
         /** Adds a key based on the block. Only suitable for vanilla stuff. Matches only the provided block with the appropriate block state properties. */
         public B add( int weight, Block block, BlockStatePropertyMap properties ) { return add( weight, BlockStateKey.of( block, properties, false ) ); }
+        
+        /** Adds a key based on the block. Only suitable for vanilla stuff. Matches only the provided block with any block state properties. */
+        public B add( int weight, Block block ) { return add( weight, block, BlockStatePropertyMap.EMPTY ); }
+        
+        /** Adds a key based on the block state. Only suitable for vanilla stuff. Matches only the provided block state. */
+        public B add( int weight, BlockState blockState ) { return add( weight, BlockStateKey.of( blockState, false ) ); }
         
         
         // ---- Tag Keys ---- //
@@ -81,7 +96,13 @@ public class BlockStateWeightedList extends FuzzyWeightedList<BlockState> {
         /** Adds a tag key based on the resource location. Matches every block in the tag with the appropriate block state properties. */
         public B addTag( int weight, ResourceLocation resLoc, BlockStatePropertyMap properties ) { return add( weight, BlockStateKey.ofTag( resLoc, properties, false ) ); }
         
+        /** Adds a tag key based on the resource location. Matches every block in the tag with any block state properties. */
+        public B addTag( int weight, ResourceLocation resLoc ) { return addTag( weight, resLoc, BlockStatePropertyMap.EMPTY ); }
+        
         /** Adds a tag key based on the tag. Matches every block in the tag with the appropriate block state properties. */
         public B addTag( int weight, TagKey<Block> tag, BlockStatePropertyMap properties ) { return add( weight, BlockStateKey.ofTag( tag, properties, false ) ); }
+        
+        /** Adds a tag key based on the tag. Matches every block in the tag with any block state properties. */
+        public B addTag( int weight, TagKey<Block> tag ) { return addTag( weight, tag, BlockStatePropertyMap.EMPTY ); }
     }
 }

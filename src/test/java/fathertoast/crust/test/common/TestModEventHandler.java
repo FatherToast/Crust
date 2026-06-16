@@ -13,7 +13,10 @@ public class TestModEventHandler {
     
     @SubscribeEvent
     static void onCommonSetup( FMLCommonSetupEvent event ) {
-        TestCrust.CONFIG.SPEC.initialize();
+        event.enqueueWork( () -> {
+            TestCrust.CONFIG.SPEC.initialize();
+            TestCrust.README.SPEC.initialize();
+        } );
     }
     
     /** Sets the default attributes for entity types, such as max health, attack damage etc. */
