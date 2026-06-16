@@ -7,12 +7,13 @@ import fathertoast.crust.api.config.common.file.TomlHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Represents a config field with a boolean value.
  */
 @SuppressWarnings( "unused" )
-public class BooleanField extends AbstractConfigField {
+public class BooleanField extends AbstractConfigField implements Supplier<Boolean> {
     
     /** The default field value. */
     private final boolean valueDefault;
@@ -27,7 +28,8 @@ public class BooleanField extends AbstractConfigField {
     }
     
     /** @return Returns the config field's value. */
-    public boolean get() { return value; }
+    @Override
+    public Boolean get() { return value; }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override

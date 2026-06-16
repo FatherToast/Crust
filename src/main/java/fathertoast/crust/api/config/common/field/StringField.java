@@ -7,12 +7,13 @@ import fathertoast.crust.api.config.common.file.TomlHelper;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Represents a config field with a string value.
  */
 @SuppressWarnings( "unused" )
-public class StringField extends GenericField<String> {
+public class StringField extends GenericField<String> implements Supplier<String> {
     
     /** This string field's value validator. */
     @Nullable

@@ -35,7 +35,7 @@ public class SqrDoubleField extends DoubleField {
     
     /** @return Returns the config field's value. */
     @Override
-    public double get() { return valueSqr; }
+    public Double get() { return valueSqr; }
     
     /** @return Returns the square root of the config field's value. */
     public double getSqrRoot() { return super.get(); }

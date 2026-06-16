@@ -7,6 +7,7 @@ import fathertoast.crust.api.config.common.file.TomlHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Represents a config field with an enum value.
@@ -17,7 +18,7 @@ import java.util.List;
  * same name when ignoring case.
  */
 @SuppressWarnings( "unused" )
-public class EnumField<T extends Enum<T>> extends GenericField<T> {
+public class EnumField<T extends Enum<T>> extends GenericField<T> implements Supplier<T> {
     
     /** Valid field values. */
     private final T[] valuesValid;

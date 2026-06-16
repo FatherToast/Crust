@@ -15,11 +15,12 @@ import net.minecraft.util.RandomSource;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 /**
  * Represents a config field with an integer value.
  */
-public class IntField extends AbstractConfigField {
+public class IntField extends AbstractConfigField implements Supplier<Integer> {
     
     /** The default field value. */
     private final int valueDefault;
@@ -53,13 +54,14 @@ public class IntField extends AbstractConfigField {
     }
     
     /** @return Returns the config field's value. */
-    public int get() { return value; }
+    @Override
+    public Integer get() { return value; }
     
     /** @return Returns the config field's value cast down to a short. */
-    public short getShort() { return (short) get(); }
+    public short getShort() { return get().shortValue(); }
     
     /** @return Returns the config field's value cast down to a byte. */
-    public byte getByte() { return (byte) get(); }
+    public byte getByte() { return get().byteValue(); }
     
     /** @return Treats the config field's value as a 1-in-X chance and returns the result of a single roll. */
     public boolean rollChance( Random random ) { return rollChance( JavaRandomSource.of( random ) ); }

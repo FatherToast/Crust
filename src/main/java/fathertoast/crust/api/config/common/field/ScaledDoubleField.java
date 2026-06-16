@@ -40,7 +40,7 @@ public class ScaledDoubleField extends DoubleField {
     
     /** @return Returns the config field's value. */
     @Override
-    public double get() { return valueScaled; }
+    public Double get() { return valueScaled; }
     
     /** @return Returns the unscaled form of the config field's value. */
     public double getUnscaled() { return super.get(); }

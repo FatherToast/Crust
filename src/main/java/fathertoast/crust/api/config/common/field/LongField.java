@@ -11,11 +11,12 @@ import net.minecraft.util.RandomSource;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 /**
  * Represents a config field with a long value.
  */
-public class LongField extends AbstractConfigField {
+public class LongField extends AbstractConfigField implements Supplier<Long> {
     
     /** The default field value. */
     private final long valueDefault;
@@ -49,10 +50,11 @@ public class LongField extends AbstractConfigField {
     }
     
     /** @return Returns the config field's value. */
-    public long get() { return value; }
+    @Override
+    public Long get() { return value; }
     
     /** @return Returns the config field's value cast down to a 32-bit integer. */
-    public int getInt() { return (int) get(); }
+    public int getInt() { return get().intValue(); }
     
     /** @return Treats the config field's value as a 1-in-X chance and returns the result of a single roll. */
     public boolean rollChance( Random random ) { return get() > 0 && random.nextLong( get() ) == 0; }

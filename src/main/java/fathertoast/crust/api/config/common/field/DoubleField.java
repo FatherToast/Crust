@@ -16,12 +16,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Represents a config field with a double value.
  */
 @SuppressWarnings( "unused" )
-public class DoubleField extends AbstractConfigField {
+public class DoubleField extends AbstractConfigField implements Supplier<Double> {
     
     /** The default field value. */
     private final double valueDefault;
@@ -55,10 +56,11 @@ public class DoubleField extends AbstractConfigField {
     }
     
     /** @return Returns the config field's value. */
-    public double get() { return value; }
+    @Override
+    public Double get() { return value; }
     
     /** @return Returns the config field's value cast to a float. */
-    public float getFloat() { return (float) get(); }
+    public float getFloat() { return get().floatValue(); }
     
     /** @return Treats the config field's value as a percent chance (from 0 to 1) and returns the result of a single roll. */
     public boolean rollChance( Random random ) { return rollChance( JavaRandomSource.of( random ) ); }
@@ -239,7 +241,7 @@ public class DoubleField extends AbstractConfigField {
      * @param base       The base value.
      * @param exceptions The environment exceptions list.
      */
-    public record EnvironmentSensitive( DoubleField base, EnvironmentListField exceptions ) {
+    public record EnvironmentSensitive(DoubleField base, EnvironmentListField exceptions) {
         
         /** @return Returns the config field's value. */
         public double get( Level level, @Nullable BlockPos pos ) { return exceptions().getOrElse( level, pos, base() ); }
@@ -365,6 +367,6 @@ public class DoubleField extends AbstractConfigField {
             return null;
         }
         
-        private record Entry<T>( T VALUE, EnvironmentSensitive WEIGHT ) {}
+        private record Entry<T>(T VALUE, EnvironmentSensitive WEIGHT) { }
     }
 }

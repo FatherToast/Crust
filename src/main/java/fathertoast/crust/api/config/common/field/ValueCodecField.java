@@ -8,6 +8,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * A generic string field implementation that allows use of a value codec to handle its value.
@@ -15,7 +16,7 @@ import java.util.List;
  * descriptive than that of a typical field.
  */
 @ApiStatus.Experimental
-public class ValueCodecField<T> extends GenericField<T> {
+public class ValueCodecField<T> extends GenericField<T> implements Supplier<T> {
     
     protected final IValueCodec<T> valueCodec;
     
