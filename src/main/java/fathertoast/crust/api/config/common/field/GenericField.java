@@ -1,7 +1,6 @@
 package fathertoast.crust.api.config.common.field;
 
 import javax.annotation.Nullable;
-import java.util.function.Supplier;
 
 /**
  * Represents a config field with an object value.
@@ -11,7 +10,7 @@ import java.util.function.Supplier;
  *
  * @see Object#equals(Object)
  */
-public abstract class GenericField<T> extends AbstractConfigField implements Supplier<T> {
+public abstract class GenericField<T> extends AbstractConfigField {
     
     /** The default field value. */
     protected final T valueDefault;
@@ -25,11 +24,7 @@ public abstract class GenericField<T> extends AbstractConfigField implements Sup
         valueDefault = defaultValue;
     }
     
-    /**
-     * @return Returns the config field's value.
-     * Also conforms to {@link Supplier#get()}.
-     */
-    @Override
+    /** @return Returns the config field's value. */
     public T get() { return value; }
     
     /** @return The value that should be assigned to this field in the config file. */
