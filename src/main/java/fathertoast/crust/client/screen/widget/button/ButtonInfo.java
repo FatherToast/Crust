@@ -123,6 +123,9 @@ public class ButtonInfo {
             ( button ) -> cmd( Command.thunder() ), Command.WEATHER_THUNDER ) );
     public static final ButtonInfo TOGGLE_RAIN = builtIn( new ButtonInfo( "toggleRain", "weather_toggle.png",
             ButtonInfo::toggleRain, Command.WEATHER_CLEAR, Command.WEATHER_RAIN ) );
+    @SuppressWarnings( "unused" )
+    public static final ButtonInfo TOGGLE_STORM = builtIn( new ButtonInfo( "toggleStorm", "storm_toggle.png",
+            ButtonInfo::toggleStorm, Command.WEATHER_CLEAR, Command.WEATHER_THUNDER ) );
     
     // Mode toggles
     public static final ButtonInfo GAME_MODE = builtIn( new ButtonInfo( "gameMode", "grass.png",
@@ -274,11 +277,7 @@ public class ButtonInfo {
     /** @return True if the button should appear 'toggled on'. */
     public boolean isToggledOn() { return toggledOn != null && toggledOn.get(); }
     
-    private static class ButtonPressCommandChain implements Button.OnPress {
-        
-        private final List<String> COMMANDS;
-        
-        ButtonPressCommandChain( List<String> commands ) { COMMANDS = commands; }
+    private record ButtonPressCommandChain(List<String> COMMANDS) implements Button.OnPress {
         
         @Override
         public void onPress( @Nullable Button button ) {
@@ -310,16 +309,15 @@ public class ButtonInfo {
     
     private static void toggleRain( @Nullable Button button ) {
         // noinspection resource
-        cmd( world().getLevelData().isRaining() || world().getLevelData().isThundering() ?
+        cmd( world().getLevelData().isRaining() || world().thunderLevel > 0 ?
                 Command.clear() : Command.rain() );
     }
     
-    // isThundering() is not implemented client-side; possibly some other method works?
-    //    private static void toggleStorm( @Nullable Button button ) {
-    //        Minecraft mc = Minecraft.getInstance();
-    //        cmd( mc.level == null || !mc.level.getLevelData().isRaining() || mc.level.getLevelData().isThundering() ?
-    //                Command.WEATHER_RAIN : Command.WEATHER_THUNDER );
-    //    }
+    private static void toggleStorm( @Nullable Button button ) {
+        // noinspection resource
+        cmd( !world().getLevelData().isRaining() || world().thunderLevel > 0 ?
+                Command.rain() : Command.thunder() );
+    }
     
     private static void gameMode( @Nullable Button button ) {
         cmd( ButtonInfo.GAME_MODE.isToggledOn() ? Command.MODE_SURVIVAL : Command.MODE_CREATIVE ); // TODO allow player to config modes

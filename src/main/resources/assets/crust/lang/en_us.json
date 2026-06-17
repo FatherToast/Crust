@@ -48,6 +48,7 @@
   "inventory.buttons.weatherrain.tooltip": "Set weather to rain",
   "inventory.buttons.weatherstorm.tooltip": "Set weather to thunder",
   "inventory.buttons.togglerain.tooltip": "Toggle weather to clear or rain",
+  "inventory.buttons.togglestorm.tooltip": "Toggle weather to thunder or rain",
 
   "inventory.buttons.gamemode.tooltip": "Toggle game mode",
   "inventory.buttons.magnetmode.tooltip": "Toggle magnet mode",
