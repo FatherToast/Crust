@@ -11,11 +11,13 @@ import fathertoast.crust.api.config.common.value.EnvironmentEntry;
 import fathertoast.crust.api.config.common.value.EnvironmentList;
 import fathertoast.crust.api.config.common.value.collection.*;
 import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
+import fathertoast.crust.api.config.common.value.collection.key.ResourceLocKey;
 import fathertoast.crust.api.config.common.value.collection.value.*;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
 import fathertoast.crust.api.config.common.value.environment.biome.BiomeCategory;
 import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.api.util.BlockStatePropertyMap;
+import fathertoast.crust.api.util.ResourceLocationUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -33,6 +35,7 @@ import net.minecraft.world.item.Instruments;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -77,12 +80,12 @@ public class TestConfigFile extends AbstractConfigFile {
         // Simple objects
         public final StringField stringField;
         public final EnumField<BiomeCategory> enumField;
-        //        public final BlockStateField blockStateField;
+        public final BlockStateField blockStateField;
         //        public final FuzzyKeyField<String> fuzzyKeyField;
         //        public final ValueCodecField<MobEffectStats> valueCodecField;
         // Fuzzy collections
         public final FuzzyListField<Long, FuzzyList<Long>> fuzzyListField;
-        public final FuzzySetField<Byte, FuzzySet<Byte>> fuzzySetField;
+        public final FuzzySetField<ResourceLocation, FuzzySet<ResourceLocation>> fuzzySetField;
         public final FuzzyMapField<Double, String, FuzzyMap<Double, String>> fuzzyMapField;
         public final EntitySetField entitySetField;
         public final EntityMapField<Double[]> entityMapField;
@@ -154,6 +157,9 @@ public class TestConfigFile extends AbstractConfigFile {
             enumField = SPEC.define( new InjectionWrapperField<>(
                     new EnumField<>( "enum", BiomeCategory.NONE ), General::testCallback ) ).field();
             
+            blockStateField = SPEC.define( new InjectionWrapperField<>(
+                    new BlockStateField( "block_state", Blocks.BROWN_CANDLE_CAKE.defaultBlockState() ), General::testCallback ) ).field();
+            
             // ---- Fuzzy collections ---- //
             SPEC.callback( General::printLine );
             SPEC.newLine();
@@ -166,12 +172,11 @@ public class TestConfigFile extends AbstractConfigFile {
                             .build() ), General::testCallback ) ).field();
             
             fuzzySetField = SPEC.define( new InjectionWrapperField<>(
-                    new FuzzySetField<>( "fuzzy_set_field", new FuzzySet.Builder<>( NumberKey.byteParser( null ) )
-                            .add( NumberKey.of( (byte) 1 ) )
-                            .add( NumberKey.of( (byte) 2 ) )
-                            .add( NumberKey.of( (byte) 4 ) )
-                            .add( NumberKey.of( (byte) 8 ) )
-                            .add( NumberKey.of( (byte) 16 ) )
+                    new FuzzySetField<>( "fuzzy_set_field", new FuzzySet.Builder<>( ResourceLocKey.PARSER )
+                            .add( ResourceLocKey.of( BuiltInLootTables.ANCIENT_CITY ) )
+                            .add( ResourceLocKey.of( ResourceLocation.fromNamespaceAndPath( "not_a_mod", "not_a_loot_table" ) ) )
+                            .add( ResourceLocKey.of( ResourceLocationUtils.EMPTY ) )
+                            .add( ResourceLocKey.of( "this_is:a_resource_location" ) )
                             .build() ), General::testCallback ) ).field();
             
             fuzzyMapField = SPEC.define( new InjectionWrapperField<>(
