@@ -35,27 +35,22 @@ public class RegistryValueListField<T, V> extends FuzzyValueListField<T, V, Regi
     public static List<String> verboseDescription() {
         final List<String> comment = new ArrayList<>();
         comment.add( "Registry Value List fields: General format = [ \"namespace:path value1 value2 ...\", ... ]" );
-        comment.add( "  Registry Value Lists are arrays of registry keys that are linked to one or multiple values." );
-        comment.add( "  Many things in the game, such as blocks or potions, are defined by their registry key within a registry." );
-        comment.add( "  For example, all items are registered in the \"minecraft:item\" registry." );
-        comment.add( "  Which type of value and how many values are linked to each entry varies, " +
+        comment.add( "  Registry Value Lists are collections of registry keys linked to one or more values." );
+        comment.add( "  Many things in the game, such as blocks and potions, are identified by their key within " +
+                "a registry. For example, all items are registered in the \"minecraft:item\" registry." );
+        comment.add( "  Which type of values and how many values are linked to each entry varies, " +
                 "so make sure to read the field description for details." );
         
         comment.add( "" );
-        comment.add( "Tags can be used here. To declare a tag entry, start with a '#' followed by the rest of the tag path." );
-        comment.add( "  Tag example: '#minecraft:is_cave'" );
+        comment.add( "  Tags can be used here, if the registry supports tags. To declare a tag entry, start with a '#' " +
+                "followed by the rest of the tag path. For example, '#minecraft:candles' adds all registry keys from " +
+                "that tag to the list." );
         
         comment.add( "" );
-        comment.add( "Wildcard entries are not supported by this field type." );
+        comment.add( "  Wildcard, blacklist, and default entries are not supported by this field type." );
         
         comment.add( "" );
-        comment.add( "Blacklist entries are not supported by this field type." );
-        
-        comment.add( "" );
-        comment.add( "This field type does not support having a default entry." );
-        
-        comment.add( "" );
-        comment.add( "IMPORTANT: the order of entries in this list matters! Entries are always checked from top to bottom." );
+        comment.add( "  IMPORTANT: The order of entries in this list matters!" );
         return comment;
     }
     

@@ -23,36 +23,44 @@ public class EntitySetField extends FuzzySetField<Entity, EntitySet> {
     public static List<String> verboseDescription() {
         final List<String> comment = new ArrayList<>();
         comment.add( "Entity Set fields: General format = [ \"namespace:entity_type\", ... ]" );
-        comment.add( "  Entity Sets are sets of entities exclusively for matching." );
-        comment.add( "  Entity types are defined by their key in the entity registry, usually following the pattern " +
+        comment.add( "  Entity Sets are collections of entities used exclusively for matching." );
+        comment.add( "  Entity types are identified by their key in the entity registry, usually following the pattern " +
                 "'namespace:entity_name'." );
         
         comment.add( "" );
-        comment.add( "An asterisk '*' can be used to define a wildcard entry. For example, 'minecraft:*' will " +
-                "match all vanilla entities, and 'minecraft:ender*' will match all vanilla entities with names that start with 'ender', like enderman or endermite." );
+        comment.add( "  An asterisk '*' can be used to define a wildcard entry. For example, 'minecraft:*' will " +
+                "match all vanilla entities, and 'minecraft:ender*' will match all vanilla entities with names that start " +
+                "with 'ender', like enderman or endermite." );
         
         comment.add( "" );
-        comment.add( "Entity type tags can also be used here. To declare a tag entry, start with a '#' followed by the rest of the tag path." );
-        comment.add( "  Tag example: '#minecraft:skeletons'." );
+        comment.add( "  Entity type tags can also be used here. To declare a tag entry, start with a '#' followed by the rest " +
+                "of the tag path. For example, '#minecraft:skeletons' matches any entity type in the tag, like skeleton or stray." );
         
         comment.add( "" );
-        comment.add( "Blacklist entries are supported by this field type. Any entry type (normal, tag, wildcard) can be turned into a blacklist entry " +
-                "by appending 'exclude' to the end of it." );
-        comment.add( "  Blacklist entries cannot have any values associated with them, so for example the entry 'minecraft:creeper exclude' " +
-                "is a valid blacklist entry, but 'minecraft:creeper exclude 1.0' is not." );
+        comment.add( "  Blacklist entries are supported by this field type. Any entry type (normal, tag, wildcard, extends) " +
+                "can be turned into a blacklist entry by appending 'exclude' to the end of it. For example, " +
+                "'minecraft:creeper exclude' prevents the vanilla creepers from being matched by any entries below it." );
         
         comment.add( "" );
-        comment.add( "This field type does not support having a default entry." );
+        comment.add( "  Default entries are not supported by this field type." );
         
         comment.add( "" );
-        comment.add( "Entries by default match any block state. The block states to match can be narrowed down " +
-                "by specifying properties. The syntax for block state properties is the same as for commands. Any " +
-                "properties not specified will match any value. For example, 'minecraft:beehive[honey_level=5]' will " +
-                "match any full beehives, regardless of the direction they face." );
-        comment.add( "  Note that tags and wildcard entries are not block state sensitive; they only care about the base block!" );
+        comment.add( "  Lastly, Entity Sets allow a special type of entry called 'extends' entries." );
+        comment.add( "  If you are unfamiliar with Java or modding Minecraft, the following explanation may not make a whole lot of sense." );
+        comment.add( "  This is a pretty niche but very powerful entry type that matches the target entity as well as all " +
+                "other entities whose entity class inherits the entity class of the target entity." );
+        comment.add( "  For example, the key '~minecraft:skeleton' will match normal skeletons as well as all other entities that " +
+                "extend the Skeleton class." );
+        comment.add( "  It is also possible to jump upwards in the class hierarchy if desired." );
+        comment.add( "  For example, the key '~minecraft:skeleton' will match the vanilla skeleton entity, but not wither skeletons or strays, " +
+                "since those entities extend the AbstractSkeleton instead of the Skeleton class." );
+        comment.add( "  To jump up one superclass to AbstractSkeleton we can rewrite the key like this: '~1^minecraft:skeleton'." );
+        comment.add( "  The number before the '^' symbol determines how many times to jump upwards in the hierarchy." );
+        comment.add( "  The jump number cannot be lower than 0, but can safely be any positive number, " +
+                "as it is not possible to jump past the base Entity class." );
         
         comment.add( "" );
-        comment.add( "IMPORTANT: the order of entries in this list matters! Entries are always checked from top to bottom." );
+        comment.add( "  IMPORTANT: The order of entries in this list matters! Entries are always checked from top to bottom." );
         return comment;
     }
     

@@ -31,32 +31,35 @@ public class EntityMapField<V> extends FuzzyMapField<Entity, V, EntityMap<V>> {
     public static List<String> verboseDescription() {
         final List<String> comment = new ArrayList<>();
         comment.add( "Entity Map fields: General format = [ \"namespace:entity_type value1 value2 ...\", ... ]" );
-        comment.add( "  Entity Maps are arrays of entity types with one or more values linked to them." );
-        comment.add( "  Entity types are defined by their key in the entity registry, usually following the pattern " +
+        comment.add( "  Entity Maps are collections of entity types linked to one or more values." );
+        comment.add( "  Entity types are identified by their key in the entity registry, usually following the pattern " +
                 "'namespace:entity_name'." );
-        comment.add( "  Which type of value and how many values are linked to each entry varies, " +
+        comment.add( "  Which type of values and how many values are linked to each entry varies, " +
                 "so make sure to read the field description for details." );
         
         comment.add( "" );
-        comment.add( "An asterisk '*' can be used to define a wildcard entry. For example, 'minecraft:*' will " +
-                "match all vanilla entities, and 'minecraft:ender*' will match all vanilla entities with names that start with 'ender', like enderman or endermite." );
+        comment.add( "  An asterisk '*' can be used to define a wildcard entry. For example, 'minecraft:*' will " +
+                "match all vanilla entities, and 'minecraft:ender*' will match all vanilla entities with names that start " +
+                "with 'ender', like enderman or endermite." );
         
         comment.add( "" );
-        comment.add( "Entity type tags can also be used here. To declare a tag entry, start with a '#' followed by the rest of the tag path." );
-        comment.add( "  Tag example: '#minecraft:skeletons'." );
+        comment.add( "  Entity type tags can also be used here. To declare a tag entry, start with a '#' followed by the rest " +
+                "of the tag path. For example, '#minecraft:skeletons' matches any entity type in the tag, like skeleton or stray." );
         
         comment.add( "" );
-        comment.add( "Blacklist entries are supported by this field type. Any entry type (normal, tag, wildcard) can be turned into a blacklist entry " +
-                "by appending 'exclude' to the end of it." );
-        comment.add( "  Blacklist entries cannot have any values associated with them, so for example the entry 'minecraft:creeper exclude' " +
-                "is a valid blacklist entry, but 'minecraft:creeper exclude 1.0' is not." );
+        comment.add( "  Blacklist entries are supported by this field type. Any entry type (normal, tag, wildcard, extends) " +
+                "can be turned into a blacklist entry by appending 'exclude' to the end of it. For example, " +
+                "'minecraft:creeper exclude' prevents the vanilla creepers from being matched by any entries below it." );
+        comment.add( "  Blacklist entries cannot have any values associated with them, so for example 'minecraft:creeper exclude 1.0' " +
+                "would be an invalid entry." );
         
         comment.add( "" );
-        comment.add( "A 'default' entry can also be specified to provide default values. To declare a default entry, start with 'default' " +
-                "and append the desired default value(s). Note that only ONE default entry can exist in an Entity Map." );
+        comment.add( "  A 'default' entry can also be specified to provide default values. To declare a default entry, " +
+                "start with 'default' and append the desired default value(s). Note that only ONE default entry can exist " +
+                "in an Entity Map and all entries after it will be ignored." );
         
         comment.add( "" );
-        comment.add( "Lastly, Entity Maps allows a special type of entry called 'extends' entries." );
+        comment.add( "  Lastly, Entity Maps allow a special type of entry called 'extends' entries." );
         comment.add( "  If you are unfamiliar with Java or modding Minecraft, the following explanation may not make a whole lot of sense." );
         comment.add( "  This is a pretty niche but very powerful entry type that matches the target entity as well as all " +
                 "other entities whose entity class inherits the entity class of the target entity." );
@@ -71,7 +74,8 @@ public class EntityMapField<V> extends FuzzyMapField<Entity, V, EntityMap<V>> {
                 "as it is not possible to jump past the base Entity class." );
         
         comment.add( "" );
-        comment.add( "IMPORTANT: the order of entries in this list matters! Entries are always checked from top to bottom." );
+        comment.add( "  IMPORTANT: The order of entries in this map matters! Entries are always checked from top to bottom, " +
+                "and the first matching entry decides which value is assigned." );
         return comment;
     }
     

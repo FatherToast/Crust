@@ -31,25 +31,20 @@ public class RegistryListField<T> extends FuzzyListField<T, RegistryList<T>> {
     public static List<String> verboseDescription() {
         final List<String> comment = new ArrayList<>();
         comment.add( "Registry List fields: General format = [ \"namespace:entry_name\", ... ]" );
-        comment.add( "  Registry Lists are arrays of registry keys. Many things in the game, such as blocks or " +
-                "potions, are defined by their registry key within a registry. For example, all items are registered " +
-                "in the \"minecraft:item\" registry." );
+        comment.add( "  Registry Lists are collections of registry keys." );
+        comment.add( "  Many things in the game, such as blocks and potions, are identified by their key within " +
+                "a registry. For example, all items are registered in the \"minecraft:item\" registry." );
         
         comment.add( "" );
-        comment.add( "Tags can be used here. To declare a tag entry, start with a '#' followed by the rest of the tag path." );
-        comment.add( "  Tag example: '#minecraft:candles'" );
+        comment.add( "  Tags can be used here, if the registry supports tags. To declare a tag entry, start with a '#' " +
+                "followed by the rest of the tag path. For example, '#minecraft:candles' adds all registry keys from " +
+                "that tag to the list." );
         
         comment.add( "" );
-        comment.add( "Wildcard entries are not supported by this field type." );
+        comment.add( "  Wildcard, blacklist, and default entries are not supported by this field type." );
         
         comment.add( "" );
-        comment.add( "Blacklist entries are not supported by this field type." );
-        
-        comment.add( "" );
-        comment.add( "This field type does not support having a default entry." );
-        
-        comment.add( "" );
-        comment.add( "IMPORTANT: the order of entries in this list matters! Entries are always checked from top to bottom." );
+        comment.add( "  IMPORTANT: The order of entries in this list matters!" );
         return comment;
     }
     

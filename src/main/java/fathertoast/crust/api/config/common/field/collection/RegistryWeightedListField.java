@@ -32,28 +32,19 @@ public class RegistryWeightedListField<T> extends FuzzyWeightedListField<T, Regi
     public static List<String> verboseDescription() {
         final List<String> comment = new ArrayList<>();
         comment.add( "Registry Weighted List fields: General format = [ \"weight namespace:path\", ... ]" );
-        comment.add( "  Registry Weighted Lists are arrays of registry keys that are linked to a weight." );
-        comment.add( "  Blocks are defined by their key in the block registry, usually following the pattern " +
-                "'namespace:block_name'." );
-        comment.add( "  Many things in the game, such as blocks or potions, are defined by their registry key within a registry." );
-        comment.add( "  For example, all items are registered in the \"minecraft:item\" registry." );
-        comment.add( "  An entry's weight can not be less than 0; it must be positive." );
+        comment.add( "  Registry Weighted Lists are collections of registry keys linked to weights for random selection." );
+        comment.add( "  Many things in the game, such as blocks and potions, are identified by their key within " +
+                "a registry. For example, all items are registered in the \"minecraft:item\" registry." );
+        comment.add( "  Entries with higher weight are more likely to be chosen, while entries with a weight of 0 will " +
+                "never be chosen. Weights cannot be negative." );
         
         comment.add( "" );
-        comment.add( "Tags can be used here. To declare a tag entry, start with a '#' followed by the rest of the tag path." );
-        comment.add( "  Tag example: '#minecraft:is_cave'" );
+        comment.add( "  Tags can be used here, if the registry supports tags. To declare a tag entry, start with a '#' " +
+                "followed by the rest of the tag path. For example, '#minecraft:candles' will pick a random (unweighted) " +
+                "registry key from that tag when chosen." );
         
         comment.add( "" );
-        comment.add( "Wildcard entries are not supported by this field type." );
-        
-        comment.add( "" );
-        comment.add( "Blacklist entries are not supported by this field type." );
-        
-        comment.add( "" );
-        comment.add( "This field type does not support having a default entry." );
-        
-        comment.add( "" );
-        comment.add( "IMPORTANT: the order of entries in this list matters! Entries are always checked from top to bottom." );
+        comment.add( "  Wildcard, blacklist, and default entries are not supported by this field type." );
         return comment;
     }
     

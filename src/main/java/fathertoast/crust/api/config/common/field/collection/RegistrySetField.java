@@ -31,29 +31,29 @@ public class RegistrySetField<T> extends FuzzySetField<T, RegistrySet<T>> {
     public static List<String> verboseDescription() {
         final List<String> comment = new ArrayList<>();
         comment.add( "Registry Set fields: General format = [ \"namespace:path\", ... ]" );
-        comment.add( "  Registry Sets are sets of registry keys used exclusively for matching." );
-        comment.add( "  Many things in the game, such as blocks or potions, are defined by their registry key within a registry." );
-        comment.add( "  For example, all items are registered in the \"minecraft:item\" registry." );
+        comment.add( "  Registry Sets are collections of registry keys used exclusively for matching." );
+        comment.add( "  Many things in the game, such as blocks and potions, are identified by their key within " +
+                "a registry. For example, all items are registered in the \"minecraft:item\" registry." );
         
         comment.add( "" );
-        comment.add( "An asterisk '*' can be used to define a wildcard entry. For example, 'minecraft:*' will " +
-                "match all vanilla entries, and 'minecraft:jeb*' will match all vanilla entries with names that start with 'jeb'." );
+        comment.add( "  An asterisk '*' can be used to define a wildcard entry. For example, 'minecraft:*' will " +
+                "match all vanilla keys, and 'minecraft:jeb*' will match all vanilla keys with names that start with 'jeb'." );
         
         comment.add( "" );
-        comment.add( "Tags can also be used here. To declare a tag entry, start with a '#' followed by the rest of the tag path." );
-        comment.add( "  Tag example: '#minecraft:is_cave'." );
+        comment.add( "  Tags can be used here, if the registry supports tags. To declare a tag entry, start with a '#' " +
+                "followed by the rest of the tag path. For example, '#minecraft:candles' adds all registry keys from " +
+                "that tag to the list." );
         
         comment.add( "" );
-        comment.add( "Blacklist entries are supported by this field type. Any entry type (normal, tag, wildcard) can be turned into a blacklist entry " +
-                "by appending 'exclude' to the end of it." );
-        comment.add( "  Blacklist entries cannot have any values associated with them, so for example the entry 'minecraft:badlands exclude' " +
-                "is a valid blacklist entry, but 'minecraft:desert exclude 1.0' is not." );
+        comment.add( "  Blacklist entries are supported by this field type. Any entry type (normal, tag, wildcard) can " +
+                "be turned into a blacklist entry by appending 'exclude' to the end of it. For example, 'minecraft:badlands exclude' " +
+                "prevents the vanilla 'badlands' key from being matched by any entries below it." );
         
         comment.add( "" );
-        comment.add( "This field type does not support having a default entry." );
+        comment.add( "  Default entries are not supported by this field type." );
         
         comment.add( "" );
-        comment.add( "IMPORTANT: the order of entries in this list matters! Entries are always checked from top to bottom." );
+        comment.add( "  IMPORTANT: The order of entries in this list matters! Entries are always checked from top to bottom." );
         return comment;
     }
     

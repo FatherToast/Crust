@@ -23,32 +23,25 @@ public class BlockStateListField extends FuzzyListField<BlockState, BlockStateLi
     public static List<String> verboseDescription() {
         final List<String> comment = new ArrayList<>();
         comment.add( "Block State List fields: General format = [ \"namespace:block_name[property1=value1,...]\", ... ]" );
-        comment.add( "  Block State Lists are arrays of blocks and partial block states." );
-        comment.add( "  Blocks are defined by their key in the block registry, usually following the pattern " +
+        comment.add( "  Block State Lists are collections of blocks and partial block states." );
+        comment.add( "  Blocks are identified by their key in the block registry, usually following the pattern " +
                 "'namespace:block_name'." );
         
         comment.add( "" );
-        comment.add( "Block tags can be used here. To declare a tag entry, start with a '#' followed by the rest of the tag path." );
-        comment.add( "  Tag example: '#minecraft:beehive_inhabitors'" );
+        comment.add( "  Block tags can be used here. To declare a tag entry, start with a '#' followed by the rest " +
+                "of the tag path. For example, '#minecraft:beehive_inhabitors' adds all blocks from that tag to the list." );
         
         comment.add( "" );
-        comment.add( "Wildcard entries are not supported by this field type." );
+        comment.add( "  Wildcard, blacklist, and default entries are not supported by this field type." );
         
         comment.add( "" );
-        comment.add( "Blacklist entries are not supported by this field type." );
-        
-        comment.add( "" );
-        comment.add( "This field type does not support having a default entry." );
-        
-        comment.add( "" );
-        comment.add( "Entries by default match any block state. The block states to match can be narrowed down " +
+        comment.add( "  Unless specified, entries use the block's default block state. The block state can be refined " +
                 "by specifying properties. The syntax for block state properties is the same as for commands. Any " +
-                "properties not specified will match any value. For example, 'minecraft:beehive[honey_level=5]' will " +
-                "match any full beehives, regardless of the direction they face." );
-        comment.add( "  Note that tag entries are not block state sensitive; they only care about the base block!" );
+                "properties not specified will remain the default value. For example, 'minecraft:beehive[honey_level=5]' " +
+                "represents a full beehive facing North." );
         
         comment.add( "" );
-        comment.add( "IMPORTANT: the order of entries in this list matters! Entries are always checked from top to bottom." );
+        comment.add( "  IMPORTANT: The order of entries in this list matters!" );
         return comment;
     }
     
