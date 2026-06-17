@@ -400,7 +400,7 @@ public class FeatureGeneratorScreen extends Screen {
                     featureOrTagId.startsWith( "#" )
                             ? TagKey.create( Registries.CONFIGURED_FEATURE, ResourceLocation.parse( featureOrTagId.substring( 1 ) ) )
                             : null,
-                    ResourceLocationUtils.parseOrDefault( fallbackId, ResourceLocationUtils.EMPTY ),
+                    ResourceLocationUtils.strictParseOrDefault( fallbackId, ResourceLocationUtils.EMPTY ),
                     BlockStatePropertyMap.strictStateFrom( turnsInto ),
                     Integer.parseInt( yOffset ),
                     Double.parseDouble( chance ),
