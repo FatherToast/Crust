@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
 /**
- * An string value codec. Allows spaces when used as the top-level value.
+ * A string value codec. Allows spaces when used as the top-level value.
  * The keyword "null" is reserved for use in place of the empty string for missing values.
  * <p>
  * Optionally, you may provide an {@link IValueCorrector} to validate and repair
