@@ -172,26 +172,7 @@ public class StringValueCodec implements IValueCodec<String> {
         @Override
         public String correctValue( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
             return value == null ? defaultValue : ResourceLocation.isValidResourceLocation( value ) ? value :
-                    stripInvalidChars( value );
-        }
-        
-        /** @return The string with all characters that make it invalid as a resource location removed. */
-        private static String stripInvalidChars( String resLoc ) {
-            final StringBuilder newResLoc = new StringBuilder();
-            boolean inPath = resLoc.indexOf( ResourceLocation.NAMESPACE_SEPARATOR ) < 0;
-            for( char c : resLoc.toCharArray() ) {
-                if( inPath ) {
-                    if( ResourceLocation.validPathChar( c ) ) newResLoc.append( c );
-                }
-                else {
-                    if( c == ResourceLocation.NAMESPACE_SEPARATOR ) {
-                        newResLoc.append( c );
-                        inPath = true;
-                    }
-                    else if( ResourceLocation.validNamespaceChar( c ) ) newResLoc.append( c );
-                }
-            }
-            return newResLoc.toString();
+                    ResourceLocValueCodec.stripInvalidChars( value );
         }
     }
 }
