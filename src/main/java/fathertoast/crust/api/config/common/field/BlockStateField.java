@@ -135,7 +135,14 @@ public class BlockStateField extends GenericField<BlockState> implements Supplie
     @Override
     @Nullable
     public BlockState getValue() {
-        return value == null ? value = blockStateProps.stateForNullable( getBlock( blockResLoc ) ) : value;
+        if( value == null ) {
+            // Use defaults if this is called before field is loaded.
+            if( blockStateProps == null || blockResLoc == null ) {
+                return blockStatePropsDefault.stateForNullable( getBlock( blockResLocDefault ) );
+            }
+            return value = blockStateProps.stateForNullable( getBlock( blockResLoc ) );
+        }
+        return value;
     }
     
     /** @return The default value of this field. */
@@ -161,7 +168,7 @@ public class BlockStateField extends GenericField<BlockState> implements Supplie
         writer.writeLine( TomlHelper.toLiteral( blockResLoc + blockStateProps.toString() ), output );
     }
     
-    //    /** @return This field's gui component provider. */ TODO
+    //    /** @return This field's gui component provider. */ TODO - Maybe render the actual block state somewhere?
     //    @Override
     //    public IConfigFieldWidgetProvider getWidgetProvider() { return new StringFieldWidgetProvider( this ); }
 }
