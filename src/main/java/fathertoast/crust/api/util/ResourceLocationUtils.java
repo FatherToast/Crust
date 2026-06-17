@@ -22,6 +22,14 @@ public final class ResourceLocationUtils {
     /** @return A ResourceLocation parsed from the specified String, or the supplied default value if something went wrong. */
     @Nullable
     public static ResourceLocation parseOrDefault( String value, @Nullable ResourceLocation defaultValue ) {
+        ResourceLocation rl = ResourceLocation.tryParse( value );
+        if( rl == null ) return defaultValue;
+        return rl;
+    }
+    
+    /** @return A ResourceLocation strictly parsed from the specified String, or the supplied default value if something went wrong. */
+    @Nullable
+    public static ResourceLocation strictParseOrDefault( String value, @Nullable ResourceLocation defaultValue ) {
         ResourceLocation rl = strictTryParse( value );
         if( rl == null ) return defaultValue;
         return rl;
