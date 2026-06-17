@@ -16,7 +16,7 @@ public class ResourceLocValueCodec implements IValueCodec<ResourceLocation> {
     
     
     /**
-     * @param strictParse If true, the returned codec's value corrector will not accept resource location strings without specified namespace.
+     * @param strictParse If true, the returned codec will not accept resource location strings without specified namespace when parsing.
      * @return A resource location codec with the specified default. Missing or empty strings will be loaded as the default value.
      */
     public static ResourceLocValueCodec of( ResourceLocation defaultValue, boolean strictParse ) {
@@ -24,7 +24,7 @@ public class ResourceLocValueCodec implements IValueCodec<ResourceLocation> {
     }
     
     /**
-     * @param strictParse If true, the returned codec's value corrector will not accept resource location strings without specified namespace.
+     * @param strictParse If true, the returned codec will not accept resource location strings without specified namespace when parsing.
      * @return A resource location codec with the specified default. Missing or empty strings will be loaded as the default value.
      */
     public static ResourceLocValueCodec of( String defaultValue, boolean strictParse ) {
@@ -36,7 +36,6 @@ public class ResourceLocValueCodec implements IValueCodec<ResourceLocation> {
     
     /** The default value of this codec. */
     public final ResourceLocation defaultValue;
-    
     /**
      * If true, entries will be parsed in "strict" mode,
      * where namespace MUST be specified.
