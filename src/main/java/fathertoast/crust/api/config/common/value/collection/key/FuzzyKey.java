@@ -16,8 +16,8 @@ import javax.annotation.Nullable;
  * These keys may be set as "blacklist" type keys. When a blacklist key is selected as the match,
  * it is treated as if no match was found.
  * <p>
- * For example, say you have two keys in a set, the first is a blacklist key that matches husks,
- * and the second is a tag key that matches all zombies - contains checks for husks will return
+ * For example, say you have two keys in a set where the first is a blacklist key that matches husks,
+ * and the second is a tag key that matches all zombies. In this case, 'contains' checks for husks will return
  * false, but all other zombies will return true.
  * <p>
  * If you were to swap the positions of those keys, the blacklist husk entry will never be used,
