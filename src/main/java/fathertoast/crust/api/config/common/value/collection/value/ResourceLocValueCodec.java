@@ -34,7 +34,8 @@ public class ResourceLocValueCodec implements IValueCodec<ResourceLocation> {
     
     // ---- Instance Methods ---- //
     
-    public final IValueCorrector<ResourceLocation> corrector;
+    /** The default value of this codec. */
+    public final ResourceLocation defaultValue;
     
     /**
      * If true, entries will be parsed in "strict" mode,
@@ -43,19 +44,22 @@ public class ResourceLocValueCodec implements IValueCodec<ResourceLocation> {
     public final boolean strict;
     
     
-    private ResourceLocValueCodec( ResourceLocation defaultValue, boolean strictParse ) {
-        corrector = new ResLocCorrector( defaultValue.toString() );
+    private ResourceLocValueCodec( ResourceLocation def, boolean strictParse ) {
+        defaultValue = def;
         strict = strictParse;
     }
     
-    private ResourceLocValueCodec( String defaultValue, boolean strictParse ) {
-        corrector = new ResLocCorrector( defaultValue );
+    private ResourceLocValueCodec( String def, boolean strictParse ) {
+        defaultValue = ResourceLocationUtils.strictTryParse( def );
         strict = strictParse;
+        
+        if( defaultValue == null )
+            throw new IllegalArgumentException( "Default value cannot be null!" );
     }
     
     /** @return The value format (e.g., {@literal "<Number (Any Value)>"}). */
     @Override
-    public String getFormat() { return corrector.getFormat(); }
+    public String getFormat() { return "<namespace:path>"; }
     
     /** @return The value, converted to a single-line string. */
     @Override
@@ -68,62 +72,15 @@ public class ResourceLocValueCodec implements IValueCodec<ResourceLocation> {
      * @return A new value based on the value string. If the parse fails, returns a non-null default value.
      */
     @Override
+    @SuppressWarnings( "ConstantConditions" )
     public ResourceLocation parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
         if( value != null )
             value = stripInvalidChars( value );
         
         if( strict ) {
-            return corrector.correctValue( field, line, ResourceLocationUtils.strictTryParse( value ) );
+            return ResourceLocationUtils.strictParseOrDefault( value, defaultValue );
         }
-        return corrector.correctValue( field, line, value == null ? null : ResourceLocation.tryParse( value ) );
-    }
-    
-    
-    // ---- Value Correctors ---- //
-    
-    /**
-     * Ensures that a default resource location is returned if the value is null.
-     */
-    public static class ResLocCorrector implements IValueCorrector<ResourceLocation> {
-        
-        /** The default value of this corrector. */
-        private final ResourceLocation defaultValue;
-        
-        
-        /** Creates a new corrector with the given default value. */
-        public ResLocCorrector( ResourceLocation def ) {
-            // noinspection ConstantConditions
-            if( def == null )
-                throw new IllegalArgumentException( "Default value cannot be null!" );
-            
-            defaultValue = def;
-        }
-        
-        /**
-         * Alternative constructor that parses a resource location
-         * from the specified string. String must contain a valid namespace!
-         */
-        public ResLocCorrector( String resLocString ) {
-            // noinspection ConstantConditions
-            this( ResourceLocationUtils.strictTryParse( resLocString ) );
-        }
-        
-        /** @return The value format (for example, {@literal "<Number (Any Value)>"}). */
-        @Override
-        public String getFormat() { return "<namespace:path>"; }
-        
-        /**
-         * @param field The config field we are loading for, or null if error reporting should be suppressed.
-         * @param line  The full line, for error context.
-         * @param value The value to correct, or null if the value is missing.
-         * @return The same value if it is present and valid. If the value is missing, a default value is quietly returned.
-         * If invalid, it reports the problem (unless field is null) and returns the closest valid value.
-         */
-        @Override
-        public ResourceLocation correctValue( @Nullable AbstractConfigField field, String line, @Nullable ResourceLocation value ) {
-            if( value == null ) return defaultValue;
-            return value;
-        }
+        return ResourceLocationUtils.parseOrDefault( value, defaultValue );
     }
     
     /** @return The string with all characters that make it invalid as a resource location removed. */
