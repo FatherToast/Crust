@@ -60,7 +60,7 @@ public class EntityMapField<V> extends FuzzyMapField<Entity, V, EntityMap<V>> {
         
         comment.add( "" );
         comment.add( "  Lastly, Entity Maps allow a special type of entry called 'extends' entries." );
-        comment.add( "  If you are unfamiliar with Java or modding Minecraft, the following explanation may not make a whole lot of sense." );
+        comment.add( "  If you are unfamiliar with Java or modding Minecraft, the following explanation may not make a lot of sense." );
         comment.add( "  This is a pretty niche but very powerful entry type that matches the target entity as well as all " +
                 "other entities whose entity class inherits the entity class of the target entity." );
         comment.add( "  For example, the key '~minecraft:skeleton' will match normal skeletons as well as all other entities that " +
