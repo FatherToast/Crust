@@ -84,8 +84,8 @@ public class TextWithSubtitle extends AbstractWidget {
     }
     
     @Override
-    protected void updateWidgetNarration( NarrationElementOutput neo ) {
-        neo.add( NarratedElementType.TITLE, TEXT );
+    protected void updateWidgetNarration( NarrationElementOutput output ) {
+        output.add( NarratedElementType.TITLE, TEXT );
     }
     
     @Override

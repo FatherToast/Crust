@@ -50,7 +50,7 @@ public class ColorPreviewWidget extends AbstractWidget {
     
     @Override
     protected void updateWidgetNarration( NarrationElementOutput output ) {
-    
+        // Nothing to narrate
     }
     
     @Override
