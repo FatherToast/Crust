@@ -1,18 +1,31 @@
 package fathertoast.crust.api.config.common.field;
 
 import com.electronwill.nightconfig.core.io.CharacterOutput;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.provider.IItemViewable;
+import fathertoast.crust.api.config.client.gui.widget.provider.ItemViewWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.util.BlockStatePropertyMap;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.ApiStatus;
+import org.joml.Matrix4f;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -24,7 +37,7 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings( "unused" )
 @ApiStatus.Experimental
-public class BlockStateField extends GenericField<BlockState> implements Supplier<BlockState> {
+public class BlockStateField extends GenericField<BlockState> implements IItemViewable, Supplier<BlockState> {
     
     /** The default block's resource location. */
     protected final ResourceLocation blockResLocDefault;
@@ -46,7 +59,6 @@ public class BlockStateField extends GenericField<BlockState> implements Supplie
         blockResLocDefault = ResourceLocation.parse( split[0] );
         blockStatePropsDefault = BlockStatePropertyMap.of( split[1] );
         actualDefault = blockStatePropsDefault.stateForNullable( getBlock( blockResLocDefault ) );
-        
     }
     
     /** Creates a new field. */
@@ -58,7 +70,7 @@ public class BlockStateField extends GenericField<BlockState> implements Supplie
     
     /** Creates a new field. */
     public BlockStateField( String key, RegistryObject<? extends Block> defaultBlock, BlockStatePropertyMap defaultProperties, @Nullable String... description ) {
-        //noinspection DataFlowIssue
+        // noinspection DataFlowIssue
         this( key, defaultBlock.getId(), defaultProperties, description );
     }
     
@@ -168,7 +180,54 @@ public class BlockStateField extends GenericField<BlockState> implements Supplie
         writer.writeLine( TomlHelper.toLiteral( blockResLoc + blockStateProps.toString() ), output );
     }
     
-    //    /** @return This field's gui component provider. */ TODO - Maybe render the actual block state somewhere?
-    //    @Override
-    //    public IConfigFieldWidgetProvider getWidgetProvider() { return new StringFieldWidgetProvider( this ); }
+    /**
+     * @return The implementing field's current raw value as a string.
+     * This is used to set the value of the widget's edit box.
+     */
+    @Override // IItemViewable
+    @Nullable
+    public String asViewedString( Object raw ) {
+        if( value == null ) return null;
+        
+        StringBuilder builder = new StringBuilder( blockResLoc.toString() );
+        if( !blockStateProps.isEmpty() ) builder.append( blockStateProps.toString() );
+        return builder.toString();
+    }
+    
+    /** @return This field's gui component provider. */
+    @Override
+    public IConfigFieldWidgetProvider getWidgetProvider() {
+        return new ItemViewWidgetProvider<>( this, ( s ) -> {
+            ResourceLocation id = ResourceLocation.tryParse( BlockStatePropertyMap.split( s )[0] );
+            return id != null && ForgeRegistries.BLOCKS.containsKey( id );
+        } ) {
+            @Override
+            public void renderItem( @Nullable BlockState value, GuiGraphics graphics, int widgetX, int widgetY,
+                                    int mouseX, int mouseY, float partialTick ) {
+                if( value == null ) return;
+                
+                final ItemStack renderStack = new ItemStack( value.getBlock() );
+                final PoseStack pose = graphics.pose();
+                
+                pose.pushPose();
+                pose.translate( widgetX + 10, widgetY + 18, 150 );
+                pose.mulPoseMatrix( (new Matrix4f()).scaling( 1.0F, -1.0F, 1.0F ) );
+                pose.mulPose( Axis.XP.rotationDegrees( 30.0F ) );
+                pose.mulPose( Axis.YN.rotationDegrees( 225.0F ) );
+                
+                pose.scale( 10.0F, 10.0F, 10.0F );
+                
+                Minecraft.getInstance().getBlockRenderer().renderSingleBlock(
+                        value,
+                        graphics.pose(),
+                        graphics.bufferSource(),
+                        LightTexture.block( 15 ),
+                        OverlayTexture.NO_OVERLAY,
+                        ModelData.EMPTY,
+                        RenderType.cutout()
+                );
+                pose.popPose();
+            }
+        };
+    }
 }

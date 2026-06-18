@@ -1,0 +1,94 @@
+package fathertoast.crust.api.config.client.gui.widget.provider;
+
+import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
+import fathertoast.crust.api.config.client.gui.widget.field.ItemViewWidget;
+import fathertoast.crust.api.config.common.field.GenericField;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+
+/**
+ * Displays a text box with an icon to the right of it that renders
+ * something based on the current value of the text box.
+ *
+ * @param <T> The type of field - must implement {@link IItemViewable}.
+ * @param <V> The type of value the field provides.
+ */
+public abstract class ItemViewWidgetProvider<V, T extends GenericField<V> & IItemViewable> implements IConfigFieldWidgetProvider {
+    
+    /** The providing field. */
+    protected final T FIELD;
+    /** An optional line validator. */
+    @Nullable
+    protected final Predicate<String> VALIDATOR;
+    
+    
+    /**
+     * Constructs a new instance of this widget provider
+     * with the specified field, and optionally a line validator.
+     *
+     * @param field         The field to provide widgets for.
+     * @param lineValidator An optional line validator for the text box provided by this provider.
+     */
+    public ItemViewWidgetProvider( T field, @Nullable Predicate<String> lineValidator ) {
+        FIELD = field;
+        VALIDATOR = lineValidator;
+    }
+    
+    /**
+     * Called to initialize the field's gui components.
+     * <p>
+     * Positions of the widgets provided (x, y) are relative to the top-left corner of the "field value widget" space.
+     * The space available for field value widgets is a {@link #VALUE_WIDTH} by {@link #VALUE_HEIGHT} rectangle
+     * (in GUI pixels) that is right-aligned in the parent list widget.
+     *
+     * @param components   The list to populate with widgets.
+     * @param listEntry    The field component (widget "row" within a scrollable list).
+     * @param displayValue The current raw value to display in the GUI.
+     */
+    @Override
+    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+        ItemViewWidget<V, T> itemViewWidget = new ItemViewWidget<>( this::renderItem, FIELD, VALUE_WIDTH - ItemViewWidget.DEFAULT_SIZE, 0 );
+        
+        // noinspection resource
+        EditBox editBox = new EditBox( listEntry.minecraft().font,
+                1, 1, VALUE_WIDTH - 3 - ItemViewWidget.DEFAULT_SIZE, VALUE_HEIGHT - 2, // Account for ~1px frame
+                Component.literal( FIELD.getKey() ) );
+        editBox.setMaxLength( Integer.MAX_VALUE );
+        
+        editBox.setValue( Objects.requireNonNullElse( FIELD.asViewedString( displayValue ), "" ) );
+        editBox.setResponder( listEntry::updateValue );
+        
+        if( VALIDATOR != null ) {
+            editBox.setResponder( ( value ) -> {
+                if( value == null || !VALIDATOR.test( value ) ) {
+                    editBox.setTextColor( INVALID_COLOR );
+                    listEntry.clearValue();
+                }
+                else {
+                    editBox.setTextColor( DEFAULT_COLOR );
+                    listEntry.updateValue( value );
+                }
+            } );
+        }
+        else {
+            editBox.setResponder( listEntry::updateValue );
+        }
+        
+        components.add( itemViewWidget );
+        components.add( editBox );
+    }
+    
+    /**
+     * Allows rendering something based on the
+     * current value of this provider's field.
+     */
+    public abstract void renderItem( @Nullable V value, GuiGraphics graphics, int widgetX, int widgetY,
+                                     int mouseX, int mouseY, float partialTick );
+}
