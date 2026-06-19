@@ -20,7 +20,6 @@ public class FakeLightChunk implements LightChunk {
     
     @Nullable
     private final BlockAndTintGetter blockAndTintGetter;
-    
     private final ChunkSkyLightSources chunkSkyLightSources = new ChunkSkyLightSources( this );
     
     
@@ -29,9 +28,7 @@ public class FakeLightChunk implements LightChunk {
     }
     
     @Override
-    public void findBlockLightSources( BiConsumer<BlockPos, BlockState> biConsumer ) {
-    
-    }
+    public void findBlockLightSources( BiConsumer<BlockPos, BlockState> biConsumer ) { }
     
     @Override
     public ChunkSkyLightSources getSkyLightSources() {
