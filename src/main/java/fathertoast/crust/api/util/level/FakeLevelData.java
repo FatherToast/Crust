@@ -1,0 +1,68 @@
+package fathertoast.crust.api.util.level;
+
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.storage.WritableLevelData;
+import org.jetbrains.annotations.ApiStatus;
+
+/** A fake level data implementation. */
+@ApiStatus.Experimental
+public class FakeLevelData implements WritableLevelData {
+    
+    private final GameRules gameRules = new GameRules();
+    
+    
+    public FakeLevelData() { }
+    
+    
+    @Override
+    public void setXSpawn( int x ) { }
+    
+    @Override
+    public void setYSpawn( int y ) { }
+    
+    @Override
+    public void setZSpawn( int z ) { }
+    
+    @Override
+    public void setSpawnAngle( float angle ) { }
+    
+    @Override
+    public int getXSpawn() { return 0; }
+    
+    @Override
+    public int getYSpawn() { return 0; }
+    
+    @Override
+    public int getZSpawn() { return 0; }
+    
+    @Override
+    public float getSpawnAngle() { return 0; }
+    
+    @Override
+    public long getGameTime() { return 0; }
+    
+    @Override
+    public long getDayTime() { return 0; }
+    
+    @Override
+    public boolean isThundering() { return false; }
+    
+    @Override
+    public boolean isRaining() { return false; }
+    
+    @Override
+    public void setRaining( boolean raining ) { }
+    
+    @Override
+    public boolean isHardcore() { return false; }
+    
+    @Override
+    public GameRules getGameRules() { return gameRules; }
+    
+    @Override
+    public Difficulty getDifficulty() { return Difficulty.NORMAL; }
+    
+    @Override
+    public boolean isDifficultyLocked() { return false; }
+}
