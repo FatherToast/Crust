@@ -3,7 +3,6 @@ package fathertoast.crust.api.config.client.gui.widget.provider;
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import fathertoast.crust.api.config.client.gui.widget.field.ItemViewWidget;
 import fathertoast.crust.api.config.common.field.GenericField;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
@@ -89,6 +88,35 @@ public abstract class ItemViewWidgetProvider<V, T extends GenericField<V> & IIte
      * Allows rendering something based on the
      * current value of this provider's field.
      */
-    public abstract void renderItem( @Nullable V value, GuiGraphics graphics, int widgetX, int widgetY,
-                                     int mouseX, int mouseY, float partialTick );
+    public abstract void renderItem( ItemViewWidget.RenderContext<V> renderContext );
+    
+    
+    /**
+     * Simple implementation that allows passing an
+     * {@link fathertoast.crust.api.config.client.gui.widget.field.ItemViewWidget.ItemViewRenderer}
+     * instance in the constructor instead of having to override
+     * {@link ItemViewWidgetProvider#renderItem(ItemViewWidget.RenderContext)}.
+     */
+    public static class Simple<V, T extends GenericField<V> & IItemViewable> extends ItemViewWidgetProvider<V, T> {
+        
+        /** The item renderer used to render a config value. */
+        private final ItemViewWidget.ItemViewRenderer<V> RENDERER;
+        
+        /**
+         * Constructs a new instance of this widget provider
+         * with the specified field, and optionally a line validator.
+         *
+         * @param field         The field to provide widgets for.
+         * @param lineValidator An optional line validator for the text box provided by this provider.
+         */
+        public Simple( T field, ItemViewWidget.ItemViewRenderer<V> renderer, @Nullable Predicate<String> lineValidator ) {
+            super( field, lineValidator );
+            RENDERER = Objects.requireNonNull( renderer );
+        }
+        
+        @Override
+        public void renderItem( ItemViewWidget.RenderContext<V> renderContext ) {
+            RENDERER.render( renderContext );
+        }
+    }
 }

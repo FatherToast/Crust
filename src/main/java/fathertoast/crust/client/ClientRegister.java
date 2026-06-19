@@ -5,6 +5,8 @@ import fathertoast.crust.api.client.accessor.IClientConfigAccessor;
 import fathertoast.crust.api.client.renderer.CrustFishingHookRenderer;
 import fathertoast.crust.api.client.util.shape.*;
 import fathertoast.crust.api.config.client.ClientConfigUtil;
+import fathertoast.crust.api.config.client.gui.ItemViewRendererRegistry;
+import fathertoast.crust.api.config.client.gui.widget.field.ItemViewWidget;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.api.util.BoxShape;
@@ -16,6 +18,7 @@ import fathertoast.crust.client.config.CfgEditorCrustConfig;
 import fathertoast.crust.client.config.ClientConfigAccessorImpl;
 import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
 import fathertoast.crust.client.config.RenderSettingsCrustConfig;
+import fathertoast.crust.client.renderer.itemview.BlockStateItemViewRenderer;
 import fathertoast.crust.common.api.impl.CrustApi;
 import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.core.registry.CrustItems;
@@ -27,6 +30,8 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingStage;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
@@ -71,9 +76,15 @@ public final class ClientRegister {
         
         // Register our debug shape renderers
         registerShapeRenderers();
+        // Register our GUI item view renderers
+        registerItemViewRenderers();
         
         // Tell Forge to open the config editor when our mod's "Config" button is clicked in the Mods screen
         ClientConfigUtil.registerConfigButtonAsEditScreen( Crust.INSTANCE.CONTAINER );
+        
+        // Run setup for all registered item view renderers
+        ModLoadingStage.COMPLETE.getDeferredWorkQueue().enqueueWork( ModList.get().getModContainerById( ICrustApi.MOD_ID ).orElseThrow(),
+                () -> ItemViewRendererRegistry.allRenderers().forEach( ItemViewWidget.ItemViewRenderer::setup ) );
     }
     
     /** Registers this mod's additional key bindings. */
@@ -88,13 +99,26 @@ public final class ClientRegister {
         event.registerEntityRenderer( CrustObjects.Entities.FISH_HOOK.get(), CrustFishingHookRenderer::new );
     }
     
-    /** Registers this mod's debug shape renderers. */
+    /**
+     * Registers this mod's debug shape renderers.
+     *
+     * @see IDebugShapeRenderer
+     */
     private static void registerShapeRenderers() {
         DebugShapeRenderManager.register( BoxShape::new, new BoxShapeRenderer() );
         DebugShapeRenderManager.register( QuadShape::new, new QuadShapeRenderer() );
         DebugShapeRenderManager.register( CircleShape::new, new CircleShapeRenderer() );
         DebugShapeRenderManager.register( SphereShape::new, new SphereShapeRenderer() );
         DebugShapeRenderManager.register( CylinderShape::new, new CylinderShapeRenderer() );
+    }
+    
+    /**
+     * Registers this mod's item view renderers.
+     *
+     * @see fathertoast.crust.api.config.client.gui.widget.field.ItemViewWidget.ItemViewRenderer
+     */
+    private static void registerItemViewRenderers() {
+        ItemViewRendererRegistry.registerRenderer( ItemViewRendererRegistry.BLOCK_STATE, new BlockStateItemViewRenderer() );
     }
     
     @SubscribeEvent

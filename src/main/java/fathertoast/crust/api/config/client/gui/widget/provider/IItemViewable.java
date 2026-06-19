@@ -6,9 +6,9 @@ import javax.annotation.Nullable;
 public interface IItemViewable {
     
     /**
-     * @return The implementing field's current raw value as a string.
-     * This is used to set the value of the widget's edit box.
+     * @param displayValue The current raw value of the field.
+     * @return A string representing the field's current raw value for GUI display.
      */
     @Nullable
-    String asViewedString( Object raw );
+    String asViewedString( Object displayValue );
 }
