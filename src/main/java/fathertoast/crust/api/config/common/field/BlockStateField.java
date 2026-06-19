@@ -158,11 +158,10 @@ public class BlockStateField extends GenericField<BlockState> implements IItemVi
         return actualDefault;
     }
     
-    /** @return Tries to get a registered block and returns it, or null if is fails. */
+    /** @return The registered block with the given ID, or null if it does not exist. */
     @Nullable
     private Block getBlock( ResourceLocation resLoc ) {
-        Block b = ForgeRegistries.BLOCKS.getValue( resLoc );
-        return b == null || b.defaultBlockState().isAir() ? null : b;
+        return ForgeRegistries.BLOCKS.getValue( resLoc );
     }
     
     /** Writes this field's value to file. */

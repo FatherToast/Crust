@@ -9,6 +9,7 @@
     - Added fuzzy key type and value codec for ResourceLocations.
     - Moved the method StringValueCodec#stripInvalidChars() to ResourceLocValueCodec.
     - Added new method ResourceLocationUtils#strictParseOrDefault() and refactored the old method to not do strict parsing.
+    - Fixed not being able to specify air-like block states in BlockStateField.
 1.20.1-4.17.28
     - Fixed EntityKey.Extends key implementation not checking class inheritance correctly,
       leading to the key not working as intended in config fields that make use of them.
