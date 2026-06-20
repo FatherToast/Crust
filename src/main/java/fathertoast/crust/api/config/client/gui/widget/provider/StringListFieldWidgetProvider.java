@@ -19,7 +19,7 @@ import java.util.List;
  * editing strings in a string list.
  */
 @SuppressWarnings( "ClassCanBeRecord" )
-public class StringListFieldWidgetProvider<T extends GenericField<?> & IStringListScreenEditable> implements
+public class StringListFieldWidgetProvider<V, T extends GenericField<V> & IStringListScreenEditable> implements
         IConfigFieldWidgetProvider {
     
     /** The providing field. */

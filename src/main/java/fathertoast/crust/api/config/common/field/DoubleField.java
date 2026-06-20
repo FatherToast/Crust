@@ -59,14 +59,17 @@ public class DoubleField extends AbstractConfigField implements Supplier<Double>
     @Override
     public Double get() { return value; }
     
+    /** @return Returns the config field's value. */
+    public double getDouble() { return value; }
+    
     /** @return Returns the config field's value cast to a float. */
-    public float getFloat() { return get().floatValue(); }
+    public float getFloat() { return (float) getDouble(); }
     
     /** @return Treats the config field's value as a percent chance (from 0 to 1) and returns the result of a single roll. */
     public boolean rollChance( Random random ) { return rollChance( JavaRandomSource.of( random ) ); }
     
     /** @return Treats the config field's value as a percent chance (from 0 to 1) and returns the result of a single roll. */
-    public boolean rollChance( RandomSource random ) { return random.nextDouble() < get(); }
+    public boolean rollChance( RandomSource random ) { return random.nextDouble() < getDouble(); }
     
     /** @return Returns the minimum value allowed by this field. */
     public double minValue() { return valueMin; }
@@ -77,7 +80,7 @@ public class DoubleField extends AbstractConfigField implements Supplier<Double>
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoRange( valueDefault, valueMin, valueMax ) );
+        comment.add( TomlHelper.fieldInfoRange( valueDefault, minValue(), maxValue() ) );
     }
     
     /**
@@ -204,10 +207,10 @@ public class DoubleField extends AbstractConfigField implements Supplier<Double>
         }
         
         /** @return The minimum value of this range. */
-        public double getMin() { return MINIMUM.get(); }
+        public double getMin() { return MINIMUM.getDouble(); }
         
         /** @return The maximum value of this range. */
-        public double getMax() { return MAXIMUM.get(); }
+        public double getMax() { return MAXIMUM.getDouble(); }
         
         /** @return The minimum value field. */
         public DoubleField getMinField() { return MINIMUM; }
@@ -241,7 +244,7 @@ public class DoubleField extends AbstractConfigField implements Supplier<Double>
      * @param base       The base value.
      * @param exceptions The environment exceptions list.
      */
-    public record EnvironmentSensitive(DoubleField base, EnvironmentListField exceptions) {
+    public record EnvironmentSensitive( DoubleField base, EnvironmentListField exceptions ) {
         
         /** @return Returns the config field's value. */
         public double get( Level level, @Nullable BlockPos pos ) { return exceptions().getOrElse( level, pos, base() ); }
@@ -367,6 +370,6 @@ public class DoubleField extends AbstractConfigField implements Supplier<Double>
             return null;
         }
         
-        private record Entry<T>(T VALUE, EnvironmentSensitive WEIGHT) { }
+        private record Entry<T>( T VALUE, EnvironmentSensitive WEIGHT ) {}
     }
 }

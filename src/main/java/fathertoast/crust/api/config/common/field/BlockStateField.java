@@ -21,14 +21,13 @@ import org.jetbrains.annotations.ApiStatus;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * Represents a config field with a block state value.
  */
 @SuppressWarnings( "unused" )
 @ApiStatus.Experimental
-public class BlockStateField extends GenericField<BlockState> implements IItemViewable, Supplier<BlockState> {
+public class BlockStateField extends GenericField<BlockState> implements IItemViewable {
     
     /** The default block's resource location. */
     protected final ResourceLocation blockResLocDefault;
