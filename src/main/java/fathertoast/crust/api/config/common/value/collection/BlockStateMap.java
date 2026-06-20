@@ -109,7 +109,7 @@ public class BlockStateMap<V> extends FuzzyMap<BlockState, V> {
         public B put( Block block, V value ) { return put( block, BlockStatePropertyMap.EMPTY, value ); }
         
         /** Adds a key-value pair based on the block state. Only suitable for vanilla stuff. Matches only the provided block state. */
-        public B put( BlockState blockState, V value ) { return put( blockState.getBlock(), BlockStatePropertyMap.of( blockState ), value ); }
+        public B put( BlockState blockState, V value ) { return put( BlockStateKey.of( blockState, false ), value ); }
         
         /** Adds a blacklist key based on the resource location. Matches only the provided block with the appropriate block state properties. */
         public B putBlacklist( String resLocAndProperties ) { return putBlacklist( BlockStateKey.of( resLocAndProperties, true ) ); }
@@ -139,7 +139,7 @@ public class BlockStateMap<V> extends FuzzyMap<BlockState, V> {
         public B putBlacklist( Block block ) { return putBlacklist( block, BlockStatePropertyMap.EMPTY ); }
         
         /** Adds a blacklist key based on the block state. Only suitable for vanilla stuff. Matches only the provided block state. */
-        public B putBlacklist( BlockState blockState ) { return putBlacklist( blockState.getBlock(), BlockStatePropertyMap.of( blockState ) ); }
+        public B putBlacklist( BlockState blockState ) { return putBlacklist( BlockStateKey.of( blockState, true ) ); }
         
         
         // ---- Wildcard Keys ---- //

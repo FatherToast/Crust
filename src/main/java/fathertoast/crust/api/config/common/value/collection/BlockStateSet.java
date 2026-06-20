@@ -58,16 +58,16 @@ public class BlockStateSet extends FuzzySet<BlockState> {
         // ---- Properties-Only Keys ---- //
         
         /** Adds a props-only key based on the resource location. Matches any block with the appropriate block state properties. */
-        public B addProps( String resLocAndProperties ) { return add( BlockStateKey.of( resLocAndProperties, false ) ); }
+        public B addProps( String properties ) { return add( BlockStateKey.ofProps( properties, false ) ); }
         
         /** Adds a props-only key based on the resource location. Matches any block with the appropriate block state properties. */
-        public B addProps( ResourceLocation resLoc, BlockStatePropertyMap properties ) { return add( BlockStateKey.of( resLoc, properties, false ) ); }
+        public B addProps( BlockStatePropertyMap properties ) { return add( BlockStateKey.ofProps( properties, false ) ); }
         
         /** Adds a blacklist props-only key based on the resource location. Matches any block with the appropriate block state properties. */
-        public B addPropsBlacklist( String resLocAndProperties ) { return add( BlockStateKey.of( resLocAndProperties, true ) ); }
+        public B addPropsBlacklist( String properties ) { return add( BlockStateKey.ofProps( properties, true ) ); }
         
         /** Adds a blacklist props-only key based on the resource location. Matches any block with the appropriate block state properties. */
-        public B addPropsBlacklist( ResourceLocation resLoc, BlockStatePropertyMap properties ) { return add( BlockStateKey.of( resLoc, properties, true ) ); }
+        public B addPropsBlacklist( BlockStatePropertyMap properties ) { return add( BlockStateKey.ofProps( properties, true ) ); }
         
         
         // ---- Basic Keys ---- //
@@ -97,7 +97,7 @@ public class BlockStateSet extends FuzzySet<BlockState> {
         public B add( Block block ) { return add( block, BlockStatePropertyMap.EMPTY ); }
         
         /** Adds a key based on the block state. Only suitable for vanilla stuff. Matches only the provided block state. */
-        public B add( BlockState blockState ) { return add( blockState.getBlock(), BlockStatePropertyMap.of( blockState ) ); }
+        public B add( BlockState blockState ) { return add( BlockStateKey.of( blockState, false ) ); }
         
         /** Adds a blacklist key based on the resource location. Matches only the provided block with the appropriate block state properties. */
         public B addBlacklist( String resLocAndProperties ) { return add( BlockStateKey.of( resLocAndProperties, true ) ); }
@@ -124,7 +124,7 @@ public class BlockStateSet extends FuzzySet<BlockState> {
         public B addBlacklist( Block block ) { return addBlacklist( block, BlockStatePropertyMap.EMPTY ); }
         
         /** Adds a blacklist key based on the block state. Only suitable for vanilla stuff. Matches only the provided block state. */
-        public B addBlacklist( BlockState blockState ) { return addBlacklist( blockState.getBlock(), BlockStatePropertyMap.of( blockState ) ); }
+        public B addBlacklist( BlockState blockState ) { return add( BlockStateKey.of( blockState, true ) ); }
         
         
         // ---- Wildcard Keys ---- //

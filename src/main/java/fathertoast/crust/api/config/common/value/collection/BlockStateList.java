@@ -85,7 +85,7 @@ public class BlockStateList extends FuzzyList<BlockState> {
         public B add( Block block, BlockStatePropertyMap properties ) { return add( BlockStateKey.of( block, properties, false ) ); }
         
         /** Adds a key based on the block state. Only suitable for vanilla stuff. Matches only the provided block state. */
-        public B add( BlockState blockState ) { return add( blockState.getBlock(), BlockStatePropertyMap.of( blockState ) ); }
+        public B add( BlockState blockState ) { return add( BlockStateKey.of( blockState, false ) ); }
         
         
         // ---- Tag Keys ---- //
