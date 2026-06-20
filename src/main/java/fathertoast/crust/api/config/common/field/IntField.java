@@ -57,17 +57,20 @@ public class IntField extends AbstractConfigField implements Supplier<Integer> {
     @Override
     public Integer get() { return value; }
     
+    /** @return Returns the config field's value. */
+    public int getInt() { return value; }
+    
     /** @return Returns the config field's value cast down to a short. */
-    public short getShort() { return get().shortValue(); }
+    public short getShort() { return (short) getInt(); }
     
     /** @return Returns the config field's value cast down to a byte. */
-    public byte getByte() { return get().byteValue(); }
+    public byte getByte() { return (byte) getInt(); }
     
     /** @return Treats the config field's value as a 1-in-X chance and returns the result of a single roll. */
     public boolean rollChance( Random random ) { return rollChance( JavaRandomSource.of( random ) ); }
     
     /** @return Treats the config field's value as a 1-in-X chance and returns the result of a single roll. */
-    public boolean rollChance( RandomSource random ) { return get() > 0 && random.nextInt( get() ) == 0; }
+    public boolean rollChance( RandomSource random ) { return getInt() > 0 && random.nextInt( getInt() ) == 0; }
     
     /** @return Returns the minimum value allowed by this field. */
     public int minValue() { return valueMin; }
@@ -78,7 +81,7 @@ public class IntField extends AbstractConfigField implements Supplier<Integer> {
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoRange( valueDefault, valueMin, valueMax ) );
+        comment.add( TomlHelper.fieldInfoRange( valueDefault, minValue(), maxValue() ) );
     }
     
     /**
@@ -196,14 +199,14 @@ public class IntField extends AbstractConfigField implements Supplier<Integer> {
         /** Adds info about the field type, format, and bounds to the end of a field's description. */
         @Override
         public void appendFieldInfo( List<String> comment ) {
-            comment.add( TomlHelper.fieldInfoRange( wrap( (int) getDefaultValue() ),
+            comment.add( TomlHelper.fieldInfoRange( wrap( getDefaultValue() ),
                     wrap( minValue() ), wrap( maxValue() ) ) );
         }
         
         /** Writes this field's value to file. */
         @Override
         public void writeValue( CrustTomlWriter writer, CharacterOutput output ) {
-            writer.writeValue( wrap( get() ), output );
+            writer.writeValue( wrap( getInt() ), output );
         }
         
         /** @return This field's gui component provider. */
@@ -259,10 +262,10 @@ public class IntField extends AbstractConfigField implements Supplier<Integer> {
         }
         
         /** @return The minimum value of this range. */
-        public int getMin() { return MINIMUM.get(); }
+        public int getMin() { return MINIMUM.getInt(); }
         
         /** @return The maximum value of this range. */
-        public int getMax() { return MAXIMUM.get(); }
+        public int getMax() { return MAXIMUM.getInt(); }
         
         /** @return The minimum value field. */
         public IntField getMinField() { return MINIMUM; }

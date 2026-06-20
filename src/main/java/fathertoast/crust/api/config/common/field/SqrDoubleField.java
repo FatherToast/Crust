@@ -30,13 +30,16 @@ public class SqrDoubleField extends DoubleField {
     @Override
     public void load( @Nullable Object raw ) {
         super.load( raw );
-        valueSqr = super.get() * super.get();
+        valueSqr = getValue() * getValue();
     }
     
     /** @return Returns the config field's value. */
     @Override
     public Double get() { return valueSqr; }
     
+    /** @return Returns the config field's value. */
+    public double getDouble() { return valueSqr; }
+    
     /** @return Returns the square root of the config field's value. */
-    public double getSqrRoot() { return super.get(); }
+    public double getSqrRoot() { return getValue(); }
 }

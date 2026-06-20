@@ -9,13 +9,12 @@ import fathertoast.crust.api.config.common.file.TomlHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Represents a config field with a string list value.
  */
 @SuppressWarnings( "unused" )
-public class StringListField extends GenericField<List<String>> implements Supplier<List<String>>, IStringListScreenEditable {
+public class StringListField extends GenericField<List<String>> implements IStringListScreenEditable {
     
     protected final String type;
     

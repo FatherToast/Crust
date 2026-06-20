@@ -7,7 +7,6 @@ import fathertoast.crust.api.config.common.file.TomlHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Represents a config field with an enum value.
@@ -18,7 +17,7 @@ import java.util.function.Supplier;
  * same name when ignoring case.
  */
 @SuppressWarnings( "unused" )
-public class EnumField<T extends Enum<T>> extends GenericField<T> implements Supplier<T> {
+public class EnumField<T extends Enum<T>> extends GenericField<T> {
     
     /** Valid field values. */
     private final T[] valuesValid;
@@ -43,7 +42,7 @@ public class EnumField<T extends Enum<T>> extends GenericField<T> implements Sup
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoValidValues( "Enum", valueDefault, (Object[]) valuesValid ) );
+        comment.add( TomlHelper.fieldInfoValidValues( "Enum", valueDefault, (Object[]) validValues() ) );
     }
     
     /**

@@ -53,11 +53,14 @@ public class LongField extends AbstractConfigField implements Supplier<Long> {
     @Override
     public Long get() { return value; }
     
+    /** @return Returns the config field's value. */
+    public long getLong() { return value; }
+    
     /** @return Returns the config field's value cast down to a 32-bit integer. */
-    public int getInt() { return get().intValue(); }
+    public int getInt() { return (int) value; }
     
     /** @return Treats the config field's value as a 1-in-X chance and returns the result of a single roll. */
-    public boolean rollChance( Random random ) { return get() > 0 && random.nextLong( get() ) == 0; }
+    public boolean rollChance( Random random ) { return getLong() > 0 && random.nextLong( getLong() ) == 0; }
     
     /** @return Returns the minimum value allowed by this field. */
     public long minValue() { return valueMin; }
@@ -68,7 +71,7 @@ public class LongField extends AbstractConfigField implements Supplier<Long> {
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoRange( valueDefault, valueMin, valueMax ) );
+        comment.add( TomlHelper.fieldInfoRange( valueDefault, minValue(), maxValue() ) );
     }
     
     /**
@@ -193,10 +196,10 @@ public class LongField extends AbstractConfigField implements Supplier<Long> {
         }
         
         /** @return The minimum value of this range. */
-        public long getMin() { return MINIMUM.get(); }
+        public long getMin() { return MINIMUM.getLong(); }
         
         /** @return The maximum value of this range. */
-        public long getMax() { return MAXIMUM.get(); }
+        public long getMax() { return MAXIMUM.getLong(); }
         
         /** @return The minimum value field. */
         public LongField getMinField() { return MINIMUM; }

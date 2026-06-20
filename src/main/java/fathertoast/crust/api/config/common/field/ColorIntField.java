@@ -40,35 +40,35 @@ public class ColorIntField extends IntField.Hex {
     public boolean usesAlpha() { return getMinDigits() > 6; }
     
     /** @return Returns the config field's value as a 'color' object. If this field does not 'use alpha', alpha will always be 0. */
-    public Color getColor() { return new Color( get(), true ); }
+    public Color getColor() { return new Color( getInt(), true ); }
     
     
     /** @return The red portion of the config field's value. Returned value will be in the range 0x00 - 0xFF. */
-    public int getRedBits() { return CrustMath.getRedBits( get() ); }
+    public int getRedBits() { return CrustMath.getRedBits( getInt() ); }
     
     /** @return The red portion of the config field's value. Returned value will be in the range 0.0 - 1.0. */
-    public float getRed() { return CrustMath.getRed( get() ); }
+    public float getRed() { return CrustMath.getRed( getInt() ); }
     
     
     /** @return The green portion of the config field's value. Returned value will be in the range 0x00 - 0xFF. */
-    public int getGreenBits() { return CrustMath.getGreenBits( get() ); }
+    public int getGreenBits() { return CrustMath.getGreenBits( getInt() ); }
     
     /** @return The green portion of the config field's value. Returned value will be in the range 0.0 - 1.0. */
-    public float getGreen() { return CrustMath.getGreen( get() ); }
+    public float getGreen() { return CrustMath.getGreen( getInt() ); }
     
     
     /** @return The blue portion of the config field's value. Returned value will be in the range 0x00 - 0xFF. */
-    public int getBlueBits() { return CrustMath.getBlueBits( get() ); }
+    public int getBlueBits() { return CrustMath.getBlueBits( getInt() ); }
     
     /** @return The blue portion of the config field's value. Returned value will be in the range 0.0 - 1.0. */
-    public float getBlue() { return CrustMath.getBlue( get() ); }
+    public float getBlue() { return CrustMath.getBlue( getInt() ); }
     
     
     /** @return The alpha (opacity) portion of the config field's value. Returned value will be in the range 0x00 - 0xFF. */
-    public int getAlphaBits() { return CrustMath.getAlphaBits( get() ); }
+    public int getAlphaBits() { return CrustMath.getAlphaBits( getInt() ); }
     
     /** @return The alpha (opacity) portion of the config field's value. Returned value will be in the range 0.0 - 1.0. */
-    public float getAlpha() { return CrustMath.getAlpha( get() ); }
+    public float getAlpha() { return CrustMath.getAlpha( getInt() ); }
     
     
     /** @return This field's gui component provider. */
