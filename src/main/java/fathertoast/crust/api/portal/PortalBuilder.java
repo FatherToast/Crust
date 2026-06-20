@@ -1,6 +1,7 @@
 package fathertoast.crust.api.portal;
 
 
+import fathertoast.crust.api.lib.CrustObjects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -10,8 +11,10 @@ import net.minecraft.world.level.Level;
  * This class represents a portal builder.
  * Portal builders are used by Crust to generate
  * a specific type of portal with the <strong>/crustportal</strong>
- * command, or by binding the command to a Crust inventory button.<p></p>
- * To register your own portal builder, create a DeferredRegister with PortalBuilder.class as the base class.
+ * command, or by binding the command to a Crust inventory button.
+ * <br><br>
+ * To register your own portal builder, create a DeferredRegister
+ * with {@link CrustObjects.Portals#REGISTRY_KEY}.
  */
 public abstract class PortalBuilder {
     
@@ -27,7 +30,7 @@ public abstract class PortalBuilder {
      * @param level      The world to generate in.
      * @param currentPos The front-center position of the portal. This is often a block position directly
      *                   above a solid 'floor block'. This is mutable so that you can #move() it rather than
-     *                   create numerous BlockPos objects.
+     *                   create numerous {@link BlockPos} objects.
      * @param forward    Horizontal facing of the portal; defined as the direction that a player is facing to
      *                   see the portal. By convention, the transverse direction is forward.getClockWise().
      */
