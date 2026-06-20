@@ -26,7 +26,7 @@ public abstract class GenericField<T> extends AbstractConfigField implements Sup
     }
     
     /** @return Returns the config field's value. */
-    @Override
+    @Override // Supplier
     public T get() { return value; }
     
     /** @return The value that should be assigned to this field in the config file. */
