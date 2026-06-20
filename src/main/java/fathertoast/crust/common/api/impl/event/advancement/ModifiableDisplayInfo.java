@@ -13,7 +13,7 @@ import java.util.Objects;
 
 
 /** The default implementation of {@link IModifiableDisplayInfo} . */
-public class ModifiableDisplayInfo implements IModifiableDisplayInfo {
+public final class ModifiableDisplayInfo implements IModifiableDisplayInfo {
     
     private Component title;
     private Component description;

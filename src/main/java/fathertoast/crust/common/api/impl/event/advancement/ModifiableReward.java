@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** The default implementation of {@link IModifiableReward} */
-public class ModifiableReward implements IModifiableReward {
+public final class ModifiableReward implements IModifiableReward {
     
     private int exp;
     private final List<ResourceLocation> lootTables;
