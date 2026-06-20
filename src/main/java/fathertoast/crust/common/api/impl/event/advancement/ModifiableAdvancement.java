@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /** The default implementation of {@link IModifiableAdvancement} */
-public class ModifiableAdvancement implements IModifiableAdvancement {
+public final class ModifiableAdvancement implements IModifiableAdvancement {
     
     private final boolean sendsTelemetryEvent;
     private final ModifiableReward reward;

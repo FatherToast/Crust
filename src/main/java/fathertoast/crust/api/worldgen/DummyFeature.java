@@ -12,7 +12,7 @@ import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfigur
  * This empty feature is primarily used to fill the optional in {@link FeaturePlaceContext} with a
  * non-null value to enable "force-placing" placement logic for DeadlyWorld features.
  */
-public class DummyFeature extends Feature<DummyFeature.Configuration> {
+public final class DummyFeature extends Feature<DummyFeature.Configuration> {
     public record Configuration() implements FeatureConfiguration {
         public static final Codec<Configuration> CODEC = RecordCodecBuilder.create( ( instance ) -> instance
                 .stable( new DummyFeature.Configuration() ) );

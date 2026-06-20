@@ -132,7 +132,6 @@ public class BlockStateItemViewRenderer implements ItemViewWidget.ItemViewRender
     
     /** Attempts to render a single face using the given fluid's still texture. */
     public static void renderFluidFace( FluidState fluidState, GuiGraphics graphics, int x, int y ) {
-        // Convert fluid -> block state (this is what models expect)
         final Minecraft mc = Minecraft.getInstance();
         final IClientFluidTypeExtensions props = IClientFluidTypeExtensions.of( fluidState );
         final TextureAtlasSprite sprite = mc.getTextureAtlas( InventoryMenu.BLOCK_ATLAS ).apply( props.getStillTexture() );

@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Class that tracks all players' current positions and their positions last tick.
  */
-public class PlayerVelocityWatcher implements IPlayerVelocityWatcher {
+public final class PlayerVelocityWatcher implements IPlayerVelocityWatcher {
     
     /** The player velocity instance used by Crust and passed around by the API. */
     public static final PlayerVelocityWatcher INSTANCE = new PlayerVelocityWatcher();
