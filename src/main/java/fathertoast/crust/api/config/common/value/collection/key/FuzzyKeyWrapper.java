@@ -26,7 +26,7 @@ public abstract class FuzzyKeyWrapper<T> extends FuzzyKey<T> {
     
     /** @return Unwraps this key (if wrapped) and returns it. Used when checking for valid key usage. */
     @Override
-    public FuzzyKey<T> unwrap() { return wrappedKey(); }
+    public FuzzyKey<T> unwrap() { return wrappedKey().unwrap(); }
     
     
     /**

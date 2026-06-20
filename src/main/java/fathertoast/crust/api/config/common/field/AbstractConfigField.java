@@ -56,6 +56,9 @@ public abstract class AbstractConfigField {
         COMMENT = comment == null ? null : Collections.unmodifiableList( comment );
     }
     
+    /** @return Unwraps this config field (if wrapped) and returns it. */
+    public AbstractConfigField unwrap() { return this; }
+    
     /** @return The config spec this field exists in. */
     public final CrustConfigSpec getSpec() { return SPEC; }
     
@@ -87,7 +90,7 @@ public abstract class AbstractConfigField {
      * Called after the spec is set. Wrapper fields should override this method and call
      * {@link #setSpec(CrustConfigSpec)} on any underlying fields.
      */
-    protected void onSpecSet() { }
+    protected void onSpecSet() {}
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     public abstract void appendFieldInfo( List<String> comment );
