@@ -173,6 +173,92 @@ public final class NBTHelper {
         return getOrCreateCompound( getPlayerData( player, name ), subName );
     }
     
+    
+    // ---- SNBT helpers ---- //
+    
+    /** @return An SNBT representation of the given NBT. */
+    // Here for completeness, and maybe we'd like to format it nicer someday
+    public static String toSNBT( CompoundTag nbt ) { return nbt.getAsString(); }
+    
+    /** @return An NBT representation of the given SNBT; null if there are any syntax errors in the SNBT. */
+    @Nullable
+    public static CompoundTag toNBT( String snbt ) {
+        try {
+            return TagParser.parseTag( snbt );
+        }
+        catch( Exception ex ) {
+            LOG.warn( "Invalid SNBT data tags: {}", snbt, ex );
+        }
+        return null;
+    }
+    
+    
+    // ---- Matching ---- //
+    
+    /**
+     * Depending on the pattern tag's type:<p>
+     * * null - Matches anything.<p>
+     * * Numeric - Matches tags with the same value.<p>
+     * * String - Matches tags that produce the same SNBT value (such as an equivalent String).<p>
+     * * Array/List - Matches tags with the same element values.<p>
+     * * Compound - Matches compound tags that contain a matching tag for each tag in the pattern.<p>
+     * * End - Only matches End tags.
+     *
+     * @param tag     The tag to check.
+     * @param pattern A tag used as a pattern.
+     * @return True if the checked tag matches the pattern.
+     */
+    public static boolean matches( @Nullable Tag tag, @Nullable Tag pattern ) {
+        if( pattern == null ) return true;
+        if( tag == null ) return false;
+        try {
+            return switch( tag.getId() ) {
+                // Compound types recursively check that each of their tags matches a tag in the checked tag with the same name
+                case TAG_COMPOUND -> {
+                    if( !(tag instanceof CompoundTag tagCompound) ) yield false;
+                    CompoundTag patternCompound = (CompoundTag) pattern;
+                    for( String name : patternCompound.getAllKeys() ) {
+                        if( !matches( tagCompound.get( name ), patternCompound.get( name ) ) ) yield false;
+                    }
+                    yield true;
+                }
+                
+                // Value types attempt to convert the checked tag to their own type to test value equivalency
+                case TAG_BYTE -> ((NumericTag) pattern).getAsByte() == ((NumericTag) tag).getAsByte();
+                case TAG_SHORT -> ((NumericTag) pattern).getAsShort() == ((NumericTag) tag).getAsShort();
+                case TAG_INT -> ((NumericTag) pattern).getAsInt() == ((NumericTag) tag).getAsInt();
+                case TAG_LONG -> ((NumericTag) pattern).getAsLong() == ((NumericTag) tag).getAsLong();
+                case TAG_FLOAT -> ((NumericTag) pattern).getAsFloat() == ((NumericTag) tag).getAsFloat();
+                case TAG_DOUBLE -> ((NumericTag) pattern).getAsDouble() == ((NumericTag) tag).getAsDouble();
+                // Note: This allows strings to be used as strict SNBT checks, since tag
+                case TAG_STRING -> pattern.getAsString().equals( tag.getAsString() );
+                
+                // Collection types check for length equivalency and that each element recursively matches
+                case TAG_LIST, TAG_BYTE_ARRAY, TAG_INT_ARRAY, TAG_LONG_ARRAY -> {
+                    CollectionTag<?> patternList = (CollectionTag<?>) pattern;
+                    CollectionTag<?> tagList = (CollectionTag<?>) tag;
+                    int size = patternList.size();
+                    if( size != tagList.size() ) yield false;
+                    for( int i = 0; i < size; i++ ) {
+                        if( !matches( tagList.get( i ), patternList.get( i ) ) ) yield false;
+                    }
+                    yield true;
+                }
+                
+                // End tags only match other end tags
+                case TAG_END -> tag.getId() == TAG_END;
+                
+                // Unknown types attempt to directly check equivalency
+                default -> pattern.equals( tag );
+            };
+        }
+        catch( ClassCastException ignored ) {
+            // Checked tag's type is incompatible with the pattern's type
+            return false;
+        }
+    }
+    
+    
     // ---- Forge Registry entries ---- //
     
     /**
@@ -760,5 +846,5 @@ public final class NBTHelper {
     
     
     // Utility class
-    private NBTHelper() { }
+    private NBTHelper() {}
 }

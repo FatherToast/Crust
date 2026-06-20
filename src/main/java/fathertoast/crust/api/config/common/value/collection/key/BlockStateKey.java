@@ -24,7 +24,7 @@ import java.util.Iterator;
 public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey<BlockState> {
     
     /** The parser for block state keys. */
-    public static IFuzzyKeyParser<BlockState> PARSER = new Parser();
+    public static final IFuzzyKeyParser<BlockState> PARSER = new Parser();
     
     /** @return A new props-only key based on the block state properties. */
     public static PropsOnly ofProps( String properties, boolean blacklist ) {

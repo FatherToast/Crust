@@ -28,7 +28,7 @@ import java.util.Objects;
 public abstract class EntityKey extends FuzzyKey<Entity> {
     
     /** The parser for entity keys. */
-    public static IFuzzyKeyParser<Entity> PARSER = new Parser();
+    public static final IFuzzyKeyParser<Entity> PARSER = new Parser();
     
     /** @return A new key based on the resource location. */
     public static Extends extending( String resLoc, boolean blacklist ) {
@@ -364,7 +364,7 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
     
     // ---- Parser Implementation ---- //
     
-    private record Parser() implements IFuzzyKeyParser<Entity> {
+    private record Parser( ) implements IFuzzyKeyParser<Entity> {
         
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
