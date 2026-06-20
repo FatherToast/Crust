@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * Represents a config field with an entity map value.
- * Use {@link #get(Entity)} to retrieve to value for a target entity (or null if the entity is not mapped).
+ * Use {@link #get(Entity)} to retrieve the value for a target entity (or null if the entity is not mapped).
  * If the value type is a number, you may use {@link #rollChance(Entity, RandomSource)} to retrieve the
  * value, roll it like a percentage or 1-in-X chance, and get back a pass/fail boolean instead.
  * <p>
