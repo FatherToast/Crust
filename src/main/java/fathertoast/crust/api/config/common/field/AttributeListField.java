@@ -18,9 +18,12 @@ import java.util.function.Predicate;
 
 /**
  * Represents a config field with an entity list value.
- *
- * @see ConfigDrivenAttributeModifierMap
+ * <p>
+ * See also {@link ConfigDrivenAttributeModifierMap}
+ * <p>
+ * This is being replaced by {@link fathertoast.crust.api.config.common.field.collection.AttributeOpListField}.
  */
+@Deprecated( forRemoval = true )
 public class AttributeListField extends GenericField<AttributeList> implements IStringListScreenEditable {
     
     /** Provides a detailed description of how to use attribute lists. Recommended to put at the top of any file using attribute lists. */

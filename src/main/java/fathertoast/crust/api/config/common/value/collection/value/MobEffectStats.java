@@ -8,8 +8,12 @@ import net.minecraft.world.effect.MobEffectInstance;
  * When loaded as a value, holds the duration and amplifier for a mob effect instance.
  */
 public class MobEffectStats extends MultiValueCodec<MobEffectStats> {
-    /** The mob effect stats codec "singleton". */
+    /** The standard mob effect stats codec that defaults to 0 duration and 0 amplitude. */
     public static final MobEffectStats CODEC = new MobEffectStats();
+    
+    /** @return New mob effect stats with the provided default values. */
+    public static MobEffectStats of( int duration, int amplifier ) { return new MobEffectStats( duration, amplifier ); }
+    
     
     /** The effect duration, in ticks (20 ticks = 1 second). */
     public final SubValue<Integer> duration = subValue( IntValueCodec.NON_NEGATIVE,

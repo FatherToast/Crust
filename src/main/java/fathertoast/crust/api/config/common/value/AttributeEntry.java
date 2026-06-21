@@ -17,9 +17,10 @@ import javax.annotation.Nullable;
  * not polled until this entry is actually used.
  * <p>
  * See also {@link ConfigDrivenAttributeModifierMap}
+ * <p>
+ * This is being replaced by {@link fathertoast.crust.api.config.common.value.collection.AttributeOpList}.
  */
-@SuppressWarnings( "unused" )
-
+@Deprecated( forRemoval = true )
 public class AttributeEntry {
     
     /** The field containing this entry. We save a reference to help improve error/warning reports. */
