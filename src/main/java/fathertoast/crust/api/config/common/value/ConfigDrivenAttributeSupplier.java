@@ -1,6 +1,6 @@
 package fathertoast.crust.api.config.common.value;
 
-import fathertoast.crust.api.config.common.field.AttributeListField;
+import fathertoast.crust.api.config.common.field.collection.AttributeOpListField;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -11,27 +11,28 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
- * This is being replaced by {@link ConfigDrivenAttributeSupplier}.
+ * A modified attribute supplier that is backed by a config field.
+ * Changes to the config field will be immediately reflected in the attribute supplier.
+ * <p>
+ * Typically created using {@link AttributeOpListField#build(Builder)} during
+ * {@link net.minecraftforge.event.entity.EntityAttributeCreationEvent}.
  */
-@Deprecated( forRemoval = true )
-public class ConfigDrivenAttributeModifierMap extends AttributeSupplier {
+public class ConfigDrivenAttributeSupplier extends AttributeSupplier {
     
-    private final AttributeListField FIELD;
+    private final AttributeOpListField FIELD;
     private final Map<Attribute, AttributeInstance> BASE_ATTRIBUTES;
     
     private AttributeSupplier underlyingMap;
     
-    public ConfigDrivenAttributeModifierMap( AttributeListField field, AttributeSupplier.Builder builder ) {
+    public ConfigDrivenAttributeSupplier( AttributeOpListField field, AttributeSupplier.Builder builder ) {
         super( builder.builder );
         FIELD = field;
         BASE_ATTRIBUTES = builder.builder;
-        field.linkedAttributeMap = this;
+        field.linkedAttributeSupplier = this;
     }
     
-    /** @return The field associated with this modifier map. */
-    public AttributeListField getField() {
-        return FIELD;
-    }
+    /** @return The field associated with this attribute supplier. */
+    public AttributeOpListField getField() { return FIELD; }
     
     /** Called when the config field is loaded to force reload. */
     public void invalidate() { underlyingMap = null; }

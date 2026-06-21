@@ -24,7 +24,7 @@ public class LongValueCodec implements IValueCodec<Long>, IValueCorrector<Long> 
     public static final LongValueCodec NON_NEGATIVE = of( 0, LongField.Range.NON_NEGATIVE );
     
     /** The standard long codec for non-negative values or -1 (>= -1). Defaults to -1. */
-    public static final LongValueCodec TOKEN_NEGATIVE = of( 0, LongField.Range.TOKEN_NEGATIVE );
+    public static final LongValueCodec TOKEN_NEGATIVE = of( -1, LongField.Range.TOKEN_NEGATIVE );
     
     public static LongValueCodec of( long defaultValue, LongField.Range range ) { return of( defaultValue, range.MIN, range.MAX ); }
     

@@ -141,7 +141,7 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
     
     /**
      * A field-like implementation of a generic value codec.
-     * Holds the sub-value's
+     * Holds the sub-value's codec and, when used as a loaded value codec, the sub-value itself.
      */
     public static final class SubValue<V> implements Supplier<V>, ITomlStringValue {
         /** This entry's read/write logic. */
@@ -162,19 +162,22 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
             formatOverride = format;
         }
         
-        /** Sets the value. Use this for creating default values. */
+        /** Sets the sub-value. Use this for creating default sub-values. */
         public void set( V v ) { value = v; }
         
         /** @return The loaded sub-value. Call this from codecs loaded as a value. */
         @Override // Supplier
         public V get() { return Objects.requireNonNull( value ); }
         
+        /** @return The sub-value's codec. */
+        public IValueCodec<V> codec() { return valueCodec; }
+        
         /** @return This sub-value, converted to a single-line string. */
         @Override // ITomlStringValue
         public String toTomlString() {
-            return valueCodec.toTomlString( value == null ?
+            return codec().toTomlString( value == null ?
                     // Handle case of using unloaded codecs as default values
-                    valueCodec.getDefaultValue() : value );
+                    codec().getDefaultValue() : value );
         }
         
         /** @return This sub-value, converted to a single-line string. */
@@ -183,12 +186,12 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
         
         /** @return The sub-value format (for example, {@literal "<Number (Any Value)>"}). */
         @ApiStatus.Internal
-        String getFormat() { return formatOverride == null ? valueCodec.getFormat() : formatOverride; }
+        String getFormat() { return formatOverride == null ? codec().getFormat() : formatOverride; }
         
         /** Loads the entry's sub-value based on the argument string. Called when a codec is being loaded as a value. */
         @ApiStatus.Internal
         void load( @Nullable AbstractConfigField field, String line, @Nullable String arg ) {
-            value = valueCodec.parseTomlString( field, line, arg );
+            value = codec().parseTomlString( field, line, arg );
         }
     }
 }

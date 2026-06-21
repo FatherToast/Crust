@@ -11,9 +11,10 @@ import java.util.List;
  * A list of attribute-operation-value entries used to describe a set of attribute changes.
  * <p>
  * See also {@link ConfigDrivenAttributeModifierMap}
+ * <p>
+ * This is being replaced by {@link fathertoast.crust.api.config.common.value.collection.AttributeOpList}.
  */
-@SuppressWarnings( "unused" )
-
+@Deprecated( forRemoval = true )
 public class AttributeList implements IStringArray {
     
     /** The attribute-operation-value entries in this list. */

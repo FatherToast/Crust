@@ -5,8 +5,6 @@ import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.config.common.field.collection.*;
-import fathertoast.crust.api.config.common.value.AttributeEntry;
-import fathertoast.crust.api.config.common.value.AttributeList;
 import fathertoast.crust.api.config.common.value.EnvironmentEntry;
 import fathertoast.crust.api.config.common.value.EnvironmentList;
 import fathertoast.crust.api.config.common.value.collection.*;
@@ -39,9 +37,7 @@ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -102,7 +98,7 @@ public class TestConfigFile extends AbstractConfigFile {
         public final RegistryWeightedListField<ConfiguredFeature<?, ?>> registryWeightedListField;
         public final RegistryWeightedValueListField<MobEffect, MobEffectStats> registryWeightedValueListField;
         // Misc collections
-        public final AttributeListField attributeListField;
+        public final AttributeOpListField attributeOpListField;
         public final EnvironmentListField environmentListField;
         public final StringListField stringListField;
         public final PredicateStringListField predicateStringListField;
@@ -377,12 +373,11 @@ public class TestConfigFile extends AbstractConfigFile {
             SPEC.callback( General::printLine );
             SPEC.newLine();
             
-            List<AttributeEntry> attributes = new ArrayList<>();
+            AttributeOpList.Builder<?> attributes = new AttributeOpList.Builder<>();
             for( Attribute attribute : ForgeRegistries.ATTRIBUTES.getValues() )
-                attributes.add( AttributeEntry.mult( attribute, 1.0 ) );
-            attributeListField = SPEC.define( new InjectionWrapperField<>(
-                    new AttributeListField( "attribute_list",
-                            new AttributeList( attributes ) ), General::testCallback ) ).field();
+                attributes.putMultiply( attribute, 1.0 );
+            attributeOpListField = SPEC.define( new InjectionWrapperField<>(
+                    new AttributeOpListField( "attribute_list", attributes.build() ), General::testCallback ) ).field();
             
             environmentListField = SPEC.define( new InjectionWrapperField<>(
                     new EnvironmentListField( "environment_list_field", new EnvironmentList(

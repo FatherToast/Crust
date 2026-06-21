@@ -25,7 +25,7 @@ public class IntValueCodec implements IValueCodec<Integer>, IValueCorrector<Inte
     public static final IntValueCodec NON_NEGATIVE = of( 0, IntField.Range.NON_NEGATIVE );
     
     /** The standard integer codec for non-negative values or -1 (>= -1). Defaults to -1. */
-    public static final IntValueCodec TOKEN_NEGATIVE = of( 0, IntField.Range.TOKEN_NEGATIVE );
+    public static final IntValueCodec TOKEN_NEGATIVE = of( -1, IntField.Range.TOKEN_NEGATIVE );
     
     public static IntValueCodec of( int defaultValue, IntField.Range range ) { return of( defaultValue, range.MIN, range.MAX ); }
     

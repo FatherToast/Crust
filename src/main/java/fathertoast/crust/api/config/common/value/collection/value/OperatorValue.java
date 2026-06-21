@@ -81,6 +81,12 @@ public enum OperatorValue implements ITomlStringValue {
         /** The standard operator codec that allows any operator except ASSIGN (=). Defaults to ADD (+). */
         public static final Codec NO_ASSIGN = of( ADD, false, true, true );
         
+        /** The standard operator codec that allows only MULTIPLY (*) and DIVIDE (/). Defaults to MULTIPLY (*). */
+        public static final Codec MULT_OR_DIV = of( MULTIPLY, false, true, false );
+        
+        /** The standard operator codec that allows only ADD (+) and SUBTRACT (-). Defaults to ADD (+). */
+        public static final Codec ADD_OR_SUB = of( ADD, false, false, true );
+        
         /** @return An operator codec that allows any operator. */
         public static Codec of( OperatorValue def ) { return of( def, 0 ); }
         
