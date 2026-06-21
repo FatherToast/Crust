@@ -1,7 +1,5 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
-import fathertoast.crust.api.config.client.gui.widget.provider.IItemViewable;
-import fathertoast.crust.api.config.common.field.GenericField;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -9,34 +7,35 @@ import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Draws a "button frame" that displays something inside itself
  * based on the current value of an associated config field.
  */
-public class ItemViewWidget<V, T extends GenericField<V> & IItemViewable> extends AbstractWidget {
+public class ItemViewWidget<V> extends AbstractWidget {
     
     /** The default size of the space this widget occupies. */
     public static final int DEFAULT_SIZE = 20;
     
     private final ItemViewRenderer<V> renderer;
-    private final T field;
+    private final Supplier<V> valueSupplier;
     
     
-    public ItemViewWidget( ItemViewRenderer<V> renderer, T field, int x, int y ) {
-        this( renderer, field, x, y, DEFAULT_SIZE );
+    public ItemViewWidget( ItemViewRenderer<V> renderer, Supplier<V> valueSupplier, int x, int y ) {
+        this( renderer, valueSupplier, x, y, DEFAULT_SIZE );
     }
     
-    public ItemViewWidget( ItemViewRenderer<V> renderer, T field, int x, int y, int size ) {
+    public ItemViewWidget( ItemViewRenderer<V> renderer, Supplier<V> valueSupplier, int x, int y, int size ) {
         super( x, y, size, size, Component.literal( "" ) );
         this.renderer = Objects.requireNonNull( renderer );
-        this.field = Objects.requireNonNull( field );
+        this.valueSupplier = Objects.requireNonNull( valueSupplier );
     }
     
     
     @Override
     protected void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTick ) {
-        renderer.render( new RenderContext<>( field.get(), graphics, getX(), getY(), mouseX, mouseY, partialTick ) );
+        renderer.render( new RenderContext<>( valueSupplier, graphics, getX(), getY(), mouseX, mouseY, partialTick ) );
     }
     
     @Override
@@ -71,6 +70,14 @@ public class ItemViewWidget<V, T extends GenericField<V> & IItemViewable> extend
     }
     
     /** Contains information required by item view renderers to draw. */
-    public record RenderContext<V>(@Nullable V value, GuiGraphics graphics, int widgetX, int widgetY, int mouseX,
-                                   int mouseY, float partialTick) { }
+    public record RenderContext<V>(@Nullable Supplier<V> valueSupplier, GuiGraphics graphics, int widgetX, int widgetY,
+                                   int mouseX,
+                                   int mouseY, float partialTick) {
+        /** @return This render context's display value, if it exists. */
+        @Nullable
+        public V getValue() {
+            if( valueSupplier == null ) return null;
+            return valueSupplier.get();
+        }
+    }
 }

@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @see fathertoast.crust.api.config.client.gui.widget.provider.ItemViewWidgetProvider
  * @see fathertoast.crust.api.config.client.gui.widget.field.ItemViewWidget.ItemViewRenderer
- * @see fathertoast.crust.api.config.client.gui.widget.provider.IItemViewable
  * @see ItemViewWidget
  */
 @ApiStatus.Experimental
@@ -34,7 +33,7 @@ public class ItemViewRendererRegistry {
     private static final Map<ResourceLocation, ItemViewWidget.ItemViewRenderer<?>> RENDERERS_BY_ID = new ConcurrentHashMap<>();
     
     
-    /** The ID for Crust's block state type renderer . */
+    /** The ID for Crust's block state type renderer that accepts only block state values. */
     public static final ResourceLocation BLOCK_STATE = id( "block_state" );
     
     

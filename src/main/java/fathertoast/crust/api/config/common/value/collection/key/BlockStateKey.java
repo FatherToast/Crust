@@ -15,6 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.function.Supplier;
 
 /**
  * A key for fuzzy collections that test against or contain block states. Very similar to a Block registry
@@ -198,9 +199,11 @@ public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey
     
     /**
      * A key that matches one specific block with appropriate block state properties.
+     * Also functions as a block state supplier.
      */
     @ApiStatus.Experimental
-    public static class Basic extends BlockStateKey<RegObjKey.Basic<Block>> implements IReverseKey<BlockState> {
+    public static class Basic extends BlockStateKey<RegObjKey.Basic<Block>>
+            implements Supplier<BlockState>, IReverseKey<BlockState> {
         
         protected Basic( RegObjKey.Basic<Block> k, BlockStatePropertyMap p ) { super( k, k.isBlacklist(), p ); }
         
@@ -210,6 +213,12 @@ public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey
         public BlockState asValue() {
             Block block = regObjKey.asValue();
             return block == null ? null : stateProps.stateFor( block );
+        }
+        
+        @Override // Supplier
+        @Nullable
+        public BlockState get() {
+            return asValue();
         }
     }
     
@@ -252,7 +261,7 @@ public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey
     
     // ---- Parser Implementation ---- //
     
-    private record Parser( ) implements IFuzzyKeyParser<BlockState> {
+    private record Parser() implements IFuzzyKeyParser<BlockState> {
         
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override

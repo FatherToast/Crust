@@ -66,7 +66,7 @@ public class BlockStateItemViewRenderer implements ItemViewWidget.ItemViewRender
      */
     @Override
     public void render( ItemViewWidget.RenderContext<BlockState> ctx ) {
-        final BlockState blockState = ctx.value();
+        final BlockState blockState = ctx.getValue();
         
         if( blockState == null ) return;
         

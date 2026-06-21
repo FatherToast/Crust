@@ -2,7 +2,6 @@ package fathertoast.crust.api.config.client.gui.widget.provider;
 
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
 import fathertoast.crust.api.config.client.gui.widget.field.ItemViewWidget;
-import fathertoast.crust.api.config.common.field.GenericField;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
@@ -11,18 +10,18 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Displays a text box with an icon to the right of it that renders
  * something based on the current value of the text box.
  *
- * @param <T> The type of field - must implement {@link IItemViewable}.
  * @param <V> The type of value the field provides.
  */
-public abstract class ItemViewWidgetProvider<V, T extends GenericField<V> & IItemViewable> implements IConfigFieldWidgetProvider {
+public abstract class ItemViewWidgetProvider<V> implements IConfigFieldWidgetProvider {
     
     /** The providing field. */
-    protected final T FIELD;
+    protected final Supplier<V> VALUE_SUPPLIER;
     /** An optional line validator. */
     @Nullable
     protected final Predicate<String> VALIDATOR;
@@ -32,11 +31,11 @@ public abstract class ItemViewWidgetProvider<V, T extends GenericField<V> & IIte
      * Constructs a new instance of this widget provider
      * with the specified field, and optionally a line validator.
      *
-     * @param field         The field to provide widgets for.
+     * @param valueSupplier A supplier providing the value to display. Usually a config field.
      * @param lineValidator An optional line validator for the text box provided by this provider.
      */
-    public ItemViewWidgetProvider( T field, @Nullable Predicate<String> lineValidator ) {
-        FIELD = field;
+    public ItemViewWidgetProvider( Supplier<V> valueSupplier, @Nullable Predicate<String> lineValidator ) {
+        VALUE_SUPPLIER = valueSupplier;
         VALIDATOR = lineValidator;
     }
     
@@ -53,15 +52,15 @@ public abstract class ItemViewWidgetProvider<V, T extends GenericField<V> & IIte
      */
     @Override
     public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
-        ItemViewWidget<V, T> itemViewWidget = new ItemViewWidget<>( this::renderItem, FIELD, VALUE_WIDTH - ItemViewWidget.DEFAULT_SIZE, 0 );
+        ItemViewWidget<V> itemViewWidget = new ItemViewWidget<>( this::renderItem, VALUE_SUPPLIER, VALUE_WIDTH - ItemViewWidget.DEFAULT_SIZE, 0 );
         
         // noinspection resource
         EditBox editBox = new EditBox( listEntry.minecraft().font,
                 1, 1, VALUE_WIDTH - 3 - ItemViewWidget.DEFAULT_SIZE, VALUE_HEIGHT - 2, // Account for ~1px frame
-                Component.literal( FIELD.getKey() ) );
+                Component.literal( "" ) );
         editBox.setMaxLength( Integer.MAX_VALUE );
         
-        editBox.setValue( Objects.requireNonNullElse( FIELD.asViewedString( displayValue ), "" ) );
+        editBox.setValue( displayValue.toString() );
         editBox.setResponder( listEntry::updateValue );
         
         if( VALIDATOR != null ) {
@@ -97,7 +96,7 @@ public abstract class ItemViewWidgetProvider<V, T extends GenericField<V> & IIte
      * instance in the constructor instead of having to override
      * {@link ItemViewWidgetProvider#renderItem(ItemViewWidget.RenderContext)}.
      */
-    public static class Simple<V, T extends GenericField<V> & IItemViewable> extends ItemViewWidgetProvider<V, T> {
+    public static class Simple<V> extends ItemViewWidgetProvider<V> {
         
         /** The item renderer used to render a config value. */
         private final ItemViewWidget.ItemViewRenderer<V> RENDERER;
@@ -109,7 +108,7 @@ public abstract class ItemViewWidgetProvider<V, T extends GenericField<V> & IIte
          * @param field         The field to provide widgets for.
          * @param lineValidator An optional line validator for the text box provided by this provider.
          */
-        public Simple( T field, ItemViewWidget.ItemViewRenderer<V> renderer, @Nullable Predicate<String> lineValidator ) {
+        public Simple( Supplier<V> field, ItemViewWidget.ItemViewRenderer<V> renderer, @Nullable Predicate<String> lineValidator ) {
             super( field, lineValidator );
             RENDERER = Objects.requireNonNull( renderer );
         }

@@ -1,13 +1,11 @@
 package fathertoast.crust.api.config.common.field;
 
-import com.electronwill.nightconfig.core.io.CharacterOutput;
 import fathertoast.crust.api.config.client.gui.ItemViewRendererRegistry;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
-import fathertoast.crust.api.config.client.gui.widget.provider.IItemViewable;
 import fathertoast.crust.api.config.client.gui.widget.provider.ItemViewWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.config.common.value.collection.key.BlockStateKey;
 import fathertoast.crust.api.util.BlockStatePropertyMap;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -23,37 +21,58 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Represents a config field with a block state value.
+ * Represents a config field with a block state value,
+ * handled internally as a {@link BlockStateKey.Basic} key.
  */
 @SuppressWarnings( "unused" )
 @ApiStatus.Experimental
-public class BlockStateField extends GenericField<BlockState> implements IItemViewable {
+public class BlockStateField extends GenericField<BlockStateKey.Basic> {
     
     /** The default block's resource location. */
     protected final ResourceLocation blockResLocDefault;
     /** The properties defining the default block state. */
     protected final BlockStatePropertyMap blockStatePropsDefault;
     
-    /** The actual default block state, once it is loaded. */
-    protected BlockState actualDefault;
+    /** The actual default block state key, once it is loaded. */
+    protected BlockStateKey.Basic actualDefault;
     
     /** The default block's resource location. */
     protected ResourceLocation blockResLoc;
     /** The properties defining the default block state. */
     protected BlockStatePropertyMap blockStateProps;
     
+    
+    /** @return A non-blacklist, basic block state key of the given block ID and properties. */
+    public static BlockStateKey.Basic of( ResourceLocation blockResLoc, BlockStatePropertyMap blockStateProps ) {
+        return BlockStateKey.of( blockResLoc, blockStateProps, false );
+    }
+    
+    /** @return A non-blacklist, basic block state key of the given block state. */
+    public static BlockStateKey.Basic of( BlockState state ) {
+        return BlockStateKey.of( state, false );
+    }
+    
+    /**
+     * @return A non-blacklist, basic block state key containing
+     * {@link Blocks#AIR}'s default block state as its value.
+     */
+    public static BlockStateKey.Basic airKey() {
+        return of( Blocks.AIR.defaultBlockState() );
+    }
+    
+    
     /** Creates a new field using a string-described block state. */
     public BlockStateField( String key, String defaultValue, @Nullable String... description ) {
-        super( key, Blocks.AIR.defaultBlockState(), description );
+        super( key, BlockStateKey.of( defaultValue, false ), description );
         final String[] split = BlockStatePropertyMap.split( defaultValue );
         blockResLocDefault = ResourceLocation.parse( split[0] );
         blockStatePropsDefault = BlockStatePropertyMap.of( split[1] );
-        actualDefault = blockStatePropsDefault.stateForNullable( getBlock( blockResLocDefault ) );
+        actualDefault = BlockStateKey.of( defaultValue, false );
     }
     
     /** Creates a new field. */
     public BlockStateField( String key, ResourceLocation defaultResLoc, BlockStatePropertyMap defaultProperties, @Nullable String... description ) {
-        super( key, Blocks.AIR.defaultBlockState(), description );
+        super( key, BlockStateKey.of( defaultResLoc, defaultProperties, false ), description );
         blockResLocDefault = defaultResLoc;
         blockStatePropsDefault = defaultProperties;
     }
@@ -82,10 +101,10 @@ public class BlockStateField extends GenericField<BlockState> implements IItemVi
      * unless you hold off config initialization until after the blocks registry is populated.
      */
     public BlockStateField( String key, BlockState defaultValue, @Nullable String... description ) {
-        super( key, defaultValue, description );
+        super( key, of( defaultValue ), description );
         blockResLocDefault = Objects.requireNonNull( ForgeRegistries.BLOCKS.getKey( defaultValue.getBlock() ) );
         blockStatePropsDefault = BlockStatePropertyMap.of( defaultValue );
-        actualDefault = defaultValue;
+        actualDefault = of( defaultValue );
     }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
@@ -123,36 +142,35 @@ public class BlockStateField extends GenericField<BlockState> implements IItemVi
             return;
         }
         blockStateProps = BlockStatePropertyMap.of( split[1] );
-        value = blockStateProps.stateForNullable( getBlock( blockResLoc ) );
+        value = of( blockResLoc, blockStateProps );
     }
     
     /** @return Returns the config field's value. */
     @Override
-    public BlockState get() {
-        BlockState blockState = getValue();
-        return blockState == null ? Blocks.AIR.defaultBlockState() : blockState;
+    public BlockStateKey.Basic get() {
+        BlockStateKey.Basic key = getValue();
+        return key == null ? airKey() : key;
     }
     
     /** @return The value that should be assigned to this field in the config file. */
     @Override
     @Nullable
-    public BlockState getValue() {
+    public BlockStateKey.Basic getValue() {
         if( value == null ) {
             // Use defaults if this is called before field is loaded.
             if( blockStateProps == null || blockResLoc == null ) {
-                return blockStatePropsDefault.stateForNullable( getBlock( blockResLocDefault ) );
+                return getDefaultValue();
             }
-            return value = blockStateProps.stateForNullable( getBlock( blockResLoc ) );
+            return value = of( blockResLoc, blockStateProps );
         }
         return value;
     }
     
     /** @return The default value of this field. */
     @Override
-    public BlockState getDefaultValue() {
+    public BlockStateKey.Basic getDefaultValue() {
         if( actualDefault == null ) {
-            actualDefault = blockStatePropsDefault.stateForNullable( getBlock( blockResLocDefault ) );
-            return actualDefault == null ? valueDefault : actualDefault;
+            return actualDefault = of( blockResLocDefault, blockStatePropsDefault );
         }
         return actualDefault;
     }
@@ -163,30 +181,10 @@ public class BlockStateField extends GenericField<BlockState> implements IItemVi
         return ForgeRegistries.BLOCKS.getValue( resLoc );
     }
     
-    /** Writes this field's value to file. */
-    @Override
-    public void writeValue( CrustTomlWriter writer, CharacterOutput output ) {
-        writer.writeLine( TomlHelper.toLiteral( blockResLoc + blockStateProps.toString() ), output );
-    }
-    
-    /**
-     * @return The implementing field's current raw value as a string.
-     * This is used to set the value of the widget's edit box.
-     */
-    @Override // IItemViewable
-    @Nullable
-    public String asViewedString( Object raw ) {
-        if( value == null ) return null;
-        
-        StringBuilder builder = new StringBuilder( blockResLoc.toString() );
-        if( !blockStateProps.isEmpty() ) builder.append( blockStateProps.toString() );
-        return builder.toString();
-    }
-    
     /** @return This field's gui component provider. */
     @Override
     public IConfigFieldWidgetProvider getWidgetProvider() {
-        return new ItemViewWidgetProvider.Simple<>( this, ItemViewRendererRegistry.getRendererOrThrow( ItemViewRendererRegistry.BLOCK_STATE ), ( s ) -> {
+        return new ItemViewWidgetProvider.Simple<>( get(), ItemViewRendererRegistry.getRendererOrThrow( ItemViewRendererRegistry.BLOCK_STATE ), ( s ) -> {
             ResourceLocation id = ResourceLocation.tryParse( BlockStatePropertyMap.split( s )[0] );
             return id != null && ForgeRegistries.BLOCKS.containsKey( id );
         } );
