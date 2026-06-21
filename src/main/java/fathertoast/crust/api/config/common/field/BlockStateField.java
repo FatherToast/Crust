@@ -21,26 +21,12 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Represents a config field with a block state value,
- * handled internally as a {@link BlockStateKey.Basic} key.
+ * Represents a config field containing a block state value
+ * wrapped in a {@link BlockStateKey.Basic} key.
  */
 @SuppressWarnings( "unused" )
 @ApiStatus.Experimental
 public class BlockStateField extends GenericField<BlockStateKey.Basic> {
-    
-    /** The default block's resource location. */
-    protected final ResourceLocation blockResLocDefault;
-    /** The properties defining the default block state. */
-    protected final BlockStatePropertyMap blockStatePropsDefault;
-    
-    /** The actual default block state key, once it is loaded. */
-    protected BlockStateKey.Basic actualDefault;
-    
-    /** The default block's resource location. */
-    protected ResourceLocation blockResLoc;
-    /** The properties defining the default block state. */
-    protected BlockStatePropertyMap blockStateProps;
-    
     
     /** @return A non-blacklist, basic block state key of the given block ID and properties. */
     public static BlockStateKey.Basic of( ResourceLocation blockResLoc, BlockStatePropertyMap blockStateProps ) {
@@ -65,16 +51,11 @@ public class BlockStateField extends GenericField<BlockStateKey.Basic> {
     public BlockStateField( String key, String defaultValue, @Nullable String... description ) {
         super( key, BlockStateKey.of( defaultValue, false ), description );
         final String[] split = BlockStatePropertyMap.split( defaultValue );
-        blockResLocDefault = ResourceLocation.parse( split[0] );
-        blockStatePropsDefault = BlockStatePropertyMap.of( split[1] );
-        actualDefault = BlockStateKey.of( defaultValue, false );
     }
     
     /** Creates a new field. */
     public BlockStateField( String key, ResourceLocation defaultResLoc, BlockStatePropertyMap defaultProperties, @Nullable String... description ) {
         super( key, BlockStateKey.of( defaultResLoc, defaultProperties, false ), description );
-        blockResLocDefault = defaultResLoc;
-        blockStatePropsDefault = defaultProperties;
     }
     
     /** Creates a new field. */
@@ -102,16 +83,13 @@ public class BlockStateField extends GenericField<BlockStateKey.Basic> {
      */
     public BlockStateField( String key, BlockState defaultValue, @Nullable String... description ) {
         super( key, of( defaultValue ), description );
-        blockResLocDefault = Objects.requireNonNull( ForgeRegistries.BLOCKS.getKey( defaultValue.getBlock() ) );
-        blockStatePropsDefault = BlockStatePropertyMap.of( defaultValue );
-        actualDefault = of( defaultValue );
     }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoFormat( "Block State", blockResLocDefault +
-                blockStatePropsDefault.toString(), "\"namespace:path[property1=value1,property2=value2,...]\"" ) );
+        comment.add( TomlHelper.fieldInfoFormat( "Block State", valueDefault,
+                "\"namespace:path[property1=value1,property2=value2,...]\"" ) );
     }
     
     /**
@@ -124,25 +102,20 @@ public class BlockStateField extends GenericField<BlockStateKey.Basic> {
     public void load( @Nullable Object raw ) {
         if( raw == null ) {
             value = getDefaultValue();
-            blockResLoc = blockResLocDefault;
-            blockStateProps = blockStatePropsDefault;
             return;
         }
-        
         final String[] split = BlockStatePropertyMap.split( raw.toString() );
-        blockResLoc = ResourceLocation.tryParse( split[0] );
-        if( blockResLoc == null ) {
+        final ResourceLocation blockId = ResourceLocation.tryParse( split[0] );
+        
+        if( blockId == null ) {
             // Invalid resource location
             ConfigUtil.warnFor( this );
             ConfigUtil.LOG.warn( "Invalid block state! Must follow the pattern \"namespace:path[property1=value1,property2=value2,...]\". Falling back to default ({}). Invalid value: {}",
                     getDefaultValue(), raw );
             value = getDefaultValue();
-            blockResLoc = blockResLocDefault;
-            blockStateProps = blockStatePropsDefault;
             return;
         }
-        blockStateProps = BlockStatePropertyMap.of( split[1] );
-        value = of( blockResLoc, blockStateProps );
+        value = of( blockId, BlockStatePropertyMap.of( split[1] ) );
     }
     
     /** @return Returns the config field's value. */
@@ -157,22 +130,9 @@ public class BlockStateField extends GenericField<BlockStateKey.Basic> {
     @Nullable
     public BlockStateKey.Basic getValue() {
         if( value == null ) {
-            // Use defaults if this is called before field is loaded.
-            if( blockStateProps == null || blockResLoc == null ) {
-                return getDefaultValue();
-            }
-            return value = of( blockResLoc, blockStateProps );
+            return getDefaultValue();
         }
         return value;
-    }
-    
-    /** @return The default value of this field. */
-    @Override
-    public BlockStateKey.Basic getDefaultValue() {
-        if( actualDefault == null ) {
-            return actualDefault = of( blockResLocDefault, blockStatePropsDefault );
-        }
-        return actualDefault;
     }
     
     /** @return The registered block with the given ID, or null if it does not exist. */
