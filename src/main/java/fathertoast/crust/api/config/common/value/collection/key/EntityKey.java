@@ -3,6 +3,7 @@ package fathertoast.crust.api.config.common.value.collection.key;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.collection.KeyUsage;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -356,15 +357,24 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
         }
         
         /** Just used to prevent repeated attempts to use factories that don't work for us. */
-        private static abstract class ErroredEntity extends Entity {
+        public static class ErroredEntity extends Entity {
             public ErroredEntity( EntityType<?> type, Level level ) { super( type, level ); }
+            
+            @Override
+            protected void defineSynchedData() { }
+            
+            @Override
+            protected void readAdditionalSaveData( CompoundTag tag ) { }
+            
+            @Override
+            protected void addAdditionalSaveData( CompoundTag tag ) { }
         }
     }
     
     
     // ---- Parser Implementation ---- //
     
-    private record Parser( ) implements IFuzzyKeyParser<Entity> {
+    private record Parser() implements IFuzzyKeyParser<Entity> {
         
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
