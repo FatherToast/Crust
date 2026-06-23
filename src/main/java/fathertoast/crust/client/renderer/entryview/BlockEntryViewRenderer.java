@@ -16,6 +16,10 @@ import java.util.function.Supplier;
  */
 public class BlockEntryViewRenderer implements EntryViewWidget.EntryViewRenderer<Block> {
     
+    /**
+     * Called from {@link EntryViewWidget#renderWidget(GuiGraphics, int, int, float)}
+     * to render something based on the widget's field's value.
+     */
     @Override
     public void render( @Nullable Supplier<Block> valueSupplier, GuiGraphics graphics, int widgetX, int widgetY,
                         int mouseX, int mouseY, float partialTick ) {

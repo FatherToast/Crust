@@ -17,6 +17,11 @@ import java.util.function.Supplier;
  * on Crust's item stack entry view renderer to actually do the rendering.
  */
 public class ItemEntryViewRenderer implements EntryViewWidget.EntryViewRenderer<Item> {
+    
+    /**
+     * Called from {@link EntryViewWidget#renderWidget(GuiGraphics, int, int, float)}
+     * to render something based on the widget's field's value.
+     */
     @Override
     public void render( @Nullable Supplier<Item> valueSupplier, GuiGraphics graphics, int widgetX, int widgetY,
                         int mouseX, int mouseY, float partialTick ) {
