@@ -47,6 +47,10 @@ public interface IRegWrapper<T> {
     /** @return The resource key that identifies the registry itself. */
     ResourceKey<? extends Registry<T>> registryKey();
     
+    /** @return The target registry's default value key, if it exists and the registry supports it. */
+    @Nullable
+    ResourceLocation getDefaultKey();
+    
     /** @return The registry name. */
     default ResourceLocation registryName() { return registryKey().location(); }
     
@@ -106,6 +110,13 @@ public interface IRegWrapper<T> {
         @Override
         public ResourceKey<? extends Registry<T>> registryKey() { return getRegistry().getRegistryKey(); }
         
+        /** @return The target registry's default value key, if it exists and the registry supports it. */
+        @Override
+        @Nullable
+        public ResourceLocation getDefaultKey() {
+            return getRegistry().getDefaultKey();
+        }
+        
         /** @return The underlying Forge registry, or null if the registry is unavailable or vanilla. */
         @Override
         public IForgeRegistry<T> asForgeRegistry() { return getRegistry(); }
@@ -162,6 +173,13 @@ public interface IRegWrapper<T> {
         /** @return The resource key that identifies the registry itself. */
         @Override
         public ResourceKey<? extends Registry<T>> registryKey() { return getRegistry().key(); }
+        
+        /** @return The target registry's default value key, if it exists and the registry supports it. */
+        @Override
+        @Nullable
+        public ResourceLocation getDefaultKey() {
+            return null;
+        }
         
         /** @return The underlying vanilla registry, or null if the registry is unavailable or non-vanilla. */
         @Override
@@ -226,6 +244,13 @@ public interface IRegWrapper<T> {
         /** @return The resource key that identifies the registry itself. */
         @Override
         public ResourceKey<? extends Registry<T>> registryKey() { return registryKey; }
+        
+        /** @return The target registry's default value key, if it exists and the registry supports it. */
+        @Override
+        @Nullable
+        public ResourceLocation getDefaultKey() {
+            return null;
+        }
         
         /** @return True if the registry is present. */
         @Override
@@ -302,6 +327,19 @@ public interface IRegWrapper<T> {
         /** @return The resource key that identifies the registry itself. */
         @Override
         public ResourceKey<? extends Registry<T>> registryKey() { return registryKey; }
+        
+        /** @return The target registry's default value key, if it exists and the registry supports it. */
+        @Override
+        @Nullable
+        public ResourceLocation getDefaultKey() {
+            IRegWrapper<T> reg = getRegistry();
+            
+            if( reg == null ) return null;
+            
+            IForgeRegistry<T> forgeReg = reg.asForgeRegistry();
+            
+            return forgeReg == null ? null : forgeReg.getDefaultKey();
+        }
         
         /** @return True if the registry is present. */
         @Override
@@ -437,7 +475,7 @@ public interface IRegWrapper<T> {
         return null;
     }
     
-    record HolderIterator<T>( Iterator<Holder<T>> itr ) implements Iterator<T> {
+    record HolderIterator<T>(Iterator<Holder<T>> itr) implements Iterator<T> {
         @Override
         public boolean hasNext() { return itr.hasNext(); }
         
