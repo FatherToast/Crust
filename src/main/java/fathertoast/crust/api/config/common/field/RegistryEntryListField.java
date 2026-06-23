@@ -5,6 +5,7 @@ import fathertoast.crust.api.config.client.gui.widget.provider.StringListFieldWi
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.RegistryEntryList;
+import fathertoast.crust.api.util.OnClient;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import javax.annotation.Nullable;
@@ -81,6 +82,7 @@ public class RegistryEntryListField<T> extends GenericField<RegistryEntryList<T>
     
     /** @return This field's gui component provider. */
     @Override
+    @OnClient
     public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider<>( this ); }
     
     /** Converts the displayable string list to a field value. */

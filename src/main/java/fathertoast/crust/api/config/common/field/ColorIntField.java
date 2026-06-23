@@ -3,6 +3,7 @@ package fathertoast.crust.api.config.common.field;
 import fathertoast.crust.api.config.client.gui.widget.provider.ColorFieldWidgetProvider;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.lib.CrustMath;
+import fathertoast.crust.api.util.OnClient;
 import net.minecraft.ChatFormatting;
 
 import javax.annotation.Nullable;
@@ -73,5 +74,6 @@ public class ColorIntField extends IntField.Hex {
     
     /** @return This field's gui component provider. */
     @Override
+    @OnClient
     public IConfigFieldWidgetProvider getWidgetProvider() { return new ColorFieldWidgetProvider( this ); }
 }

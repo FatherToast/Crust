@@ -6,6 +6,7 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.lib.CrustMath;
+import fathertoast.crust.api.util.OnClient;
 import net.minecraft.util.RandomSource;
 
 import javax.annotation.Nullable;
@@ -124,6 +125,7 @@ public class LongField extends AbstractConfigField implements Supplier<Long> {
     
     /** @return This field's gui component provider. */
     @Override
+    @OnClient
     public IConfigFieldWidgetProvider getWidgetProvider() {
         return new NumberFieldWidgetProvider( this, Number::longValue,
                 ( number ) -> number.longValue() >= valueMin && number.longValue() <= valueMax );

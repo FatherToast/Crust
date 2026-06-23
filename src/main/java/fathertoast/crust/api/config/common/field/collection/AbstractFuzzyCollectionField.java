@@ -7,6 +7,7 @@ import fathertoast.crust.api.config.common.field.GenericField;
 import fathertoast.crust.api.config.common.field.IStringListScreenEditable;
 import fathertoast.crust.api.config.common.value.collection.AbstractFuzzyCollection;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
+import fathertoast.crust.api.util.OnClient;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
@@ -72,6 +73,7 @@ public abstract class AbstractFuzzyCollectionField<T, K extends FuzzyKey<T>, C e
     
     /** @return This field's gui component provider. */
     @Override
+    @OnClient
     public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider<>( this ); }
     
     /** Converts the displayable string list to a field value. */

@@ -4,6 +4,7 @@ import fathertoast.crust.api.config.client.gui.widget.provider.EnumFieldWidgetPr
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.util.OnClient;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -94,5 +95,6 @@ public class EnumField<T extends Enum<T>> extends GenericField<T> {
     
     /** @return This field's gui component provider. */
     @Override
+    @OnClient
     public IConfigFieldWidgetProvider getWidgetProvider() { return new EnumFieldWidgetProvider<>( this ); }
 }

@@ -5,6 +5,7 @@ import fathertoast.crust.api.config.client.gui.widget.provider.StringListFieldWi
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.*;
+import fathertoast.crust.api.util.OnClient;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -294,6 +295,7 @@ public class EntityListField extends GenericField<EntityList> implements IString
     
     /** @return This field's gui component provider. */
     @Override
+    @OnClient
     public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider<>( this ); }
     
     /** Converts the displayable string list to a field value. */

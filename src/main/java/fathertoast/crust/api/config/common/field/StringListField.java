@@ -6,6 +6,7 @@ import fathertoast.crust.api.config.client.gui.widget.provider.StringListFieldWi
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.util.OnClient;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -58,6 +59,7 @@ public class StringListField extends GenericField<List<String>> implements IStri
     
     /** @return This field's gui component provider. */
     @Override
+    @OnClient
     public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider<>( this ); }
     
     /** Converts the displayable string list to a field value. */

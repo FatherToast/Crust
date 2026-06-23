@@ -6,6 +6,7 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.util.JavaRandomSource;
+import fathertoast.crust.api.util.OnClient;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
@@ -128,6 +129,7 @@ public class DoubleField extends AbstractConfigField implements Supplier<Double>
     
     /** @return This field's gui component provider. */
     @Override
+    @OnClient
     public IConfigFieldWidgetProvider getWidgetProvider() {
         return new NumberFieldWidgetProvider( this, Number::doubleValue,
                 ( number ) -> valueMin <= number.doubleValue() && number.doubleValue() <= valueMax );
@@ -244,7 +246,7 @@ public class DoubleField extends AbstractConfigField implements Supplier<Double>
      * @param base       The base value.
      * @param exceptions The environment exceptions list.
      */
-    public record EnvironmentSensitive( DoubleField base, EnvironmentListField exceptions ) {
+    public record EnvironmentSensitive(DoubleField base, EnvironmentListField exceptions) {
         
         /** @return Returns the config field's value. */
         public double get( Level level, @Nullable BlockPos pos ) { return exceptions().getOrElse( level, pos, base() ); }
@@ -370,6 +372,6 @@ public class DoubleField extends AbstractConfigField implements Supplier<Double>
             return null;
         }
         
-        private record Entry<T>( T VALUE, EnvironmentSensitive WEIGHT ) {}
+        private record Entry<T>(T VALUE, EnvironmentSensitive WEIGHT) { }
     }
 }

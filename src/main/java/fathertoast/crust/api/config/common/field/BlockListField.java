@@ -4,6 +4,7 @@ import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidge
 import fathertoast.crust.api.config.client.gui.widget.provider.StringListFieldWidgetProvider;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.BlockList;
+import fathertoast.crust.api.util.OnClient;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
@@ -73,6 +74,7 @@ public class BlockListField extends GenericField<BlockList> implements IStringLi
     
     /** @return This field's gui component provider. */
     @Override
+    @OnClient
     public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider<>( this ); }
     
     /** Converts the displayable string list to a field value. */

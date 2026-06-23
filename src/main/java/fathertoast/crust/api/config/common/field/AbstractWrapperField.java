@@ -4,6 +4,7 @@ import com.electronwill.nightconfig.core.io.CharacterOutput;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
+import fathertoast.crust.api.util.OnClient;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -67,5 +68,6 @@ public abstract class AbstractWrapperField<T extends AbstractConfigField> extend
     
     /** @return This field's gui component provider. */
     @Override
+    @OnClient
     public IConfigFieldWidgetProvider getWidgetProvider() { return wrappedField.getWidgetProvider(); }
 }

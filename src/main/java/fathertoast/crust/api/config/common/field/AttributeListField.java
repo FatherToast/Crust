@@ -7,6 +7,7 @@ import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.AttributeEntry;
 import fathertoast.crust.api.config.common.value.AttributeList;
 import fathertoast.crust.api.config.common.value.ConfigDrivenAttributeModifierMap;
+import fathertoast.crust.api.util.OnClient;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -160,6 +161,7 @@ public class AttributeListField extends GenericField<AttributeList> implements I
     
     /** @return This field's gui component provider. */
     @Override
+    @OnClient
     public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider<>( this ); }
     
     /** Converts the displayable string list to a field value. */

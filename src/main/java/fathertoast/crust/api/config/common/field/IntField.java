@@ -10,6 +10,7 @@ import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.HexIntWrapper;
 import fathertoast.crust.api.util.JavaRandomSource;
+import fathertoast.crust.api.util.OnClient;
 import net.minecraft.util.RandomSource;
 
 import javax.annotation.Nullable;
@@ -211,6 +212,7 @@ public class IntField extends AbstractConfigField implements Supplier<Integer> {
         
         /** @return This field's gui component provider. */
         @Override
+        @OnClient
         public IConfigFieldWidgetProvider getWidgetProvider() {
             return new HexIntFieldWidgetProvider( this, ( number ) -> minValue() <= number && number <= maxValue() );
         }

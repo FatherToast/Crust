@@ -1,12 +1,13 @@
 package fathertoast.crust.api.config.common.field;
 
-import fathertoast.crust.api.config.client.gui.ItemViewRendererRegistry;
+import fathertoast.crust.api.config.client.gui.EntryViewRendererRegistry;
+import fathertoast.crust.api.config.client.gui.widget.provider.EntryViewWidgetProvider;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
-import fathertoast.crust.api.config.client.gui.widget.provider.ItemViewWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.collection.key.BlockStateKey;
 import fathertoast.crust.api.util.BlockStatePropertyMap;
+import fathertoast.crust.api.util.OnClient;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -24,7 +25,6 @@ import java.util.Objects;
  * Represents a config field containing a block state value
  * wrapped in a {@link BlockStateKey.Basic} key.
  */
-@SuppressWarnings( "unused" )
 @ApiStatus.Experimental
 public class BlockStateField extends GenericField<BlockStateKey.Basic> {
     
@@ -130,21 +130,22 @@ public class BlockStateField extends GenericField<BlockStateKey.Basic> {
     @Nullable
     public BlockStateKey.Basic getValue() {
         if( value == null ) {
-            return getDefaultValue();
+            return value = getDefaultValue();
         }
         return value;
     }
     
-    /** @return The registered block with the given ID, or null if it does not exist. */
+    /** @return This config field's block state value, if it exists. */
     @Nullable
-    private Block getBlock( ResourceLocation resLoc ) {
-        return ForgeRegistries.BLOCKS.getValue( resLoc );
+    private BlockState getBlockState() {
+        return get().asValue();
     }
     
     /** @return This field's gui component provider. */
     @Override
+    @OnClient
     public IConfigFieldWidgetProvider getWidgetProvider() {
-        return new ItemViewWidgetProvider.Simple<>( get(), ItemViewRendererRegistry.getRendererOrThrow( ItemViewRendererRegistry.BLOCK_STATE ), ( s ) -> {
+        return new EntryViewWidgetProvider.Simple<>( this::getBlockState, EntryViewRendererRegistry.getRendererOrThrow( EntryViewRendererRegistry.BLOCK_STATE ), ( s ) -> {
             ResourceLocation id = ResourceLocation.tryParse( BlockStatePropertyMap.split( s )[0] );
             return id != null && ForgeRegistries.BLOCKS.containsKey( id );
         } );

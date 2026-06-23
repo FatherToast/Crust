@@ -10,6 +10,7 @@ import fathertoast.crust.api.config.common.value.EnvironmentList;
 import fathertoast.crust.api.config.common.value.environment.AbstractEnvironment;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
 import fathertoast.crust.api.lib.EnvironmentHelper;
+import fathertoast.crust.api.util.OnClient;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
@@ -165,6 +166,7 @@ public class EnvironmentListField extends GenericField<EnvironmentList> implemen
     
     /** @return This field's gui component provider. */
     @Override
+    @OnClient
     public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider<>( this ); }
     
     /** Converts the displayable string list to a field value. */
