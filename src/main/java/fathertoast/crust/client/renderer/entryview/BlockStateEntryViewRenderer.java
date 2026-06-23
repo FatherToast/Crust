@@ -3,12 +3,12 @@ package fathertoast.crust.client.renderer.entryview;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import fathertoast.crust.api.client.renderer.level.FakeBlockAndTintGetter;
 import fathertoast.crust.api.config.client.gui.widget.field.EntryViewWidget;
 import fathertoast.crust.api.lib.CrustMath;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -16,9 +16,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -29,8 +27,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.client.ChunkRenderTypeSet;
-import net.minecraftforge.client.RenderTypeHelper;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
@@ -51,9 +47,6 @@ import java.util.function.Supplier;
  * the state's block will be rendered instead, if possible.
  */
 public class BlockStateEntryViewRenderer implements EntryViewWidget.EntryViewRenderer<BlockState> {
-    
-    /** A "dummy" {@link net.minecraft.world.level.BlockAndTintGetter} implementation used to render liquids. */
-    private static final FakeBlockAndTintGetter FAKE_TINT_GETTER = new FakeBlockAndTintGetter();
     
     /**
      * A list of block states that most likely have
@@ -112,20 +105,8 @@ public class BlockStateEntryViewRenderer implements EntryViewWidget.EntryViewRen
         pose.scale( 10.0F, 10.0F, 10.0F );
         
         final BlockRenderDispatcher renderDispatcher = Minecraft.getInstance().getBlockRenderer();
-        final BakedModel model = renderDispatcher.getBlockModel( state );
-        final ChunkRenderTypeSet renderTypeSet = model.getRenderTypes( state, RandomSource.create( state.getSeed( BlockPos.ZERO ) ), ModelData.EMPTY );
+        renderDispatcher.renderSingleBlock( state, pose, bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null );
         
-        FAKE_TINT_GETTER.setOriginPos( BlockPos.ZERO );
-        FAKE_TINT_GETTER.setCurrentTint( Minecraft.getInstance().getBlockColors().getColor( state, null, null, 0 ) );
-        
-        for( RenderType renderType : renderTypeSet ) {
-            renderType = RenderTypeHelper.getMovingBlockRenderType( renderType );
-            renderDispatcher.getModelRenderer().tesselateWithoutAO(
-                    FAKE_TINT_GETTER, model, state,
-                    BlockPos.ZERO, pose, bufferSource.getBuffer( renderType ),
-                    false, RandomSource.create(), state.getSeed( BlockPos.ZERO ),
-                    OverlayTexture.NO_OVERLAY, ModelData.EMPTY, renderType );
-        }
         pose.popPose();
     }
     
