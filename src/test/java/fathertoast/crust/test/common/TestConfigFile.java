@@ -168,6 +168,10 @@ public class TestConfigFile extends AbstractConfigFile {
             itemStackField = SPEC.define( new InjectionWrapperField<>(
                     new ItemStackField( "item_stack", new ItemStack( Items.BEEF, 22 ) ), General::testCallback ) ).field();
             
+            // ---- Single registry objects ---- //
+            SPEC.callback( General::printLine );
+            SPEC.newLine();
+            
             blockRegObjectField = SPEC.define( new InjectionWrapperField<>(
                     new RegObjectField<>( "block_reg_object", IRegWrapper.of( ForgeRegistries.BLOCKS ),
                             Blocks.ICE ), General::testCallback ) ).field();
