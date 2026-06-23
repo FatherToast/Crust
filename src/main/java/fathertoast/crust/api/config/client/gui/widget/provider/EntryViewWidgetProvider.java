@@ -1,7 +1,8 @@
 package fathertoast.crust.api.config.client.gui.widget.provider;
 
 import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
-import fathertoast.crust.api.config.client.gui.widget.field.ItemViewWidget;
+import fathertoast.crust.api.config.client.gui.widget.field.EntryViewWidget;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
@@ -18,7 +19,7 @@ import java.util.function.Supplier;
  *
  * @param <V> The type of value the field provides.
  */
-public abstract class ItemViewWidgetProvider<V> implements IConfigFieldWidgetProvider {
+public abstract class EntryViewWidgetProvider<V> implements IConfigFieldWidgetProvider {
     
     /** The providing field. */
     protected final Supplier<V> VALUE_SUPPLIER;
@@ -34,7 +35,7 @@ public abstract class ItemViewWidgetProvider<V> implements IConfigFieldWidgetPro
      * @param valueSupplier A supplier providing the value to display. Usually a config field.
      * @param lineValidator An optional line validator for the text box provided by this provider.
      */
-    public ItemViewWidgetProvider( Supplier<V> valueSupplier, @Nullable Predicate<String> lineValidator ) {
+    public EntryViewWidgetProvider( Supplier<V> valueSupplier, @Nullable Predicate<String> lineValidator ) {
         VALUE_SUPPLIER = valueSupplier;
         VALIDATOR = lineValidator;
     }
@@ -52,11 +53,11 @@ public abstract class ItemViewWidgetProvider<V> implements IConfigFieldWidgetPro
      */
     @Override
     public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
-        ItemViewWidget<V> itemViewWidget = new ItemViewWidget<>( this::renderItem, VALUE_SUPPLIER, VALUE_WIDTH - ItemViewWidget.DEFAULT_SIZE, 0 );
+        EntryViewWidget<V> itemViewWidget = new EntryViewWidget<>( this::renderEntry, VALUE_SUPPLIER, VALUE_WIDTH - EntryViewWidget.DEFAULT_SIZE, 0 );
         
         // noinspection resource
         EditBox editBox = new EditBox( listEntry.minecraft().font,
-                1, 1, VALUE_WIDTH - 3 - ItemViewWidget.DEFAULT_SIZE, VALUE_HEIGHT - 2, // Account for ~1px frame
+                1, 1, VALUE_WIDTH - 3 - EntryViewWidget.DEFAULT_SIZE, VALUE_HEIGHT - 2, // Account for ~1px frame
                 Component.literal( "" ) );
         editBox.setMaxLength( Integer.MAX_VALUE );
         
@@ -87,19 +88,20 @@ public abstract class ItemViewWidgetProvider<V> implements IConfigFieldWidgetPro
      * Allows rendering something based on the
      * current value of this provider's field.
      */
-    public abstract void renderItem( ItemViewWidget.RenderContext<V> renderContext );
+    public abstract void renderEntry( @Nullable Supplier<V> valueSupplier, GuiGraphics graphics,
+                                      int widgetX, int widgetY, int mouseX, int mouseY, float partialTick );
     
     
     /**
      * Simple implementation that allows passing an
-     * {@link fathertoast.crust.api.config.client.gui.widget.field.ItemViewWidget.ItemViewRenderer}
+     * {@link EntryViewWidget.EntryViewRenderer}
      * instance in the constructor instead of having to override
-     * {@link ItemViewWidgetProvider#renderItem(ItemViewWidget.RenderContext)}.
+     * {@link EntryViewWidgetProvider#renderEntry(Supplier, GuiGraphics, int, int, int, int, float)}.
      */
-    public static class Simple<V> extends ItemViewWidgetProvider<V> {
+    public static class Simple<T> extends EntryViewWidgetProvider<T> {
         
-        /** The item renderer used to render a config value. */
-        private final ItemViewWidget.ItemViewRenderer<V> RENDERER;
+        /** The entry renderer used to render a config value. */
+        private final EntryViewWidget.EntryViewRenderer<T> RENDERER;
         
         /**
          * Constructs a new instance of this widget provider
@@ -108,14 +110,15 @@ public abstract class ItemViewWidgetProvider<V> implements IConfigFieldWidgetPro
          * @param field         The field to provide widgets for.
          * @param lineValidator An optional line validator for the text box provided by this provider.
          */
-        public Simple( Supplier<V> field, ItemViewWidget.ItemViewRenderer<V> renderer, @Nullable Predicate<String> lineValidator ) {
+        public Simple( Supplier<T> field, EntryViewWidget.EntryViewRenderer<T> renderer, @Nullable Predicate<String> lineValidator ) {
             super( field, lineValidator );
             RENDERER = Objects.requireNonNull( renderer );
         }
         
         @Override
-        public void renderItem( ItemViewWidget.RenderContext<V> renderContext ) {
-            RENDERER.render( renderContext );
+        public void renderEntry( @Nullable Supplier<T> valueSupplier, GuiGraphics graphics,
+                                 int widgetX, int widgetY, int mouseX, int mouseY, float partialTick ) {
+            RENDERER.render( valueSupplier, graphics, widgetX, widgetY, mouseX, mouseY, partialTick );
         }
     }
 }

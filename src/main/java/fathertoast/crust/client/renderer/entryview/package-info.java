@@ -1,6 +1,6 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package fathertoast.crust.client.renderer.itemview;
+package fathertoast.crust.client.renderer.entryview;
 
 import com.mojang.logging.annotations.MethodsReturnNonnullByDefault;
 

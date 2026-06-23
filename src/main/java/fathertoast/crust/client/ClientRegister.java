@@ -5,8 +5,8 @@ import fathertoast.crust.api.client.accessor.IClientConfigAccessor;
 import fathertoast.crust.api.client.renderer.CrustFishingHookRenderer;
 import fathertoast.crust.api.client.util.shape.*;
 import fathertoast.crust.api.config.client.ClientConfigUtil;
-import fathertoast.crust.api.config.client.gui.ItemViewRendererRegistry;
-import fathertoast.crust.api.config.client.gui.widget.field.ItemViewWidget;
+import fathertoast.crust.api.config.client.gui.EntryViewRendererRegistry;
+import fathertoast.crust.api.config.client.gui.widget.field.EntryViewWidget;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.api.util.BoxShape;
@@ -18,7 +18,7 @@ import fathertoast.crust.client.config.CfgEditorCrustConfig;
 import fathertoast.crust.client.config.ClientConfigAccessorImpl;
 import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
 import fathertoast.crust.client.config.RenderSettingsCrustConfig;
-import fathertoast.crust.client.renderer.itemview.BlockStateItemViewRenderer;
+import fathertoast.crust.client.renderer.entryview.*;
 import fathertoast.crust.common.api.impl.CrustApi;
 import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.core.registry.CrustItems;
@@ -76,15 +76,15 @@ public final class ClientRegister {
         
         // Register our debug shape renderers
         registerShapeRenderers();
-        // Register our GUI item view renderers
-        registerItemViewRenderers();
+        // Register our GUI entry view renderers
+        registerEntryViewRenderers();
         
         // Tell Forge to open the config editor when our mod's "Config" button is clicked in the Mods screen
         ClientConfigUtil.registerConfigButtonAsEditScreen( Crust.INSTANCE.CONTAINER );
         
         // Run setup for all registered item view renderers
         ModLoadingStage.COMPLETE.getDeferredWorkQueue().enqueueWork( ModList.get().getModContainerById( ICrustApi.MOD_ID ).orElseThrow(),
-                () -> ItemViewRendererRegistry.allRenderers().forEach( ItemViewWidget.ItemViewRenderer::setup ) );
+                () -> EntryViewRendererRegistry.allRenderers().forEach( EntryViewWidget.EntryViewRenderer::setup ) );
     }
     
     /** Registers this mod's additional key bindings. */
@@ -113,12 +113,21 @@ public final class ClientRegister {
     }
     
     /**
-     * Registers this mod's item view renderers.
+     * Registers this mod's entry view renderers.
      *
-     * @see fathertoast.crust.api.config.client.gui.widget.field.ItemViewWidget.ItemViewRenderer
+     * @see EntryViewWidget.EntryViewRenderer
      */
-    private static void registerItemViewRenderers() {
-        ItemViewRendererRegistry.registerRenderer( ItemViewRendererRegistry.BLOCK_STATE, new BlockStateItemViewRenderer() );
+    private static void registerEntryViewRenderers() {
+        // SPECIAL
+        EntryViewRendererRegistry.registerRenderer( EntryViewRendererRegistry.EMPTY, new EmptyEntryViewRenderer() );
+        EntryViewRendererRegistry.registerRenderer( EntryViewRendererRegistry.BLOCK_STATE, new BlockStateEntryViewRenderer() );
+        EntryViewRendererRegistry.registerRenderer( EntryViewRendererRegistry.ITEM_STACK, new ItemStackEntryViewRenderer() );
+        
+        // REGISTRY
+        EntryViewRendererRegistry.registerRenderer( EntryViewRendererRegistry.BLOCK, new BlockEntryViewRenderer() );
+        EntryViewRendererRegistry.registerRenderer( EntryViewRendererRegistry.ITEM, new ItemEntryViewRenderer() );
+        EntryViewRendererRegistry.registerRenderer( EntryViewRendererRegistry.MOB_EFFECT, new MobEffectEntryViewRenderer() );
+        EntryViewRendererRegistry.registerRenderer( EntryViewRendererRegistry.ENTITY_TYPE, new EntityTypeEntryViewRenderer() );
     }
     
     @SubscribeEvent

@@ -1,10 +1,10 @@
-package fathertoast.crust.client.renderer.itemview;
+package fathertoast.crust.client.renderer.entryview;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import fathertoast.crust.api.client.renderer.level.FakeBlockAndTintGetter;
-import fathertoast.crust.api.config.client.gui.widget.field.ItemViewWidget;
+import fathertoast.crust.api.config.client.gui.widget.field.EntryViewWidget;
 import fathertoast.crust.api.lib.CrustMath;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -35,20 +35,22 @@ import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
- * An item view renderer implementation that renders a block state.
+ * An entry view renderer implementation that renders a block state.
  * <br><br>
  * If the block state to render either doesn't have a block model
  * or likely uses a block entity renderer, an item stack containing
  * the state's block will be rendered instead, if possible.
  */
-public class BlockStateItemViewRenderer implements ItemViewWidget.ItemViewRenderer<BlockState> {
+public class BlockStateEntryViewRenderer implements EntryViewWidget.EntryViewRenderer<BlockState> {
     
     /** A "dummy" {@link net.minecraft.world.level.BlockAndTintGetter} implementation used to render liquids. */
     private static final FakeBlockAndTintGetter FAKE_TINT_GETTER = new FakeBlockAndTintGetter();
@@ -61,40 +63,39 @@ public class BlockStateItemViewRenderer implements ItemViewWidget.ItemViewRender
     
     
     /**
-     * Called from {@link ItemViewWidget#renderWidget(GuiGraphics, int, int, float)}
+     * Called from {@link EntryViewWidget#renderWidget(GuiGraphics, int, int, float)}
      * to render something based on the widget's field's value.
      */
     @Override
-    public void render( ItemViewWidget.RenderContext<BlockState> ctx ) {
-        final BlockState blockState = ctx.getValue();
+    public void render( @Nullable Supplier<BlockState> valueSupplier, GuiGraphics graphics,
+                        int widgetX, int widgetY, int mouseX, int mouseY, float partialTick ) {
+        final BlockState blockState = getValue( valueSupplier );
         
         if( blockState == null ) return;
         
-        final int x = ctx.widgetX();
-        final int y = ctx.widgetY();
-        final PoseStack pose = ctx.graphics().pose();
-        final MultiBufferSource.BufferSource bufferSource = ctx.graphics().bufferSource();
+        final PoseStack pose = graphics.pose();
+        final MultiBufferSource.BufferSource bufferSource = graphics.bufferSource();
         final RenderShape renderShape = blockState.getRenderShape();
         
         // Fluids/liquids needs special handling.
         if( blockState.getBlock() instanceof LiquidBlock && !blockState.getFluidState().isEmpty() ) {
-            renderFluidFace( blockState.getFluidState(), ctx.graphics(), x, y );
+            renderFluidFace( blockState.getFluidState(), graphics, widgetX, widgetY );
         }
         // Try rendering the block state as an item
         // instead if it is invisible or uses a block entity renderer.
         else if( renderShape == RenderShape.INVISIBLE || statesWithRenderers.contains( blockState ) ) {
-            renderItemStack( blockState, ctx.graphics(), x, y );
+            renderItemStack( blockState, graphics, widgetX, widgetY );
         }
         // Otherwise render the block state itself.
         else {
-            renderBlockState( blockState, bufferSource, pose, x, y );
+            renderBlockState( blockState, bufferSource, pose, widgetX, widgetY );
         }
     }
     
     /** Renders the given block state as an item stack. */
     private void renderItemStack( BlockState state, GuiGraphics graphics, int x, int y ) {
         // Params: stack, x, y, seed, depth
-        graphics.renderItem( new ItemStack( state.getBlock() ), x + 2, y + 2, 0, -135 );
+        graphics.renderItem( new ItemStack( state.getBlock() ), x + 2, y + 2, 0, Integer.MIN_VALUE );
     }
     
     /** Renders the given block state with transforms similar to GUI items. */
@@ -116,12 +117,10 @@ public class BlockStateItemViewRenderer implements ItemViewWidget.ItemViewRender
         
         FAKE_TINT_GETTER.setOriginPos( BlockPos.ZERO );
         FAKE_TINT_GETTER.setCurrentTint( Minecraft.getInstance().getBlockColors().getColor( state, null, null, 0 ) );
-        FAKE_TINT_GETTER.setCurrentBlockState( state );
-        FAKE_TINT_GETTER.setCurrentFluidState( state.getFluidState() );
         
         for( RenderType renderType : renderTypeSet ) {
             renderType = RenderTypeHelper.getMovingBlockRenderType( renderType );
-            renderDispatcher.getModelRenderer().tesselateWithAO(
+            renderDispatcher.getModelRenderer().tesselateWithoutAO(
                     FAKE_TINT_GETTER, model, state,
                     BlockPos.ZERO, pose, bufferSource.getBuffer( renderType ),
                     false, RandomSource.create(), state.getSeed( BlockPos.ZERO ),
