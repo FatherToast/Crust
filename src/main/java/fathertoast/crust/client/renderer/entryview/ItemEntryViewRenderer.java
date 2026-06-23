@@ -3,6 +3,7 @@ package fathertoast.crust.client.renderer.entryview;
 import fathertoast.crust.api.config.client.gui.EntryViewRendererRegistry;
 import fathertoast.crust.api.config.client.gui.widget.field.EntryViewWidget;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -24,9 +25,16 @@ public class ItemEntryViewRenderer implements EntryViewWidget.EntryViewRenderer<
         if( item == null ) return;
         
         try {
-            EntryViewRendererRegistry.getRendererOrThrow( EntryViewRendererRegistry.ITEM_STACK ).render(
-                    () -> new ItemStack( item ), graphics, widgetX, widgetY, mouseX, mouseY, partialTick
-            );
+            if( item instanceof BlockItem blockItem ) {
+                EntryViewRendererRegistry.getRendererOrThrow( EntryViewRendererRegistry.BLOCK_STATE ).render(
+                        blockItem.getBlock()::defaultBlockState, graphics, widgetX, widgetY, mouseX, mouseY, partialTick
+                );
+            }
+            else {
+                EntryViewRendererRegistry.getRendererOrThrow( EntryViewRendererRegistry.ITEM_STACK ).render(
+                        () -> new ItemStack( item ), graphics, widgetX, widgetY, mouseX, mouseY, partialTick
+                );
+            }
         }
         catch( Exception e ) {
             // noinspection CallToPrintStackTrace
