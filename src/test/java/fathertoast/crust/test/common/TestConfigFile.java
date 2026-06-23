@@ -8,6 +8,7 @@ import fathertoast.crust.api.config.common.field.collection.*;
 import fathertoast.crust.api.config.common.value.EnvironmentEntry;
 import fathertoast.crust.api.config.common.value.EnvironmentList;
 import fathertoast.crust.api.config.common.value.collection.*;
+import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
 import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
 import fathertoast.crust.api.config.common.value.collection.key.ResourceLocKey;
 import fathertoast.crust.api.config.common.value.collection.value.*;
@@ -20,6 +21,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.TreeFeatures;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.*;
 import net.minecraft.world.damagesource.DamageType;
@@ -28,12 +30,13 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.item.Instrument;
-import net.minecraft.world.item.Instruments;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -77,8 +80,14 @@ public class TestConfigFile extends AbstractConfigFile {
         public final StringField stringField;
         public final EnumField<BiomeCategory> enumField;
         public final BlockStateField blockStateField;
+        public final ItemStackField itemStackField;
         //        public final FuzzyKeyField<String> fuzzyKeyField;
         //        public final ValueCodecField<MobEffectStats> valueCodecField;
+        public final RegObjectField<Block> blockRegObjectField;
+        public final RegObjectField<Item> itemRegObjectField;
+        public final RegObjectField<MobEffect> mobEffectRegObjectField;
+        public final RegObjectField<EntityType<?>> entityTypeRegObjectField;
+        public final RegObjectField<Attribute> attributeRegObjectField;
         // Fuzzy collections
         public final FuzzyListField<Long, FuzzyList<Long>> fuzzyListField;
         public final FuzzySetField<ResourceLocation, FuzzySet<ResourceLocation>> fuzzySetField;
@@ -155,6 +164,29 @@ public class TestConfigFile extends AbstractConfigFile {
             
             blockStateField = SPEC.define( new InjectionWrapperField<>(
                     new BlockStateField( "block_state", Blocks.BROWN_CANDLE_CAKE.defaultBlockState() ), General::testCallback ) ).field();
+            
+            itemStackField = SPEC.define( new InjectionWrapperField<>(
+                    new ItemStackField( "item_stack", new ItemStack( Items.BEEF, 22 ) ), General::testCallback ) ).field();
+            
+            blockRegObjectField = SPEC.define( new InjectionWrapperField<>(
+                    new RegObjectField<>( "block_reg_object", IRegWrapper.of( ForgeRegistries.BLOCKS ),
+                            Blocks.ICE ), General::testCallback ) ).field();
+            
+            itemRegObjectField = SPEC.define( new InjectionWrapperField<>(
+                    new RegObjectField<>( "item_reg_object", IRegWrapper.of( ForgeRegistries.ITEMS ),
+                            ResourceKey.create( Registries.ITEM, ResourceLocation.withDefaultNamespace( "stick" ) ) ), General::testCallback ) ).field();
+            
+            mobEffectRegObjectField = SPEC.define( new InjectionWrapperField<>(
+                    new RegObjectField<>( "mob_effect_reg_object", IRegWrapper.of( ForgeRegistries.MOB_EFFECTS ),
+                            "fire_resistance" ), General::testCallback ) ).field();
+            
+            entityTypeRegObjectField = SPEC.define( new InjectionWrapperField<>(
+                    new RegObjectField<>( "entity_type_reg_object", IRegWrapper.of( ForgeRegistries.ENTITY_TYPES ),
+                            ResourceLocation.withDefaultNamespace( "creeper" ) ), General::testCallback ) ).field();
+            
+            attributeRegObjectField = SPEC.define( new InjectionWrapperField<>(
+                    new RegObjectField<>( "attribute_reg_object", IRegWrapper.of( ForgeRegistries.ATTRIBUTES ),
+                            ForgeMod.SWIM_SPEED ), General::testCallback ) ).field();
             
             // ---- Fuzzy collections ---- //
             SPEC.callback( General::printLine );
