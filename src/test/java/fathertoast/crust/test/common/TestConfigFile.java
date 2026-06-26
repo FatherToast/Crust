@@ -106,6 +106,7 @@ public class TestConfigFile extends AbstractConfigFile {
         public final RegistryValueListField<DamageType, String> registryValueListFieldDn;
         public final RegistryWeightedListField<ConfiguredFeature<?, ?>> registryWeightedListField;
         public final RegistryWeightedValueListField<MobEffect, MobEffectStats> registryWeightedValueListField;
+        public final NumberSetField<Integer> numberSetField;
         // Misc collections
         public final AttributeOpListField attributeOpListField;
         public final EnvironmentListField environmentListField;
@@ -198,9 +199,9 @@ public class TestConfigFile extends AbstractConfigFile {
             
             fuzzyListField = SPEC.define( new InjectionWrapperField<>(
                     new FuzzyListField<>( "fuzzy_list_field", new FuzzyList.Builder<>( NumberKey.longParser( LongValueCodec.ANY ) )
-                            .add( NumberKey.of( 1L ) )
-                            .add( NumberKey.of( 1234L ) )
-                            .add( NumberKey.of( 1234567890000000000L ) )
+                            .add( NumberKey.exactly( 1L, false ) )
+                            .add( NumberKey.exactly( 1234L, false ) )
+                            .add( NumberKey.exactly( 1234567890000000000L, false ) )
                             .build() ), General::testCallback ) ).field();
             
             fuzzySetField = SPEC.define( new InjectionWrapperField<>(
@@ -215,11 +216,11 @@ public class TestConfigFile extends AbstractConfigFile {
                     new FuzzyMapField<>( "fuzzy_map_field", new FuzzyMap.Builder<>(
                             NumberKey.doubleParser( DoubleValueCodec.NON_NEGATIVE ),
                             StringValueCodec.of( 10 ) )
-                            .put( NumberKey.of( 0.0 ), "Binky" )
-                            .put( NumberKey.of( 0.05 ), "Bonky" )
-                            .put( NumberKey.of( 0.10 ), "Spinky" )
-                            .put( NumberKey.of( 0.15 ), "Sponky" )
-                            .put( NumberKey.of( 0.20 ), "A very sad $5 sponge" )
+                            .put( NumberKey.exactly( 0.0, false ), "Binky" )
+                            .put( NumberKey.exactly( 1.0, false ), "Bonky" )
+                            .put( NumberKey.exactly( 2.0, false ), "Spinky" )
+                            .put( NumberKey.exactly( 3.0, false ), "Sponky" )
+                            .put( NumberKey.exactly( 4.0, false ), "A very sad $5 sponge" )
                             .build() ), General::testCallback ) ).field();
             
             /// Note: To fully test {@link fathertoast.crust.api.config.common.value.collection.key.RegObjKey}, we
@@ -245,6 +246,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             .addWildcard( "minecraft", "ender" )
                             .addWildcard( "specialmobs", "fire" )
                             .build() ), General::testCallback ) ).field();
+            
             entityMapField = SPEC.define( new InjectionWrapperField<>(
                     new EntityMapField<>( "entity_map_field", new EntityMap
                             .Builder<>( ArrayValueCodec.of( 3, Double.class, DoubleValueCodec.SIGNED_PERCENT ) )
@@ -266,7 +268,8 @@ public class TestConfigFile extends AbstractConfigFile {
                             .addTag( Tags.Blocks.CHESTS ).addTag( "forge:sandstone" )
                             .addTagBlacklist( MISSING_FEATURE )
                             .addWildcard( "minecraft", "oak" )
-                            .build() ), General::testCallback ) ).field();
+                            .buildWithDefault() ), General::testCallback ) ).field();
+            
             // noinspection deprecation
             blockStateMapField = SPEC.define( new InjectionWrapperField<>(
                     new BlockStateMapField<>( "block_state_map_field", new BlockStateMap.Builder<>( EnumValueCodec.of( BiomeCategory.NONE ) )
@@ -280,6 +283,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             .putTagBlacklist( BlockTags.BAMBOO_PLANTABLE_ON )
                             .putWildcard( "deadlyworld", BiomeCategory.BEACH )
                             .build() ), General::testCallback ) ).field();
+            
             blockStateListField = SPEC.define( new InjectionWrapperField<>(
                     new BlockStateListField( "block_state_list_field", new BlockStateList.Builder<>()
                             .add( Blocks.ANVIL ).add( MISSING_FEATURE ).add( "acacia_log[axis=y]" )
@@ -288,6 +292,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             .addTag( Tags.Blocks.CHESTS )
                             .addTag( "forge:sandstone" ).addTag( MISSING_FEATURE )
                             .build() ), General::testCallback ) ).field();
+            
             blockStateValueListField = SPEC.define( new InjectionWrapperField<>(
                     new BlockStateValueListField<>( "block_state_value_list_field", new BlockStateValueList.Builder<>( DoubleValueCodec.PERCENT )
                             .put( Blocks.BARREL, 0.0 )
@@ -298,6 +303,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             .putTag( "forge:sandstone", 0.004 )
                             .putTag( MISSING_FEATURE, 0.22 )
                             .build() ), General::testCallback ) ).field();
+            
             blockStateWeightedListField = SPEC.define( new InjectionWrapperField<>(
                     new BlockStateWeightedListField( "block_state_weighted_list_field", new BlockStateWeightedList.Builder<>()
                             .add( 10, Blocks.CARTOGRAPHY_TABLE )
@@ -308,6 +314,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             .addTag( 1000, "forge:sandstone" )
                             .addTag( 0, MISSING_FEATURE )
                             .build() ), General::testCallback ) ).field();
+            
             blockStateWeightedValueListField = SPEC.define( new InjectionWrapperField<>(
                     new BlockStateWeightedValueListField<>( "block_state_weighted_value_list_field", new BlockStateWeightedValueList.Builder<>( DoubleValueCodec.ANY )
                             .put( 10, Blocks.FLETCHING_TABLE, -2.0 )
@@ -340,6 +347,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             .addWildcard( "minecraft", "ender" )
                             .addWildcard( "specialmobs", "fire" )
                             .build() ), General::testCallback ) ).field();
+            
             registryMapField = SPEC.define( new InjectionWrapperField<>(
                     new RegistryMapField<>( "registry_map_field", new RegistryMap
                             .Builder<>( ForgeRegistries.ENTITY_TYPES, IntValueCodec.of( 0, IntField.Range.TOKEN_NEGATIVE ) )
@@ -366,6 +374,7 @@ public class TestConfigFile extends AbstractConfigFile {
                 }
                 TestCrust.LOG.info( str.length() > 2 ? "    " + str.substring( 2 ) : str.toString() );
             } );
+            
             registryValueListFieldDn = SPEC.define( new InjectionWrapperField<>(
                     new RegistryValueListField<>( "registry_value_list_field_d", new RegistryValueList
                             .Builder<>( Registries.DAMAGE_TYPE, StringValueCodec.of( 16 ) )
@@ -393,6 +402,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             .addTag( 10, MISSING_FEATURE )
                             .addTag( 5, "deadlyworld:lone_chests" )
                             .build() ), General::testCallback ) ).field();
+            
             registryWeightedValueListField = SPEC.define( new InjectionWrapperField<>(
                     new RegistryWeightedValueListField<>( "registry_weighted_value_list_field", new RegistryWeightedValueList
                             .Builder<>( ForgeRegistries.MOB_EFFECTS, MobEffectStats.CODEC )
@@ -404,6 +414,12 @@ public class TestConfigFile extends AbstractConfigFile {
                             .put( 6, MISSING_FEATURE, new MobEffectStats( 420, -69 ) )
                             .putTag( 4, MISSING_FEATURE, new MobEffectStats( 0, 666 ) )
                             .buildWithNull( 69 ) ), General::testCallback ) ).field();
+            
+            numberSetField = SPEC.define( new InjectionWrapperField<>(
+                    new NumberSetField<>( "number_set_field", NumberSet.intBuilder()
+                            .addBlacklist( 4 )
+                            .betweenInclusive( 0, 50 )
+                            .build() ), General::testCallback ).field() );
             
             // ---- Misc. collections ---- //
             SPEC.callback( General::printLine );

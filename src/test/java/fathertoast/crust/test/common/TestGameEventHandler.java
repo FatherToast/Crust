@@ -10,7 +10,11 @@ import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.FireworkRocketEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -22,7 +26,9 @@ public class TestGameEventHandler {
     @SubscribeEvent( priority = EventPriority.NORMAL )
     static void onLivingHurt( LivingHurtEvent event ) {
         // noinspection resource
-        if( event.getEntity().level().isClientSide() ) return;
+        final Level level = event.getEntity().level();
+        
+        if( level.isClientSide() ) return;
         
         // Test registry map
         EntityType<?> entityType = event.getEntity().getType();
@@ -41,6 +47,18 @@ public class TestGameEventHandler {
         }
         else {
             TestCrust.LOG.debug( "Values = {} for entity: {}", doubles, entityType );
+        }
+        
+        // Test fuzzy number collections
+        if( event.getSource().getEntity() instanceof Player player ) {
+            ItemStack heldStack = player.getMainHandItem();
+            
+            if( TestCrust.CONFIG.GENERAL.numberSetField.contains( heldStack.getCount() ) ) {
+                // Hurrah! Let us celebrate with murder and fireworks :D
+                FireworkRocketEntity rocket = new FireworkRocketEntity( level, new ItemStack( Items.FIREWORK_ROCKET ), event.getEntity() );
+                level.addFreshEntity( rocket );
+                event.getEntity().kill();
+            }
         }
     }
     

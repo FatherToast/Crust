@@ -20,99 +20,372 @@ import java.util.function.Function;
  * {@code byte}, {@code double}, {@code float}, {@code int}, {@code long}, and {@code short}.
  */
 @ApiStatus.Experimental
-public class NumberKey<T extends Number> extends FuzzyKey<T> implements IReverseKey<T> {
+public class NumberKey<T extends Number> extends FuzzyKey<T> {
     
     
     /** @return A parser appropriate for bytes, optionally with a value codec. */
     public static IFuzzyKeyParser<Byte> byteParser( @Nullable IValueCodec<Byte> codec ) {
-        if( codec != null ) return new Parser<>( Type.BYTE, codec );
+        if( codec != null ) return new Parser<>( ValueType.BYTE, codec );
         // noinspection unchecked
-        return (Parser<Byte>) PARSERS.get( Type.BYTE );
+        return (Parser<Byte>) PARSERS.get( ValueType.BYTE );
     }
     
     /** @return A parser appropriate for shorts, optionally with a value codec. */
     public static IFuzzyKeyParser<Short> shortParser( @Nullable IValueCodec<Short> codec ) {
-        if( codec != null ) return new Parser<>( Type.SHORT, codec );
+        if( codec != null ) return new Parser<>( ValueType.SHORT, codec );
         // noinspection unchecked
-        return (Parser<Short>) PARSERS.get( Type.SHORT );
+        return (Parser<Short>) PARSERS.get( ValueType.SHORT );
     }
     
     /** @return A parser appropriate for integers, optionally with a value codec. */
     public static IFuzzyKeyParser<Integer> intParser( @Nullable IValueCodec<Integer> codec ) {
-        if( codec != null ) return new Parser<>( Type.SHORT, codec );
+        if( codec != null ) return new Parser<>( ValueType.SHORT, codec );
         // noinspection unchecked
-        return (Parser<Integer>) PARSERS.get( Type.INT );
+        return (Parser<Integer>) PARSERS.get( ValueType.INT );
     }
     
     /** @return A parser appropriate for longs, optionally with a value codec. */
     public static IFuzzyKeyParser<Long> longParser( @Nullable IValueCodec<Long> codec ) {
-        if( codec != null ) return new Parser<>( Type.LONG, codec );
+        if( codec != null ) return new Parser<>( ValueType.LONG, codec );
         // noinspection unchecked
-        return (Parser<Long>) PARSERS.get( Type.LONG );
+        return (Parser<Long>) PARSERS.get( ValueType.LONG );
     }
     
     /** @return A parser appropriate for floats, optionally with a value codec. */
     public static IFuzzyKeyParser<Float> floatParser( @Nullable IValueCodec<Float> codec ) {
-        if( codec != null ) return new Parser<>( Type.FLOAT, codec );
+        if( codec != null ) return new Parser<>( ValueType.FLOAT, codec );
         // noinspection unchecked
-        return (Parser<Float>) PARSERS.get( Type.FLOAT );
+        return (Parser<Float>) PARSERS.get( ValueType.FLOAT );
     }
     
     /** @return A parser appropriate for doubles, optionally with a value codec. */
     public static IFuzzyKeyParser<Double> doubleParser( @Nullable IValueCodec<Double> codec ) {
-        if( codec != null ) return new Parser<>( Type.DOUBLE, codec );
+        if( codec != null ) return new Parser<>( ValueType.DOUBLE, codec );
         // noinspection unchecked
-        return (Parser<Double>) PARSERS.get( Type.DOUBLE );
+        return (Parser<Double>) PARSERS.get( ValueType.DOUBLE );
     }
     
-    /** @return A new non-blacklist key with the given value. */
-    public static <T extends Number> NumberKey<T> of( T value ) {
-        return of( value, false );
+    
+    /** @return A new exact match key with the given value. */
+    public static <T extends Number> Exactly<T> exactly( T value, boolean blacklist ) {
+        return (Exactly<T>) of( ComparisonOp.EXACTLY, blacklist, value );
     }
     
-    /** @return A new key with the given value. */
-    public static <T extends Number> NumberKey<T> of( T value, boolean blacklist ) {
-        Type type = null;
-        if( value instanceof Byte ) type = Type.BYTE;
-        else if( value instanceof Short ) type = Type.SHORT;
-        else if( value instanceof Integer ) type = Type.INT;
-        else if( value instanceof Long ) type = Type.LONG;
-        else if( value instanceof Float ) type = Type.FLOAT;
-        else if( value instanceof Double ) type = Type.DOUBLE;
+    /** @return A new not-equals key with the given value. */
+    public static <T extends Number> NotEquals<T> notEquals( T value, boolean blacklist ) {
+        return (NotEquals<T>) of( ComparisonOp.NOT_EQUALS, blacklist, value );
+    }
+    
+    /** @return A new less-than key with the given value. */
+    public static <T extends Number> LessThan<T> lessThan( T value, boolean blacklist ) {
+        return (LessThan<T>) of( ComparisonOp.LESS, blacklist, value );
+    }
+    
+    /** @return A new less-or-equal key with the given value. */
+    public static <T extends Number> LessOrEqual<T> lessOrEqual( T value, boolean blacklist ) {
+        return (LessOrEqual<T>) of( ComparisonOp.LESS_OR_EQUAL, blacklist, value );
+    }
+    
+    /** @return A new greater-than key with the given value. */
+    public static <T extends Number> GreaterThan<T> greaterThan( T value, boolean blacklist ) {
+        return (GreaterThan<T>) of( ComparisonOp.GREATER, blacklist, value );
+    }
+    
+    /** @return A new greater-or-equal key with the given value. */
+    public static <T extends Number> GreaterOrEqual<T> greaterOrEqual( T value, boolean blacklist ) {
+        return (GreaterOrEqual<T>) of( ComparisonOp.GREATER_OR_EQUAL, blacklist, value );
+    }
+    
+    /** @return A new divisible-by key with the given value. */
+    public static <T extends Number> DivisibleBy<T> divisibleBy( T value, boolean blacklist ) {
+        return (DivisibleBy<T>) of( ComparisonOp.MODULO, blacklist, value );
+    }
+    
+    /** @return A new between-inclusive key with the given value. */
+    public static <T extends Number> BetweenInclusive<T> betweenInclusive( T minValue, T maxValue, boolean blacklist ) {
+        return (BetweenInclusive<T>) of( ComparisonOp.BETWEEN_INCLUSIVE, blacklist, minValue, maxValue );
+    }
+    
+    
+    /**
+     * @return A new key with the given value(s) and comparison operation.
+     * <br><br>
+     * The amount of values that need to be specified depends on the type of key
+     * that is being created.
+     */
+    @SafeVarargs
+    public static <T extends Number> NumberKey<T> of( ComparisonOp op, boolean blacklist, T... values ) {
+        Objects.requireNonNull( op );
+        
+        if( values.length == 0 )
+            throw new IllegalArgumentException( "Attempted to instantiate number key with no specified value!" );
+        
+        final T firstValue = values[0];
+        final ValueType type = getFromNumber( firstValue );
         
         if( type == null )
-            throw new IllegalArgumentException( "Attempted to construct NumberKey with an unsupported type: " + value.getClass() );
+            throw new IllegalArgumentException( "Attempted to construct NumberKey with an unsupported type: " + firstValue.getClass() );
         
-        return new NumberKey<>( value, type, blacklist );
+        return switch( op ) {
+            case EXACTLY -> new Exactly<>( firstValue, type, blacklist );
+            case NOT_EQUALS -> new NotEquals<>( firstValue, type, blacklist );
+            case GREATER -> new GreaterThan<>( firstValue, type, blacklist );
+            case LESS -> new LessThan<>( firstValue, type, blacklist );
+            case GREATER_OR_EQUAL -> new GreaterOrEqual<>( firstValue, type, blacklist );
+            case LESS_OR_EQUAL -> new LessOrEqual<>( firstValue, type, blacklist );
+            case MODULO -> new DivisibleBy<>( firstValue, type, blacklist );
+            case BETWEEN_INCLUSIVE -> new BetweenInclusive<>( firstValue, values[1], type, blacklist );
+        };
     }
+    
+    /**
+     * @return The {@link ValueType} of the given number.
+     * Returns null if no appropriate value type exists.
+     */
+    @Nullable
+    public static <T extends Number> ValueType getFromNumber( T value ) {
+        if( value instanceof Byte ) return ValueType.BYTE;
+        else if( value instanceof Short ) return ValueType.SHORT;
+        else if( value instanceof Integer ) return ValueType.INT;
+        else if( value instanceof Long ) return ValueType.LONG;
+        else if( value instanceof Float ) return ValueType.FLOAT;
+        else if( value instanceof Double ) return ValueType.DOUBLE;
+        
+        return null;
+    }
+    
     
     // ---- Key Implementations ---- //
     
     protected static final String PATTERN = "value";
     
-    /** The key's value. */
+    /** This key's value. */
     protected final T value;
-    /** The key's value type. */
-    protected final Type type;
+    /** This key's value type. */
+    protected final ValueType type;
+    
+    /** This key's comparison operator. */
+    protected final ComparisonOp op;
     
     
-    private NumberKey( T value, Type type, boolean blacklist ) {
+    private NumberKey( T value, ValueType type, ComparisonOp op, boolean blacklist ) {
         super( blacklist );
         this.value = value;
         this.type = type;
+        this.op = op;
+    }
+    
+    /**
+     * A key that matches only an exact value.
+     */
+    @ApiStatus.Experimental
+    public static class Exactly<T extends Number> extends NumberKey<T> implements IReverseKey<T> {
+        
+        protected Exactly( T value, ValueType valueType, boolean blacklist ) {
+            super( value, valueType, ComparisonOp.EXACTLY, blacklist );
+        }
+        
+        /** @return This key's numeric value. */
+        @Override
+        @Nullable // IReverseKey
+        public T asValue() {
+            return value;
+        }
+    }
+    
+    /**
+     * A key that matches all values except its own value.
+     */
+    @ApiStatus.Experimental
+    public static class NotEquals<T extends Number> extends NumberKey<T> {
+        
+        protected NotEquals( T value, ValueType valueType, boolean blacklist ) {
+            super( value, valueType, ComparisonOp.EXACTLY, blacklist );
+        }
+        
+        /** @return True if this key matches the target. */
+        @Override
+        public boolean matches( T target ) {
+            return switch( type ) {
+                case BYTE -> target.byteValue() != value.byteValue();
+                case SHORT -> target.shortValue() != value.shortValue();
+                case INT -> target.intValue() != value.intValue();
+                case LONG -> target.longValue() != value.longValue();
+                case FLOAT -> target.floatValue() != value.floatValue();
+                case DOUBLE -> target.doubleValue() != value.doubleValue();
+            };
+        }
+    }
+    
+    /**
+     * A key that matches all values greater than its own value.
+     */
+    @ApiStatus.Experimental
+    public static class GreaterThan<T extends Number> extends NumberKey<T> {
+        
+        protected GreaterThan( T value, ValueType valueType, boolean blacklist ) {
+            super( value, valueType, ComparisonOp.GREATER, blacklist );
+        }
+        
+        /** @return True if this key matches the target. */
+        @Override
+        public boolean matches( T target ) {
+            return switch( type ) {
+                case BYTE -> target.byteValue() > value.byteValue();
+                case SHORT -> target.shortValue() > value.shortValue();
+                case INT -> target.intValue() > value.intValue();
+                case LONG -> target.longValue() > value.longValue();
+                case FLOAT -> target.floatValue() > value.floatValue();
+                case DOUBLE -> target.doubleValue() > value.doubleValue();
+            };
+        }
+    }
+    
+    /**
+     * A key that matches all values lower than its own value.
+     */
+    @ApiStatus.Experimental
+    public static class LessThan<T extends Number> extends NumberKey<T> {
+        
+        protected LessThan( T value, ValueType valueType, boolean blacklist ) {
+            super( value, valueType, ComparisonOp.LESS, blacklist );
+        }
+        
+        /** @return True if this key matches the target. */
+        @Override
+        public boolean matches( T target ) {
+            return switch( type ) {
+                case BYTE -> target.byteValue() < value.byteValue();
+                case SHORT -> target.shortValue() < value.shortValue();
+                case INT -> target.intValue() < value.intValue();
+                case LONG -> target.longValue() < value.longValue();
+                case FLOAT -> target.floatValue() < value.floatValue();
+                case DOUBLE -> target.doubleValue() < value.doubleValue();
+            };
+        }
+    }
+    
+    /**
+     * A key that matches all values greater or equal to its own value.
+     */
+    @ApiStatus.Experimental
+    public static class GreaterOrEqual<T extends Number> extends NumberKey<T> {
+        
+        protected GreaterOrEqual( T value, ValueType valueType, boolean blacklist ) {
+            super( value, valueType, ComparisonOp.GREATER_OR_EQUAL, blacklist );
+        }
+        
+        /** @return True if this key matches the target. */
+        @Override
+        public boolean matches( T target ) {
+            return switch( type ) {
+                case BYTE -> target.byteValue() >= value.byteValue();
+                case SHORT -> target.shortValue() >= value.shortValue();
+                case INT -> target.intValue() >= value.intValue();
+                case LONG -> target.longValue() >= value.longValue();
+                case FLOAT -> target.floatValue() >= value.floatValue();
+                case DOUBLE -> target.doubleValue() >= value.doubleValue();
+            };
+        }
+    }
+    
+    /**
+     * A key that matches all values lower or equal to its own value.
+     */
+    @ApiStatus.Experimental
+    public static class LessOrEqual<T extends Number> extends NumberKey<T> {
+        
+        protected LessOrEqual( T value, ValueType valueType, boolean blacklist ) {
+            super( value, valueType, ComparisonOp.LESS_OR_EQUAL, blacklist );
+        }
+        
+        /** @return True if this key matches the target. */
+        @Override
+        public boolean matches( T target ) {
+            return switch( type ) {
+                case BYTE -> target.byteValue() <= value.byteValue();
+                case SHORT -> target.shortValue() <= value.shortValue();
+                case INT -> target.intValue() <= value.intValue();
+                case LONG -> target.longValue() <= value.longValue();
+                case FLOAT -> target.floatValue() <= value.floatValue();
+                case DOUBLE -> target.doubleValue() <= value.doubleValue();
+            };
+        }
+    }
+    
+    /**
+     * A key that matches all values that are perfectly divisible (0 remainder) by its own value.
+     */
+    @ApiStatus.Experimental
+    public static class DivisibleBy<T extends Number> extends NumberKey<T> {
+        
+        protected DivisibleBy( T value, ValueType valueType, boolean blacklist ) {
+            super( value, valueType, ComparisonOp.MODULO, blacklist );
+        }
+        
+        /** @return True if this key matches the target. */
+        @Override
+        public boolean matches( T target ) {
+            return switch( type ) {
+                case BYTE -> target.byteValue() % value.byteValue() == 0;
+                case SHORT -> target.shortValue() % value.shortValue() == 0;
+                case INT -> target.intValue() % value.intValue() == 0;
+                case LONG -> target.longValue() % value.longValue() == 0;
+                case FLOAT -> target.floatValue() % value.floatValue() == 0;
+                case DOUBLE -> target.doubleValue() % value.doubleValue() == 0;
+            };
+        }
+    }
+    
+    /**
+     * A key that matches all values between two values (inclusive).
+     */
+    @ApiStatus.Experimental
+    public static class BetweenInclusive<T extends Number> extends NumberKey<T> {
+        
+        /**
+         * The upper limit value used to determine the range of this key.
+         */
+        private final T maxValue;
+        
+        
+        /**
+         * Note: the caller is responsible for making sure
+         * the min value is lesser than the max value.
+         *
+         * @param minValue The lower limit of this key's value range.
+         * @param maxValue The upper limit of this key's value range.
+         */
+        protected BetweenInclusive( T minValue, T maxValue, ValueType valueType, boolean blacklist ) {
+            super( minValue, valueType, ComparisonOp.BETWEEN_INCLUSIVE, blacklist );
+            this.maxValue = maxValue;
+        }
+        
+        /** @return True if this key matches the target. */
+        @Override
+        public boolean matches( T target ) {
+            return switch( type ) {
+                case BYTE -> target.byteValue() >= value.byteValue() && target.byteValue() <= maxValue.byteValue();
+                case SHORT -> target.shortValue() >= value.shortValue() && target.shortValue() <= maxValue.shortValue();
+                case INT -> target.intValue() >= value.intValue() && target.intValue() <= maxValue.intValue();
+                case LONG -> target.longValue() >= value.longValue() && target.longValue() <= maxValue.longValue();
+                case FLOAT -> target.floatValue() >= value.floatValue() && target.floatValue() <= maxValue.floatValue();
+                case DOUBLE ->
+                        target.doubleValue() >= value.doubleValue() && target.doubleValue() <= maxValue.doubleValue();
+            };
+        }
+        
+        /** @return This fuzzy key's string definition. This must uniquely describe the match conditions. */
+        @Override
+        public String keyString() {
+            return value.toString() + op.getIdentifier() + maxValue.toString();
+        }
     }
     
     /** @return This fuzzy key's string definition. This must uniquely describe the match conditions. */
     @Override
     public String keyString() {
-        return switch( type ) {
-            case BYTE -> String.valueOf( value.byteValue() );
-            case SHORT -> String.valueOf( value.shortValue() );
-            case INT -> String.valueOf( value.intValue() );
-            case LONG -> String.valueOf( value.longValue() );
-            case FLOAT -> String.valueOf( value.floatValue() );
-            case DOUBLE -> String.valueOf( value.doubleValue() );
-        };
+        return op.getIdentifier() + value.toString();
     }
     
     /** @return True if this key matches the target. */
@@ -121,22 +394,15 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> implements IReverse
         return Objects.equals( value, target );
     }
     
-    /** @return The value that matches this key, or null if anything goes wrong. */
-    @Override
-    @Nullable // IReverseKey
-    public T asValue() {
-        return value;
-    }
-    
     /** Represents a numeric value type. */
-    public enum Type {
+    public enum ValueType {
         BYTE( "Byte" ), SHORT( "Short" ),
         INT( "Integer" ), LONG( "Long" ),
         FLOAT( "Float" ), DOUBLE( "Double" );
         
         final String name;
         
-        Type( String name ) {
+        ValueType( String name ) {
             this.name = name;
         }
         
@@ -146,20 +412,83 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> implements IReverse
         }
     }
     
+    /**
+     * Represents a numerical comparison operation.
+     */
+    public enum ComparisonOp {
+        // The order here is important; the default number key parsers
+        // iterate through each value here in order to determine what type of
+        // comparison op a key uses.
+        NOT_EQUALS( "!=" ), GREATER_OR_EQUAL( ">=" ), LESS_OR_EQUAL( "<=" ),
+        GREATER( ">" ), LESS( "<" ), MODULO( "%" ),
+        EXACTLY( "" ),
+        BETWEEN_INCLUSIVE( "~" ) {
+            @Override
+            @Nullable
+            @SuppressWarnings( "unchecked" )
+            public <T extends Number> FuzzyKey<T> parseSpecialKey( @Nullable AbstractConfigField field, String line, String key, ValueType valueType,
+                                                                   boolean blacklist, Function<String, ?> numberParser ) {
+                final String[] parts = key.split( "~", 2 );
+                if( parts.length != 2 ) return null;
+                T minValue, maxValue;
+                
+                try {
+                    minValue = (T) numberParser.apply( parts[0] );
+                    maxValue = (T) numberParser.apply( parts[1] );
+                    if( !isValidRange( minValue, maxValue ) )
+                        throw new IllegalArgumentException( "Min value must be lesser than max value!" );
+                }
+                catch( Exception e ) {
+                    if( field != null ) {
+                        ConfigUtil.warnFor( field );
+                        ConfigUtil.LOG.warn( "Invalid value range ({}) specified for between-inclusive number key in entry '{}'! Entry will be discarded.",
+                                key, line );
+                    }
+                    return null;
+                }
+                return new BetweenInclusive<>( minValue, maxValue, valueType, blacklist );
+            }
+        };
+        
+        final String identifier;
+        
+        ComparisonOp( String identifier ) {
+            this.identifier = identifier;
+        }
+        
+        /** @return This comparison operator's identifier. */
+        public String getIdentifier() {
+            return identifier;
+        }
+        
+        /**
+         * @return This comparison op's special key parsing result, if any.
+         * By default, a comparison op is not responsible for key parsing,
+         * but for ops that require a different key format than <strong>'identifier + value'</strong>
+         * entirely can override parsing by returning something else than null.
+         */
+        @Nullable
+        public <T extends Number> FuzzyKey<T> parseSpecialKey( @Nullable AbstractConfigField field, String line, String key, ValueType valueType,
+                                                               boolean blacklist, Function<String, ?> numberParser ) {
+            return null;
+        }
+    }
+    
     // ---- Parser Implementation ---- //
     
     /** Default parsers with no value codecs. */
-    private static final Map<Type, Parser<?>> PARSERS = new HashMap<>();
+    private static final Map<ValueType, Parser<?>> PARSERS = new HashMap<>();
     
     static {
-        for( Type t : Type.values() ) PARSERS.put( t, new Parser<>( t, null ) );
+        for( ValueType t : ValueType.values() ) PARSERS.put( t, new Parser<>( t, null ) );
     }
     
     /**
-     * @param type  A {@link Type} representing the type of value.
+     * @param type  A {@link ValueType} representing the type of value.
      * @param codec Value codec for parsing. This is optional.
      */
-    private record Parser<T extends Number>(Type type, @Nullable IValueCodec<T> codec) implements IFuzzyKeyParser<T> {
+    private record Parser<T extends Number>(ValueType type,
+                                            @Nullable IValueCodec<T> codec) implements IFuzzyKeyParser<T> {
         
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
@@ -186,12 +515,12 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> implements IReverse
         @Nullable
         public FuzzyKey<T> parseKeyString( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
             return switch( type ) {
-                case BYTE -> parse( field, line, key, Byte::parseByte );
-                case SHORT -> parse( field, line, key, Short::parseShort );
-                case INT -> parse( field, line, key, Integer::parseInt );
-                case LONG -> parse( field, line, key, Long::parseLong );
-                case FLOAT -> parse( field, line, key, Float::parseFloat );
-                case DOUBLE -> parse( field, line, key, Double::parseDouble );
+                case BYTE -> parse( field, line, key, blacklist, Byte::parseByte );
+                case SHORT -> parse( field, line, key, blacklist, Short::parseShort );
+                case INT -> parse( field, line, key, blacklist, Integer::parseInt );
+                case LONG -> parse( field, line, key, blacklist, Long::parseLong );
+                case FLOAT -> parse( field, line, key, blacklist, Float::parseFloat );
+                case DOUBLE -> parse( field, line, key, blacklist, Double::parseDouble );
             };
         }
         
@@ -200,22 +529,42 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> implements IReverse
          * Uses this parser's value codec if it is present. Otherwise,
          * the provided default parser is used.
          *
-         * @param field         The config field we are loading for, or null if error reporting should be suppressed.
-         * @param line          The full line, for error context.
-         * @param key           The key string to parse from.
-         * @param defaultParser The default parser to use if {@link Parser#codec} is null.
+         * @param field        The config field we are loading for, or null if error reporting should be suppressed.
+         * @param line         The full line, for error context.
+         * @param key          The key string to parse from.
+         * @param numberParser The default parser to use if {@link Parser#codec} is null.
          * @return A new fuzzy key based on the key string, or null if parsing fails.
          */
         @Nullable
-        private FuzzyKey<T> parse( @Nullable AbstractConfigField field, String line, String key, Function<String, ?> defaultParser ) {
+        private FuzzyKey<T> parse( @Nullable AbstractConfigField field, String line, String key, boolean blacklist, Function<String, ?> numberParser ) {
+            ComparisonOp comparisonOp = ComparisonOp.EXACTLY;
+            
+            // Determine which comparison op the key uses
+            for( ComparisonOp op : ComparisonOp.values() ) {
+                // EXACTLY op has no identifier, skip
+                if( op == ComparisonOp.EXACTLY ) continue;
+                
+                // Special parsing for BETWEEN_INCLUSIVE
+                if( key.contains( ComparisonOp.BETWEEN_INCLUSIVE.getIdentifier() ) ) {
+                    return ComparisonOp.BETWEEN_INCLUSIVE.parseSpecialKey( field, line, key, type, blacklist,
+                            codec == null ? numberParser : ( k ) -> codec.parseTomlString( field, line, k ) );
+                }
+                else if( key.startsWith( op.getIdentifier() ) ) {
+                    comparisonOp = op;
+                    key = key.substring( op.getIdentifier().length() );
+                    break;
+                }
+            }
+            
             T val;
+            
             if( codec != null ) {
                 val = codec.parseTomlString( field, line, key );
             }
             else {
                 try {
                     //noinspection unchecked
-                    val = (T) defaultParser.apply( key );
+                    val = (T) numberParser.apply( key );
                 }
                 catch( Exception e ) {
                     if( field != null ) {
@@ -227,7 +576,37 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> implements IReverse
                 }
             }
             if( val == null ) return null;
-            return of( val );
+            
+            return switch( comparisonOp ) {
+                case NOT_EQUALS -> new NotEquals<>( val, type, blacklist );
+                case GREATER_OR_EQUAL -> new GreaterOrEqual<>( val, type, blacklist );
+                case LESS_OR_EQUAL -> new LessOrEqual<>( val, type, blacklist );
+                case GREATER -> new GreaterThan<>( val, type, blacklist );
+                case LESS -> new LessThan<>( val, type, blacklist );
+                case MODULO -> new DivisibleBy<>( val, type, blacklist );
+                default -> new Exactly<>( val, type, blacklist );
+            };
         }
+    }
+    
+    /** @return The number key parser associated with the specified {@link ValueType}. */
+    public static <T extends Number> IFuzzyKeyParser<T> getParserForType( ValueType type ) {
+        // noinspection unchecked
+        return (IFuzzyKeyParser<T>) PARSERS.get( type );
+    }
+    
+    /**
+     * @return True if the min value is less than the max value.
+     * Always returns false if the provided values are unsupported number objects.
+     */
+    @SuppressWarnings( "BooleanMethodIsAlwaysInverted" )
+    public static <T extends Number> boolean isValidRange( T min, T max ) {
+        if( min instanceof Byte ) return min.byteValue() < max.byteValue();
+        else if( min instanceof Short ) return min.shortValue() < max.shortValue();
+        else if( min instanceof Integer ) return min.intValue() < max.intValue();
+        else if( min instanceof Long ) return min.longValue() < max.longValue();
+        else if( min instanceof Float ) return min.floatValue() < max.floatValue();
+        else if( min instanceof Double ) return min.doubleValue() < max.doubleValue();
+        return false;
     }
 }
