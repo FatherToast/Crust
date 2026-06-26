@@ -255,7 +255,7 @@ public abstract class RegObjKey<T> extends FuzzyKey<T> {
     
     private static final Map<ResourceLocation, Parser<?>> PARSERS = new HashMap<>();
     
-    private record Parser<T>( IRegWrapper<T> registry ) implements IFuzzyKeyParser<T> {
+    private record Parser<T>(IRegWrapper<T> registry) implements IFuzzyKeyParser<T> {
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
         public String getTypeName() {

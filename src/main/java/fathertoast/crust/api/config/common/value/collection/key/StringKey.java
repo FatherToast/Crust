@@ -191,7 +191,7 @@ public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<
     
     // ---- Parser Implementation ---- //
     
-    private record Parser( ) implements IFuzzyKeyParser<String> {
+    private record Parser() implements IFuzzyKeyParser<String> {
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
         public String getTypeName() { return "String"; }

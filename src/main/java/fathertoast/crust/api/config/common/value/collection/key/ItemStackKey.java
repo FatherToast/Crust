@@ -269,7 +269,7 @@ public abstract class ItemStackKey<K extends RegObjKey<Item>> extends FuzzyKey<I
     
     // ---- Parser Implementation ---- //
     
-    private record Parser( ) implements IFuzzyKeyParser<ItemStack> {
+    private record Parser() implements IFuzzyKeyParser<ItemStack> {
         
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
