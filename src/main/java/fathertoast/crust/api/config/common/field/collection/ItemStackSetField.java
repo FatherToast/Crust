@@ -41,7 +41,8 @@ public class ItemStackSetField extends FuzzySetField<ItemStack, ItemStackSet> {
                 "prevents vanilla diamonds from being matched by any entries below it." );
         
         comment.add( "" );
-        comment.add( "  Default entries are not supported by this field type." );
+        comment.add( "  A 'default' entry can be added to effectively turn this field type into a blacklist" );
+        comment.add( "  This makes it so ALL values get matches, and exceptions can be added by specifying blacklist entries." );
         
         comment.add( "" );
         comment.add( "  Unless specified, entries match any item stack of the right item. The item stacks to match can " +

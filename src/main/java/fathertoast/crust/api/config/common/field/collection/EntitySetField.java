@@ -42,7 +42,8 @@ public class EntitySetField extends FuzzySetField<Entity, EntitySet> {
                 "'minecraft:creeper exclude' prevents the vanilla creepers from being matched by any entries below it." );
         
         comment.add( "" );
-        comment.add( "  Default entries are not supported by this field type." );
+        comment.add( "  A 'default' entry can be added to effectively turn this field type into a blacklist" );
+        comment.add( "  This makes it so ALL values get matches, and exceptions can be added by specifying blacklist entries." );
         
         comment.add( "" );
         comment.add( "  Lastly, Entity Sets allow a special type of entry called 'extends' entries." );

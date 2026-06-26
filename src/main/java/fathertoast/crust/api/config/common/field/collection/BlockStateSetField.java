@@ -41,7 +41,8 @@ public class BlockStateSetField extends FuzzySetField<BlockState, BlockStateSet>
                 "prevents vanilla stone blocks from being matched by any entries below it." );
         
         comment.add( "" );
-        comment.add( "  Default entries are not supported by this field type." );
+        comment.add( "  A 'default' entry can be added to effectively turn this field type into a blacklist" );
+        comment.add( "  This makes it so ALL values get matches, and exceptions can be added by specifying blacklist entries." );
         
         comment.add( "" );
         comment.add( "  Unless specified, entries match any block state. The block states to match can be narrowed down " +

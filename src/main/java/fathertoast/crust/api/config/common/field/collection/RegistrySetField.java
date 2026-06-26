@@ -50,7 +50,8 @@ public class RegistrySetField<T> extends FuzzySetField<T, RegistrySet<T>> {
                 "prevents the vanilla 'badlands' key from being matched by any entries below it." );
         
         comment.add( "" );
-        comment.add( "  Default entries are not supported by this field type." );
+        comment.add( "  A 'default' entry can be added to effectively turn this field type into a blacklist" );
+        comment.add( "  This makes it so ALL values get matches, and exceptions can be added by specifying blacklist entries." );
         
         comment.add( "" );
         comment.add( "  IMPORTANT: The order of entries in this list matters! Entries are always checked from top to bottom." );
