@@ -17,13 +17,13 @@ import java.util.Objects;
 public class SimpleTextureButton extends Button {
     
     /** A resource location pointing to the texture to use for this button. */
-    private final ResourceLocation texture;
+    private final ResourceLocation TEXTURE;
     
     public SimpleTextureButton( int x, int y, int width, int height, @Nullable Component tooltip, ResourceLocation texture, Button.OnPress onPress ) {
         super( x, y, width, height,
                 Component.empty(), onPress, DEFAULT_NARRATION );
         Objects.requireNonNull( texture );
-        this.texture = texture;
+        TEXTURE = texture;
         
         if( tooltip != null ) {
             setTooltip( Tooltip.create( tooltip ) );
@@ -34,7 +34,7 @@ public class SimpleTextureButton extends Button {
     public void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTick ) {
         RenderSystem.enableDepthTest();
         
-        graphics.blit( texture, getX(), getY(), 0.0F, getTextureY(),
+        graphics.blit( TEXTURE, getX(), getY(), 0.0F, getTextureY(),
                 width, height, width, height * 3 );
     }
     
