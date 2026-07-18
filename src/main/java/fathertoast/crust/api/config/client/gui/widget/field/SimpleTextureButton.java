@@ -20,8 +20,7 @@ public class SimpleTextureButton extends Button {
     private final ResourceLocation TEXTURE;
     
     public SimpleTextureButton( int x, int y, int width, int height, @Nullable Component tooltip, ResourceLocation texture, Button.OnPress onPress ) {
-        super( x, y, width, height,
-                Component.empty(), onPress, DEFAULT_NARRATION );
+        super( x, y, width, height, Component.empty(), onPress, DEFAULT_NARRATION );
         Objects.requireNonNull( texture );
         TEXTURE = texture;
         

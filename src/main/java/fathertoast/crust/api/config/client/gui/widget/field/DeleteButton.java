@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import fathertoast.crust.api.ICrustApi;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
@@ -9,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 public class DeleteButton extends Button {
     
     private static final ResourceLocation DELETE_BUTTON_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath( "crust", "textures/delete_button.png" );
+            ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "textures/delete_button.png" );
     
     public static final int WIDTH = 20;
     public static final int HEIGHT = 20;

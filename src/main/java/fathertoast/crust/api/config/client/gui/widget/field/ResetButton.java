@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import fathertoast.crust.api.ICrustApi;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
@@ -13,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 public class ResetButton extends Button {
     
     private static final ResourceLocation RESET_BUTTON_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath( "crust", "textures/reset_button.png" );
+            ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "textures/reset_button.png" );
     
     public static final int WIDTH = 10;
     public static final int HEIGHT = 20;

@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import fathertoast.crust.api.ICrustApi;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -13,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 public class ColorPreviewWidget extends AbstractWidget {
     
     private static final ResourceLocation BACKGROUND_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath( "crust", "textures/swatch.png" );
+            ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "textures/swatch.png" );
     
     public static final int DEFAULT_SIZE = 20;
     
