@@ -31,6 +31,7 @@ public class RenderSettingsCrustConfig extends AbstractConfigFile.Simple {
         super( cfgManager, cfgName,
                 "Settings for features related to in-world rendering." );
         
+        SPEC.category( "misc" );
         fancyFishing = SPEC.define( new BooleanField( "fancy_fishing", true,
                 "Overrides the default fishing rod item animation so that it is compatible with fishing " +
                         "mobs that use Crust's base fishing hook. Set to false if it causes problems with another mod."

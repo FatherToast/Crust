@@ -1,5 +1,6 @@
 1.20.1-5.18.29
     - Finished the built-in "toggle storm" extra inventory button.
+    - Misc config tweaks.
     API Changes:
     - Added new entity class hierarchy-climbing functionality for the config entity `extends` key.
     - Most simple config field types (fields not in the "collection" package) now implement Supplier.

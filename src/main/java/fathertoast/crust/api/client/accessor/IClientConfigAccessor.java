@@ -11,7 +11,9 @@ public interface IClientConfigAccessor {
     //          CONFIG "client_render_settings"
     //------------------------------------------------------
     
+    /** Category: "misc". */
     boolean getFancyFishingEnabled();
+    
     
     /** Category: "block_entity_debug_shapes". */
     boolean getBlockEntityShapesEnabled();
