@@ -30,7 +30,7 @@ public class MobEffectStats extends MultiValueCodec<MobEffectStats> {
     }
     
     /** The no-args constructor used to create the codec "singleton" and for value loading. */
-    public MobEffectStats() {}
+    public MobEffectStats() { }
     
     //    /** @return A copy of this multi-value codec, with no values loaded. */
     //    @Override
