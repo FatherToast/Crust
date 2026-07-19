@@ -54,12 +54,12 @@ public final class CrustMath {
         try {
             return RANDOM_SOURCE_SEED_GETTER.apply( random );
         }
-        catch( Exception ignored ) { }
+        catch( Exception ignored ) {}
         return random.nextLong();
     }
     
     
-    // ---- COLOR METHODS ---- //
+    // ---- RGB/ARGB COLOR METHODS ---- //
     
     /** @return The separate RGB float values (0.0 - 1.0) combined into a single ARGB color int with no alpha. */
     public static int toRGB( float r, float g, float b ) {
@@ -75,39 +75,42 @@ public final class CrustMath {
     public static int bitsToRGB( int r, int g, int b ) { return (r & 0xFF) << 16 | (g & 0xFF) << 8 | (b & 0xFF); }
     
     /** @return The separate ARGB values (0x00 - 0xFF) combined into a single ARGB color int. */
-    public static int bitsToARGB( int a, int r, int g, int b ) { return (a & 0xFF) << 24 | toRGB( r, g, b ); }
+    public static int bitsToARGB( int a, int r, int g, int b ) { return bitsToARGB( a, toRGB( r, g, b ) ); }
     
-    /** @return The red portion of an ARGB color int. Returned value will be in the range 0x00 - 0xFF. */
-    public static int getRedBits( int color ) { return color >> 16 & 0xFF; }
+    /** @return The alpha value (0x00 - 0xFF) and RGB color int combined into a single ARGB color int. */
+    public static int bitsToARGB( int a, int rgb ) { return (a & 0xFF) << 24 | rgb; }
     
-    /** @return The green portion of an ARGB color int. Returned value will be in the range 0x00 - 0xFF. */
-    public static int getGreenBits( int color ) { return color >> 8 & 0xFF; }
+    /** @return The red portion of an RGB/ARGB color int. Returned value will be in the range 0x00 - 0xFF. */
+    public static int getRedBits( int argb ) { return argb >> 16 & 0xFF; }
     
-    /** @return The blue portion of an ARGB color int. Returned value will be in the range 0x00 - 0xFF. */
-    public static int getBlueBits( int color ) { return color & 0xFF; }
+    /** @return The green portion of an RGB/ARGB color int. Returned value will be in the range 0x00 - 0xFF. */
+    public static int getGreenBits( int argb ) { return argb >> 8 & 0xFF; }
+    
+    /** @return The blue portion of an RGB/ARGB color int. Returned value will be in the range 0x00 - 0xFF. */
+    public static int getBlueBits( int argb ) { return argb & 0xFF; }
     
     /** @return The alpha (opacity) portion of an ARGB color int. Returned value will be in the range 0x00 - 0xFF. */
-    public static int getAlphaBits( int color ) { return color >> 24 & 0xFF; }
+    public static int getAlphaBits( int argb ) { return argb >> 24 & 0xFF; }
     
-    /** @return The red portion of an ARGB color int. Returned value will be in the range 0.0 - 1.0. */
-    public static float getRed( int color ) { return getFloat( getRedBits( color ) ); }
+    /** @return The red portion of an RGB/ARGB color int. Returned value will be in the range 0.0 - 1.0. */
+    public static float getRed( int argb ) { return getFloat( getRedBits( argb ) ); }
     
-    /** @return The green portion of an ARGB color int. Returned value will be in the range 0.0 - 1.0. */
-    public static float getGreen( int color ) { return getFloat( getGreenBits( color ) ); }
+    /** @return The green portion of an RGB/ARGB color int. Returned value will be in the range 0.0 - 1.0. */
+    public static float getGreen( int argb ) { return getFloat( getGreenBits( argb ) ); }
     
-    /** @return The blue portion of an ARGB color int. Returned value will be in the range 0.0 - 1.0. */
-    public static float getBlue( int color ) { return getFloat( getBlueBits( color ) ); }
+    /** @return The blue portion of an RGB/ARGB color int. Returned value will be in the range 0.0 - 1.0. */
+    public static float getBlue( int argb ) { return getFloat( getBlueBits( argb ) ); }
     
     /** @return The alpha (opacity) portion of an ARGB color int. Returned value will be in the range 0.0 - 1.0. */
-    public static float getAlpha( int color ) { return getFloat( getAlphaBits( color ) ); }
+    public static float getAlpha( int argb ) { return getFloat( getAlphaBits( argb ) ); }
     
     /** @return The color float value (0.0 - 1.0) converted to bits (0x00 - 0xFF). */
-    public static int getBits( float v ) { return (int) (v * 0xFF); }
+    public static int getBits( float f ) { return (int) (f * 0xFF); }
     
     /** @return The color bits (0x00 - 0xFF) converted to a float value (0.0 - 1.0). */
     public static float getFloat( int bits ) { return (float) bits / 0xFF; }
     
     
     // Utility class
-    private CrustMath() { }
+    private CrustMath() {}
 }
