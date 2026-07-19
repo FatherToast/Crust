@@ -49,7 +49,7 @@ public class TestGameEventHandler {
             TestCrust.LOG.debug( "Values = {} for entity: {}", doubles, entityType );
         }
         
-        // Test fuzzy number collections
+        // Test number set
         if( event.getSource().getEntity() instanceof Player player ) {
             ItemStack heldStack = player.getMainHandItem();
             
@@ -59,6 +59,10 @@ public class TestGameEventHandler {
                 level.addFreshEntity( rocket );
                 event.getEntity().kill();
             }
+        }
+        
+        for( Double val : TestCrust.CONFIG.GENERAL.numberListField.entries() ) {
+            TestCrust.LOG.debug( "An incredible double value: {}", val );
         }
     }
     

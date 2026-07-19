@@ -19,6 +19,7 @@ public class SimpleTextureButton extends Button {
     /** A resource location pointing to the texture to use for this button. */
     private final ResourceLocation TEXTURE;
     
+    
     public SimpleTextureButton( int x, int y, int width, int height, @Nullable Component tooltip, ResourceLocation texture, Button.OnPress onPress ) {
         super( x, y, width, height, Component.empty(), onPress, DEFAULT_NARRATION );
         Objects.requireNonNull( texture );
@@ -38,5 +39,11 @@ public class SimpleTextureButton extends Button {
     }
     
     @Override
-    public int getTextureY() { return height * (!active ? 0 : isHoveredOrFocused() ? 2 : 1); }
+    public int getTextureY() {
+        boolean bright = brightWhenFocused() ? isHoveredOrFocused() : isHovered();
+        return height * (!active ? 0 : bright ? 2 : 1);
+    }
+    
+    /** @return True if this button should use its "bright" texture when focused. */
+    protected boolean brightWhenFocused() { return true; }
 }

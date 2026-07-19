@@ -23,6 +23,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.*;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -36,7 +38,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -82,12 +83,12 @@ public class TestConfigFile extends AbstractConfigFile {
         public final BlockStateField blockStateField;
         public final ItemStackField itemStackField;
         //        public final FuzzyKeyField<String> fuzzyKeyField;
-        //        public final ValueCodecField<MobEffectStats> valueCodecField;
+        //        public final ValueCodecField<SoundInstanceStats> valueCodecField;
         public final RegObjectField<Block> blockRegObjectField;
         public final RegObjectField<Item> itemRegObjectField;
         public final RegObjectField<MobEffect> mobEffectRegObjectField;
         public final RegObjectField<EntityType<?>> entityTypeRegObjectField;
-        public final RegObjectField<Attribute> attributeRegObjectField;
+        public final RegObjectField<SoundEvent> soundRegObjectField;
         // Fuzzy collections
         public final FuzzyListField<Long, FuzzyList<Long>> fuzzyListField;
         public final FuzzySetField<ResourceLocation, FuzzySet<ResourceLocation>> fuzzySetField;
@@ -107,6 +108,7 @@ public class TestConfigFile extends AbstractConfigFile {
         public final RegistryWeightedListField<ConfiguredFeature<?, ?>> registryWeightedListField;
         public final RegistryWeightedValueListField<MobEffect, MobEffectStats> registryWeightedValueListField;
         public final NumberSetField<Integer> numberSetField;
+        public final NumberListField<Double> numberListField;
         // Misc collections
         public final AttributeOpListField attributeOpListField;
         public final EnvironmentListField environmentListField;
@@ -189,9 +191,9 @@ public class TestConfigFile extends AbstractConfigFile {
                     new RegObjectField<>( "entity_type_reg_object", IRegWrapper.of( ForgeRegistries.ENTITY_TYPES ),
                             ResourceLocation.withDefaultNamespace( "creeper" ) ), General::testCallback ) ).field();
             
-            attributeRegObjectField = SPEC.define( new InjectionWrapperField<>(
-                    new RegObjectField<>( "attribute_reg_object", IRegWrapper.of( ForgeRegistries.ATTRIBUTES ),
-                            ForgeMod.SWIM_SPEED ), General::testCallback ) ).field();
+            soundRegObjectField = SPEC.define( new InjectionWrapperField<>(
+                    new RegObjectField<>( "sound_reg_object", IRegWrapper.of( ForgeRegistries.SOUND_EVENTS ),
+                            SoundEvents.GOAT_AMBIENT ), General::testCallback ) ).field();
             
             // ---- Fuzzy collections ---- //
             SPEC.callback( General::printLine );
@@ -419,6 +421,13 @@ public class TestConfigFile extends AbstractConfigFile {
                     new NumberSetField<>( "number_set_field", NumberSet.intBuilder()
                             .addBlacklist( 4 )
                             .betweenInclusive( 0, 50 )
+                            .build() ), General::testCallback ).field() );
+            
+            numberListField = SPEC.define( new InjectionWrapperField<>(
+                    new NumberListField<>( "number_list_field", NumberList.doubleBuilder()
+                            .add( 4.0 )
+                            .add( 4.1 )
+                            .add( 4.5 )
                             .build() ), General::testCallback ).field() );
             
             // ---- Misc. collections ---- //

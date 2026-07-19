@@ -3,6 +3,7 @@ package fathertoast.crust.api.config.common.field;
 import fathertoast.crust.api.config.client.gui.EntryViewRendererRegistry;
 import fathertoast.crust.api.config.client.gui.widget.provider.EntryViewWidgetProvider;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
+import fathertoast.crust.api.config.client.gui.widget.provider.SoundPlayerWidgetProvider;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
@@ -11,6 +12,8 @@ import fathertoast.crust.api.util.OnClient;
 import fathertoast.crust.api.util.ResourceLocationUtils;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -143,6 +146,11 @@ public class RegObjectField<T> extends GenericField<RegObjKey.Basic<T>> {
     @Override
     @OnClient
     public IConfigFieldWidgetProvider getWidgetProvider() {
+        // Special case for sound events
+        if( WRAPPED_REGISTRY.asForgeRegistry() == ForgeRegistries.SOUND_EVENTS ) {
+            // noinspection unchecked
+            return SoundPlayerWidgetProvider.ofField( (RegObjectField<SoundEvent>) this );
+        }
         return new EntryViewWidgetProvider.Simple<>(
                 this::getRegistryObject,
                 EntryViewRendererRegistry.getForRegistry( WRAPPED_REGISTRY.registryKey() ),
@@ -151,7 +159,7 @@ public class RegObjectField<T> extends GenericField<RegObjKey.Basic<T>> {
     }
     
     /** @return A registry based line validator using the given field. */
-    protected Predicate<String> lineValidator() {
+    public Predicate<String> lineValidator() {
         return ( s ) -> {
             final ResourceLocation id = ResourceLocation.tryParse( s );
             
