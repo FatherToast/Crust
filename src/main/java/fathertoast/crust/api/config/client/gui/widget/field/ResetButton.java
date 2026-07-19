@@ -24,6 +24,7 @@ public class ResetButton extends Button {
                 Component.empty(), onPress, DEFAULT_NARRATION );
     }
     
+    /** Renders this widget. */
     @Override
     public void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTick ) {
         RenderSystem.enableDepthTest();
@@ -32,6 +33,7 @@ public class ResetButton extends Button {
                 WIDTH, HEIGHT, WIDTH, HEIGHT * 3 );
     }
     
+    /** @return The current texture Y-offset to use when rendering this button. */
     @Override
     public int getTextureY() { return HEIGHT * (!active ? 0 : isHoveredOrFocused() ? 2 : 1); }
 }

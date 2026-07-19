@@ -20,6 +20,7 @@ public class DeleteButton extends Button {
                 Component.empty(), onPress, DEFAULT_NARRATION );
     }
     
+    /** Renders this widget. */
     @Override
     public void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTick ) {
         RenderSystem.enableDepthTest();
@@ -28,6 +29,7 @@ public class DeleteButton extends Button {
                 WIDTH, HEIGHT, WIDTH, HEIGHT * 2 );
     }
     
+    /** @return The current texture Y-offset to use when rendering this button. */
     @Override
     public int getTextureY() { return HEIGHT * (!active ? 0 : isHoveredOrFocused() ? 1 : 2); }
 }

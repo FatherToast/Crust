@@ -1,5 +1,6 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import fathertoast.crust.api.config.client.gui.EntryViewRendererRegistry;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -32,17 +33,24 @@ public class EntryViewWidget<V> extends AbstractWidget {
         this.valueSupplier = Objects.requireNonNull( valueSupplier );
     }
     
-    
+    /** Renders this widget. */
     @Override
     protected void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTick ) {
         renderer.render( valueSupplier, graphics, getX(), getY(), mouseX, mouseY, partialTick );
     }
     
+    /** Called when building narration elements for this widget. */
     @Override
     protected void updateWidgetNarration( NarrationElementOutput output ) {
         // Nothing to narrate
     }
     
+    /**
+     * Called when a mouse button is clicked.
+     *
+     * @param mouseKey The mouse key that was clicked (see {@link InputConstants.Type#MOUSE}).
+     * @return True if the event has been handled.
+     */
     @Override
     public boolean mouseClicked( double x, double y, int mouseKey ) {
         return false;

@@ -32,6 +32,7 @@ public class ExtraMenuButton extends Button {
                 BUTTON_SIZE, BUTTON_SIZE, BUTTON_SIZE, BUTTON_SIZE * 2 );
     }
     
+    /** @return The current texture Y-offset to use when rendering this button. */
     @Override
     public int getTextureY() { return BUTTON_SIZE * (isHovered ? 1 : 0); }
 }

@@ -1,5 +1,6 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import fathertoast.crust.api.ICrustApi;
 import net.minecraft.client.gui.GuiGraphics;
@@ -38,6 +39,7 @@ public class ColorPreviewWidget extends AbstractWidget {
         argb = usesAlpha ? color : color | 0xFF000000;
     }
     
+    /** Renders this widget. */
     @Override
     public void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks ) {
         if( !visible ) return;
@@ -49,11 +51,18 @@ public class ColorPreviewWidget extends AbstractWidget {
                 getX() + size - 1, getY() + size - 1, argb );
     }
     
+    /** Called when building narration elements for this widget. */
     @Override
     protected void updateWidgetNarration( NarrationElementOutput output ) {
         // Nothing to narrate
     }
     
+    /**
+     * Called when a mouse button is clicked.
+     *
+     * @param mouseKey The mouse key that was clicked (see {@link InputConstants.Type#MOUSE}).
+     * @return True if the event has been handled.
+     */
     @Override
     public boolean mouseClicked( double x, double y, int mouseKey ) {
         return false;

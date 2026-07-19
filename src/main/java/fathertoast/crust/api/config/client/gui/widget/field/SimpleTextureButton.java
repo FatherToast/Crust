@@ -30,6 +30,7 @@ public class SimpleTextureButton extends Button {
         }
     }
     
+    /** Renders this widget. */
     @Override
     public void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTick ) {
         RenderSystem.enableDepthTest();
@@ -38,6 +39,7 @@ public class SimpleTextureButton extends Button {
                 width, height, width, height * 3 );
     }
     
+    /** @return The current texture Y-offset to use when rendering this button. */
     @Override
     public int getTextureY() {
         boolean bright = brightWhenFocused() ? isHoveredOrFocused() : isHovered();

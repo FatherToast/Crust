@@ -257,10 +257,9 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
     @Override
     public boolean isMouseOver( double x, double y ) { return y >= y0 && y <= y1 && x >= x0 && x <= x1; }
     
+    /** Called when building narration elements for this widget. */
     @Override
-    protected void updateWidgetNarration( NarrationElementOutput output ) {
-    
-    }
+    protected void updateWidgetNarration( NarrationElementOutput output ) { }
     
     /** True if currently scrolling (from clicking on the scrollbar). */
     private boolean scrolling;
@@ -695,8 +694,9 @@ public class PopupListWidget<E extends PopupListWidget.AbstractListEntry<E>> ext
         /**
          * Called when focus change is requested (for example, tab or shift+tab).
          *
-         * @param event (Don't quite know how this thing works yet)
-         * @return This gui's new focus state.
+         * @param event Represents the type of focus shift. In vanilla, this is always
+         *              one of the three following types: {@code ArrowNavigation}, {@code InitialFocus} or {@code TabNavigation}.
+         * @return This GUI's new focus state.
          */
         @Override
         @Nullable

@@ -47,13 +47,15 @@ public class ExtraInventoryButton extends Button {
         INFO = info;
     }
     
+    /** Called when this button is either clicked or activated with a keystroke. */
     @Override
     public void onPress() {
         super.onPress();
         PARENT.skipNextRelease = true;
     }
     
-    @Override
+    /** Renders this renderable. */
+    @Override // Renderable
     public void render( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks ) {
         if( ClientRegister.EXTRA_INV_BUTTONS.GENERAL.hideForRecipeBook.get() && HAS_RECIPE_BOOK ) {
             visible = !((RecipeUpdateListener) PARENT).getRecipeBookComponent().isVisible();
@@ -62,6 +64,7 @@ public class ExtraInventoryButton extends Button {
         super.render( graphics, mouseX, mouseY, partialTicks );
     }
     
+    /** Renders this widget. */
     @Override
     public void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks ) {
         Minecraft mc = Minecraft.getInstance();
@@ -98,9 +101,11 @@ public class ExtraInventoryButton extends Button {
         graphics.pose().popPose();
     }
     
+    /** @return The current texture Y-offset to use when rendering this button. */
     @Override
     public int getTextureY() { return BUTTON_SIZE * (!active ? 0 : isHovered() ? 2 : 1); }
     
+    /** @return A tooltip to be used for this button. */
     public static Tooltip createButtonTooltip( String tooltip ) {
         return Tooltip.create( Component.translatable( tooltip ) );
     }

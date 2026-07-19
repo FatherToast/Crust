@@ -1,5 +1,6 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import fathertoast.crust.api.client.util.GuiUtil;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
@@ -64,12 +65,19 @@ public class TextWithSubtitle extends AbstractWidget {
             setTooltip( Tooltip.create( subtitle ) );
     }
     
+    /**
+     * Called when a mouse button is clicked.
+     *
+     * @param mouseKey The mouse key that was clicked (see {@link InputConstants.Type#MOUSE}).
+     * @return True if the event has been handled.
+     */
     @Override
     public boolean mouseClicked( double x, double y, int mouseKey ) {
         // Do nothing and return
         return false;
     }
     
+    /** Creates a tooltip positioner for this widget. */
     @Override
     protected ClientTooltipPositioner createTooltipPositioner() {
         return GuiUtil.getOrForMenu( this, CENTER_X
@@ -78,16 +86,19 @@ public class TextWithSubtitle extends AbstractWidget {
         );
     }
     
+    /** Renders this widget. */
     @Override
     protected void renderWidget( GuiGraphics graphics, int mouseX, int mouseY, float partialTick ) {
         graphics.drawString( FONT, TEXT, getX(), getY(), 0xFFFFFF );
     }
     
+    /** Called when building narration elements for this widget. */
     @Override
     protected void updateWidgetNarration( NarrationElementOutput output ) {
         output.add( NarratedElementType.TITLE, TEXT );
     }
     
+    /** @return This widget's current focus path. */
     @Override
     @Nullable
     public ComponentPath getCurrentFocusPath() {
@@ -95,6 +106,13 @@ public class TextWithSubtitle extends AbstractWidget {
         return null;
     }
     
+    /**
+     * Called when focus change is requested (for example, tab or shift+tab).
+     *
+     * @param event Represents the type of focus shift. In vanilla, this is always
+     *              one of the three following types: {@code ArrowNavigation}, {@code InitialFocus} or {@code TabNavigation}.
+     * @return This GUI's new focus state.
+     */
     @Override
     @Nullable
     public ComponentPath nextFocusPath( FocusNavigationEvent event ) {
