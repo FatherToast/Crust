@@ -2,11 +2,24 @@ package fathertoast.crust.api.config.common.field.collection;
 
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.NumberSet;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * Represents a config field with a number set value.
+ * Use {@link #contains(T)} to check if a target number is in the set.
+ * <p>
+ * All standard primitive number types are supported: bytes, shorts, ints,
+ * longs, floats and doubles.
+ *
+ * @param <T> The number type to match against (integer, float, long etc.).
+ * @see Number
+ */
+@ApiStatus.Experimental
 public class NumberSetField<T extends Number> extends FuzzySetField<T, NumberSet<T>> {
     
     /**
@@ -26,10 +39,10 @@ public class NumberSetField<T extends Number> extends FuzzySetField<T, NumberSet
                 "the entry to match a range of values:" );
         comment.add( "    '<' - Matches all values that are lower than the key's value." );
         comment.add( "    '>' - Matches all values that are greater than the key's value." );
-        comment.add( "    '%' - Matches all values that are perfectly divisibly by the key's value." );
         comment.add( "    '<=' - Matches all values that are lower or equal tto the key's value." );
         comment.add( "    '>=' - Matches all values that are greater or equal to key's value." );
         comment.add( "    '!=' - Matches all values that not equal to the key's value." );
+        comment.add( "    '%' - Matches all values that are perfectly divisibly by the key's value." );
         
         comment.add( "" );
         comment.add( "  To match a specific range between two values you can use the '~' symbol." );

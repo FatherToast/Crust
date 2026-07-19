@@ -6,6 +6,13 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 
+/**
+ * A fuzzy set used to match numbers.
+ *
+ * @see NumberKey
+ * @see fathertoast.crust.api.config.common.field.collection.NumberSetField
+ * @see NumberMap NumberMap - A similar collection that allows values
+ */
 @ApiStatus.Experimental
 public class NumberSet<T extends Number> extends FuzzySet<T> {
     
@@ -34,13 +41,13 @@ public class NumberSet<T extends Number> extends FuzzySet<T> {
         return new Builder<>( NumberKey.ValueType.FLOAT );
     }
     
-    /** Creates a new builder for a {@code byte} double set. */
+    /** Creates a new builder for a {@code double} number set. */
     public static Builder<Double, ?> doubleBuilder() {
         return new Builder<>( NumberKey.ValueType.DOUBLE );
     }
     
     
-    /** The {@link NumberKey.ValueType} of this field. */
+    /** The {@link NumberKey.ValueType} of this number set. */
     private final NumberKey.ValueType valueType;
     
     
