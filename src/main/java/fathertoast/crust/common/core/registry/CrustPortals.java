@@ -41,7 +41,7 @@ public final class CrustPortals {
      */
     public static void onRegistryCreate( NewRegistryEvent event ) {
         RegistryBuilder<PortalBuilder> builder = new RegistryBuilder<>();
-        builder.setName( Crust.rl( "portal_builder" ) );
+        builder.setName( CrustObjects.Portals.REGISTRY_KEY.location() );
         CrustObjects.PORTAL_REGISTRY = event.create( builder );
     }
     
