@@ -27,7 +27,7 @@ public interface ICrustApi {
      * Returns null otherwise.
      */
     @Nullable
-    IDifficultyAccessor getDifficultyAccessor();
+    IApocalypseDifficultyAccessor getDifficultyAccessor();
     
     /**
      * @return Crust's client configs wrapped in an easy-to-read

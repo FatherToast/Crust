@@ -1,7 +1,7 @@
 package fathertoast.crust.common.api.impl.accessor.apocalypse;
 
-import com.toast.apocalypse.api.plugin.DifficultyProvider;
-import fathertoast.crust.api.IDifficultyAccessor;
+import com.toast.apocalypse.api.plugin.IDifficultyAccessor;
+import fathertoast.crust.api.IApocalypseDifficultyAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -13,12 +13,12 @@ import java.util.List;
  * Helper class for accessing Apocalypse difficulty data.
  * (Take care not to call any of this if Apocalypse is not installed, will result in runtime-anger :biglist:)
  */
-public final class DifficultyAccessor implements IDifficultyAccessor {
+public final class ApocalypseDifficultyAccessor implements IApocalypseDifficultyAccessor {
     
     // Apocalypse's provider.
-    private DifficultyProvider provider;
+    private IDifficultyAccessor provider;
     
-    public void setDifficultyProvider( DifficultyProvider provider ) {
+    public void setDifficultyProvider( IDifficultyAccessor provider ) {
         this.provider = provider;
     }
     

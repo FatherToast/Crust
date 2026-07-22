@@ -1,8 +1,8 @@
 package fathertoast.crust.test.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import fathertoast.crust.api.IApocalypseDifficultyAccessor;
 import fathertoast.crust.api.ICrustApi;
-import fathertoast.crust.api.IDifficultyAccessor;
 import fathertoast.crust.api.client.SortedKeyMapping;
 import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.client.ClientRegister;
@@ -59,7 +59,7 @@ public class TestClientForgeEventHandler {
                     BlockPos pos = minecraft.player.blockPosition();
                     
                     // Test the Apocalypse Rebooted difficulty hooks
-                    IDifficultyAccessor diffAccess = TestCrust.API.getDifficultyAccessor();
+                    IApocalypseDifficultyAccessor diffAccess = TestCrust.API.getDifficultyAccessor();
                     if( diffAccess == null ) {
                         TestCrust.LOG.info( "Player Difficulty: N/A" );
                     }

@@ -1,12 +1,12 @@
 package fathertoast.crust.common.api.impl;
 
+import fathertoast.crust.api.IApocalypseDifficultyAccessor;
 import fathertoast.crust.api.ICrustApi;
-import fathertoast.crust.api.IDifficultyAccessor;
 import fathertoast.crust.api.client.accessor.IClientConfigAccessor;
 import fathertoast.crust.api.entity.IPlayerVelocityWatcher;
 import fathertoast.crust.api.lib.CrustMath;
 import fathertoast.crust.client.ClientRegister;
-import fathertoast.crust.common.api.impl.accessor.apocalypse.DifficultyAccessor;
+import fathertoast.crust.common.api.impl.accessor.apocalypse.ApocalypseDifficultyAccessor;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
@@ -23,12 +23,12 @@ import java.util.function.Function;
 
 public final class CrustApi implements ICrustApi {
     
-    private final IDifficultyAccessor difficultyAccessor;
+    private final IApocalypseDifficultyAccessor difficultyAccessor;
     
     public CrustApi() {
         if( ModList.get().isLoaded( "apocalypse" ) ) {
             // Do not instantiate unless Apocalypse is present
-            difficultyAccessor = new DifficultyAccessor();
+            difficultyAccessor = new ApocalypseDifficultyAccessor();
             Crust.LOG.info( "Instantiated Apocalypse Difficulty Accessor" );
         }
         else {
@@ -44,7 +44,7 @@ public final class CrustApi implements ICrustApi {
     
     @Nullable
     @Override
-    public IDifficultyAccessor getDifficultyAccessor() { return difficultyAccessor; }
+    public IApocalypseDifficultyAccessor getDifficultyAccessor() { return difficultyAccessor; }
     
     @Nullable
     @Override

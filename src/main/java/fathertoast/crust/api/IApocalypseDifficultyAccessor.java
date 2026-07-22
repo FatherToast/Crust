@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Interface for accessing Apocalypse difficulty data.
  */
-public interface IDifficultyAccessor {
+public interface IApocalypseDifficultyAccessor {
     
     /** @return The rate at which difficulty is increasing for a player. */
     double getDifficultyRate( Player player );
