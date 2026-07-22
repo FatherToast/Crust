@@ -43,4 +43,8 @@ public final class CrustEntityHelper {
         return EntityType.Builder.of( factory, MobCategory.MISC ).noSave().noSummon()
                 .sized( 0.25F, 0.25F ).clientTrackingRange( 4 ).updateInterval( 5 );
     }
+    
+    
+    // Utility class
+    private CrustEntityHelper() { }
 }
