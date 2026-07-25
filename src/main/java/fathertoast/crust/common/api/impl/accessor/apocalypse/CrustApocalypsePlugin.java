@@ -1,7 +1,7 @@
 package fathertoast.crust.common.api.impl.accessor.apocalypse;
 
+import com.toast.apocalypse.api.IApocalypseApi;
 import com.toast.apocalypse.api.plugin.ApocalypsePlugin;
-import com.toast.apocalypse.api.plugin.IApocalypseApi;
 import com.toast.apocalypse.api.plugin.IApocalypsePlugin;
 import fathertoast.crust.common.api.impl.CrustApi;
 import fathertoast.crust.common.core.Crust;

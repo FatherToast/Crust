@@ -1,6 +1,6 @@
 package fathertoast.crust.common.api.impl.accessor.apocalypse;
 
-import com.toast.apocalypse.api.plugin.IDifficultyAccessor;
+import com.toast.apocalypse.api.IDifficultyAccessor;
 import fathertoast.crust.api.IApocalypseDifficultyAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,17 +22,21 @@ public final class ApocalypseDifficultyAccessor implements IApocalypseDifficulty
         this.provider = provider;
     }
     
+    /** @return The rate at which difficulty is increasing for a player. */
     @Override
     public double getDifficultyRate( Player player ) { return provider.getDifficultyRate( player ); }
     
+    /** @return The difficulty for a player. */
     @Override
     public long getPlayerDifficulty( Player player ) { return provider.getPlayerDifficulty( player ); }
     
+    /** @return The difficulty for the player nearest to a location. */
     @Override
     public long getNearestPlayerDifficulty( Level level, BlockPos origin ) {
         return getNearestPlayerDifficulty( level, origin, -1 );
     }
     
+    /** @return The difficulty for the player nearest to a location, with a max search radius. */
     @Override
     public long getNearestPlayerDifficulty( Level level, BlockPos origin, double searchRadius ) {
         Player player = level.getNearestPlayer( origin.getX(), origin.getY(), origin.getZ(),
@@ -40,9 +44,11 @@ public final class ApocalypseDifficultyAccessor implements IApocalypseDifficulty
         return player == null ? 0 : provider.getPlayerDifficulty( player );
     }
     
+    /** @return The max difficulty for a player. */
     @Override
     public long getMaxPlayerDifficulty( Player player ) { return provider.getMaxPlayerDifficulty( player ); }
     
+    /** @return The id for the currently running event. */
     @Override
     public List<Integer> currentEventIds( ServerPlayer player ) { return provider.getEventIds( player ); }
 }
