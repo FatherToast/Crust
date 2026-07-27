@@ -23,10 +23,10 @@ public enum CrustAnchor {
      * @return The anchored position of the object's top-left corner.
      */
     public int pos( int regionSize, int size ) {
-        return switch (this) {
+        return switch( this ) {
             case TOP, LEFT, SCREEN_TOP, SCREEN_LEFT -> 0;
             case BOTTOM, RIGHT, SCREEN_BOTTOM, SCREEN_RIGHT -> regionSize - size;
-            default -> (regionSize - size) / 2;
+            default -> (regionSize >> 1) - (size >> 1);
         };
     }
     
@@ -41,12 +41,12 @@ public enum CrustAnchor {
      * @see #pos(int, int, int, int) Anchoring to an off-center GUI window.
      */
     public int pos( int screenSize, int guiSize, int size ) {
-        return switch (this) {
+        return switch( this ) {
             case SCREEN_TOP, SCREEN_LEFT -> 0;
             case SCREEN_BOTTOM, SCREEN_RIGHT -> screenSize - size;
-            case TOP, LEFT -> (screenSize - guiSize) / 2 - size;
-            case BOTTOM, RIGHT -> (screenSize + guiSize) / 2;
-            default -> (screenSize - size) / 2;
+            case TOP, LEFT -> (screenSize >> 1) - (guiSize >> 1) - size;
+            case BOTTOM, RIGHT -> (screenSize >> 1) + (guiSize >> 1);
+            default -> (screenSize >> 1) - (size >> 1);
         };
     }
     
@@ -62,12 +62,12 @@ public enum CrustAnchor {
      * @see #pos(int, int, int) Anchoring to a centered GUI window.
      */
     public int pos( int screenSize, int guiSize, int guiPos, int size ) {
-        return switch (this) {
+        return switch( this ) {
             case SCREEN_TOP, SCREEN_LEFT -> 0;
             case SCREEN_BOTTOM, SCREEN_RIGHT -> screenSize - size;
             case TOP, LEFT -> guiPos - size;
             case BOTTOM, RIGHT -> guiPos + guiSize;
-            default -> guiPos + (guiSize - size) / 2;
+            default -> guiPos + (guiSize >> 1) - (size >> 1);
         };
     }
 }
