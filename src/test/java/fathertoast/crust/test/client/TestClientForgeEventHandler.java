@@ -86,7 +86,7 @@ public class TestClientForgeEventHandler {
      */
     @SubscribeEvent
     public static void onInitScreen( ScreenEvent.Init.Post event ) {
-        // Add a button to the config select screen that opens the test screen.
+        // Add a button to the title screen that opens the test screen
         if( event.getScreen() instanceof TitleScreen screen ) {
             Minecraft mc = screen.getMinecraft();
             CfgEditorCrustConfig.Button config = ClientRegister.CONFIG_EDITOR.MAIN_BUTTON;
