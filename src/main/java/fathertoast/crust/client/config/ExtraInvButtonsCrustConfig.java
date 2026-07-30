@@ -112,7 +112,7 @@ public class ExtraInvButtonsCrustConfig extends AbstractConfigFile {
             
             SPEC.newLine();
             
-            offsetY = SPEC.define( new IntField( "offset.vertical", 16, IntField.Range.ANY,
+            offsetY = SPEC.define( new IntField( "offset.vertical", 30, IntField.Range.ANY,
                     "The position offset for the extra inventory buttons from the anchor position, in GUI pixels. " +
                             "Negative values move the buttons toward the top/left, positive move them toward the bottom/right." ) );
             offsetX = SPEC.define( new IntField( "offset.horizontal", 16, IntField.Range.ANY,
