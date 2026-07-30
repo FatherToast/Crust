@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 @JeiPlugin
-public class CrustJeiPlugin implements IModPlugin {
+public final class CrustJeiPlugin implements IModPlugin {
     
     public static final ResourceLocation PLUGIN_ID = Crust.rl( "crust_jei" );
     
