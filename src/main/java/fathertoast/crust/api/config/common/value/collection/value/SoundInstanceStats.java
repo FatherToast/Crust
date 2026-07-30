@@ -5,6 +5,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nullable;
+
 /**
  * A simple multi-value codec.
  * When loaded as a value, holds a sound event ID, volume and pitch to play a sound instance.
@@ -51,6 +53,16 @@ public class SoundInstanceStats extends MultiValueCodec<SoundInstanceStats> {
         volume = subValue( DoubleValueCodec.NON_NEGATIVE, DoubleValueCodec.NON_NEGATIVE.getFormat( "Volume" ) );
         final DoubleValueCodec pitchCodec = DoubleValueCodec.of( 1.0, 0.5, 2.0 );
         pitch = subValue( pitchCodec, pitchCodec.getFormat( "Pitch" ) );
+    }
+    
+    /** @return The sound event associated with this sound instance's sound ID, if it exists in the registry. */
+    @Nullable
+    public SoundEvent getSound() {
+        final ResourceLocation id = soundId.get();
+        if( ForgeRegistries.SOUND_EVENTS.containsKey( id ) ) {
+            return ForgeRegistries.SOUND_EVENTS.getValue( id );
+        }
+        return null;
     }
     
     /** @return A new effect instance using the loaded duration and amplifier. */
