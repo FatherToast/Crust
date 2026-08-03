@@ -6,6 +6,7 @@ import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.client.SortedKeyMapping;
 import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.client.ClientRegister;
+import fathertoast.crust.client.ScreenEvents;
 import fathertoast.crust.client.config.CfgEditorCrustConfig;
 import fathertoast.crust.client.screen.widget.button.ExtraMenuButton;
 import fathertoast.crust.test.common.TestCrust;
@@ -14,6 +15,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
@@ -86,7 +89,7 @@ public class TestClientForgeEventHandler {
      */
     @SubscribeEvent
     public static void onInitScreen( ScreenEvent.Init.Post event ) {
-        // Add a button to the config select screen that opens the test screen.
+        // Add a button to the title screen that opens the test screen
         if( event.getScreen() instanceof TitleScreen screen ) {
             Minecraft mc = screen.getMinecraft();
             CfgEditorCrustConfig.Button config = ClientRegister.CONFIG_EDITOR.MAIN_BUTTON;
@@ -117,6 +120,29 @@ public class TestClientForgeEventHandler {
                     Component.literal( "Open test screen" ),
                     button -> screen.getMinecraft().setScreen( new TestScreen( screen ) ),
                     Supplier::get ) );
+        }
+    }
+    
+    /** Called right before a screen is being rendered. */
+    @SubscribeEvent
+    public static void onRenderScreen( ScreenEvent.Render.Pre event ) {
+        if( !ClientRegister.EXTRA_INV_BUTTONS.GENERAL.enabled.get() )
+            return;
+        
+        // Render a translucent rectangle behind the extra inventory buttons
+        // to properly visualize X, Y, width and height of the occupied area
+        if( event.getScreen() instanceof AbstractContainerScreen ) {
+            if( ScreenEvents.INV_BUTTONS_AREA != null ) {
+                final Rect2i rect = ScreenEvents.INV_BUTTONS_AREA;
+                // noinspection ConstantConditions
+                event.getGuiGraphics().fill(
+                        rect.getX(),
+                        rect.getY(),
+                        rect.getWidth() + rect.getX(),
+                        rect.getHeight() + rect.getY(),
+                        0xAAEE2222
+                );
+            }
         }
     }
 }

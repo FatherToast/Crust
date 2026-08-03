@@ -15,21 +15,34 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber( value = Dist.CLIENT, modid = ICrustApi.MOD_ID )
 public final class ScreenEvents {
     
+    /**
+     * A rectangle representing the last known space that was or is occupied by Crust's
+     * extra inventory buttons. Used by Crust's {@link fathertoast.crust.common.compat.jei.CrustJeiPlugin JEI plugin}
+     * to let JEI know where the buttons are to avoid rendering things in the same space.
+     *
+     * @see ScreenEvents#addExtraInventoryButtons(ScreenEvent.Init, AbstractContainerScreen)
+     */
+    @Nullable
+    public static volatile Rect2i INV_BUTTONS_AREA = null;
+    
+    
     /** Called when a GUI is initialized. */
     @SubscribeEvent
-    static void onGuiInit( ScreenEvent.Init.Post event ) {
+    public static void onGuiInit( ScreenEvent.Init.Post event ) {
         if( ClientRegister.EXTRA_INV_BUTTONS.GENERAL.enabled.get() && event.getScreen() instanceof AbstractContainerScreen ) {
             MultiPlayerGameMode gameMode = Minecraft.getInstance().gameMode;
             boolean creative = gameMode != null && gameMode.hasInfiniteItems(); // Avoid double-initializing our buttons
@@ -79,6 +92,8 @@ public final class ScreenEvents {
         
         int posX = config.anchorX.get().pos( screenWidth, screen.getXSize(), screen.getGuiLeft(), width ) + config.offsetX.get();
         int posY = config.anchorY.get().pos( screenHeight, screen.getYSize(), screen.getGuiTop(), height ) + config.offsetY.get();
+        
+        INV_BUTTONS_AREA = new Rect2i( posX, posY, width, height );
         
         for( int i = 0; i < buttonCount; i++ ) {
             event.addListener( new ExtraInventoryButton( screen,

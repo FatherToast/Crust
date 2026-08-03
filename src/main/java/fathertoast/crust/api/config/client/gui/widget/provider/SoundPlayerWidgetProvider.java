@@ -8,9 +8,7 @@ import fathertoast.crust.api.config.common.value.collection.value.SoundInstanceS
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -64,7 +62,7 @@ public class SoundPlayerWidgetProvider implements IConfigFieldWidgetProvider {
      */
     @Override
     public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
-        final SoundPlayerWidget soundPlayerWidget = new SoundPlayerWidget( VALUE_SUPPLIER, VALUE_WIDTH - EntryViewWidget.DEFAULT_SIZE, 0, 20, 20 );
+        final SoundPlayerWidget soundPlayer = new SoundPlayerWidget( displayValue.toString(), VALUE_WIDTH - EntryViewWidget.DEFAULT_SIZE, 0, 20, 20 );
         
         // noinspection resource
         EditBox editBox = new EditBox( listEntry.minecraft().font,
@@ -81,24 +79,20 @@ public class SoundPlayerWidgetProvider implements IConfigFieldWidgetProvider {
                     editBox.setTextColor( INVALID_COLOR );
                     listEntry.clearValue();
                     // Update sound player widget
-                    soundPlayerWidget.setSound( null );
-                    soundPlayerWidget.active = false;
+                    soundPlayer.setSound( null );
                 }
                 else {
                     editBox.setTextColor( DEFAULT_COLOR );
                     listEntry.updateValue( value );
                     // Update sound player widget
-                    ResourceLocation soundId = ResourceLocation.tryParse( value );
-                    SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue( soundId );
-                    soundPlayerWidget.setSound( sound );
-                    soundPlayerWidget.active = true;
+                    soundPlayer.setSoundFromId( value );
                 }
             } );
         }
         else {
             editBox.setResponder( listEntry::updateValue );
         }
-        components.add( soundPlayerWidget );
+        components.add( soundPlayer );
         components.add( editBox );
     }
 }

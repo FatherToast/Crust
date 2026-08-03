@@ -13,7 +13,6 @@ import net.minecraft.util.Mth;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
-import java.util.function.Supplier;
 
 /**
  * A simple button widget that plays a sound event.
@@ -21,13 +20,6 @@ import java.util.function.Supplier;
 public class SoundPlayerWidget extends SimpleTextureButton {
     
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "textures/speaker.png" );
-    
-    /**
-     * A supplier that provides sound data for this widget. This field takes priority over
-     * the below fields, so if this field is not null, the below fields will not be used.
-     */
-    @Nullable
-    private Supplier<SoundInstanceStats> soundProvider;
     
     /** The sound event to play. Can be null. */
     @Nullable
@@ -38,18 +30,60 @@ public class SoundPlayerWidget extends SimpleTextureButton {
     private float pitch = 1.0F;
     
     
+    /** Creates a new instance with no initial sound data. */
     public SoundPlayerWidget( int x, int y, int width, int height ) {
         super( x, y, width, height, Component.empty(), TEXTURE, ( button ) -> { } );
+        // Initially inactive, until a sound is set
+        active = false;
     }
     
-    public SoundPlayerWidget( @Nullable Supplier<SoundInstanceStats> soundInstanceSupplier, int x, int y, int width, int height ) {
-        this( x, y, width, height );
-        soundProvider = soundInstanceSupplier;
+    /**
+     * Creates a new instance with an initial sound.
+     *
+     * @param initialSound Either a sound event or the ID of a sound event in the form of a {@link ResourceLocation} or a string.
+     */
+    public SoundPlayerWidget( Object initialSound, int x, int y, int width, int height ) {
+        super( x, y, width, height, Component.empty(), TEXTURE, ( button ) -> { } );
+        if( initialSound instanceof SoundEvent sound ) {
+            setSound( sound );
+        }
+        else if( initialSound instanceof ResourceLocation soundId ) {
+            setSoundFromId( soundId );
+        }
+        else if( initialSound instanceof String s ) {
+            setSoundFromId( ResourceLocation.tryParse( s ) );
+        }
+        else {
+            throw new IllegalArgumentException( "Initial sound object must either be a sound event or a sound event ID " +
+                    "in the form of a resource location or a string!" );
+        }
     }
     
-    /** Sets this widget's playback sound. */
+    
+    /** Sets this widget's playback sound and updates active state. */
     public void setSound( @Nullable SoundEvent sound ) {
         soundEvent = sound;
+        active = sound != null;
+    }
+    
+    /** Sets this widget's playback sound from the specified ID and updates active state. */
+    public void setSoundFromId( @Nullable ResourceLocation soundId ) {
+        if( soundId == null ) {
+            setSound( null );
+            return;
+        }
+        if( ForgeRegistries.SOUND_EVENTS.containsKey( soundId ) ) {
+            setSound( ForgeRegistries.SOUND_EVENTS.getValue( soundId ) );
+        }
+    }
+    
+    /** Sets this widget's playback sound from the specified ID string and updates active state. */
+    public void setSoundFromId( @Nullable String soundId ) {
+        if( soundId == null ) {
+            setSound( null );
+            return;
+        }
+        setSoundFromId( ResourceLocation.tryParse( soundId ) );
     }
     
     /** Sets this widget's playback volume. Ensures the value is not negative. */
@@ -62,12 +96,9 @@ public class SoundPlayerWidget extends SimpleTextureButton {
         pitch = Mth.clamp( pit, 0.5F, 2.0F );
     }
     
-    /** Plays this widget's sound. */
+    /** Plays this widget's sound, if it is not null. */
     protected void playSound() {
-        if( soundProvider != null ) {
-            playUISound( soundProvider.get() );
-        }
-        else if( soundEvent != null ) {
+        if( soundEvent != null ) {
             playUISound( soundEvent, volume, pitch );
         }
     }
@@ -78,7 +109,7 @@ public class SoundPlayerWidget extends SimpleTextureButton {
     }
     
     /**
-     * Attempts to play the sound contained within the specified sound instance stats instance.
+     * Attempts to play a sound event using the specified sound instance stats.
      * If the instance is null, this method will do nothing.
      */
     private void playUISound( @Nullable SoundInstanceStats soundData ) {
