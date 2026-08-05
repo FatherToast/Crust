@@ -30,8 +30,7 @@ public interface ICrustApi {
     IApocalypseDifficultyAccessor getDifficultyAccessor();
     
     /**
-     * @return Crust's client configs wrapped in an easy-to-read
-     * interface to read their values.
+     * @return An interface providing read access to Crust's client config values.
      * <br><br>
      * If called on dedicated server or before
      * Crust's client configs have been initialized (during {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent}),
