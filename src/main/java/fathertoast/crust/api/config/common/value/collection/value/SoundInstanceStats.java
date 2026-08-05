@@ -30,6 +30,15 @@ public class SoundInstanceStats extends MultiValueCodec<SoundInstanceStats> {
         return of( soundId, 1.0F, 1.0F );
     }
     
+    /** @return New sound instance stats with the given sound event and default volume and pitch. */
+    public static SoundInstanceStats of( SoundEvent sound ) {
+        final ResourceLocation soundId = ForgeRegistries.SOUND_EVENTS.getKey( sound );
+        if( soundId == null ) {
+            throw new IllegalArgumentException( "Cannot create an instance using an unregistered sound event!" );
+        }
+        return of( soundId, 1.0F, 1.0F );
+    }
+    
     
     /** The sound event ID. Defaults to "crust:empty". */
     public final SubValue<ResourceLocation> soundId;
