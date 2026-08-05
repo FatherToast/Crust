@@ -108,7 +108,9 @@ public class TestConfigFile extends AbstractConfigFile {
         public final RegistryWeightedListField<ConfiguredFeature<?, ?>> registryWeightedListField;
         public final RegistryWeightedValueListField<MobEffect, MobEffectStats> registryWeightedValueListField;
         public final NumberSetField<Integer> numberSetField;
-        public final NumberListField<Double> numberListField;
+        public final NumberListField<Float> numberListField;
+        public final NumberMapField<Byte, SoundInstanceStats> numberMapField;
+        public final NumberValueListField<Long, Rarity> numberValueListField;
         // Misc collections
         public final AttributeOpListField attributeOpListField;
         public final EnvironmentListField environmentListField;
@@ -222,7 +224,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             .put( NumberKey.exactly( 1.0, false ), "Bonky" )
                             .put( NumberKey.exactly( 2.0, false ), "Spinky" )
                             .put( NumberKey.exactly( 3.0, false ), "Sponky" )
-                            .put( NumberKey.exactly( 4.0, false ), "A very sad $5 sponge" )
+                            .put( NumberKey.exactly( 4.0, false ), "$5 sponge" )
                             .build() ), General::testCallback ) ).field();
             
             /// Note: To fully test {@link fathertoast.crust.api.config.common.value.collection.key.RegObjKey}, we
@@ -419,16 +421,35 @@ public class TestConfigFile extends AbstractConfigFile {
             
             numberSetField = SPEC.define( new InjectionWrapperField<>(
                     new NumberSetField<>( "number_set_field", NumberSet.intBuilder()
-                            .addBlacklist( 4 )
+                            .exactlyBlacklist( 4 )
                             .betweenInclusive( 0, 50 )
-                            .build() ), General::testCallback ).field() );
+                            .build() ), General::testCallback ) ).field();
             
+            // We can test iterator usage (lists) via callback log outputs
             numberListField = SPEC.define( new InjectionWrapperField<>(
-                    new NumberListField<>( "number_list_field", NumberList.doubleBuilder()
-                            .add( 4.0 )
-                            .add( 4.1 )
-                            .add( 4.5 )
-                            .build() ), General::testCallback ).field() );
+                    new NumberListField<>( "number_list_field", NumberList.floatBuilder()
+                            .exactly( 4.1F )
+                            .exactly( 4.2F )
+                            .exactly( 4.3F )
+                            .lessOrEq( 30.0F )
+                            .divisibleBy( 6.5F )
+                            .build() ), General::testCallback ) ).field();
+            
+            numberMapField = SPEC.define( new InjectionWrapperField<>(
+                    new NumberMapField<>( "number_map_field", NumberMap.byteBuilder( SoundInstanceStats.CODEC )
+                            .exactly( (byte) 1, SoundInstanceStats.of( SoundEvents.CREEPER_DEATH ) )
+                            .exactly( (byte) 4, SoundInstanceStats.of( SoundEvents.ALLAY_AMBIENT_WITH_ITEM ) )
+                            .lessThanBlacklist( (byte) 20 )
+                            .greaterThan( (byte) 8, SoundInstanceStats.of( SoundEvents.LLAMA_SPIT ) )
+                            .buildWithDefault( SoundInstanceStats.of( SoundEvents.FROGSPAWNSTEP ) ) ), General::testCallback ) ).field();
+            
+            numberValueListField = SPEC.define( new InjectionWrapperField<>(
+                    new NumberValueListField<>( "number_value_list_field", NumberValueList.longBuilder( EnumValueCodec.of( Rarity.COMMON ) )
+                            .exactly( 200235325000030L, Rarity.EPIC )
+                            .exactly( -200235325000030L, Rarity.UNCOMMON )
+                            .greaterThan( 0L, Rarity.RARE )
+                            .build() ), General::testCallback ) ).field();
+            
             
             // ---- Misc. collections ---- //
             SPEC.callback( General::printLine );

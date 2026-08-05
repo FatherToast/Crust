@@ -17,12 +17,12 @@ import java.util.Collection;
 public class NumberSet<T extends Number> extends FuzzySet<T> {
     
     /** Creates a new builder for a {@code byte} number set. */
-    public static Builder<Short, ?> byteBuilder() {
+    public static Builder<Byte, ?> byteBuilder() {
         return new Builder<>( NumberKey.ValueType.BYTE );
     }
     
     /** Creates a new builder for a {@code short} number set. */
-    public static Builder<Byte, ?> shortBuilder() {
+    public static Builder<Short, ?> shortBuilder() {
         return new Builder<>( NumberKey.ValueType.SHORT );
     }
     
@@ -102,7 +102,7 @@ public class NumberSet<T extends Number> extends FuzzySet<T> {
             valueType = type;
         }
         
-        /** @return A new fuzzy set reflecting the current state of this builder. */
+        /** @return A new number set reflecting the current state of this builder. */
         @Override
         public NumberSet<V> build() { return new NumberSet<>( valueType, list ); }
         
@@ -110,13 +110,13 @@ public class NumberSet<T extends Number> extends FuzzySet<T> {
         // ---- Exact Value Keys ---- //
         
         /** Adds a key based on the value. Matches only the provided value. */
-        public B add( V value ) { return add( NumberKey.exactly( value, false ) ); }
+        public B exactly( V value ) { return add( NumberKey.exactly( value, false ) ); }
         
         /** Adds a blacklist key based on the value. Matches only the provided value. */
-        public B addBlacklist( V value ) { return add( NumberKey.exactly( value, true ) ); }
+        public B exactlyBlacklist( V value ) { return add( NumberKey.exactly( value, true ) ); }
         
         
-        // ---- Exact Value Keys ---- //
+        // ---- Not Equal Keys ---- //
         
         /** Adds a key based on the value. Matches all values that are not equal to the given value. */
         public B notEquals( V value ) { return add( NumberKey.notEquals( value, false ) ); }

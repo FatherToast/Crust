@@ -17,12 +17,12 @@ import java.util.Collection;
 public class NumberList<T extends Number> extends FuzzyList<T> {
     
     /** Creates a new builder for a {@code byte} number list. */
-    public static NumberList.Builder<Short, ?> byteBuilder() {
+    public static NumberList.Builder<Byte, ?> byteBuilder() {
         return new NumberList.Builder<>( NumberKey.ValueType.BYTE );
     }
     
     /** Creates a new builder for a {@code short} number list. */
-    public static NumberList.Builder<Byte, ?> shortBuilder() {
+    public static NumberList.Builder<Short, ?> shortBuilder() {
         return new NumberList.Builder<>( NumberKey.ValueType.SHORT );
     }
     
@@ -96,12 +96,30 @@ public class NumberList<T extends Number> extends FuzzyList<T> {
             valueType = type;
         }
         
-        /** @return A new fuzzy list reflecting the current state of this builder. */
+        /** @return A new number list reflecting the current state of this builder. */
         @Override
-        public NumberList<V> build() { return new NumberList<>( valueType ); }
+        public NumberList<V> build() { return new NumberList<>( valueType, list ); }
         
         
-        /** Adds a key based on the resource location. Matches only the provided item with an appropriate data tag. */
-        public B add( V value ) { return add( NumberKey.exactly( value, false ) ); }
+        /** Adds a key based on the value. Matches only the provided value. */
+        public B exactly( V value ) { return add( NumberKey.exactly( value, false ) ); }
+        
+        /** Adds a key based on the value. Matches all values that are not equal to the given value. */
+        public B notEquals( V value ) { return add( NumberKey.notEquals( value, false ) ); }
+        
+        /** Adds a key based on the value. Matches all values that are lower than the given value. */
+        public B lessThan( V value ) { return add( NumberKey.lessThan( value, false ) ); }
+        
+        /** Adds a key based on the value. Matches all values greater than the given value. */
+        public B greaterThan( V value ) { return add( NumberKey.greaterThan( value, false ) ); }
+        
+        /** Adds a key based on the value. Matches all values that are lower or equal to the given value. */
+        public B lessOrEq( V value ) { return add( NumberKey.lessOrEqual( value, false ) ); }
+        
+        /** Adds a key based on the value. Matches all values that are greater than or equal to the given value. */
+        public B greaterOrEq( V value ) { return add( NumberKey.greaterOrEqual( value, false ) ); }
+        
+        /** Adds a key based on the value. Matches all values that are perfectly divisible by (0 remainder) the given value. */
+        public B divisibleBy( V value ) { return add( NumberKey.divisibleBy( value, false ) ); }
     }
 }

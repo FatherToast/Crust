@@ -60,10 +60,6 @@ public class TestGameEventHandler {
                 event.getEntity().kill();
             }
         }
-        
-        for( Double val : TestCrust.CONFIG.GENERAL.numberListField.entries() ) {
-            TestCrust.LOG.debug( "An incredible double value: {}", val );
-        }
     }
     
     @SubscribeEvent( priority = EventPriority.NORMAL )

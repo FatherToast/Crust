@@ -4,6 +4,7 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.value.collection.KeyUsage;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
+import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -197,7 +198,7 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
      * A key that matches all values except its own value.
      */
     @ApiStatus.Experimental
-    public static class NotEquals<T extends Number> extends NumberKey<T> {
+    public static class NotEquals<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
         protected NotEquals( T value, ValueType valueType, boolean blacklist ) {
             super( value, valueType, ComparisonOp.EXACTLY, blacklist );
@@ -215,13 +216,20 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
                 case DOUBLE -> target.doubleValue() != value.doubleValue();
             };
         }
+        
+        /** @return A value that matches this key, or null if anything goes wrong. */
+        @Nullable
+        @Override // IRandomKey
+        public T nextValue( RandomSource random ) {
+            return value;
+        }
     }
     
     /**
      * A key that matches all values greater than its own value.
      */
     @ApiStatus.Experimental
-    public static class GreaterThan<T extends Number> extends NumberKey<T> {
+    public static class GreaterThan<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
         protected GreaterThan( T value, ValueType valueType, boolean blacklist ) {
             super( value, valueType, ComparisonOp.GREATER, blacklist );
@@ -239,13 +247,20 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
                 case DOUBLE -> target.doubleValue() > value.doubleValue();
             };
         }
+        
+        /** @return A value that matches this key, or null if anything goes wrong. */
+        @Nullable
+        @Override // IRandomKey
+        public T nextValue( RandomSource random ) {
+            return value;
+        }
     }
     
     /**
      * A key that matches all values lower than its own value.
      */
     @ApiStatus.Experimental
-    public static class LessThan<T extends Number> extends NumberKey<T> {
+    public static class LessThan<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
         protected LessThan( T value, ValueType valueType, boolean blacklist ) {
             super( value, valueType, ComparisonOp.LESS, blacklist );
@@ -263,13 +278,20 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
                 case DOUBLE -> target.doubleValue() < value.doubleValue();
             };
         }
+        
+        /** @return A value that matches this key, or null if anything goes wrong. */
+        @Nullable
+        @Override // IRandomKey
+        public T nextValue( RandomSource random ) {
+            return value;
+        }
     }
     
     /**
      * A key that matches all values greater or equal to its own value.
      */
     @ApiStatus.Experimental
-    public static class GreaterOrEqual<T extends Number> extends NumberKey<T> {
+    public static class GreaterOrEqual<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
         protected GreaterOrEqual( T value, ValueType valueType, boolean blacklist ) {
             super( value, valueType, ComparisonOp.GREATER_OR_EQUAL, blacklist );
@@ -287,13 +309,20 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
                 case DOUBLE -> target.doubleValue() >= value.doubleValue();
             };
         }
+        
+        /** @return A value that matches this key, or null if anything goes wrong. */
+        @Nullable
+        @Override // IRandomKey
+        public T nextValue( RandomSource random ) {
+            return value;
+        }
     }
     
     /**
      * A key that matches all values lower or equal to its own value.
      */
     @ApiStatus.Experimental
-    public static class LessOrEqual<T extends Number> extends NumberKey<T> {
+    public static class LessOrEqual<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
         protected LessOrEqual( T value, ValueType valueType, boolean blacklist ) {
             super( value, valueType, ComparisonOp.LESS_OR_EQUAL, blacklist );
@@ -311,13 +340,20 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
                 case DOUBLE -> target.doubleValue() <= value.doubleValue();
             };
         }
+        
+        /** @return A value that matches this key, or null if anything goes wrong. */
+        @Nullable
+        @Override // IRandomKey
+        public T nextValue( RandomSource random ) {
+            return value;
+        }
     }
     
     /**
      * A key that matches all values that are perfectly divisible (0 remainder) by its own value.
      */
     @ApiStatus.Experimental
-    public static class DivisibleBy<T extends Number> extends NumberKey<T> {
+    public static class DivisibleBy<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
         protected DivisibleBy( T value, ValueType valueType, boolean blacklist ) {
             super( value, valueType, ComparisonOp.MODULO, blacklist );
@@ -335,17 +371,22 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
                 case DOUBLE -> target.doubleValue() % value.doubleValue() == 0;
             };
         }
+        
+        /** @return A value that matches this key, or null if anything goes wrong. */
+        @Nullable
+        @Override // IRandomKey
+        public T nextValue( RandomSource random ) {
+            return value;
+        }
     }
     
     /**
-     * A key that matches all values between two values (inclusive).
+     * A key that matches all values between a minimum and maximum value (both inclusive).
      */
     @ApiStatus.Experimental
-    public static class BetweenInclusive<T extends Number> extends NumberKey<T> {
+    public static class BetweenInclusive<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
-        /**
-         * The upper limit value used to determine the range of this key.
-         */
+        /** The upper limit value used to determine the range of this key. */
         private final T maxValue;
         
         
@@ -379,6 +420,13 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
         @Override
         public String keyString() {
             return value.toString() + op.getIdentifier() + maxValue.toString();
+        }
+        
+        /** @return A value that matches this key, or null if anything goes wrong. */
+        @Nullable
+        @Override // IRandomKey
+        public T nextValue( RandomSource random ) {
+            return value;
         }
     }
     
@@ -555,7 +603,6 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
                     break;
                 }
             }
-            
             T val;
             
             if( codec != null ) {
