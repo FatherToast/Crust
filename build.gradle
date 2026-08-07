@@ -120,6 +120,7 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:mantle-74924:${mantle_version}")
 
     // Jade
+    compileOnly fg.deobf("curse.maven:jade-api-324717:${jade_api_version}")
     runtimeOnly fg.deobf("curse.maven:jade-324717:${jade_version}")
 
     // JEI

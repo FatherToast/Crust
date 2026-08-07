@@ -2,6 +2,8 @@
     - Finished the built-in "toggle storm" extra inventory button.
     - Misc config tweaks.
     - Extra inventory buttons should no longer get in the way of JEI bookmarks.
+    - New Jade compat:
+        - Optional entity element for rendering living entities' absorption hearts.
     API Changes:
     - Added new entity class hierarchy-climbing functionality for the config entity `extends` key.
     - Most simple config field types (fields not in the "collection" package) now implement Supplier.
