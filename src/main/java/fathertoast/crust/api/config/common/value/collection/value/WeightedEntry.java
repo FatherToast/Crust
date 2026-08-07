@@ -1,12 +1,11 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
 import fathertoast.crust.api.config.common.value.collection.key.NullKey;
 import fathertoast.crust.api.config.common.value.collection.key.WeightedKey;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 
@@ -20,7 +19,6 @@ import javax.annotation.Nullable;
  * @param <T> The type to match against.
  * @param <V> The value type.
  */
-@ApiStatus.Experimental
 public class WeightedEntry<T, V> extends FuzzyEntry<T, V> {
     
     /** Creates a weighted entry that represents a chance to pick a particular key-value pair. */
@@ -47,7 +45,7 @@ public class WeightedEntry<T, V> extends FuzzyEntry<T, V> {
      * @return A new weighted entry based on the provided line.
      */
     public static <T, V> WeightedEntry<T, V> parseLine( IFuzzyKeyParser<T> parser, IValueCodec<V> codec,
-                                                        @Nullable AbstractConfigField field, String line ) {
+                                                        @Nullable IConfigField<?> field, String line ) {
         // Parse the key/value from the weight (pattern: "weight key value"); assume that if one is missing, it's the weight
         String[] keyAndWeight = FuzzyKey.getKeyAndValue( line );
         int weight;

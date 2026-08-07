@@ -1,17 +1,27 @@
 package fathertoast.crust.common.core;
 
+import com.mojang.brigadier.CommandDispatcher;
 import fathertoast.crust.api.ICrustApi;
+import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.lib.CrustObjects;
+import fathertoast.crust.common.command.CrustCleanCommand;
+import fathertoast.crust.common.command.CrustModeCommand;
+import fathertoast.crust.common.command.CrustPortalCommand;
+import fathertoast.crust.common.command.CrustRecoverCommand;
 import fathertoast.crust.common.network.CrustPacketHandler;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -60,7 +70,6 @@ public final class CrustForgeEvents {
     /** Called when an entity is taking damage. */
     @SubscribeEvent( priority = EventPriority.NORMAL )
     static void onLivingHurt( LivingHurtEvent event ) {
-        // noinspection resource
         Level level = event.getEntity().level();
         
         if( event.getEntity() != null && event.getSource().type() != level.damageSources().fellOutOfWorld().type() && !event.getSource().is( DamageTypeTags.BYPASSES_ENCHANTMENTS ) &&
@@ -87,7 +96,32 @@ public final class CrustForgeEvents {
         }
     }
     
+    /** Called when a player logs in. */
+    @SubscribeEvent( priority = EventPriority.NORMAL )
+    public static void onPlayerLoggedIn( PlayerEvent.PlayerLoggedInEvent event ) {
+        if( event.getEntity() instanceof ServerPlayer player ) {
+            CrustPacketHandler.sendConfigSync( player );
+        }
+    }
+    
+    /** Called immediately before shutting down on the dedicated server, and before returning to the main menu on the client. */
+    @SubscribeEvent( priority = EventPriority.NORMAL )
+    public static void onServerStopped( ServerStoppedEvent event ) {
+        ConfigManager.getAll().forEach( manager -> manager.getConfigs()
+                .forEach( file -> file.SPEC.clearSyncData() ) );
+    }
+    
+    /** Called each time commands are loaded. */
+    @SubscribeEvent( priority = EventPriority.NORMAL )
+    static void registerCommands( RegisterCommandsEvent event ) {
+        CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
+        CrustCleanCommand.register( dispatcher );
+        CrustModeCommand.register( dispatcher );
+        CrustPortalCommand.register( dispatcher );
+        CrustRecoverCommand.register( dispatcher );
+    }
+    
     
     // Static listener, no instantiation
-    private CrustForgeEvents() { }
+    private CrustForgeEvents() {}
 }

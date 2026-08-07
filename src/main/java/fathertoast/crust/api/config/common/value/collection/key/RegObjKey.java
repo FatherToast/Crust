@@ -1,19 +1,16 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.collection.KeyUsage;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -24,8 +21,9 @@ import java.util.Objects;
 /**
  * A key for fuzzy collections that test against or contain registered objects.
  *
- * @see Registries
- * @see ForgeRegistries
+ * @see net.minecraftforge.registries.ForgeRegistries
+ * @see net.minecraft.core.registries.Registries
+ * @see net.minecraft.core.registries.BuiltInRegistries
  * @see net.minecraftforge.common.Tags
  * @see fathertoast.crust.api.config.common.value.collection.RegistrySet
  * @see fathertoast.crust.api.config.common.value.collection.RegistryMap
@@ -34,7 +32,6 @@ import java.util.Objects;
  * @see fathertoast.crust.api.config.common.value.collection.RegistryWeightedList
  * @see fathertoast.crust.api.config.common.value.collection.RegistryWeightedValueList
  */
-@ApiStatus.Experimental
 public abstract class RegObjKey<T> extends FuzzyKey<T> {
     
     /** @return The parser appropriate for a particular registry. */
@@ -129,11 +126,13 @@ public abstract class RegObjKey<T> extends FuzzyKey<T> {
         registry = reg;
     }
     
+    /** @return This key's target registry. */
+    public IRegWrapper<T> registry() { return registry; }
+    
     
     /**
      * A key that matches one specific registered object.
      */
-    @ApiStatus.Experimental
     public static class Basic<T> extends RegObjKey<T> implements IReverseKey<T> {
         public static final String PATTERN = "namespace:path";
         
@@ -171,7 +170,6 @@ public abstract class RegObjKey<T> extends FuzzyKey<T> {
     /**
      * A key that matches all registered objects in a namespace that have a path starting with a specific string.
      */
-    @ApiStatus.Experimental
     public static class Wildcard<T> extends RegObjKey<T> {// implements IMultiKey<T> { // Note: We could do this, if we want
         public static final String CODE = "*";
         public static final String PATTERN = "namespace:partial_path" + CODE;
@@ -209,7 +207,6 @@ public abstract class RegObjKey<T> extends FuzzyKey<T> {
     /**
      * A key that matches all registered objects contained by a specific tag.
      */
-    @ApiStatus.Experimental
     public static class Tag<T> extends RegObjKey<T> implements IMultiKey<T> {
         public static final String CODE = "#";
         public static final String PATTERN = CODE + "namespace:tag_path";
@@ -255,7 +252,7 @@ public abstract class RegObjKey<T> extends FuzzyKey<T> {
     
     private static final Map<ResourceLocation, Parser<?>> PARSERS = new HashMap<>();
     
-    private record Parser<T>(IRegWrapper<T> registry) implements IFuzzyKeyParser<T> {
+    private record Parser<T>( IRegWrapper<T> registry ) implements IFuzzyKeyParser<T> {
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
         public String getTypeName() {
@@ -282,7 +279,7 @@ public abstract class RegObjKey<T> extends FuzzyKey<T> {
          */
         @Override
         @Nullable
-        public FuzzyKey<T> parseKeyString( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
+        public FuzzyKey<T> parseKeyString( @Nullable IConfigField<?> field, String line, String key, boolean blacklist ) {
             FuzzyKey<T> loadedKey;
             if( key.startsWith( Tag.CODE ) ) {
                 loadedKey = Tag.parse( registry, key, blacklist );

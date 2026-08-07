@@ -1,6 +1,6 @@
 package fathertoast.crust.api.config.client.gui.widget.provider;
 
-import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
+import fathertoast.crust.api.config.client.gui.widget.entry.ConfigFieldGuiEntry;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  * Displays a grayed-out button with customizable text.
  */
 @SuppressWarnings( "ClassCanBeRecord" )
-public class UnsupportedWidgetProvider implements IConfigFieldWidgetProvider {
+public class UnsupportedWidgetProvider<T> implements IConfigFieldWidgetProvider<T> {
     
     /** The message to display on the disabled button. */
     private final Component TEXT;
@@ -35,9 +35,9 @@ public class UnsupportedWidgetProvider implements IConfigFieldWidgetProvider {
      * @param displayValue The current raw value to display in the GUI.
      */
     @Override
-    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+    public void apply( List<AbstractWidget> components, ConfigFieldGuiEntry<T> listEntry, T displayValue ) {
         Button dummyButton = new Button( 0, 0, VALUE_WIDTH, VALUE_HEIGHT,
-                TEXT, ( button ) -> { }, Supplier::get );
+                TEXT, button -> {}, Supplier::get );
         dummyButton.active = false;
         components.add( dummyButton );
     }

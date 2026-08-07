@@ -1,15 +1,13 @@
 package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.collection.key.*;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
 import fathertoast.crust.api.lib.CrustMath;
 import net.minecraft.util.RandomSource;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -37,6 +35,7 @@ import java.util.Random;
  * @see fathertoast.crust.api.config.common.field.collection.FuzzyValueListField
  * @see FuzzyList FuzzyList - A similar collection that does not allow values
  */
+@SuppressWarnings( "unused" )
 public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<T, V>> {
     
     /** This map's value codec. */
@@ -83,7 +82,7 @@ public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<
     /** @return The freshly loaded entry, or null if the line should be deleted. */
     @Override
     @Nullable
-    public FuzzyEntry<T, V> loadLine( @Nullable AbstractConfigField field, String line ) {
+    public FuzzyEntry<T, V> loadLine( @Nullable IConfigField<?> field, String line ) {
         return keyUsage().ifAllowed( FuzzyEntry.parseLine( keyParser, valueCodec, field, line ) );
     }
     
@@ -96,7 +95,6 @@ public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<
     
     
     /** Boilerplate builder class for fuzzy value lists. */
-    @ApiStatus.Experimental
     public static abstract class AbstractBuilder<T, V, C extends FuzzyValueList<T, V>, B extends AbstractBuilder<T, V, C, B>>
             extends AbstractFuzzyCollection.AbstractBuilder<T, FuzzyEntry<T, V>, C, B> {
         
@@ -116,7 +114,6 @@ public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<
     }
     
     /** Builder class for a generic fuzzy value list. */
-    @ApiStatus.Experimental
     public static class Builder<T, V, B extends Builder<T, V, B>> extends AbstractBuilder<T, V, FuzzyValueList<T, V>, B> {
         
         public final IFuzzyKeyParser<T> keyParser;
@@ -135,7 +132,6 @@ public class FuzzyValueList<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<
     }
     
     /** Builder class for a fuzzy string-value list. */
-    @ApiStatus.Experimental
     public static class StrBuilder<V> extends Builder<String, V, StrBuilder<V>> {
         
         public StrBuilder( IValueCodec<V> codec ) { super( StringKey.PARSER, codec ); }

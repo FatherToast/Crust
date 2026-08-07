@@ -4,7 +4,6 @@ import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.BlockStateWeightedList;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ import java.util.List;
  * Represents a config field with a block state weighted list value.
  * Use {@link #next(RandomSource)} to draw a random block state, or null if empty or nothing is drawn.
  */
-@ApiStatus.Experimental
 public class BlockStateWeightedListField extends FuzzyWeightedListField<BlockState, BlockStateWeightedList> {
     
     /**

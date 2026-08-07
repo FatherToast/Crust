@@ -5,6 +5,7 @@ import fathertoast.crust.api.IApocalypseDifficultyAccessor;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.client.SortedKeyMapping;
 import fathertoast.crust.api.config.common.field.EnvironmentListField;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentContext;
 import fathertoast.crust.client.ClientRegister;
 import fathertoast.crust.client.ScreenEvents;
 import fathertoast.crust.client.config.CfgEditorCrustConfig;
@@ -50,7 +51,7 @@ public class TestClientForgeEventHandler {
     
     /** Called when a key is pressed. */
     @SubscribeEvent
-    public static void onKeyInput( InputEvent.Key event ) {
+    static void onKeyInput( InputEvent.Key event ) {
         Minecraft minecraft = Minecraft.getInstance();
         Screen screen = minecraft.screen;
         if( event.getKey() == InputConstants.UNKNOWN.getValue() || screen != null && screen.isPauseScreen() ) return;
@@ -73,10 +74,10 @@ public class TestClientForgeEventHandler {
                     }
                     
                     // Poll state of each environment condition at player's position and print result
-                    EnvironmentListField[] envs = TestCrust.CONFIG.ENVIRONMENT.fields;
-                    TestCrust.LOG.info( "Environment Test Results:" );
-                    for( EnvironmentListField env : envs ) {
-                        TestCrust.LOG.info( "  {} = {}", env.getKey(), env.getOrElse( level, pos, 0.0 ) );
+                    TestCrust.LOG.info( "Environment Test Results (-1 is 'no match'):" );
+                    for( EnvironmentListField<Integer> env : TestCrust.CONFIG.ENVIRONMENT.fields ) {
+                        TestCrust.LOG.info( "  {} = {}", env.getKey(),
+                                env.getOrElse( EnvironmentContext.withTarget( minecraft.player ), -1 ) );
                     }
                 }
             }
@@ -88,7 +89,7 @@ public class TestClientForgeEventHandler {
      * overridable init() method has been called.
      */
     @SubscribeEvent
-    public static void onInitScreen( ScreenEvent.Init.Post event ) {
+    static void onInitScreen( ScreenEvent.Init.Post event ) {
         // Add a button to the title screen that opens the test screen
         if( event.getScreen() instanceof TitleScreen screen ) {
             Minecraft mc = screen.getMinecraft();
@@ -124,8 +125,8 @@ public class TestClientForgeEventHandler {
     }
     
     /** Called right before a screen is being rendered. */
-    @SubscribeEvent
-    public static void onRenderScreen( ScreenEvent.Render.Pre event ) {
+    //@SubscribeEvent // Comment the annotation out to 'turn off' the rectangle rendering
+    static void onRenderScreen( ScreenEvent.Render.Pre event ) {
         if( !ClientRegister.EXTRA_INV_BUTTONS.GENERAL.enabled.get() )
             return;
         
@@ -136,12 +137,9 @@ public class TestClientForgeEventHandler {
                 final Rect2i rect = ScreenEvents.INV_BUTTONS_AREA;
                 // noinspection ConstantConditions
                 event.getGuiGraphics().fill(
-                        rect.getX(),
-                        rect.getY(),
-                        rect.getWidth() + rect.getX(),
-                        rect.getHeight() + rect.getY(),
-                        0xAAEE2222
-                );
+                        rect.getX(), rect.getY(),
+                        rect.getWidth() + rect.getX(), rect.getHeight() + rect.getY(),
+                        0xAAEE2222 );
             }
         }
     }

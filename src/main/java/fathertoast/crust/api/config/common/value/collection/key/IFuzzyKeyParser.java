@@ -1,9 +1,8 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.KeyUsage;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 
@@ -14,7 +13,6 @@ import javax.annotation.Nullable;
  *
  * @param <T> The type that parsed keys match against.
  */
-@ApiStatus.Experimental
 public interface IFuzzyKeyParser<T> extends IValueCodec<FuzzyKey<T>> {
     
     /** @return The key parser's type name. */
@@ -37,7 +35,7 @@ public interface IFuzzyKeyParser<T> extends IValueCodec<FuzzyKey<T>> {
      * @return A new fuzzy key based on the key string, or null if parsing fails.
      */
     @Nullable
-    FuzzyKey<T> parseKeyString( @Nullable AbstractConfigField field, String line, String key, boolean blacklist );
+    FuzzyKey<T> parseKeyString( @Nullable IConfigField<?> field, String line, String key, boolean blacklist );
     
     /**
      * Loads a key from the provided TOML string. If anything goes wrong, correct it at the lowest level possible,
@@ -48,7 +46,7 @@ public interface IFuzzyKeyParser<T> extends IValueCodec<FuzzyKey<T>> {
      * @param key   The key string to parse from.
      * @return A new fuzzy key based on the key string. Returns {@link NullKey} if parsing fails.
      */
-    default FuzzyKey<T> parseKeyStringNonNull( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
+    default FuzzyKey<T> parseKeyStringNonNull( @Nullable IConfigField<?> field, String line, String key, boolean blacklist ) {
         FuzzyKey<T> loadedKey = parseKeyString( field, line, key, blacklist );
         // It's expected that a warning was already printed for failing to parse if null was returned
         return loadedKey == null ? NullKey.of( key, blacklist ) : loadedKey;
@@ -61,7 +59,7 @@ public interface IFuzzyKeyParser<T> extends IValueCodec<FuzzyKey<T>> {
      * @return A new value based on the value string. If the parse fails, returns a non-null default value.
      */
     @Override
-    default FuzzyKey<T> parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+    default FuzzyKey<T> parseTomlString( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
         return value == null || value.equalsIgnoreCase( FuzzyKey.NULL_KEY ) ? NullKey.ofValue() :
                 parseKeyStringNonNull( field, line, value, false );
     }

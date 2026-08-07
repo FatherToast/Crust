@@ -4,7 +4,6 @@ import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.BlockStateMap;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import java.util.List;
  * @param <V> The value type.
  * @see fathertoast.crust.api.config.common.value.collection.value.IValueCodec
  */
-@ApiStatus.Experimental
 public class BlockStateMapField<V> extends FuzzyMapField<BlockState, V, BlockStateMap<V>> {
     
     /**

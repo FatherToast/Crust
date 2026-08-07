@@ -1,7 +1,7 @@
 package fathertoast.crust.client;
 
 import fathertoast.crust.api.ICrustApi;
-import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
+import fathertoast.crust.client.screen.CrustConfigSelectScreen;
 import fathertoast.crust.client.config.CfgEditorCrustConfig;
 import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
 import fathertoast.crust.client.screen.widget.button.ButtonInfo;
@@ -147,5 +147,5 @@ public final class ScreenEvents {
     
     
     // Static listener, no instantiation
-    private ScreenEvents() { }
+    private ScreenEvents() {}
 }

@@ -10,7 +10,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -24,7 +23,7 @@ import java.util.Collection;
  * @see fathertoast.crust.api.config.common.field.collection.ItemStackWeightedValueListField
  * @see ItemStackWeightedList ItemStackWeightedList - A similar collection that does not allow values
  */
-@ApiStatus.Experimental
+@SuppressWarnings( "unused" )
 public class ItemStackWeightedValueList<V> extends FuzzyWeightedValueList<ItemStack, V> {
     
     /** Constructs an empty weighted value list. Use this if you want to {@link #load} a weighted value list from file/NBT. */
@@ -55,7 +54,6 @@ public class ItemStackWeightedValueList<V> extends FuzzyWeightedValueList<ItemSt
     // ---- Builder Implementation ---- //
     
     /** Builder to make constructing registry weighted value lists smoother. */
-    @ApiStatus.Experimental
     public static class Builder<V, B extends Builder<V, B>> extends AbstractBuilder<ItemStack, V, ItemStackWeightedValueList<V>, B> {
         
         public Builder( IValueCodec<V> codec ) { super( codec ); }

@@ -10,7 +10,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -24,7 +23,7 @@ import java.util.Collection;
  * @see fathertoast.crust.api.config.common.field.collection.ItemStackMapField
  * @see ItemStackSet ItemStackSet - A similar collection that does not allow values
  */
-@ApiStatus.Experimental
+@SuppressWarnings( "unused" )
 public class ItemStackMap<V> extends FuzzyMap<ItemStack, V> {
     
     /** Constructs an empty map. Use this if you want to {@link #load} a map from file/NBT. */
@@ -55,7 +54,6 @@ public class ItemStackMap<V> extends FuzzyMap<ItemStack, V> {
     // ---- Builder Implementation ---- //
     
     /** Builder to make constructing item stack maps smoother. */
-    @ApiStatus.Experimental
     public static class Builder<V, B extends Builder<V, B>> extends AbstractBuilder<ItemStack, V, ItemStackMap<V>, B> {
         
         public Builder( IValueCodec<V> codec ) { super( codec ); }

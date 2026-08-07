@@ -28,7 +28,7 @@ public class RenderSettingsCrustConfig extends AbstractConfigFile.Simple {
      * @param cfgName    Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
      */
     public RenderSettingsCrustConfig( ConfigManager cfgManager, String cfgName ) {
-        super( cfgManager, cfgName,
+        super( cfgManager, cfgName, true,
                 "Settings for features related to in-world rendering." );
         
         SPEC.category( "misc" );

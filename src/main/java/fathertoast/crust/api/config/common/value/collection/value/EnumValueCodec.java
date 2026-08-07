@@ -1,8 +1,7 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 
@@ -14,7 +13,6 @@ import javax.annotation.Nullable;
  * (due to obfuscation) and any enums with constants that share the same name when ignoring case.
  */
 @SuppressWarnings( "ClassCanBeRecord" )
-@ApiStatus.Experimental
 public class EnumValueCodec<V extends Enum<V>> implements IValueCodec<V>, IValueCorrector<V> {
     
     // Disabling these until MC disables obfuscation
@@ -78,7 +76,7 @@ public class EnumValueCodec<V extends Enum<V>> implements IValueCodec<V>, IValue
      * @return A new value based on the value string. If the parse fails, returns a non-null default value.
      */
     @Override // IValueCodec
-    public V parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+    public V parseTomlString( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
         if( value != null ) for( V val : validValues ) {
             if( val.name().equalsIgnoreCase( value ) ) return val;
         }
@@ -93,7 +91,7 @@ public class EnumValueCodec<V extends Enum<V>> implements IValueCodec<V>, IValue
      * If invalid, it reports the problem (unless field is null) and returns the closest valid value.
      */
     @Override // IValueCorrector
-    public V correctValue( @Nullable AbstractConfigField field, String line, @Nullable V value ) {
+    public V correctValue( @Nullable IConfigField<?> field, String line, @Nullable V value ) {
         return value == null || !isValid( value ) ? defaultValue : value;
     }
     

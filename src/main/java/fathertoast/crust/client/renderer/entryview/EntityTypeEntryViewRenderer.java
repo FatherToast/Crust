@@ -19,7 +19,6 @@ import org.joml.Matrix4f;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import static fathertoast.crust.api.config.common.value.collection.key.EntityKey.Extends.ErroredEntity;
 
@@ -31,22 +30,20 @@ import static fathertoast.crust.api.config.common.value.collection.key.EntityKey
  */
 public class EntityTypeEntryViewRenderer implements EntryViewWidget.EntryViewRenderer<EntityType<?>> {
     
-    
     /** A map of entity types linked to W item stack containing their spawn egg, if it exists. */
     private static final Map<EntityType<?>, ItemStack> SPAWN_EGG_STACKS = new HashMap<>();
     /** A map of entity types linked to related entity instances. */
     private static final Map<EntityType<?>, Entity> ENTITY_INSTANCES = new HashMap<>();
+    
     
     /**
      * Called from {@link EntryViewWidget#renderWidget(GuiGraphics, int, int, float)}
      * to render something based on the widget's field's value.
      */
     @Override
-    public void render( @Nullable Supplier<EntityType<?>> valueSupplier, GuiGraphics graphics,
+    public void render( @Nullable EntityType<?> displayValue, GuiGraphics graphics,
                         int widgetX, int widgetY, int mouseX, int mouseY, float partialTick ) {
-        final EntityType<?> entityType = getValue( valueSupplier );
-        
-        if( entityType == null ) return;
+        if( displayValue == null ) return;
         
         final PoseStack stack = graphics.pose();
         
@@ -56,7 +53,7 @@ public class EntityTypeEntryViewRenderer implements EntryViewWidget.EntryViewRen
         // If it does, we render the entity type's entity model.
         if( level != null ) {
             // Create entity instances when they are needed.
-            final Entity entity = ENTITY_INSTANCES.computeIfAbsent( entityType, ( type ) -> {
+            final Entity entity = ENTITY_INSTANCES.computeIfAbsent( displayValue, ( type ) -> {
                 try {
                     Entity instance = type.create( level );
                     if( instance != null ) {
@@ -89,6 +86,7 @@ public class EntityTypeEntryViewRenderer implements EntryViewWidget.EntryViewRen
                 
                 // noinspection unchecked
                 EntityRenderer<Entity> renderer = (EntityRenderer<Entity>) Minecraft.getInstance().getEntityRenderDispatcher().getRenderer( entity );
+                //TODO ?
                 // renderer.render( entity, 0.0F, partialTick, stack, graphics.bufferSource(), LightTexture.FULL_BRIGHT );
                 
                 stack.popPose();
@@ -97,11 +95,11 @@ public class EntityTypeEntryViewRenderer implements EntryViewWidget.EntryViewRen
         // Otherwise, try rendering the entity type's spawn egg if it exists.
         else {
             try {
-                final ItemStack displayStack = SPAWN_EGG_STACKS.get( entityType );
+                final ItemStack displayStack = SPAWN_EGG_STACKS.get( displayValue );
                 
                 if( !displayStack.isEmpty() ) {
                     EntryViewWidget.EntryViewRenderer<ItemStack> itemStackRenderer = EntryViewRendererRegistry.getRendererOrThrow( EntryViewRendererRegistry.ITEM_STACK );
-                    itemStackRenderer.render( () -> displayStack, graphics, widgetX, widgetY, mouseX, mouseY, partialTick );
+                    itemStackRenderer.render( displayStack, graphics, widgetX, widgetY, mouseX, mouseY, partialTick );
                 }
             }
             catch( Exception e ) {

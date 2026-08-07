@@ -11,7 +11,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 
@@ -28,7 +27,7 @@ import java.util.Collection;
  * @see fathertoast.crust.api.config.common.field.collection.RegistryMapField
  * @see RegistrySet RegistrySet - A similar collection that does not allow values
  */
-@ApiStatus.Experimental
+@SuppressWarnings( "unused" )
 public class RegistryMap<T, V> extends FuzzyMap<T, V> {
     /** The target registry. */
     private final IRegWrapper<T> registry;
@@ -78,7 +77,6 @@ public class RegistryMap<T, V> extends FuzzyMap<T, V> {
     // ---- Builder Implementation ---- //
     
     /** Builder to make constructing registry maps smoother. */
-    @ApiStatus.Experimental
     public static class Builder<T, V, B extends Builder<T, V, B>> extends AbstractBuilder<T, V, RegistryMap<T, V>, B> {
         
         public final IRegWrapper<T> registry;

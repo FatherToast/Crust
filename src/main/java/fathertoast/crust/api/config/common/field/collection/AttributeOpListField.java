@@ -8,7 +8,6 @@ import fathertoast.crust.api.config.common.value.collection.value.OperationStats
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import java.util.List;
  *
  * @see fathertoast.crust.api.config.common.value.ConfigDrivenAttributeSupplier
  */
-@ApiStatus.Experimental
 public class AttributeOpListField extends FuzzyValueListField<Attribute, OperationStats, AttributeOpList> {
     
     /**
@@ -68,21 +66,22 @@ public class AttributeOpListField extends FuzzyValueListField<Attribute, Operati
     public void appendFieldInfo( List<String> comment ) {
         comment.add( TomlHelper.fieldInfoNoDefault( "Attribute List",
                 "[ \"namespace:attribute_name operation\", ... ]" ) );
-        comment.add( "Attribute Patterns: " + valueDefault.getKeyPatterns() );
-        comment.add( "Operation Format: " + valueDefault.getValueFormat() );
-        comment.add( TomlHelper.fieldInfoOnlyDefault( valueDefault ) );
+        comment.add( "Attribute Patterns: " + getDefaultValue().getKeyPatterns() );
+        comment.add( "Operation Format: " + getDefaultValue().getValueFormat() );
+        comment.add( TomlHelper.fieldInfoOnlyDefault( getDefaultValue() ) );
     }
     
     /**
-     * Loads this field's value from the given value or raw toml. If anything goes wrong, correct it at the lowest level possible.
+     * @return Reads a value from the given value or raw toml. If anything goes wrong, correct it at the lowest level
+     * possible.
      * <p>
-     * For example, a missing value should be set to the default, while an out-of-range value should be adjusted to the
-     * nearest in-range value and print a warning explaining the change.
+     * For example, a missing or unreadable value should return the default value, while an out-of-range value should be
+     * adjusted to the nearest in-range value. If any value correction is applied, print a warning to explain the change.
      */
     @Override
-    public void load( @Nullable Object raw ) {
-        super.load( raw );
+    public AttributeOpList parse( Object raw ) {
         if( linkedAttributeSupplier != null ) linkedAttributeSupplier.invalidate();
+        return super.parse( raw );
     }
     
     

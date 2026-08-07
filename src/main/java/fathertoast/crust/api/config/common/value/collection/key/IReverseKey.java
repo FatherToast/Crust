@@ -1,7 +1,6 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
 import net.minecraft.util.RandomSource;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -12,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
  * @see fathertoast.crust.api.config.common.value.collection.FuzzyList
  * @see fathertoast.crust.api.config.common.value.collection.FuzzyValueList
  */
-@ApiStatus.Experimental
 public interface IReverseKey<T> extends IRandomKey<T> {
     
     /** @return The value that matches this key, or null if anything goes wrong. */

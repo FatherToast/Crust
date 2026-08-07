@@ -7,7 +7,6 @@ import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.value.IntValueCodec;
 import fathertoast.crust.api.config.common.value.collection.value.WeightedEntry;
 import net.minecraft.util.RandomSource;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -23,12 +22,10 @@ import java.util.Random;
  * @see fathertoast.crust.api.config.common.value.collection.value.IValueCodec
  * @see FuzzyWeightedListField WeightedListField - A similar collection that does not allow values
  */
-@ApiStatus.Experimental
 public class FuzzyWeightedValueListField<T, V, C extends FuzzyWeightedValueList<T, V>> extends AbstractFuzzyCollectionField<T, WeightedEntry<T, V>, C> {
     
     /** A simple implementation for using generic weighted value lists without the extra type parameter. */
     @SuppressWarnings( "unused" )
-    @ApiStatus.Experimental
     public static class Generic<T, V> extends FuzzyWeightedValueListField<T, V, FuzzyWeightedValueList<T, V>> {
         /** Creates a new field. */
         public Generic( String key, FuzzyWeightedValueList<T, V> defaultValue, @Nullable String... description ) {
@@ -44,12 +41,12 @@ public class FuzzyWeightedValueListField<T, V, C extends FuzzyWeightedValueList<
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoNoDefault( valueDefault.getTypeName() + " Map",
+        comment.add( TomlHelper.fieldInfoNoDefault( getDefaultValue().getTypeName() + " Map",
                 "[ \"weight_1 key_1 value_1\", \"weight_2 " + FuzzyKey.NULL_KEY + "\", \"weight_3 key_3 value_3\", ... ]" ) );
         comment.add( "Weight Format: " + IntValueCodec.NON_NEGATIVE.getFormat() );
-        comment.add( "Key Patterns: \"" + FuzzyKey.NULL_KEY + "\", " + valueDefault.getKeyPatterns() );
-        comment.add( "Value Format: " + valueDefault.getValueFormat() );
-        comment.add( TomlHelper.fieldInfoOnlyDefault( valueDefault ) );
+        comment.add( "Key Patterns: \"" + FuzzyKey.NULL_KEY + "\", " + getDefaultValue().getKeyPatterns() );
+        comment.add( "Value Format: " + getDefaultValue().getValueFormat() );
+        comment.add( TomlHelper.fieldInfoOnlyDefault( getDefaultValue() ) );
     }
     
     

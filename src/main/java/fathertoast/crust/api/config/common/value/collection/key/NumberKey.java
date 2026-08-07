@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.KeyUsage;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
 import net.minecraft.util.RandomSource;
@@ -20,7 +20,7 @@ import java.util.function.Function;
  * All primitive numeric types are supported, which includes
  * {@code byte}, {@code double}, {@code float}, {@code int}, {@code long}, and {@code short}.
  */
-@ApiStatus.Experimental
+@SuppressWarnings( "unused" )
 public class NumberKey<T extends Number> extends FuzzyKey<T> {
     
     
@@ -179,7 +179,6 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
     /**
      * A key that matches only an exact value.
      */
-    @ApiStatus.Experimental
     public static class Exactly<T extends Number> extends NumberKey<T> implements IReverseKey<T> {
         
         protected Exactly( T value, ValueType valueType, boolean blacklist ) {
@@ -197,7 +196,6 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
     /**
      * A key that matches all values except its own value.
      */
-    @ApiStatus.Experimental
     public static class NotEquals<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
         protected NotEquals( T value, ValueType valueType, boolean blacklist ) {
@@ -228,7 +226,6 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
     /**
      * A key that matches all values greater than its own value.
      */
-    @ApiStatus.Experimental
     public static class GreaterThan<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
         protected GreaterThan( T value, ValueType valueType, boolean blacklist ) {
@@ -259,7 +256,6 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
     /**
      * A key that matches all values lower than its own value.
      */
-    @ApiStatus.Experimental
     public static class LessThan<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
         protected LessThan( T value, ValueType valueType, boolean blacklist ) {
@@ -290,7 +286,6 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
     /**
      * A key that matches all values greater or equal to its own value.
      */
-    @ApiStatus.Experimental
     public static class GreaterOrEqual<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
         protected GreaterOrEqual( T value, ValueType valueType, boolean blacklist ) {
@@ -321,7 +316,6 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
     /**
      * A key that matches all values lower or equal to its own value.
      */
-    @ApiStatus.Experimental
     public static class LessOrEqual<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
         protected LessOrEqual( T value, ValueType valueType, boolean blacklist ) {
@@ -352,7 +346,6 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
     /**
      * A key that matches all values that are perfectly divisible (0 remainder) by its own value.
      */
-    @ApiStatus.Experimental
     public static class DivisibleBy<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
         protected DivisibleBy( T value, ValueType valueType, boolean blacklist ) {
@@ -383,7 +376,6 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
     /**
      * A key that matches all values between a minimum and maximum value (both inclusive).
      */
-    @ApiStatus.Experimental
     public static class BetweenInclusive<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
         /** The upper limit value used to determine the range of this key. */
@@ -474,7 +466,7 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
             @Override
             @Nullable
             @SuppressWarnings( "unchecked" )
-            public <T extends Number> FuzzyKey<T> parseSpecialKey( @Nullable AbstractConfigField field, String line, String key, ValueType valueType,
+            public <T extends Number> FuzzyKey<T> parseSpecialKey( @Nullable IConfigField<?> field, String line, String key, ValueType valueType,
                                                                    boolean blacklist, Function<String, ?> numberParser ) {
                 final String[] parts = key.split( "~", 2 );
                 if( parts.length != 2 ) return null;
@@ -516,7 +508,7 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
          * entirely can override parsing by returning something else than null.
          */
         @Nullable
-        public <T extends Number> FuzzyKey<T> parseSpecialKey( @Nullable AbstractConfigField field, String line, String key, ValueType valueType,
+        public <T extends Number> FuzzyKey<T> parseSpecialKey( @Nullable IConfigField<?> field, String line, String key, ValueType valueType,
                                                                boolean blacklist, Function<String, ?> numberParser ) {
             return null;
         }
@@ -535,8 +527,8 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
      * @param type  A {@link ValueType} representing the type of value.
      * @param codec Value codec for parsing. This is optional.
      */
-    private record Parser<T extends Number>(ValueType type,
-                                            @Nullable IValueCodec<T> codec) implements IFuzzyKeyParser<T> {
+    private record Parser<T extends Number>( ValueType type,
+                                             @Nullable IValueCodec<T> codec ) implements IFuzzyKeyParser<T> {
         
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
@@ -561,7 +553,7 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
          */
         @Override
         @Nullable
-        public FuzzyKey<T> parseKeyString( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
+        public FuzzyKey<T> parseKeyString( @Nullable IConfigField<?> field, String line, String key, boolean blacklist ) {
             return switch( type ) {
                 case BYTE -> parse( field, line, key, blacklist, Byte::parseByte );
                 case SHORT -> parse( field, line, key, blacklist, Short::parseShort );
@@ -584,7 +576,7 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
          * @return A new fuzzy key based on the key string, or null if parsing fails.
          */
         @Nullable
-        private FuzzyKey<T> parse( @Nullable AbstractConfigField field, String line, String key, boolean blacklist, Function<String, ?> numberParser ) {
+        private FuzzyKey<T> parse( @Nullable IConfigField<?> field, String line, String key, boolean blacklist, Function<String, ?> numberParser ) {
             ComparisonOp comparisonOp = ComparisonOp.EXACTLY;
             
             // Determine which comparison op the key uses

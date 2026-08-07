@@ -1,13 +1,10 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
-import org.jetbrains.annotations.ApiStatus;
-
 /**
  * Represents a default key for fuzzy sets and maps.
  * <p>
  * Always matches everything. Cannot be a blacklist type key.
  */
-@ApiStatus.Experimental
 public class DefaultKey<T> extends FuzzyKey<T> {
     
     /** @return A new parameterized default key. */

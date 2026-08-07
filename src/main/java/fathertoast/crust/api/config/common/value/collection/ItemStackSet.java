@@ -9,7 +9,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -21,7 +20,7 @@ import java.util.Collection;
  * @see fathertoast.crust.api.config.common.field.collection.ItemStackSetField
  * @see ItemStackMap ItemStackMap - A similar collection that allows values
  */
-@ApiStatus.Experimental
+@SuppressWarnings( "unused" )
 public class ItemStackSet extends FuzzySet<ItemStack> {
     
     /** Constructs an empty set. Use this if you want to {@link #load} a set from file/NBT. */
@@ -48,7 +47,6 @@ public class ItemStackSet extends FuzzySet<ItemStack> {
     // ---- Builder Implementation ---- //
     
     /** Builder to make constructing item stack sets smoother. */
-    @ApiStatus.Experimental
     public static class Builder<B extends Builder<B>> extends AbstractBuilder<ItemStack, ItemStackSet, B> {
         
         /** @return A new fuzzy set reflecting the current state of this builder. */

@@ -1,22 +1,27 @@
 package fathertoast.crust.api.config.common.value.environment;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.EnvironmentListField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.config.common.value.collection.value.ComparatorValue;
 import fathertoast.crust.api.config.common.value.environment.biome.*;
 import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDifficultyEnvironment;
 import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDifficultyOrTimeEnvironment;
+import fathertoast.crust.api.config.common.value.environment.dimension.DimensionEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionPropertyEnvironment;
-import fathertoast.crust.api.config.common.value.environment.dimension.DimensionTypeEnvironment;
-import fathertoast.crust.api.config.common.value.environment.dimension.DimensionTypeGroupEnvironment;
-import fathertoast.crust.api.config.common.value.environment.position.*;
+import fathertoast.crust.api.config.common.value.environment.position.PositionEnvironment;
+import fathertoast.crust.api.config.common.value.environment.position.StructureEnvironment;
+import fathertoast.crust.api.config.common.value.environment.position.YEnvironment;
+import fathertoast.crust.api.config.common.value.environment.position.YFromSeaEnvironment;
 import fathertoast.crust.api.config.common.value.environment.time.*;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
 public final class CrustEnvironmentRegistry {
+    
+    public static final AbstractEnvironment NEVER = new GameTimeEnvironment( ComparatorValue.LESS, 0 );
     
     /**
      * Call this to register an environment that can be used in {@link EnvironmentListField}s.
@@ -84,26 +89,69 @@ public final class CrustEnvironmentRegistry {
     }
     
     /**
+     * @param field       The loading field.
+     * @param environment The unique environment name and environment data (if applicable).
+     * @return A new environment instance parsed from the provided data, or a 'never' environment if the parse fails.
+     */
+    public static AbstractEnvironment parse( @Nullable IConfigField<?> field, String environment ) {
+        String[] args = split( environment );
+        return parse( field, args[0], args[1] );
+    }
+    
+    /**
      * @param field The loading field.
      * @param name  The unique environment name.
      * @param value Environment data; empty string if none was provided.
-     * @return A new environment instance parsed from the provided data.
+     * @return A new environment instance parsed from the provided data, or a 'never' environment if the parse fails.
      */
-    public static AbstractEnvironment parse( AbstractConfigField field, String name, String value ) {
-        IFactory factory = NAME_TO_FACTORY_MAP.get( name.toLowerCase( Locale.ROOT ) );
-        
-        if( factory == null ) {
+    public static AbstractEnvironment parse( @Nullable IConfigField<?> field, String name, String value ) {
+        AbstractEnvironment environment = parseNullable( field, name, value );
+        if( environment == null ) {
             // The environment name was not recognized; try to provide some good feedback because this field is complicated
-            final AbstractEnvironment fallback = new WorldTimeEnvironment( ComparisonOperator.LESS_THAN, 0 );
-            ConfigUtil.warnFor( field );
-            ConfigUtil.LOG.warn( "Environment entry has invalid environment type ({})! Falling back to \"{}\". Environment type must be in the set [ {} ]. Entry: {}",
-                    name, fallback, TomlHelper.toLiteralList( (Object[]) getNames().toArray( new String[0] ) ),
-                    name + " " + value );
-            return fallback;
+            if( field != null ) {
+                ConfigUtil.warnFor( field );
+                ConfigUtil.LOG.warn( "Environment entry has invalid environment type ({})! Falling back to \"{}\". Environment type must be in the set [ {} ]. Environment: {}",
+                        name, NEVER, TomlHelper.toLiteralList( (Object[]) getNames().toArray( new String[0] ) ),
+                        name + " " + value );
+            }
+            return NEVER;
         }
+        return environment;
+    }
+    
+    /**
+     * @param field       The loading field.
+     * @param environment The unique environment name and environment data (if applicable).
+     * @return A new environment instance parsed from the provided data, or null if an environment couldn't be parsed.
+     */
+    @Nullable
+    public static AbstractEnvironment parseNullable( @Nullable IConfigField<?> field, String environment ) {
+        String[] args = split( environment );
+        return parseNullable( field, args[0], args[1] );
+    }
+    
+    /**
+     * @param field The loading field.
+     * @param name  The unique environment name.
+     * @param value Environment data; empty string if none was provided.
+     * @return A new environment instance parsed from the provided data, or null if an environment couldn't be parsed.
+     */
+    @Nullable
+    public static AbstractEnvironment parseNullable( @Nullable IConfigField<?> field, String name, String value ) {
+        IFactory factory = NAME_TO_FACTORY_MAP.get( name.toLowerCase( Locale.ROOT ) );
+        if( factory == null ) return null;
         
         // Allow the registered factory to decide how to load the rest
         return factory.parse( field, value );
+    }
+    
+    /**
+     * @param environment The unique environment name and environment data (if applicable).
+     * @return A length 2 array, with the first element as the environment name and the second as its value.
+     */
+    public static String[] split( String environment ) {
+        String[] args = environment.trim().split( " ", 2 );
+        return new String[] { args[0].trim(), args.length < 2 ? "" : args[1].trim() };
     }
     
     /** @return A read-only set of all registered environment names. */
@@ -132,7 +180,7 @@ public final class CrustEnvironmentRegistry {
          * @param value Additional information provided with the environment.
          * @return A newly constructed environment.
          */
-        AbstractEnvironment parse( AbstractConfigField field, String value );
+        AbstractEnvironment parse( @Nullable IConfigField<?> field, String value );
     }
     
     
@@ -168,12 +216,10 @@ public final class CrustEnvironmentRegistry {
                 "Valid property values: " + TomlHelper.toLiteralList( (Object[]) DimensionPropertyEnvironment.Value.values() ),
                 "Dimension properties are the true/false values available to dimension types in data packs. " +
                         "See the wiki for more info: [https://minecraft.fandom.com/wiki/Custom_dimension#Syntax]." );
-        register( "dimension_type", ( field, value ) -> value.endsWith( "*" ) ?
-                        new DimensionTypeGroupEnvironment( field, value ) : new DimensionTypeEnvironment( field, value ),
-                Arrays.asList( DimensionTypeGroupEnvironment.class, DimensionTypeEnvironment.class ),
-                "(!)namespace:dimension_type_name",
-                "The world's dimension type. In vanilla, these are only \"minecraft:overworld\", " +
-                        "\"minecraft:the_nether\", or \"minecraft:the_end\"." );
+        register( "dimension", DimensionEnvironment::new, DimensionEnvironment.class,
+                "(!)namespace:dimension_name OR (!)#namespace:dimension_tag OR (!)namespace:partial*",
+                "The dimension name, dimension #tag, or partial dimension name. In vanilla, these are only " +
+                        "\"minecraft:overworld\", \"minecraft:the_nether\", and \"minecraft:the_end\"." );
         
         // Biome-based
         //        register( "terrain_depth", TerrainDepthEnvironment::new, TerrainDepthEnvironment.class,
@@ -197,27 +243,21 @@ public final class CrustEnvironmentRegistry {
                 "op value OR (!)" + TemperatureEnvironment.FREEZING,
                 "Height-adjusted temperature. For reference, freezing is < 0.15 and hot is generally " +
                         "considered > 0.95." );
+        //noinspection removal TODO Remove when updating beyond MC 1.20
         register( "biome_category", BiomeCategoryEnvironment::new, BiomeCategoryEnvironment.class,
-                "(!)category", // TODO Remove when updating beyond MC 1.20
-                "Deprecated, use \"biome_tag\" instead!" );
-        register( "biome_tag", BiomeTagEnvironment::new, BiomeTagEnvironment.class,
-                "(!)#namespace:biome_tag",
-                "The biome tag. See the wiki for vanilla biome tags (resource locations) " +
-                        "[https://minecraft.wiki/w/Biome_tag_(Java_Edition)]." );
-        register( "biome", ( field, value ) -> value.endsWith( "*" ) ?
-                        new BiomeGroupEnvironment( field, value ) : new BiomeEnvironment( field, value ),
-                Arrays.asList( BiomeGroupEnvironment.class, BiomeEnvironment.class ),
-                "(!)namespace:biome_name",
-                "The biome. See the wiki for vanilla biome names (resource locations) " +
-                        "[https://minecraft.fandom.com/wiki/Biome#Biome_IDs]." );
+                "(!)category",
+                "Deprecated, use \"biome\" tags instead!" );
+        register( "biome", BiomeEnvironment::new, BiomeEnvironment.class,
+                "(!)namespace:biome_name OR (!)#namespace:biome_tag OR (!)namespace:partial*",
+                "The biome name, biome #tag, or partial biome name. See the wiki for vanilla biome names " +
+                        "and tags (resource locations) [https://minecraft.fandom.com/wiki/Biome#Biome_IDs] and " +
+                        "[https://minecraft.wiki/w/Biome_tag_(Java_Edition)], respectively." );
         
         // Position-based
-        register( "structure", ( field, value ) -> value.endsWith( "*" ) ?
-                        new StructureGroupEnvironment( field, value ) : new StructureEnvironment( field, value ),
-                Arrays.asList( StructureGroupEnvironment.class, StructureEnvironment.class ),
-                "(!)namespace:structure_name",
-                "The structure. See the wiki for vanilla structure names " +
-                        "[https://minecraft.fandom.com/wiki/Structure#ID]." );
+        register( "structure", StructureEnvironment::new, StructureEnvironment.class,
+                "(!)namespace:structure_name OR (!)#namespace:structure_tag OR (!)namespace:partial*",
+                "The structure name, structure #tag, or partial structure name. See the wiki for vanilla " +
+                        "structure names [https://minecraft.fandom.com/wiki/Structure#ID]." );
         register( "y", YEnvironment::new, YEnvironment.class,
                 "op value",
                 "The y-value. For reference, sea level is normally 63 and lava level is normally -54." );
@@ -265,8 +305,14 @@ public final class CrustEnvironmentRegistry {
                 "The absolute time in ticks away from midnight. Value must be 0 to 12000." );
         register( "world_time", WorldTimeEnvironment::new, WorldTimeEnvironment.class,
                 "op value",
-                "The total time the world has existed, in ticks. For reference, each day cycle is 24000 " +
-                        "ticks and each lunar cycle is 192000 ticks." );
+                "The total world time, in ticks. This depends on the daylight cycle, so it will reflect " +
+                        "time jumps (such as from sleeping) and will never advance if the \"doDaylightCycle\" game rule " +
+                        "is disabled. For reference, each day cycle is 24000 ticks and each lunar cycle is 192000 ticks." );
+        register( "game_time", GameTimeEnvironment::new, GameTimeEnvironment.class,
+                "op value",
+                "The total time the world has existed, in ticks. Unlike \"world_time\", this is not " +
+                        "related to the daylight cycle and is therefore not affected by time jumps or the " +
+                        "\"doDaylightCycle\" game rule." );
         register( "chunk_time", ChunkTimeEnvironment::new, ChunkTimeEnvironment.class,
                 "op value",
                 "The total time the chunk has been loaded, in ticks. For reference, each day cycle is 24000 " +
@@ -275,12 +321,12 @@ public final class CrustEnvironmentRegistry {
         // Mod-based
         register( "apocalypse_difficulty", ApocalypseDifficultyEnvironment::new, ApocalypseDifficultyEnvironment.class,
                 "op value",
-                "The Apocalypse Rebooted mod's difficulty (scale depends on your config). This is based on " +
-                        "the nearest player's current difficulty level. If no player exists, or the mod is not installed, " +
-                        "it will never match any condition." );
+                "The Apocalypse mod's difficulty (scale depends on your config). This is based on the " +
+                        "nearest player's current difficulty level. If no player exists, or the mod is not installed, it " +
+                        "will never match any condition." );
         register( "apocalypse_difficulty_or_time", ApocalypseDifficultyOrTimeEnvironment::new, ApocalypseDifficultyOrTimeEnvironment.class,
                 "op value",
-                "The Apocalypse Rebooted mod's difficulty (scale depends on your config). If the mod is not " +
+                "The Apocalypse mod's difficulty (scale depends on your config). If the mod is not " +
                         "installed, this is instead treated like a \"" + getName( WorldTimeEnvironment.class ) +
                         "\" condition." );
     }

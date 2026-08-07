@@ -1,5 +1,7 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
+import org.jetbrains.annotations.ApiStatus;
+
 /**
  * TODO WIP: copy/pasted from text field
  * <p>
@@ -9,6 +11,7 @@ package fathertoast.crust.api.config.client.gui.widget.field;
  *
  * @see net.minecraft.client.gui.components.EditBox
  */
+@ApiStatus.Experimental // Not implemented, might never be
 public class TextBoxWidget /*extends Widget implements IRenderable, IGuiEventListener*/ {
     //
     //    /** The horizontal size of the scrollbar. */

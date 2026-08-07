@@ -1,21 +1,23 @@
 package fathertoast.crust.api.config.common.value.environment.position;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.value.environment.CompareIntEnvironment;
-import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
+import fathertoast.crust.api.config.common.field.IConfigField;
+import fathertoast.crust.api.config.common.value.collection.value.ComparatorValue;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentContext;
+import fathertoast.crust.api.config.common.value.environment.core.CompareDoubleEnvironment;
 
 import javax.annotation.Nullable;
 
-public class YFromSeaEnvironment extends CompareIntEnvironment {
+public class YFromSeaEnvironment extends CompareDoubleEnvironment {
     
-    public YFromSeaEnvironment( ComparisonOperator op, int value ) { super( op, value ); }
+    public YFromSeaEnvironment( ComparatorValue op, int value ) { super( op, value ); }
     
-    public YFromSeaEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
+    public YFromSeaEnvironment( @Nullable IConfigField<?> field, String value ) { super( field, value ); }
     
     /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Override
     @Nullable
-    public Integer getActual( Level level, @Nullable BlockPos pos ) { return pos == null ? null : pos.getY() - level.getSeaLevel(); }
+    protected Double getActual( EnvironmentContext context ) {
+        //noinspection deprecation
+        return context.getPos() == null ? null : context.getPos().y() - context.getLevel().getSeaLevel();
+    }
 }

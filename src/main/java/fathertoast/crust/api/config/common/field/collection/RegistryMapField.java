@@ -4,7 +4,6 @@ import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.RegistryMap;
 import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
 import net.minecraft.util.RandomSource;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -28,7 +27,6 @@ import java.util.List;
  * @see IRegWrapper
  * @see fathertoast.crust.api.config.common.value.collection.value.IValueCodec
  */
-@ApiStatus.Experimental
 public class RegistryMapField<T, V> extends FuzzyMapField<T, V, RegistryMap<T, V>> {
     
     /**

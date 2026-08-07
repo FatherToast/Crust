@@ -1,10 +1,11 @@
 package fathertoast.crust.api.config.common.value.environment.time;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.value.environment.CompareFloatEnvironment;
-import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
+import fathertoast.crust.api.config.common.field.IConfigField;
+import fathertoast.crust.api.config.common.value.collection.value.ComparatorValue;
+import fathertoast.crust.api.config.common.value.collection.value.FloatValueCodec;
+import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentContext;
+import fathertoast.crust.api.config.common.value.environment.core.CompareFloatEnvironment;
 
 import javax.annotation.Nullable;
 
@@ -20,20 +21,19 @@ import javax.annotation.Nullable;
  */
 public class DifficultyEnvironment extends CompareFloatEnvironment {
     
-    @SuppressWarnings( "unused" )
-    public DifficultyEnvironment( ComparisonOperator op, float value ) { super( op, value ); }
+    public DifficultyEnvironment( ComparatorValue op, float value ) { super( op, value ); }
     
-    public DifficultyEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
+    public DifficultyEnvironment( @Nullable IConfigField<?> field, String value ) { super( field, value ); }
     
-    /** @return The minimum value that can be given to the value. */
+    /** @return The value codec used. */
     @Override
-    protected float getMinValue() { return 0.0F; }
+    protected IValueCodec<Float> getValueCodec() { return FloatValueCodec.NON_NEGATIVE; }
     
-    // Don't specify the max value, just in case a mod changes it.
-    
-    /** @return Returns the actual value to compare, or Float.NaN if there isn't enough information. */
+    /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Override
-    public float getActual( Level world, @Nullable BlockPos pos ) {
-        return pos == null ? Float.NaN : world.getCurrentDifficultyAt( pos ).getEffectiveDifficulty();
+    @Nullable
+    protected Float getActual( EnvironmentContext context ) {
+        return context.getBlockPos() == null ? null :
+                context.getLevel().getCurrentDifficultyAt( context.getBlockPos() ).getEffectiveDifficulty();
     }
 }

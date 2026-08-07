@@ -1,9 +1,8 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.value.IntValueCodec;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 
@@ -16,7 +15,6 @@ import javax.annotation.Nullable;
  *
  * @param <T> The type to match against.
  */
-@ApiStatus.Experimental
 public class WeightedKey<T> extends FuzzyKeyWrapper<T> {
     
     /** Creates a weighted key that represents a chance to pick a particular key. */
@@ -37,7 +35,7 @@ public class WeightedKey<T> extends FuzzyKeyWrapper<T> {
      * @param line   The full TOML string.
      * @return A new weighted key based on the provided line.
      */
-    public static <T> WeightedKey<T> parseLine( IFuzzyKeyParser<T> parser, @Nullable AbstractConfigField field, String line ) {
+    public static <T> WeightedKey<T> parseLine( IFuzzyKeyParser<T> parser, @Nullable IConfigField<?> field, String line ) {
         // Parse the key/value from the weight (pattern: "weight key"); assume that if one is missing, it's the weight
         String[] keyAndWeight = FuzzyKey.getKeyAndValue( line );
         int weight;

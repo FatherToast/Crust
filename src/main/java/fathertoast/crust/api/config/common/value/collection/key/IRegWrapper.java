@@ -15,7 +15,6 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 import net.minecraftforge.registries.tags.ITagManager;
 import net.minecraftforge.server.ServerLifecycleHooks;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -24,9 +23,10 @@ import java.util.*;
  * Wraps the various registry types so that reg obj keys can ignore their implementation differences.
  *
  * @param <T> The type of values registered.
+ * @see net.minecraftforge.registries.ForgeRegistries
  * @see net.minecraft.core.registries.Registries
+ * @see net.minecraft.core.registries.BuiltInRegistries
  */
-@ApiStatus.Experimental
 public interface IRegWrapper<T> {
     /**
      * @return A wrapper we can use to refer to the registry identified in an agnostic way.
@@ -160,6 +160,12 @@ public interface IRegWrapper<T> {
             return tags != null && tags.isKnownTagName( tag ) ?
                     tags.getTag( tag ).iterator() : null;
         }
+        
+        /** @return True if the registry is equal to another. */
+        @Override
+        public boolean equals( Object other ) {
+            return other instanceof IRegWrapper<?> reg && registryKey().equals( reg.registryKey() );
+        }
     }
     
     /** A registry wrapper for a vanilla registry that is not wrapped by Forge. */
@@ -215,6 +221,12 @@ public interface IRegWrapper<T> {
         public Iterator<T> tagIterator( TagKey<T> tag ) {
             return getRegistry().getTag( tag ).map( ( tagSet ) ->
                     new HolderIterator<>( tagSet.iterator() ) ).orElse( null );
+        }
+        
+        /** @return True if the registry is equal to another. */
+        @Override
+        public boolean equals( Object other ) {
+            return other instanceof IRegWrapper<?> reg && registryKey().equals( reg.registryKey() );
         }
     }
     
@@ -304,6 +316,12 @@ public interface IRegWrapper<T> {
             Registry<T> reg = getRegistry();
             return reg == null ? null : reg.getTag( tag ).map( ( tagSet ) ->
                     new HolderIterator<>( tagSet.iterator() ) ).orElse( null );
+        }
+        
+        /** @return True if the registry is equal to another. */
+        @Override
+        public boolean equals( Object other ) {
+            return other instanceof IRegWrapper<?> reg && registryKey().equals( reg.registryKey() );
         }
     }
     
@@ -416,6 +434,12 @@ public interface IRegWrapper<T> {
             IRegWrapper<T> reg = getRegistry();
             return reg == null ? null : reg.tagIterator( tag );
         }
+        
+        /** @return True if the registry is equal to another. */
+        @Override
+        public boolean equals( Object other ) {
+            return other instanceof IRegWrapper<?> reg && registryKey().equals( reg.registryKey() );
+        }
     }
     
     
@@ -475,7 +499,7 @@ public interface IRegWrapper<T> {
         return null;
     }
     
-    record HolderIterator<T>(Iterator<Holder<T>> itr) implements Iterator<T> {
+    record HolderIterator<T>( Iterator<Holder<T>> itr ) implements Iterator<T> {
         @Override
         public boolean hasNext() { return itr.hasNext(); }
         

@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.ITomlStringValue;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import org.jetbrains.annotations.ApiStatus;
@@ -35,7 +35,6 @@ import java.util.function.Supplier;
  * @param <V> The type of value this codec reads/writes; should be this multi-value codec itself.
  * @see MobEffectStats An example multi-value codec implementation.
  */
-@ApiStatus.Experimental
 public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements IValueCodec<V> {
     /**
      * Call this to define a sub-value for this multi-value codec.
@@ -76,6 +75,9 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
         }
     }
     
+    /** @return The number of arguments this codec uses; i.e., how many sub-values it has. */
+    public int arguments() { return subValues.size(); }
+    
     /** @return The value format (for example, {@literal "<Number (Any Value)>"}). */
     @Override
     public String getFormat() {
@@ -101,7 +103,7 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
      * @return A new value based on the value string. If the parse fails, returns a non-null default value.
      */
     @Override
-    public V parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+    public V parseTomlString( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
         String[] args = IValueCodec.getArgs( value );
         int actualArgs = args.length;
         
@@ -190,7 +192,7 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
         
         /** Loads the entry's sub-value based on the argument string. Called when a codec is being loaded as a value. */
         @ApiStatus.Internal
-        void load( @Nullable AbstractConfigField field, String line, @Nullable String arg ) {
+        void load( @Nullable IConfigField<?> field, String line, @Nullable String arg ) {
             value = codec().parseTomlString( field, line, arg );
         }
     }

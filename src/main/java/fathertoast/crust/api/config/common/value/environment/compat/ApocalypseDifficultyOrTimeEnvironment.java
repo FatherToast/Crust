@@ -1,28 +1,27 @@
 package fathertoast.crust.api.config.common.value.environment.compat;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
+import fathertoast.crust.api.config.common.field.IConfigField;
+import fathertoast.crust.api.config.common.value.collection.value.ComparatorValue;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentContext;
 import fathertoast.crust.api.config.common.value.environment.time.WorldTimeEnvironment;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
 /**
  * This condition is the same as {@link ApocalypseDifficultyEnvironment}, except that when
- * Apocalypse Rebooted is NOT installed, this condition is treated as {@link WorldTimeEnvironment}
+ * Apocalypse is NOT installed, this condition is treated as {@link WorldTimeEnvironment}
  * instead of always evaluating as false.
  */
 public class ApocalypseDifficultyOrTimeEnvironment extends ApocalypseDifficultyEnvironment {
     
-    public ApocalypseDifficultyOrTimeEnvironment( ComparisonOperator op, long value ) { super( op, value ); }
+    public ApocalypseDifficultyOrTimeEnvironment( ComparatorValue op, long value ) { super( op, value ); }
     
-    public ApocalypseDifficultyOrTimeEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
+    public ApocalypseDifficultyOrTimeEnvironment( @Nullable IConfigField<?> field, String value ) { super( field, value ); }
     
     /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Override
     @Nullable
-    public Long getActual( Level level, @Nullable BlockPos pos ) {
-        return isApocalypseInstalled() ? super.getActual( level, pos ) : (Long) level.dayTime();
+    protected Long getActual( EnvironmentContext context ) {
+        return isApocalypseInstalled() ? super.getActual( context ) : (Long) context.getLevel().dayTime();
     }
 }

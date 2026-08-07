@@ -7,7 +7,7 @@ import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDifficultyEnvironment;
 import fathertoast.crust.common.api.impl.CrustApi;
 import fathertoast.crust.common.api.impl.PlayerVelocityWatcher;
-import fathertoast.crust.common.command.impl.CrustArgumentTypes;
+import fathertoast.crust.common.command.CrustArgumentTypes;
 import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.core.registry.*;
 import fathertoast.crust.common.network.CrustPacketHandler;
@@ -64,7 +64,7 @@ public class Crust {
      *  - tools
      *      + starting inventory
      *      ? inventory presets/loadouts
-     *      + hotkey to equip from creative inv - ideally MMB by default
+     *      - hotkey to equip from creative inv
      *      - extra inventory buttons (command-driven)
      *          - can have hotkey assigned
      *          - built-in buttons
@@ -105,7 +105,7 @@ public class Crust {
         CONTAINER = context.getContainer();
         API = new CrustApi();
         ApocalypseDifficultyEnvironment.register( API );
-        CrustPacketHandler.registerMessages();
+        new CrustPacketHandler().registerMessages();
         
         ModLoadingStage.CONSTRUCT.getDeferredWorkQueue().enqueueWork( CONTAINER, () -> {
             // Crust's config manager; defines the mod config folder

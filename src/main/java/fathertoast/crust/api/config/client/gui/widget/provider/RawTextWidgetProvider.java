@@ -1,11 +1,12 @@
 package fathertoast.crust.api.config.client.gui.widget.provider;
 
-import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.client.gui.widget.entry.ConfigFieldGuiEntry;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -15,13 +16,14 @@ import java.util.function.Supplier;
  *
  * @see net.minecraft.client.gui.components.EditBox
  */
-@SuppressWarnings( "ClassCanBeRecord" )
-public class RawTextWidgetProvider implements IConfigFieldWidgetProvider {
+@ApiStatus.Experimental // WIP Does not work yet
+@SuppressWarnings( { "ClassCanBeRecord", "unused" } )
+public class RawTextWidgetProvider<T> implements IConfigFieldWidgetProvider<T> {
     
     /** The providing field. */
-    protected final AbstractConfigField FIELD;
+    protected final IConfigField<T> FIELD;
     
-    public RawTextWidgetProvider( AbstractConfigField field ) { FIELD = field; }
+    public RawTextWidgetProvider( IConfigField<T> field ) { FIELD = field; }
     
     /**
      * Called to initialize the field's gui components.
@@ -35,27 +37,28 @@ public class RawTextWidgetProvider implements IConfigFieldWidgetProvider {
      * @param displayValue The current raw value to display in the GUI.
      */
     @Override
-    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+    public void apply( List<AbstractWidget> components, ConfigFieldGuiEntry<T> listEntry,//TODO remove reference to non-api package
+                       T displayValue ) {
         Button editButton = new Button( 0, 0, VALUE_WIDTH, VALUE_HEIGHT,
                 Component.literal( "Edit..." ),
-                ( button ) -> openTextBoxMenu( button, listEntry, this ), Supplier::get );
+                button -> openTextBoxMenu( button, listEntry, this ), Supplier::get );
+        editButton.active = listEntry.isEditable();
         
-        components.add( editButton );
-        
-        // noinspection resource
-        EditBox editBox = new EditBox( listEntry.minecraft().font,
+        EditBox editBox = new EditBox( listEntry.client().font,
                 1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for ~1px frame
                 Component.literal( FIELD.getKey() ) );
         editBox.setMaxLength( Integer.MAX_VALUE );
         
         editBox.setValue( displayValue.toString() );
-        editBox.setResponder( listEntry::updateValue );
+        editBox.setResponder( listEntry::updateInput );
+        editBox.active = listEntry.isEditable();
         
+        components.add( editButton );
         components.add( editBox );
     }
     
     /** Called when the button is pressed to open a text box popup. */
-    protected void openTextBoxMenu( Button openingButton, CrustConfigFieldList.FieldEntry listEntry, RawTextWidgetProvider provider ) {
+    protected void openTextBoxMenu( Button openingButton, ConfigFieldGuiEntry<T> listEntry, RawTextWidgetProvider<T> provider ) {
         //TODO create text box widget (needs to be created)
         //TODO create accept and cancel buttons
     }

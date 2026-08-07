@@ -1,24 +1,26 @@
 package fathertoast.crust.api.config.common.value.environment.time;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.value.environment.CompareLongEnvironment;
-import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
+import fathertoast.crust.api.config.common.field.IConfigField;
+import fathertoast.crust.api.config.common.value.collection.value.ComparatorValue;
+import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
+import fathertoast.crust.api.config.common.value.collection.value.LongValueCodec;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentContext;
+import fathertoast.crust.api.config.common.value.environment.core.CompareLongEnvironment;
 
 import javax.annotation.Nullable;
 
 public class WorldTimeEnvironment extends CompareLongEnvironment {
     
-    public WorldTimeEnvironment( ComparisonOperator op, long value ) { super( op, value ); }
+    public WorldTimeEnvironment( ComparatorValue op, long value ) { super( op, value ); }
     
-    public WorldTimeEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
+    public WorldTimeEnvironment( @Nullable IConfigField<?> field, String value ) { super( field, value ); }
     
-    /** @return The minimum value that can be given to the value. */
+    /** @return The value codec used. */
     @Override
-    protected long getMinValue() { return 0L; }
+    protected IValueCodec<Long> getValueCodec() { return LongValueCodec.NON_NEGATIVE; }
     
     /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Override
-    public Long getActual( Level level, @Nullable BlockPos pos ) { return level.dayTime(); }
+    @Nullable
+    protected Long getActual( EnvironmentContext context ) { return context.getLevel().dayTime(); }
 }

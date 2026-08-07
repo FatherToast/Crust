@@ -2,11 +2,12 @@ package fathertoast.crust.api.config.common.file;
 
 import com.electronwill.nightconfig.core.utils.StringUtils;
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.DoubleField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.field.IntField;
 import fathertoast.crust.api.config.common.value.ITomlDoubleValue;
 import fathertoast.crust.api.config.common.value.ITomlIntValue;
+import fathertoast.crust.api.config.common.value.ITomlStringValue;
 import fathertoast.crust.api.config.common.value.ITomlValue;
 import net.minecraft.resources.ResourceLocation;
 
@@ -81,13 +82,13 @@ public final class TomlHelper {
     
     /** @return The object as a string, or null if it cannot be. */
     @Nullable
-    public static String readAsString( @Nullable AbstractConfigField field, @Nullable Object raw ) {
+    public static String readAsString( @Nullable IConfigField<?> field, @Nullable Object raw ) {
         return raw == null ? null : raw.toString();
     }
     
     /** @return The object as a non-string TOML primitive type, or null if it cannot be. */
     @Nullable
-    public static Object readAsPrimitive( @Nullable AbstractConfigField field, @Nullable Object raw ) {
+    public static Object readAsPrimitive( @Nullable IConfigField<?> field, @Nullable Object raw ) {
         if( raw instanceof String stringValue ) {
             if( field != null ) {
                 ConfigUtil.infoFor( field );
@@ -100,13 +101,13 @@ public final class TomlHelper {
     
     /** @return The object as a number, or null if it cannot be. */
     @Nullable
-    public static Number readAsNumber( @Nullable AbstractConfigField field, @Nullable Object raw ) {
+    public static Number readAsNumber( @Nullable IConfigField<?> field, @Nullable Object raw ) {
         return asNumber( readAsPrimitive( field, raw ) );
     }
     
     /** @return The object as a boolean, or null if it cannot be. */
     @Nullable
-    public static Boolean readAsBoolean( @Nullable AbstractConfigField field, @Nullable Object raw ) {
+    public static Boolean readAsBoolean( @Nullable IConfigField<?> field, @Nullable Object raw ) {
         Object value = readAsPrimitive( field, raw );
         if( value instanceof Boolean booleanValue ) return booleanValue;
         if( value instanceof Number numberValue ) {
@@ -123,19 +124,19 @@ public final class TomlHelper {
     
     /** @return The object as a list of strings, or null if it cannot be. */
     @Nullable
-    public static List<String> readAsStringList( @Nullable AbstractConfigField field, @Nullable Object raw ) {
+    public static List<String> readAsStringList( @Nullable IConfigField<?> field, @Nullable Object raw ) {
         return raw == null ? null : parseStringList( raw );
     }
     
     /** @return The object as a list of numbers, or null if it cannot be. */
     @Nullable
-    public static List<Number> readAsNumberList( @Nullable AbstractConfigField field, @Nullable Object raw ) {
+    public static List<Number> readAsNumberList( @Nullable IConfigField<?> field, @Nullable Object raw ) {
         return raw == null ? null : parseNumberList( field, raw );
     }
     
     /** @return The object as a list of booleans, or null if it cannot be. */
     @Nullable
-    public static List<Boolean> readAsBooleanList( @Nullable AbstractConfigField field, @Nullable Object raw ) {
+    public static List<Boolean> readAsBooleanList( @Nullable IConfigField<?> field, @Nullable Object raw ) {
         return raw == null ? null : parseBooleanList( field, raw );
     }
     
@@ -200,24 +201,27 @@ public final class TomlHelper {
     
     /** Attempts to convert a TOML literal to a list of strings. */
     public static List<String> parseStringList( Object value ) {
-        final List<String> list = new ArrayList<>();
-        if( value instanceof List ) {
-            // Get all values from the list
-            for( Object entry : (List<?>) value ) {
-                if( entry != null ) list.add( entry.toString() );
+        if( value instanceof List<?> unkList ) {
+            try {
+                //noinspection unchecked
+                return (List<String>) value;
             }
+            catch( ClassCastException ex ) {
+                // Hey, at least we tried
+            }
+            // Get all values from the list
+            List<String> list = new ArrayList<>();
+            unkList.forEach( e -> { if( e != null ) list.add( e.toString() ); } );
+            return list;
         }
-        else {
-            // Read non-list as a single item list
-            list.add( value.toString() );
-        }
-        return list;
+        // Read non-list as a single item list
+        return List.of( value.toString() );
     }
     
     /** Attempts to convert a TOML literal to a list of numbers. */
-    public static List<Number> parseNumberList( @Nullable AbstractConfigField field, Object value ) {
+    public static List<Number> parseNumberList( @Nullable IConfigField<?> field, Object value ) {
         final List<Number> list = new ArrayList<>();
-        if( value instanceof List ) {
+        if( value instanceof List<?> ) {
             // Get all values from the list
             for( Object entry : (List<?>) value ) {
                 Number number = readAsNumber( field, entry );
@@ -233,9 +237,9 @@ public final class TomlHelper {
     }
     
     /** Attempts to convert a TOML literal to a list of booleans. */
-    public static List<Boolean> parseBooleanList( @Nullable AbstractConfigField field, Object value ) {
+    public static List<Boolean> parseBooleanList( @Nullable IConfigField<?> field, Object value ) {
         final List<Boolean> list = new ArrayList<>();
-        if( value instanceof List ) {
+        if( value instanceof List<?> ) {
             // Get all values from the list
             for( Object entry : (List<?>) value ) {
                 Boolean bool = readAsBoolean( field, entry );
@@ -258,6 +262,34 @@ public final class TomlHelper {
         return Objects.equals( toLiteral( valueA ), toLiteral( valueB ) );
     }
     
+    /**
+     * Attempts to convert an object to a single-line string. Only compatible with the following objects:<p>
+     * * null (becomes the empty string)<p>
+     * * {@link String}s<p>
+     * * {@link Number}s<p>
+     * * {@link Boolean}s<p>
+     * * {@link Enum}s (as by {@link TomlHelper#enumToString(Enum)})<p>
+     * * Objects that implement {@link ITomlStringValue}<p>
+     * * Objects that override {@link Object#toString()} to provide a string serialization<p>
+     *
+     * @param value The value to convert.
+     * @return The value, converted to a single-line string.
+     */
+    public static String toTomlString( @Nullable Object value ) {
+        if( value == null ) {
+            return "";
+        }
+        else if( value instanceof ITomlStringValue tomlValue ) {
+            return tomlValue.toTomlString();
+        }
+        if( value instanceof String stringValue ) {
+            return stringValue;
+        }
+        else if( value instanceof Enum<?> enumValue ) {
+            return enumToString( enumValue );
+        }
+        return value.toString();
+    }
     
     /**
      * Attempts to convert an object to a TOML literal for the use of a comment.
@@ -322,7 +354,6 @@ public final class TomlHelper {
         //  generally works for numerical and boolean values, but nothing else unless
         //  #toString() is specifically overridden to return a valid TOML literal
         return value.toString();
-        
     }
     
     /** @return The enum value's string representation, as used by configs. */

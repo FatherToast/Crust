@@ -2,10 +2,9 @@ package fathertoast.crust.api.config.common.value.collection;
 
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -26,7 +25,7 @@ import java.util.*;
  * @see FuzzyWeightedValueList
  * @see fathertoast.crust.api.config.common.field.collection.AbstractFuzzyCollectionField
  */
-@ApiStatus.Experimental
+@SuppressWarnings( "unused" )
 public abstract class AbstractFuzzyCollection<T, K extends FuzzyKey<T>> extends TomlStringList<K> {
     
     /** This collection's fuzzy key parser. */
@@ -72,7 +71,7 @@ public abstract class AbstractFuzzyCollection<T, K extends FuzzyKey<T>> extends 
      * @param value List value to load from. This generally comes from a TOML string array value
      *              (config loading) or a string list tag (NBT loading).
      */
-    public void load( @Nullable AbstractConfigField field, List<String> value ) {
+    public void load( @Nullable IConfigField<?> field, List<String> value ) {
         final ArrayList<K> list = new ArrayList<>( value.size() );
         for( String line : value ) {
             K entry = loadLine( field, line );
@@ -86,7 +85,7 @@ public abstract class AbstractFuzzyCollection<T, K extends FuzzyKey<T>> extends 
     
     /** @return The freshly loaded entry, or null if the line should be deleted. */
     @Nullable
-    public abstract K loadLine( @Nullable AbstractConfigField field, String line );
+    public abstract K loadLine( @Nullable IConfigField<?> field, String line );
     
     
     /** @return True if the given target is contained within this collection. */
@@ -137,7 +136,7 @@ public abstract class AbstractFuzzyCollection<T, K extends FuzzyKey<T>> extends 
      * Can only identify obviously unreachable keys; things like tags hiding registry keys are not picked up.
      * Only valid when using keys for matching (i.e., {@link KeyUsage#MATCH}).
      */
-    protected static void checkUnreachableForMatching( @Nullable AbstractConfigField field, AbstractFuzzyCollection<?, ?> fuzz ) {
+    protected static void checkUnreachableForMatching( @Nullable IConfigField<?> field, AbstractFuzzyCollection<?, ?> fuzz ) {
         if( field == null || fuzz.isEmpty() ) return;
         
         Set<FuzzyKey<?>> loadedKeys = new HashSet<>();
@@ -170,7 +169,6 @@ public abstract class AbstractFuzzyCollection<T, K extends FuzzyKey<T>> extends 
     
     
     /** Boilerplate builder class for fuzzy collections. */
-    @ApiStatus.Experimental
     public static abstract class AbstractBuilder<T, K extends FuzzyKey<T>, C extends AbstractFuzzyCollection<T, K>,
             B extends AbstractBuilder<T, K, C, B>> {
         

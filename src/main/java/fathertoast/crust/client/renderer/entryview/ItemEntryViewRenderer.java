@@ -8,8 +8,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
-
 /**
  * An entry view renderer implementation that renders a flat item.
  * <br><br>
@@ -17,28 +15,23 @@ import java.util.function.Supplier;
  * on Crust's item stack entry view renderer to actually do the rendering.
  */
 public class ItemEntryViewRenderer implements EntryViewWidget.EntryViewRenderer<Item> {
-    
     /**
      * Called from {@link EntryViewWidget#renderWidget(GuiGraphics, int, int, float)}
      * to render something based on the widget's field's value.
      */
     @Override
-    public void render( @Nullable Supplier<Item> valueSupplier, GuiGraphics graphics, int widgetX, int widgetY,
+    public void render( @Nullable Item displayValue, GuiGraphics graphics, int widgetX, int widgetY,
                         int mouseX, int mouseY, float partialTick ) {
-        final Item item = getValue( valueSupplier );
-        
-        if( item == null ) return;
+        if( displayValue == null ) return;
         
         try {
-            if( item instanceof BlockItem blockItem ) {
+            if( displayValue instanceof BlockItem blockItem ) {
                 EntryViewRendererRegistry.getRendererOrThrow( EntryViewRendererRegistry.BLOCK_STATE ).render(
-                        blockItem.getBlock()::defaultBlockState, graphics, widgetX, widgetY, mouseX, mouseY, partialTick
-                );
+                        blockItem.getBlock().defaultBlockState(), graphics, widgetX, widgetY, mouseX, mouseY, partialTick );
             }
             else {
                 EntryViewRendererRegistry.getRendererOrThrow( EntryViewRendererRegistry.ITEM_STACK ).render(
-                        () -> new ItemStack( item ), graphics, widgetX, widgetY, mouseX, mouseY, partialTick
-                );
+                        new ItemStack( displayValue ), graphics, widgetX, widgetY, mouseX, mouseY, partialTick );
             }
         }
         catch( Exception e ) {

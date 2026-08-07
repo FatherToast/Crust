@@ -1,12 +1,11 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.key.DefaultKey;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKeyWrapper;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -20,7 +19,6 @@ import java.util.function.Supplier;
  * @param <T> The type to match against.
  * @param <V> The value type.
  */
-@ApiStatus.Experimental
 public class FuzzyEntry<T, V> extends FuzzyKeyWrapper<T> implements Supplier<V> {
     
     /** Creates an entry that associates a non-blacklist key with a value. */
@@ -52,7 +50,7 @@ public class FuzzyEntry<T, V> extends FuzzyKeyWrapper<T> implements Supplier<V> 
      */
     @Nullable
     public static <T, V> FuzzyEntry<T, V> parseLine( IFuzzyKeyParser<T> parser, IValueCodec<V> codec,
-                                                     @Nullable AbstractConfigField field, String line ) {
+                                                     @Nullable IConfigField<?> field, String line ) {
         // Check for blacklist declaration and parse the value
         String[] keyAndValue = FuzzyKey.getKeyAndValue( line );
         String key = keyAndValue[0];

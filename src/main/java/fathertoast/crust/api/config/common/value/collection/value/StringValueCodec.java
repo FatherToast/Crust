@@ -1,9 +1,8 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
@@ -16,7 +15,6 @@ import java.util.function.Predicate;
  * input values and customize the format hint for config field comments.
  */
 @SuppressWarnings( "ClassCanBeRecord" )
-@ApiStatus.Experimental
 public class StringValueCodec implements IValueCodec<String> {
     
     /** A string codec that allows any value (except "null"). */
@@ -68,7 +66,7 @@ public class StringValueCodec implements IValueCodec<String> {
      * @return A new value based on the value string. If the parse fails, returns a non-null default value.
      */
     @Override
-    public String parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+    public String parseTomlString( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
         return corrector.correctValue( field, line, value == null || value.isEmpty() ||
                 FuzzyKey.NULL_KEY.equalsIgnoreCase( value ) ? null : value );
     }
@@ -95,7 +93,7 @@ public class StringValueCodec implements IValueCodec<String> {
          * If invalid, it reports the problem (unless field is null) and returns the closest valid value.
          */
         @Override
-        public String correctValue( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+        public String correctValue( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
             return value == null ? defaultValue : value;
         }
     }
@@ -118,7 +116,7 @@ public class StringValueCodec implements IValueCodec<String> {
          * If invalid, it reports the problem (unless field is null) and returns the closest valid value.
          */
         @Override
-        public String correctValue( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+        public String correctValue( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
             return value == null || !validator.test( value ) ? defaultValue : value;
         }
     }
@@ -144,7 +142,7 @@ public class StringValueCodec implements IValueCodec<String> {
          * If invalid, it reports the problem (unless field is null) and returns the closest valid value.
          */
         @Override
-        public String correctValue( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+        public String correctValue( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
             return value == null ? defaultValue : value.length() > length ? value.substring( 0, length ) : value;
         }
     }
@@ -170,7 +168,7 @@ public class StringValueCodec implements IValueCodec<String> {
          * If invalid, it reports the problem (unless field is null) and returns the closest valid value.
          */
         @Override
-        public String correctValue( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+        public String correctValue( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
             return value == null ? defaultValue : ResourceLocation.isValidResourceLocation( value ) ? value :
                     ResourceLocValueCodec.stripInvalidChars( value );
         }

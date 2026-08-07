@@ -4,7 +4,6 @@ import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.RegistryWeightedValueList;
 import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
 import net.minecraft.util.RandomSource;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -26,7 +25,6 @@ import java.util.List;
  * @see IRegWrapper
  * @see fathertoast.crust.api.config.common.value.collection.value.IValueCodec
  */
-@ApiStatus.Experimental
 public class RegistryWeightedValueListField<T, V> extends FuzzyWeightedValueListField<T, V, RegistryWeightedValueList<T, V>> {
     
     /**

@@ -70,19 +70,6 @@ public final class CrustObjects {
         RegistryObject<ArgumentTypeInfo<ArgumentType<PortalBuilder>, ?>> PORTAL_TYPE = cmdArg( "portal_type" );
     }
     
-    /** The registry IDs of misc game objects added by Crust. */
-    @SuppressWarnings( "unused" )
-    @Deprecated( forRemoval = true ) // TODO Remove in next MC version, use the above registry object's #getId() instead
-    public interface ID {
-        // Portal builders
-        ResourceLocation NETHER_PORTAL = Portals.NETHER.getId();
-        ResourceLocation END_PORTAL = Portals.END.getId();
-        
-        // Mob effects
-        ResourceLocation VULNERABILITY_EFFECT = Effects.VULNERABILITY.getId();
-        ResourceLocation WEIGHT_EFFECT = Effects.WEIGHT.getId();
-    }
-    
     
     // ---- Internal Methods ---- //
     
@@ -139,5 +126,5 @@ public final class CrustObjects {
     
     
     // Utility class
-    private CrustObjects() { }
+    private CrustObjects() {}
 }

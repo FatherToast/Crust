@@ -1,8 +1,6 @@
 package fathertoast.crust.common.mixin_work;
 
-import fathertoast.crust.api.config.common.field.AttributeListField;
 import fathertoast.crust.api.config.common.field.collection.AttributeOpListField;
-import fathertoast.crust.api.config.common.value.ConfigDrivenAttributeModifierMap;
 import fathertoast.crust.api.config.common.value.ConfigDrivenAttributeSupplier;
 import fathertoast.crust.api.event.advancement.AdvancementLoadEvent;
 import fathertoast.crust.common.api.impl.event.advancement.ModifiableAdvancement;
@@ -33,31 +31,21 @@ public class CommonMixinHooks {
     }
     
     public static void collectConfigDrivenTypes( Map<EntityType<? extends LivingEntity>, AttributeSupplier> forgeAttributes,
-                                                 Map<EntityType<? extends LivingEntity>, AttributeOpListField> configByEntityType,
-                                                 Map<EntityType<? extends LivingEntity>, AttributeListField> configDrivenTypes ) {
+                                                 Map<EntityType<? extends LivingEntity>, AttributeOpListField> configByEntityType ) {
         forgeAttributes.forEach( ( entityType, attributeSupplier ) -> {
             if( attributeSupplier instanceof ConfigDrivenAttributeSupplier cfgDrivenSupplier ) {
                 configByEntityType.put( entityType, cfgDrivenSupplier.getField() );
-            }
-            else if( attributeSupplier instanceof ConfigDrivenAttributeModifierMap cfgDrivenSupplier ) {
-                configDrivenTypes.put( entityType, cfgDrivenSupplier.getField() );
             }
         } );
     }
     
     public static void handleModifyAttributes( Map<EntityType<? extends LivingEntity>, AttributeSupplier> forgeAttributes,
-                                               Map<EntityType<? extends LivingEntity>, AttributeOpListField> configByEntityType,
-                                               Map<EntityType<? extends LivingEntity>, AttributeListField> configDrivenTypes ) {
+                                               Map<EntityType<? extends LivingEntity>, AttributeOpListField> configByEntityType ) {
         configByEntityType.forEach( ( entityType, field ) -> {
             AttributeSupplier supplier = forgeAttributes.get( entityType );
             if( supplier != null ) {
                 forgeAttributes.put( entityType, field.build( new AttributeSupplier.Builder( supplier ) ) );
             }
-        } );
-        configDrivenTypes.forEach( ( entityType, field ) -> {
-            AttributeSupplier supplier = forgeAttributes.get( entityType );
-            ConfigDrivenAttributeModifierMap cfgDrivenSupplier = new ConfigDrivenAttributeModifierMap( field, new AttributeSupplier.Builder( supplier ) );
-            forgeAttributes.put( entityType, cfgDrivenSupplier );
         } );
     }
 }

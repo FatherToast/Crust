@@ -18,7 +18,6 @@ import java.util.List;
  * @param <V> The value type.
  * @see fathertoast.crust.api.config.common.value.collection.value.IValueCodec
  */
-@ApiStatus.Experimental
 public class ItemStackValueListField<V> extends FuzzyValueListField<ItemStack, V, ItemStackValueList<V>> {
     
     /**

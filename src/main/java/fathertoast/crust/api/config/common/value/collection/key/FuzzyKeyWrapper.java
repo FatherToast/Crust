@@ -1,7 +1,5 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
-import org.jetbrains.annotations.ApiStatus;
-
 /**
  * Extended by fuzzy keys that wrap the "actual" fuzzy keys to add extra functionality
  * to those keys (for example, a weight or value).
@@ -11,7 +9,6 @@ import org.jetbrains.annotations.ApiStatus;
  * @see fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry
  * @see fathertoast.crust.api.config.common.value.collection.value.WeightedEntry
  */
-@ApiStatus.Experimental
 public abstract class FuzzyKeyWrapper<T> extends FuzzyKey<T> {
     /** @see #wrappedKey() */
     private final FuzzyKey<T> wrappedKey;

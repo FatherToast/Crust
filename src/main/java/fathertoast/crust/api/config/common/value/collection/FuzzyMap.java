@@ -1,6 +1,6 @@
 package fathertoast.crust.api.config.common.value.collection;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
 import fathertoast.crust.api.config.common.value.collection.key.StringKey;
@@ -8,7 +8,6 @@ import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
 import fathertoast.crust.api.lib.CrustMath;
 import net.minecraft.util.RandomSource;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -39,6 +38,7 @@ import java.util.Random;
  * @see fathertoast.crust.api.config.common.field.collection.FuzzyMapField
  * @see FuzzySet FuzzySet - A similar collection that does not allow values
  */
+@SuppressWarnings( "unused" )
 public class FuzzyMap<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<T, V>> {
     
     /** This map's value codec. */
@@ -121,7 +121,7 @@ public class FuzzyMap<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<T, V>>
      *              (config loading) or a string list tag (NBT loading).
      */
     @Override
-    public void load( @Nullable AbstractConfigField field, List<String> value ) {
+    public void load( @Nullable IConfigField<?> field, List<String> value ) {
         super.load( field, value );
         checkUnreachableForMatching( field, this );
     }
@@ -129,13 +129,12 @@ public class FuzzyMap<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<T, V>>
     /** @return The freshly loaded entry, or null if the line should be deleted. */
     @Override
     @Nullable
-    public FuzzyEntry<T, V> loadLine( @Nullable AbstractConfigField field, String line ) {
+    public FuzzyEntry<T, V> loadLine( @Nullable IConfigField<?> field, String line ) {
         return keyUsage().ifAllowed( FuzzyEntry.parseLine( keyParser, valueCodec, field, line ) );
     }
     
     
     /** Boilerplate builder class for fuzzy maps. */
-    @ApiStatus.Experimental
     public static abstract class AbstractBuilder<T, V, C extends FuzzyMap<T, V>, B extends AbstractBuilder<T, V, C, B>>
             extends AbstractFuzzyCollection.AbstractBuilder<T, FuzzyEntry<T, V>, C, B> {
         
@@ -161,7 +160,6 @@ public class FuzzyMap<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<T, V>>
     }
     
     /** Builder class for a generic fuzzy map. */
-    @ApiStatus.Experimental
     public static class Builder<T, V, B extends Builder<T, V, B>> extends AbstractBuilder<T, V, FuzzyMap<T, V>, B> {
         
         public final IFuzzyKeyParser<T> keyParser;
@@ -183,7 +181,6 @@ public class FuzzyMap<T, V> extends AbstractFuzzyCollection<T, FuzzyEntry<T, V>>
     }
     
     /** Builder class for a fuzzy string map. */
-    @ApiStatus.Experimental
     public static class StrBuilder<V> extends Builder<String, V, StrBuilder<V>> {
         
         public StrBuilder( IValueCodec<V> codec ) { super( StringKey.PARSER, codec ); }

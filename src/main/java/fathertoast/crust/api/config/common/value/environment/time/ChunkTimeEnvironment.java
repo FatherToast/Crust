@@ -1,29 +1,35 @@
 package fathertoast.crust.api.config.common.value.environment.time;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.value.environment.CompareLongEnvironment;
-import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
+import fathertoast.crust.api.config.common.field.IConfigField;
+import fathertoast.crust.api.config.common.value.collection.value.ComparatorValue;
+import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
+import fathertoast.crust.api.config.common.value.collection.value.LongValueCodec;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentContext;
+import fathertoast.crust.api.config.common.value.environment.core.CompareLongEnvironment;
+import net.minecraft.core.SectionPos;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkStatus;
 
 import javax.annotation.Nullable;
 
 public class ChunkTimeEnvironment extends CompareLongEnvironment {
     
-    public ChunkTimeEnvironment( ComparisonOperator op, long value ) { super( op, value ); }
+    public ChunkTimeEnvironment( ComparatorValue op, long value ) { super( op, value ); }
     
-    public ChunkTimeEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
+    public ChunkTimeEnvironment( @Nullable IConfigField<?> field, String value ) { super( field, value ); }
     
-    /** @return The minimum value that can be given to the value. */
+    /** @return The value codec used. */
     @Override
-    protected long getMinValue() { return 0L; }
+    protected IValueCodec<Long> getValueCodec() { return LongValueCodec.NON_NEGATIVE; }
     
     /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Override
     @Nullable
-    public Long getActual( Level level, @Nullable BlockPos pos ) {
-        // Ignore deprecation; this is intentionally the same method used by World#getCurrentDifficultyAt
-        //noinspection deprecation
-        return pos == null || !level.hasChunkAt( pos ) ? null : level.getChunkAt( pos ).getInhabitedTime();
+    protected Long getActual( EnvironmentContext context ) {
+        ChunkAccess chunk = context.getBlockPos() == null ? null : context.getLevel().getChunk(
+                SectionPos.blockToSectionCoord( context.getBlockPos().getX() ),
+                SectionPos.blockToSectionCoord( context.getBlockPos().getZ() ),
+                ChunkStatus.FULL, false );
+        return chunk == null ? null : chunk.getInhabitedTime();
     }
 }

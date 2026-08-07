@@ -100,7 +100,7 @@ dependencies {
     // Apocalypse & API
     // runtimeOnly fg.deobf("curse.maven:apocalypse-229199:${apocalypse_version}")
     // compileOnly fg.deobf("curse.maven:apocalypse_api-229199:${apocalypse_api_version}")
-    runtimeOnly fg.deobf("blank:apocalypse:1.20.1-4.11.10-r:all")
+    // runtimeOnly fg.deobf("blank:apocalypse:1.20.1-4.11.10-r:all")
     compileOnly fg.deobf("blank:apocalypse:1.20.1-4.11.10-r:api")
 
     // Other toasty mods // TODO Re-add later!

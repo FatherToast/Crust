@@ -1,10 +1,9 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.DoubleField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 
@@ -12,7 +11,6 @@ import javax.annotation.Nullable;
  * A double value codec. Defines a default value and an allowed value range.
  */
 @SuppressWarnings( "ClassCanBeRecord" )
-@ApiStatus.Experimental
 public class DoubleValueCodec implements IValueCodec<Double>, IValueCorrector<Double> {
     
     /** The standard double codec for any value. Defaults to 0.0. */
@@ -65,7 +63,7 @@ public class DoubleValueCodec implements IValueCodec<Double>, IValueCorrector<Do
      * @return A new value based on the value string. If the parse fails, returns a non-null default value.
      */
     @Override // IValueCodec
-    public Double parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+    public Double parseTomlString( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
         if( value == null ) return defaultValue;
         Object v = TomlHelper.parseStringPrimitive( value );
         if( v instanceof Number numberValue ) {
@@ -87,7 +85,7 @@ public class DoubleValueCodec implements IValueCodec<Double>, IValueCorrector<Do
      * If invalid, it reports the problem (unless field is null) and returns the closest valid value.
      */
     @Override // IValueCorrector
-    public Double correctValue( @Nullable AbstractConfigField field, String line, @Nullable Double value ) {
+    public Double correctValue( @Nullable IConfigField<?> field, String line, @Nullable Double value ) {
         if( value == null ) return defaultValue;
         // Verify value is within range
         if( value < minValue ) {

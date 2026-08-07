@@ -6,8 +6,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
-
 /**
  * An entry view renderer implementation that renders a block's default state.
  * <br><br>
@@ -15,22 +13,18 @@ import java.util.function.Supplier;
  * on Crust's block state entry view renderer to actually do the rendering.
  */
 public class BlockEntryViewRenderer implements EntryViewWidget.EntryViewRenderer<Block> {
-    
     /**
      * Called from {@link EntryViewWidget#renderWidget(GuiGraphics, int, int, float)}
      * to render something based on the widget's field's value.
      */
     @Override
-    public void render( @Nullable Supplier<Block> valueSupplier, GuiGraphics graphics, int widgetX, int widgetY,
+    public void render( @Nullable Block displayValue, GuiGraphics graphics, int widgetX, int widgetY,
                         int mouseX, int mouseY, float partialTick ) {
-        final Block block = getValue( valueSupplier );
-        
-        if( block == null ) return;
+        if( displayValue == null ) return;
         
         try {
             EntryViewRendererRegistry.getRendererOrThrow( EntryViewRendererRegistry.BLOCK_STATE ).render(
-                    block::defaultBlockState, graphics, widgetX, widgetY, mouseX, mouseY, partialTick
-            );
+                    displayValue.defaultBlockState(), graphics, widgetX, widgetY, mouseX, mouseY, partialTick );
         }
         catch( Exception e ) {
             // noinspection CallToPrintStackTrace

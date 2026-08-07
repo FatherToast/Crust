@@ -1,6 +1,5 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -8,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * Never matches anything, used to minimize deletion of user-entered data and as a placeholder for null values.
  */
-@ApiStatus.Experimental
 public class NullKey<T> extends FuzzyKey<T> implements IReverseKey<T> {
     
     /** @return A new parameterized null key. */

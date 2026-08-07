@@ -75,5 +75,5 @@ public class ColorIntField extends IntField.Hex {
     /** @return This field's gui component provider. */
     @Override
     @OnClient
-    public IConfigFieldWidgetProvider getWidgetProvider() { return new ColorFieldWidgetProvider( this ); }
+    public IConfigFieldWidgetProvider<Integer> getWidgetProvider() { return new ColorFieldWidgetProvider( this ); }
 }

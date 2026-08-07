@@ -1,10 +1,9 @@
 package fathertoast.crust.api.config.common.value.environment.biome;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.value.environment.EnumEnvironment;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
+import fathertoast.crust.api.config.common.field.IConfigField;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentContext;
+import fathertoast.crust.api.config.common.value.environment.core.EnumEnvironment;
 
 import javax.annotation.Nullable;
 
@@ -15,16 +14,19 @@ public class BiomeCategoryEnvironment extends EnumEnvironment<BiomeCategory> {
     public BiomeCategoryEnvironment( BiomeCategory value, boolean invert ) { super( value, invert ); }
     
     @Deprecated( forRemoval = true )
-    public BiomeCategoryEnvironment( AbstractConfigField field, String value ) {
+    public BiomeCategoryEnvironment( @Nullable IConfigField<?> field, String value ) {
         super( field, value, BiomeCategory.values() );
-        ConfigUtil.warnFor( field );
-        ConfigUtil.LOG.warn( "Deprecated environment entry! The \"biome_category\" environment condition will be removed in a future version. Deprecated entry: {}",
-                name() + " " + value );
+        if( field != null ) {
+            ConfigUtil.warnFor( field );
+            ConfigUtil.LOG.warn( "Deprecated environment entry! The \"{}\" environment condition will be removed in a future version. Deprecated entry: {}",
+                    name(), name() + " " + value );
+        }
     }
     
-    /** @return Returns true if this environment matches the provided environment. */
+    /** @return True if this environment matches the provided environment, ignoring inversion. */
     @Override
-    public boolean matches( Level level, @Nullable BlockPos pos ) {
-        return (pos != null && (VALUE == BiomeCategory.NONE || level.getBiome( pos ).is( VALUE.BIOME_TAG ))) != INVERT;
+    protected boolean cleanTest( EnvironmentContext context ) {
+        return context.getBlockPos() != null && VALUE != BiomeCategory.NONE &&
+                context.getLevel().getBiome( context.getBlockPos() ).is( VALUE.BIOME_TAG );
     }
 }

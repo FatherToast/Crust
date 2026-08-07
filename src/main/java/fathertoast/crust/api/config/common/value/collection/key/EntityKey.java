@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.KeyUsage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -13,7 +13,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -25,7 +24,6 @@ import java.util.Objects;
  * <p>
  * Only usable for matching (that is, as a set or map key).
  */
-@ApiStatus.Experimental
 public abstract class EntityKey extends FuzzyKey<Entity> {
     
     /** The parser for entity keys. */
@@ -189,12 +187,11 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
     /**
      * A key that matches based on entity type.
      */
-    @ApiStatus.Experimental
     public static class Basic extends EntityKey {
         
         /** @return A new key, parsed from a key string, or null if the key was invalid. */
         @Nullable
-        public static Basic parse( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
+        public static Basic parse( @Nullable IConfigField<?> field, String line, String key, boolean blacklist ) {
             FuzzyKey<EntityType<?>> loadedKey = REG_PARSER.parseKeyString( field, line, key, blacklist );
             return loadedKey == null ? null : of( loadedKey );
         }
@@ -215,7 +212,6 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
     /**
      * A key that matches an entity type, or any entity that extends the entity type's class.
      */
-    @ApiStatus.Experimental
     public static class Extends extends Basic {
         public static final String CODE_DEFAULT = "~";
         public static final String CODE_CLIMB = "^";
@@ -223,7 +219,7 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
         
         /** @return A new extends key, parsed from a key string, or null if the key was invalid. */
         @Nullable
-        public static Extends parse( String key, @Nullable AbstractConfigField field, boolean blacklist ) {
+        public static Extends parse( String key, @Nullable IConfigField<?> field, boolean blacklist ) {
             RegObjKey.Basic<EntityType<?>> loadedKey;
             Integer steps = null;
             
@@ -361,20 +357,20 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
             public ErroredEntity( EntityType<?> type, Level level ) { super( type, level ); }
             
             @Override
-            protected void defineSynchedData() { }
+            protected void defineSynchedData() {}
             
             @Override
-            protected void readAdditionalSaveData( CompoundTag tag ) { }
+            protected void readAdditionalSaveData( CompoundTag tag ) {}
             
             @Override
-            protected void addAdditionalSaveData( CompoundTag tag ) { }
+            protected void addAdditionalSaveData( CompoundTag tag ) {}
         }
     }
     
     
     // ---- Parser Implementation ---- //
     
-    private record Parser() implements IFuzzyKeyParser<Entity> {
+    private record Parser( ) implements IFuzzyKeyParser<Entity> {
         
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
@@ -400,7 +396,7 @@ public abstract class EntityKey extends FuzzyKey<Entity> {
          */
         @Override
         @Nullable
-        public FuzzyKey<Entity> parseKeyString( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
+        public FuzzyKey<Entity> parseKeyString( @Nullable IConfigField<?> field, String line, String key, boolean blacklist ) {
             if( key.startsWith( Extends.CODE_DEFAULT ) ) {
                 FuzzyKey<Entity> loadedKey = Extends.parse( key, field, blacklist );
                 if( field != null && loadedKey == null ) {

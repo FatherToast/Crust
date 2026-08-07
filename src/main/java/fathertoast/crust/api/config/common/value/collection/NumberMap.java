@@ -10,13 +10,15 @@ import java.util.Collection;
 /**
  * A fuzzy map used to associate values with numbers.
  *
- * @param <T> The number type to match against (i.e., integer, byte, double etc.).
+ * @param <T> The type of number to match against.
  * @param <V> The value type.
+ * @see NumberKey
  * @see fathertoast.crust.api.config.common.field.collection.NumberMapField
+ * @see NumberSet NumberSet - A similar collection that does not allow values
  */
+@SuppressWarnings( "unused" )
 @ApiStatus.Experimental
 public class NumberMap<T extends Number, V> extends FuzzyMap<T, V> {
-    
     
     /** Creates a new builder for a {@code byte} number list. */
     public static <V> NumberMap.Builder<Byte, V, ?> byteBuilder( IValueCodec<V> valueCodec ) {
@@ -86,7 +88,6 @@ public class NumberMap<T extends Number, V> extends FuzzyMap<T, V> {
     // ---- Builder Implementation ---- //
     
     /** Builder to make constructing block state maps smoother. */
-    @ApiStatus.Experimental
     public static class Builder<T extends Number, V, B extends NumberMap.Builder<T, V, B>> extends AbstractBuilder<T, V, NumberMap<T, V>, B> {
         
         /** The {@link fathertoast.crust.api.config.common.value.collection.key.NumberKey.ValueType} of this builder. */

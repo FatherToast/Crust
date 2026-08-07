@@ -1,6 +1,5 @@
 package fathertoast.crust.common.mixin;
 
-import fathertoast.crust.api.config.common.field.AttributeListField;
 import fathertoast.crust.api.config.common.field.collection.AttributeOpListField;
 import fathertoast.crust.common.mixin_work.CommonMixinHooks;
 import net.minecraft.world.entity.EntityType;
@@ -22,8 +21,6 @@ import java.util.Map;
  * This mixin exists to preserve {@link fathertoast.crust.api.config.common.value.ConfigDrivenAttributeSupplier} instances
  * that are registered during {@link net.minecraftforge.event.entity.EntityAttributeCreationEvent} but later lost
  * from merging attributes after {@link net.minecraftforge.event.entity.EntityAttributeModificationEvent}.
- * <p>
- * (Also {@link fathertoast.crust.api.config.common.value.ConfigDrivenAttributeModifierMap} instances, until that is deleted.)
  */
 @Mixin( ForgeHooks.class )
 public class ForgeHooksMixin {
@@ -34,9 +31,6 @@ public class ForgeHooksMixin {
     
     @Unique
     private static Map<EntityType<? extends LivingEntity>, AttributeOpListField> CONFIG_BY_ENTITY_TYPE = new HashMap<>();
-    @Unique
-    @Deprecated( forRemoval = true )
-    private static Map<EntityType<? extends LivingEntity>, AttributeListField> CONFIG_DRIVEN_TYPES = new HashMap<>();
     
     
     @Inject(
@@ -49,7 +43,7 @@ public class ForgeHooksMixin {
             )
     )
     private static void crust$onModifyAttributesFirst( CallbackInfo ci ) {
-        CommonMixinHooks.collectConfigDrivenTypes( FORGE_ATTRIBUTES, CONFIG_BY_ENTITY_TYPE, CONFIG_DRIVEN_TYPES );
+        CommonMixinHooks.collectConfigDrivenTypes( FORGE_ATTRIBUTES, CONFIG_BY_ENTITY_TYPE );
     }
     
     @Inject(
@@ -62,6 +56,6 @@ public class ForgeHooksMixin {
             )
     )
     private static void crust$onModifyAttributesSecond( CallbackInfo ci ) {
-        CommonMixinHooks.handleModifyAttributes( FORGE_ATTRIBUTES, CONFIG_BY_ENTITY_TYPE, CONFIG_DRIVEN_TYPES );
+        CommonMixinHooks.handleModifyAttributes( FORGE_ATTRIBUTES, CONFIG_BY_ENTITY_TYPE );
     }
 }

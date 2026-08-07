@@ -1,7 +1,6 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import org.jetbrains.annotations.ApiStatus;
+import fathertoast.crust.api.config.common.field.IConfigField;
 
 import javax.annotation.Nullable;
 
@@ -12,7 +11,6 @@ import javax.annotation.Nullable;
  *
  * @param <V> The type of value this performs error correction for.
  */
-@ApiStatus.Experimental
 public interface IValueCorrector<V> {
     
     /** @return The value format (for example, {@literal "<Number (Any Value)>"}). */
@@ -25,5 +23,5 @@ public interface IValueCorrector<V> {
      * @return The same value if it is present and valid. If the value is missing, a default value is quietly returned.
      * If invalid, it reports the problem (unless field is null) and returns the closest valid value.
      */
-    V correctValue( @Nullable AbstractConfigField field, String line, @Nullable V value );
+    V correctValue( @Nullable IConfigField<?> field, String line, @Nullable V value );
 }

@@ -1,11 +1,10 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.collection.KeyUsage;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.regex.Pattern;
 
 /**
@@ -25,7 +24,6 @@ import java.util.regex.Pattern;
  * @see fathertoast.crust.api.config.common.value.collection.FuzzyWeightedList.StrBuilder
  * @see fathertoast.crust.api.config.common.value.collection.FuzzyWeightedValueList.StrBuilder
  */
-@ApiStatus.Experimental
 public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<String> {
     
     public static final String WILDCARD = "*";
@@ -68,7 +66,6 @@ public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<
     /**
      * A key that matches one specific string.
      */
-    @ApiStatus.Experimental
     public static class Basic extends StringKey {
         
         protected Basic( String s, boolean blacklist ) { super( s, blacklist ); }
@@ -86,7 +83,6 @@ public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<
     /**
      * A key that matches a string based on a regex pattern.
      */
-    @ApiStatus.Experimental
     public static class Regex extends StringKey {
         public static final String CODE = "^"; // The regex char for 'start of sequence'
         public static final String PATTERN = CODE + "regex";
@@ -117,7 +113,6 @@ public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<
     /**
      * A key that matches all strings that contain a specific string.
      */
-    @ApiStatus.Experimental
     public static class Contains extends StringKey {
         public static final String PATTERN = WILDCARD + StringKey.PATTERN + WILDCARD;
         
@@ -142,7 +137,6 @@ public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<
     /**
      * A key that matches all strings that start with a specific string.
      */
-    @ApiStatus.Experimental
     public static class StartsWith extends StringKey {
         public static final String PATTERN = StringKey.PATTERN + WILDCARD;
         
@@ -167,7 +161,6 @@ public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<
     /**
      * A key that matches all strings that end with a specific string.
      */
-    @ApiStatus.Experimental
     public static class EndsWith extends StringKey {
         public static final String PATTERN = WILDCARD + StringKey.PATTERN;
         
@@ -191,7 +184,7 @@ public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<
     
     // ---- Parser Implementation ---- //
     
-    private record Parser() implements IFuzzyKeyParser<String> {
+    private record Parser( ) implements IFuzzyKeyParser<String> {
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
         public String getTypeName() { return "String"; }
@@ -216,7 +209,7 @@ public abstract class StringKey extends FuzzyKey<String> implements IReverseKey<
          * @return A new fuzzy key based on the key string, or null if parsing fails.
          */
         @Override
-        public FuzzyKey<String> parseKeyString( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
+        public FuzzyKey<String> parseKeyString( @Nullable IConfigField<?> field, String line, String key, boolean blacklist ) {
             if( key.startsWith( Regex.CODE ) ) return Regex.parse( key, blacklist );
             boolean startsWithWildcard = key.startsWith( WILDCARD );
             boolean endsWithWildcard = key.endsWith( WILDCARD );

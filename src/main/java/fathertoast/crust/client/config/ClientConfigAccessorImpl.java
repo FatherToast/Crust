@@ -44,17 +44,17 @@ public class ClientConfigAccessorImpl implements IClientConfigAccessor {
     
     @Override
     public Searchbar.Orientation getSearchbarOrientation() {
-        return CONFIG_EDITOR.SEARCHBAR.orientation.get();
+        return CONFIG_EDITOR.EDIT_SCREEN.searchBarOrientation.get();
     }
     
     @Override
     public boolean getShowSearchHighlights() {
-        return CONFIG_EDITOR.SEARCHBAR.showSearchHighlights.get();
+        return CONFIG_EDITOR.EDIT_SCREEN.showSearchHighlights.get();
     }
     
     @Override
     public int getHighlightColor() {
-        return CONFIG_EDITOR.SEARCHBAR.highlightColor.get();
+        return CONFIG_EDITOR.EDIT_SCREEN.highlightColor.get();
     }
     
     @Override

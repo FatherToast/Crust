@@ -78,7 +78,7 @@ public final class CrustMath {
     public static int bitsToARGB( int a, int r, int g, int b ) { return bitsToARGB( a, toRGB( r, g, b ) ); }
     
     /** @return The alpha value (0x00 - 0xFF) and RGB color int combined into a single ARGB color int. */
-    public static int bitsToARGB( int a, int rgb ) { return (a & 0xFF) << 24 | rgb; }
+    public static int bitsToARGB( int a, int rgb ) { return a << 24 | rgb; }
     
     /** @return The red portion of an RGB/ARGB color int. Returned value will be in the range 0x00 - 0xFF. */
     public static int getRedBits( int argb ) { return argb >> 16 & 0xFF; }
@@ -90,7 +90,7 @@ public final class CrustMath {
     public static int getBlueBits( int argb ) { return argb & 0xFF; }
     
     /** @return The alpha (opacity) portion of an ARGB color int. Returned value will be in the range 0x00 - 0xFF. */
-    public static int getAlphaBits( int argb ) { return argb >> 24 & 0xFF; }
+    public static int getAlphaBits( int argb ) { return argb >>> 24; }
     
     /** @return The red portion of an RGB/ARGB color int. Returned value will be in the range 0.0 - 1.0. */
     public static float getRed( int argb ) { return getFloat( getRedBits( argb ) ); }

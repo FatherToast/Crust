@@ -2,7 +2,6 @@ package fathertoast.crust.api.config.client.gui.widget;
 
 import fathertoast.crust.api.config.client.gui.widget.field.searchbar.ISearchable;
 import fathertoast.crust.api.config.client.gui.widget.field.searchbar.Searchbar;
-import fathertoast.crust.client.ClientRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
@@ -41,6 +40,19 @@ public abstract class SearchableSelectionList<T extends ContainerObjectSelection
             searchbar.search( searchbar.getValue(), true );
     }
     
+    /** Tells this searchbar's selection list to scroll to the element at the given index. */
+    public void scrollToIndex( int index ) {
+        // Negative index, assume it is intentional for defocusing the focused search candidate.
+        if( index < 0 ) {
+            setScrollAmount( 0.0 );
+        }
+        // Out of bounds
+        else if( index > children().size() - 1 ) {
+            throw new IndexOutOfBoundsException( "Attempted to scroll to an out-of-bounds index in a selection list!" );
+        }
+        setScrollAmount( index * itemHeight + (double) (itemHeight / 2) - (double) ((getBottom() - getTop()) / 2) );
+    }
+    
     /**
      * Called from {@link net.minecraft.client.gui.components.AbstractSelectionList#renderList(GuiGraphics, int, int, float)}.
      * Draws an item from this list for the given index.
@@ -48,8 +60,8 @@ public abstract class SearchableSelectionList<T extends ContainerObjectSelection
     @Override
     protected void renderItem( GuiGraphics graphics, int mouseX, int mouseY, float partialTick,
                                int itemIndex, int rowLeft, int rowTop, int rowWidth, int itemHeight ) {
-        // Check if highlights are enabled in the config.
-        if( searchbar != null && ClientRegister.CONFIG_EDITOR.SEARCHBAR.showSearchHighlights.get() ) {
+        // Check if highlights are enabled in the config
+        if( searchbar != null && Searchbar.showHighlights.get() ) {
             if( searchbar.getElementByMatchIndexes().inverse().containsKey( itemIndex ) ) {
                 ISearchable searchable = children().get( itemIndex );
                 // noinspection ConstantConditions

@@ -3,7 +3,6 @@ package fathertoast.crust.api.config.common.field.collection;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.BlockStateList;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import java.util.List;
  * Represents a config field with a block state list value.
  * Use {@link #entries()} to iterate through the defined list.
  */
-@ApiStatus.Experimental
 public class BlockStateListField extends FuzzyListField<BlockState, BlockStateList> {
     
     /**
