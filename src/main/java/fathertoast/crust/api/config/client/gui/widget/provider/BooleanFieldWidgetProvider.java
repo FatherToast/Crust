@@ -1,8 +1,6 @@
 package fathertoast.crust.api.config.client.gui.widget.provider;
 
-import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
-import fathertoast.crust.api.config.common.field.BooleanField;
-import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.config.client.gui.widget.entry.ConfigFieldGuiEntry;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.CommonComponents;
@@ -13,14 +11,7 @@ import java.util.function.Supplier;
 /**
  * Displays an on/off toggle button for a boolean value.
  */
-@SuppressWarnings( "ClassCanBeRecord" )
-public class BooleanFieldWidgetProvider implements IConfigFieldWidgetProvider {
-    
-    /** The providing field. */
-    protected final BooleanField FIELD;
-    
-    public BooleanFieldWidgetProvider( BooleanField field ) { FIELD = field; }
-    
+public class BooleanFieldWidgetProvider implements IConfigFieldWidgetProvider<Boolean> {
     /**
      * Called to initialize the field's gui components.
      * <p>
@@ -33,19 +24,16 @@ public class BooleanFieldWidgetProvider implements IConfigFieldWidgetProvider {
      * @param displayValue The current raw value to display in the GUI.
      */
     @Override
-    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+    public void apply( List<AbstractWidget> components, ConfigFieldGuiEntry<Boolean> listEntry, Boolean displayValue ) {
         Button toggleButton = new Button( 0, 0, VALUE_WIDTH, VALUE_HEIGHT,
-                CommonComponents.optionStatus( cast( displayValue ) ), ( button ) -> {
-            boolean newValue = !cast( listEntry.getValue() );
-            button.setMessage( CommonComponents.optionStatus( newValue ) );
-            listEntry.updateValue( newValue );
-        }, Supplier::get );
-        
+                CommonComponents.optionStatus( displayValue ),
+                button -> {
+                    boolean newValue = !listEntry.getValue();
+                    button.setMessage( CommonComponents.optionStatus( newValue ) );
+                    listEntry.updateValue( newValue );
+                },
+                Supplier::get );
+        toggleButton.active = listEntry.isEditable();
         components.add( toggleButton );
-    }
-    
-    private static boolean cast( Object raw ) {
-        Boolean value = TomlHelper.asBoolean( raw );
-        return value != null && value;
     }
 }

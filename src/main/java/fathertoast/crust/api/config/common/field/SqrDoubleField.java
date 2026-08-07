@@ -8,9 +8,6 @@ import javax.annotation.Nullable;
 @SuppressWarnings( "unused" )
 public class SqrDoubleField extends DoubleField {
     
-    /** The underlying field value, squared. */
-    private double valueSqr;
-    
     /** Creates a new field that accepts a common range of values. */
     public SqrDoubleField( String key, double defaultValue, Range range, @Nullable String... description ) {
         super( key, defaultValue, range, description );
@@ -21,25 +18,10 @@ public class SqrDoubleField extends DoubleField {
         super( key, defaultValue, min, max, description );
     }
     
-    /**
-     * Loads this field's value from the given value or raw toml. If anything goes wrong, correct it at the lowest level possible.
-     * <p>
-     * For example, a missing value should be set to the default, while an out-of-range value should be adjusted to the
-     * nearest in-range value and print a warning explaining the change.
-     */
-    @Override
-    public void load( @Nullable Object raw ) {
-        super.load( raw );
-        valueSqr = getValue() * getValue();
-    }
-    
     /** @return Returns the config field's value. */
     @Override
-    public Double get() { return valueSqr; }
-    
-    /** @return Returns the config field's value. */
-    public double getDouble() { return valueSqr; }
+    public Double get() { return super.get() * super.get(); }
     
     /** @return Returns the square root of the config field's value. */
-    public double getSqrRoot() { return getValue(); }
+    public double getSqrRoot() { return super.get(); }
 }

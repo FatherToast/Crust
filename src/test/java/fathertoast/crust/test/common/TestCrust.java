@@ -21,9 +21,9 @@ public class TestCrust implements ICrustPlugin {
     
     /** File for testing the config api. */
     public static final TestConfigFile CONFIG = new TestConfigFile(
-            ConfigManager.getRequired( ICrustApi.MOD_ID ), "test_config" );
+            ConfigManager.getRequired( ICrustApi.MOD_ID ), "test/test_config" );
     public static final TestConfigReadme README = new TestConfigReadme(
-            ConfigManager.getRequired( ICrustApi.MOD_ID ), "test_readme" );
+            ConfigManager.getRequired( ICrustApi.MOD_ID ), "test/readme" );
     
     
     /** Called by Crust after {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}. */

@@ -1,9 +1,8 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.ITomlStringValue;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 
@@ -29,7 +28,6 @@ import javax.annotation.Nullable;
  * @see fathertoast.crust.api.config.common.value.collection.FuzzySet
  * @see fathertoast.crust.api.config.common.value.collection.FuzzyMap
  */
-@ApiStatus.Experimental
 public abstract class FuzzyKey<T> implements ITomlStringValue {
     
     /** Key string for the default key; only used for matching. */
@@ -62,7 +60,7 @@ public abstract class FuzzyKey<T> implements ITomlStringValue {
      * @return A new fuzzy key based on the provided line, or null if the line should be deleted.
      */
     @Nullable
-    public static <T> FuzzyKey<T> parseLine( IFuzzyKeyParser<T> parser, @Nullable AbstractConfigField field, String line ) {
+    public static <T> FuzzyKey<T> parseLine( IFuzzyKeyParser<T> parser, @Nullable IConfigField<?> field, String line ) {
         // Check for a value or blacklist declaration
         String[] keyAndValue = FuzzyKey.getKeyAndValue( line );
         String key = keyAndValue[0];

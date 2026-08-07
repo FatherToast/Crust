@@ -1,17 +1,15 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.field.LongField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 
 /**
  * A long value codec. Defines a default value and an allowed value range.
  */
-@ApiStatus.Experimental
 public class LongValueCodec implements IValueCodec<Long>, IValueCorrector<Long> {
     
     /** The standard long codec for any value. Defaults to 0. */
@@ -61,7 +59,7 @@ public class LongValueCodec implements IValueCodec<Long>, IValueCorrector<Long> 
      * @return A new value based on the value string. If the parse fails, returns a non-null default value.
      */
     @Override // IValueCodec
-    public Long parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+    public Long parseTomlString( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
         if( value == null ) return defaultValue;
         Object v = TomlHelper.parseStringPrimitive( value );
         if( v instanceof Number numberValue ) {
@@ -88,7 +86,7 @@ public class LongValueCodec implements IValueCodec<Long>, IValueCorrector<Long> 
      * If invalid, it reports the problem (unless field is null) and returns the closest valid value.
      */
     @Override // IValueCorrector
-    public Long correctValue( @Nullable AbstractConfigField field, String line, @Nullable Long value ) {
+    public Long correctValue( @Nullable IConfigField<?> field, String line, @Nullable Long value ) {
         if( value == null ) return defaultValue;
         // Verify value is within range
         if( value < minValue ) {

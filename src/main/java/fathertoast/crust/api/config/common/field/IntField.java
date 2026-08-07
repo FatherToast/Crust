@@ -9,29 +9,26 @@ import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.HexIntWrapper;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentContext;
 import fathertoast.crust.api.util.JavaRandomSource;
 import fathertoast.crust.api.util.OnClient;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.RandomSource;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Supplier;
 
 /**
  * Represents a config field with an integer value.
  */
-public class IntField extends AbstractConfigField implements Supplier<Integer> {
+@SuppressWarnings( "unused" )
+public class IntField extends AbstractConfigField<Integer> {
     
-    /** The default field value. */
-    private final int valueDefault;
     /** The minimum field value. */
     private final int valueMin;
     /** The maximum field value. */
     private final int valueMax;
-    
-    /** The underlying field value. */
-    private int value;
     
     /** Creates a new field that accepts a common range of values. */
     public IntField( String key, int defaultValue, Range range, @Nullable String... description ) {
@@ -40,26 +37,21 @@ public class IntField extends AbstractConfigField implements Supplier<Integer> {
     
     /** Creates a new field that accepts a specialized range of values. */
     public IntField( String key, int defaultValue, int min, int max, @Nullable String... description ) {
-        super( key, description );
-        valueDefault = defaultValue;
+        super( key, defaultValue, description );
         valueMin = min;
         valueMax = max;
         
         // Sanity checks
-        if( valueMin >= valueMax ) {
+        if( min >= max ) {
             throw new IllegalArgumentException( "Maximum value must be greater than the minimum! Invalid field: " + getKey() );
         }
-        if( valueDefault < valueMin || valueDefault > valueMax ) {
+        if( defaultValue < min || defaultValue > max ) {
             throw new IllegalArgumentException( "Default value is outside of allowed range! Invalid field: " + getKey() );
         }
     }
     
     /** @return Returns the config field's value. */
-    @Override
-    public Integer get() { return value; }
-    
-    /** @return Returns the config field's value. */
-    public int getInt() { return value; }
+    public int getInt() { return get(); }
     
     /** @return Returns the config field's value cast down to a short. */
     public short getShort() { return (short) getInt(); }
@@ -82,62 +74,57 @@ public class IntField extends AbstractConfigField implements Supplier<Integer> {
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoRange( valueDefault, minValue(), maxValue() ) );
+        comment.add( TomlHelper.fieldInfoRange( getDefaultValue(), minValue(), maxValue() ) );
     }
     
     /**
-     * Loads this field's value from the given value or raw toml. If anything goes wrong, correct it at the lowest level possible.
+     * @return Reads a value from the given value or raw toml. If anything goes wrong, correct it at the lowest level
+     * possible.
      * <p>
-     * For example, a missing value should be set to the default, while an out-of-range value should be adjusted to the
-     * nearest in-range value and print a warning explaining the change.
+     * For example, a missing or unreadable value should return the default value, while an out-of-range value should be
+     * adjusted to the nearest in-range value. If any value correction is applied, print a warning to explain the change.
      */
     @Override
-    public void load( @Nullable Object raw ) {
-        Number newValue = TomlHelper.readAsNumber( this, raw );
-        if( newValue == null ) {
-            if( raw != null ) {
-                ConfigUtil.warnFor( this );
-                ConfigUtil.LOG.warn( "Invalid integer! Falling back to default ({}). Invalid value: {}",
-                        valueDefault, raw );
-            }
-            value = valueDefault;
+    public Integer parse( Object raw ) {
+        Number value = TomlHelper.readAsNumber( this, raw );
+        if( value == null ) {
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Invalid integer! Falling back to default ({}). Invalid value: {}",
+                    getDefaultValue(), raw );
+            return getDefaultValue();
         }
-        else {
-            int castValue = newValue.intValue();
-            if( castValue < valueMin ) {
-                ConfigUtil.warnFor( this );
-                ConfigUtil.LOG.warn( "Value is below the minimum! Adjusting from {} to {}.", raw, valueMin );
-                value = valueMin;
-            }
-            else if( castValue > valueMax ) {
-                ConfigUtil.warnFor( this );
-                ConfigUtil.LOG.warn( "Value is above the maximum! Adjusting from {} to {}.", raw, valueMax );
-                value = valueMax;
-            }
-            else {
-                if( (double) castValue != newValue.doubleValue() ) {
-                    ConfigUtil.warnFor( this );
-                    ConfigUtil.LOG.warn( "Floating point value given for integer! Truncating value {} to {}.",
-                            raw, castValue );
-                }
-                value = castValue;
-            }
+        int castValue = value.intValue();
+        if( castValue < minValue() ) {
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Value is below the minimum! Adjusting from {} to {}.", raw, minValue() );
+            return minValue();
         }
+        else if( castValue > maxValue() ) {
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Value is above the maximum! Adjusting from {} to {}.", raw, maxValue() );
+            return maxValue();
+        }
+        if( (double) castValue != value.doubleValue() ) {
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Floating point value given for integer! Truncating value {} to {}.",
+                    raw, castValue );
+        }
+        return castValue;
     }
     
-    /** @return The value that should be assigned to this field in the config file. */
+    /** Writes a field value to the byte buffer; should be the inverse of {@link #deserialize}. */
     @Override
-    public Integer getValue() { return value; }
+    public void serialize( Integer value, FriendlyByteBuf buffer ) { buffer.writeInt( value ); }
     
-    /** @return The default value of this field. */
+    /** Reads a new field value from the byte buffer; should be the inverse of {@link #serialize}. */
     @Override
-    public Integer getDefaultValue() { return valueDefault; }
+    public Integer deserialize( FriendlyByteBuf buffer ) { return buffer.readInt(); }
     
     /** @return This field's gui component provider. */
     @Override
-    public IConfigFieldWidgetProvider getWidgetProvider() {
-        return new NumberFieldWidgetProvider( this, Number::intValue,
-                ( number ) -> valueMin <= number.intValue() && number.intValue() <= valueMax );
+    public IConfigFieldWidgetProvider<Integer> getWidgetProvider() {
+        return new NumberFieldWidgetProvider<>( this, Number::intValue,
+                number -> valueMin <= number.intValue() && number.intValue() <= valueMax );
     }
     
     
@@ -213,8 +200,9 @@ public class IntField extends AbstractConfigField implements Supplier<Integer> {
         /** @return This field's gui component provider. */
         @Override
         @OnClient
-        public IConfigFieldWidgetProvider getWidgetProvider() {
-            return new HexIntFieldWidgetProvider( this, ( number ) -> minValue() <= number && number <= maxValue() );
+        public IConfigFieldWidgetProvider<Integer> getWidgetProvider() {
+            return new HexIntFieldWidgetProvider( this,
+                    ( number ) -> minValue() <= number && number <= maxValue() );
         }
     }
     
@@ -223,6 +211,7 @@ public class IntField extends AbstractConfigField implements Supplier<Integer> {
      * Represents two number fields, a minimum and a maximum, combined into one.
      * This has convenience methods for returning a random value between the min and the max (inclusive).
      */
+    @SuppressWarnings( "ClassCanBeRecord" )
     public static class RandomRange {
         
         /** The minimum. Defines the lower limit of the range (inclusive). */
@@ -257,9 +246,9 @@ public class IntField extends AbstractConfigField implements Supplier<Integer> {
         public RandomRange( IntField minimum, IntField maximum ) {
             MINIMUM = minimum;
             MAXIMUM = maximum;
-            if( minimum.valueDefault > maximum.valueDefault ) {
+            if( minimum.getDefaultValue() > maximum.getDefaultValue() ) {
                 throw new IllegalArgumentException( String.format( "Random range has inverted default values! (%s > %s) See: (%s, %s)",
-                        minimum.valueDefault, maximum.valueDefault, minimum.getKey(), maximum.getKey() ) );
+                        minimum.getDefaultValue(), maximum.getDefaultValue(), minimum.getKey(), maximum.getKey() ) );
             }
         }
         
@@ -290,6 +279,34 @@ public class IntField extends AbstractConfigField implements Supplier<Integer> {
                         getMin(), getMax() );
                 return getMin();
             }
+        }
+    }
+    
+    /**
+     * Represents a double field and an environment exception list, combined into one.
+     * This has convenience methods for returning the value that should be used based on the environment.
+     *
+     * @param base       The base value.
+     * @param exceptions The environment exceptions list.
+     */
+    public record EnvironmentSensitive( IntField base, EnvironmentListField<Integer> exceptions ) {
+        
+        /** @return Returns the config field's value. */
+        public int getInt( EnvironmentContext context ) { return exceptions().getOrElse( context, base() ); }
+        
+        /** @return Returns the config field's value cast down to a short. */
+        public short getShort( EnvironmentContext context ) { return (short) getInt( context ); }
+        
+        /** @return Returns the config field's value cast down to a byte. */
+        public byte getByte( EnvironmentContext context ) { return (byte) getInt( context ); }
+        
+        /** @return Treats the config field's value as a 1-in-X chance and returns the result of a single roll. */
+        public boolean rollChance( Random random, EnvironmentContext context ) { return rollChance( JavaRandomSource.of( random ), context ); }
+        
+        /** @return Treats the config field's value as a 1-in-X chance and returns the result of a single roll. */
+        public boolean rollChance( RandomSource random, EnvironmentContext context ) {
+            int i = getInt( context );
+            return i > 0 && random.nextInt( i ) == 0;
         }
     }
 }

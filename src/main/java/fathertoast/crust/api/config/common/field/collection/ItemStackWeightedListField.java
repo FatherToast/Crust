@@ -4,7 +4,6 @@ import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.ItemStackWeightedList;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ import java.util.List;
  * Represents a config field with an item stack weighted list value.
  * Use {@link #next(RandomSource)} to draw a random item stack, or null if empty or nothing is drawn.
  */
-@ApiStatus.Experimental
 public class ItemStackWeightedListField extends FuzzyWeightedListField<ItemStack, ItemStackWeightedList> {
     
     /**

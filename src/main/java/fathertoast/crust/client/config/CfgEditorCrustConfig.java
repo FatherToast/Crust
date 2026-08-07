@@ -1,14 +1,14 @@
 package fathertoast.crust.client.config;
 
+import fathertoast.crust.api.config.client.ClientConfigUtil;
+import fathertoast.crust.api.config.client.gui.widget.SearchableSelectionList;
 import fathertoast.crust.api.config.client.gui.widget.field.searchbar.Searchbar;
 import fathertoast.crust.api.config.common.AbstractConfigCategory;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
-import fathertoast.crust.api.config.common.field.BooleanField;
-import fathertoast.crust.api.config.common.field.ColorIntField;
-import fathertoast.crust.api.config.common.field.EnumField;
-import fathertoast.crust.api.config.common.field.IntField;
+import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.config.common.value.CrustAnchor;
+import fathertoast.crust.client.screen.widget.CrustConfigFileList;
 import net.minecraftforge.fml.ModList;
 
 /**
@@ -16,10 +16,9 @@ import net.minecraftforge.fml.ModList;
  */
 public class CfgEditorCrustConfig extends AbstractConfigFile {
     
-    
     public final Button MAIN_BUTTON;
     public final Button PAUSE_BUTTON;
-    public final Searchbars SEARCHBAR;
+    public final EditScreen EDIT_SCREEN;
     public final Misc MISC;
     
     /**
@@ -27,7 +26,7 @@ public class CfgEditorCrustConfig extends AbstractConfigFile {
      * @param cfgName    Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
      */
     public CfgEditorCrustConfig( ConfigManager cfgManager, String cfgName ) {
-        super( cfgManager, cfgName,
+        super( cfgManager, cfgName, true,
                 "In-game config editor client preferences." );
         
         // Move the default button position to the right side if Quark is installed to avoid conflicting with its default
@@ -37,19 +36,13 @@ public class CfgEditorCrustConfig extends AbstractConfigFile {
                 "Options to modify the in-game config editor button on the main menu.",
                 -56, buttonConflict,
                 "Set this to false to hide the config editor button on the main menu." );
-        
         PAUSE_BUTTON = new Button( this, "pause_menu_button",
                 "Options to modify the in-game config editor button on the pause menu.",
                 -44, buttonConflict,
                 "Set this to false to hide the in-game config editor button.",
                 "You may assign a hotkey to the editor in your options, whether or not you choose to display a button." );
-        
-        SEARCHBAR = new Searchbars( this, "searchbar_properties",
-                "Contains settings for the search bar added by Crust that appears " +
-                        "in the config file selection screen and the config field browser screen." );
-        
-        MISC = new Misc( this, "misc",
-                "Contains settings that don't fit in other categories." );
+        EDIT_SCREEN = new EditScreen( this, "editor_screen" );
+        MISC = new Misc( this, "misc" );
     }
     
     
@@ -94,27 +87,32 @@ public class CfgEditorCrustConfig extends AbstractConfigFile {
     /**
      * Category for config editor buttons.
      */
-    public static class Searchbars extends AbstractConfigCategory<CfgEditorCrustConfig> {
+    public static class EditScreen extends AbstractConfigCategory<CfgEditorCrustConfig> {
         
-        public final EnumField<Searchbar.Orientation> orientation;
+        public final EnumField<CrustConfigFileList.Visibility> fileVisibility;
         
+        public final EnumField<Searchbar.Orientation> searchBarOrientation;
         public final BooleanField showSearchHighlights;
         public final ColorIntField highlightColor;
         
-        Searchbars( CfgEditorCrustConfig parent, String category, String categoryDescription ) {
-            super( parent, category, categoryDescription );
+        EditScreen( CfgEditorCrustConfig parent, String category ) {
+            super( parent, category,
+                    "Contains settings for the in-game editor appearance and function." );
             
-            orientation = SPEC.define( new EnumField<>( "orientation", Searchbar.Orientation.LEFT,
-                    "Determines the orientation and placement of the searchbar and its navigation buttons on the screen." ) );
+            fileVisibility = SPEC.define( new EnumField<>( "file_visibility",
+                    CrustConfigFileList.Visibility.HIDE_UNREADABLE,
+                    "Whether to show all files, or hide files you don't have permission to read or edit." ) );
             
             SPEC.newLine();
             
-            showSearchHighlights = SPEC.define( new BooleanField( "show_search_highlights", true,
+            Searchbar.orientation = searchBarOrientation = SPEC.define( new EnumField<>( "search_bar.orientation", Searchbar.Orientation.LEFT,
+                    "Determines the orientation and placement of the searchbar and its navigation buttons on the screen." ) );
+            Searchbar.showHighlights = showSearchHighlights = SPEC.define( new BooleanField(
+                    "search_bar.show_highlights", true,
                     "If true, search results found by the searchbar will be highlighted.",
                     "The searchbar will still auto-scroll to the first match even if this is disabled." ) );
-            
-            // noinspection ConstantConditions
-            highlightColor = SPEC.define( new ColorIntField( "highlight_color", 0x45FFFF5D, true,
+            Searchbar.highlightColor = highlightColor = SPEC.define( new ColorIntField(
+                    "search_bar.highlight_color", 0x45_FFFF5D, true,
                     "If the above setting is enabled, this field determines the highlight color for search results." ) );
         }
     }
@@ -126,8 +124,9 @@ public class CfgEditorCrustConfig extends AbstractConfigFile {
         
         public final BooleanField ignoreBrokenConfigs;
         
-        Misc( CfgEditorCrustConfig parent, String category, String categoryDescription ) {
-            super( parent, category, categoryDescription );
+        Misc( CfgEditorCrustConfig parent, String category ) {
+            super( parent, category,
+                    "Contains settings that don't fit in other categories." );
             
             ignoreBrokenConfigs = SPEC.define( new BooleanField( "ignore_broken_configs", false,
                     "If true, the \"broken configs\" screen will not open when trying to load a world if any Crust-based configs are broken." ) );

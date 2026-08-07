@@ -1,12 +1,11 @@
 package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.field.collection.FuzzyWeightedListField;
 import fathertoast.crust.api.config.common.value.collection.key.*;
 import fathertoast.crust.api.util.JavaRandomSource;
 import net.minecraft.util.RandomSource;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -30,7 +29,7 @@ import java.util.Random;
  * @see FuzzyWeightedListField
  * @see FuzzyWeightedValueList WeightedValueList - A similar collection that allows values
  */
-@ApiStatus.Experimental
+@SuppressWarnings( "unused" )
 public class FuzzyWeightedList<T> extends AbstractFuzzyCollection<T, WeightedKey<T>> {
     
     /** The sum of all elements' weights. */
@@ -55,7 +54,7 @@ public class FuzzyWeightedList<T> extends AbstractFuzzyCollection<T, WeightedKey
     @Override
     public KeyUsage keyUsage() { return KeyUsage.POLL; }
     
-    /** Call this to set the list value during {@link #load(AbstractConfigField, List)}. */
+    /** Call this to set the list value during {@link #load(IConfigField, List)}. */
     @Override
     protected void setList( Collection<? extends WeightedKey<T>> newList ) {
         super.setList( newList );
@@ -65,7 +64,7 @@ public class FuzzyWeightedList<T> extends AbstractFuzzyCollection<T, WeightedKey
     /** @return The freshly loaded entry, or null if the line should be deleted. */
     @Override
     @Nullable
-    public WeightedKey<T> loadLine( @Nullable AbstractConfigField field, String line ) {
+    public WeightedKey<T> loadLine( @Nullable IConfigField<?> field, String line ) {
         return keyUsage().ifAllowed( WeightedKey.parseLine( keyParser, field, line ) );
     }
     
@@ -123,7 +122,6 @@ public class FuzzyWeightedList<T> extends AbstractFuzzyCollection<T, WeightedKey
     
     
     /** Boilerplate builder class for fuzzy lists. */
-    @ApiStatus.Experimental
     public static abstract class AbstractBuilder<T, C extends FuzzyWeightedList<T>, B extends AbstractBuilder<T, C, B>>
             extends AbstractFuzzyCollection.AbstractBuilder<T, WeightedKey<T>, C, B> {
         
@@ -145,7 +143,6 @@ public class FuzzyWeightedList<T> extends AbstractFuzzyCollection<T, WeightedKey
     }
     
     /** Builder class for a generic fuzzy list. */
-    @ApiStatus.Experimental
     public static class Builder<T, B extends Builder<T, B>> extends AbstractBuilder<T, FuzzyWeightedList<T>, B> {
         
         public final IFuzzyKeyParser<T> keyParser;
@@ -164,7 +161,6 @@ public class FuzzyWeightedList<T> extends AbstractFuzzyCollection<T, WeightedKey
     }
     
     /** Builder class for a fuzzy weighted string list. */
-    @ApiStatus.Experimental
     public static class StrBuilder extends Builder<String, StrBuilder> {
         
         public StrBuilder() { super( StringKey.PARSER ); }

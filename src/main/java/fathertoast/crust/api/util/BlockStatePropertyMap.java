@@ -1,7 +1,7 @@
 package fathertoast.crust.api.util;
 
 import com.google.common.collect.ImmutableMap;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.ITomlStringValue;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
@@ -43,7 +43,7 @@ import java.util.Objects;
  * @see BlockStateProperties
  * @see BlockStatePredicate
  */
-public record BlockStatePropertyMap(Map<String, String> map) implements
+public record BlockStatePropertyMap( Map<String, String> map ) implements
         ITomlStringValue, IValueCodec<BlockStatePropertyMap> {
     
     public static final char VALUE_SEPARATOR = '=';
@@ -277,7 +277,7 @@ public record BlockStatePropertyMap(Map<String, String> map) implements
      * @return A new value based on the value string. If the parse fails, returns a non-null default value.
      */
     @Override // IValueCodec
-    public BlockStatePropertyMap parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+    public BlockStatePropertyMap parseTomlString( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
         return value == null ? EMPTY : of( value );
     }
     

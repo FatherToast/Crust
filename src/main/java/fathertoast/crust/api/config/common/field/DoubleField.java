@@ -5,35 +5,26 @@ import fathertoast.crust.api.config.client.gui.widget.provider.NumberFieldWidget
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentContext;
 import fathertoast.crust.api.util.JavaRandomSource;
 import fathertoast.crust.api.util.OnClient;
-import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * Represents a config field with a double value.
  */
 @SuppressWarnings( "unused" )
-public class DoubleField extends AbstractConfigField implements Supplier<Double> {
+public class DoubleField extends AbstractConfigField<Double> {
     
-    /** The default field value. */
-    private final double valueDefault;
     /** The minimum field value. */
     private final double valueMin;
     /** The maximum field value. */
     private final double valueMax;
-    
-    /** The underlying field value. */
-    private double value;
     
     /** Creates a new field that accepts a common range of values. */
     public DoubleField( String key, double defaultValue, Range range, @Nullable String... description ) {
@@ -42,26 +33,21 @@ public class DoubleField extends AbstractConfigField implements Supplier<Double>
     
     /** Creates a new field that accepts a specialized range of values. */
     public DoubleField( String key, double defaultValue, double min, double max, @Nullable String... description ) {
-        super( key, description );
-        valueDefault = defaultValue;
+        super( key, defaultValue, description );
         valueMin = min;
         valueMax = max;
         
         // Sanity checks
-        if( valueMin >= valueMax ) {
-            throw new IllegalArgumentException( "Maximum value must be greater than the minimum! Invalid field: " + getKey() );
+        if( min >= max ) {
+            throw new IllegalArgumentException( "Maximum value cannot be less than the minimum! Invalid field: " + getKey() );
         }
-        if( valueDefault < valueMin || valueDefault > valueMax ) {
+        if( defaultValue < min || defaultValue > max ) {
             throw new IllegalArgumentException( "Default value is outside of allowed range! Invalid field: " + getKey() );
         }
     }
     
     /** @return Returns the config field's value. */
-    @Override
-    public Double get() { return value; }
-    
-    /** @return Returns the config field's value. */
-    public double getDouble() { return value; }
+    public double getDouble() { return get(); }
     
     /** @return Returns the config field's value cast to a float. */
     public float getFloat() { return (float) getDouble(); }
@@ -81,58 +67,53 @@ public class DoubleField extends AbstractConfigField implements Supplier<Double>
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoRange( valueDefault, minValue(), maxValue() ) );
+        comment.add( TomlHelper.fieldInfoRange( getDefaultValue(), minValue(), maxValue() ) );
     }
     
     /**
-     * Loads this field's value from the given value or raw toml. If anything goes wrong, correct it at the lowest level possible.
+     * @return Reads a value from the given value or raw toml. If anything goes wrong, correct it at the lowest level
+     * possible.
      * <p>
-     * For example, a missing value should be set to the default, while an out-of-range value should be adjusted to the
-     * nearest in-range value and print a warning explaining the change.
+     * For example, a missing or unreadable value should return the default value, while an out-of-range value should be
+     * adjusted to the nearest in-range value. If any value correction is applied, print a warning to explain the change.
      */
     @Override
-    public void load( @Nullable Object raw ) {
-        Number newValue = TomlHelper.readAsNumber( this, raw );
-        if( newValue == null ) {
-            if( raw != null ) {
-                ConfigUtil.warnFor( this );
-                ConfigUtil.LOG.warn( "Invalid floating point number! Falling back to default ({}). Invalid value: {}",
-                        valueDefault, raw );
-            }
-            value = valueDefault;
+    public Double parse( Object raw ) {
+        Number value = TomlHelper.readAsNumber( this, raw );
+        if( value == null ) {
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Invalid floating point number! Falling back to default ({}). Invalid value: {}",
+                    getDefaultValue(), raw );
+            return getDefaultValue();
         }
-        else {
-            double castValue = newValue.doubleValue();
-            if( castValue < valueMin ) {
-                ConfigUtil.warnFor( this );
-                ConfigUtil.LOG.warn( "Value is below the minimum! Adjusting from {} to {}.", raw, valueMin );
-                value = valueMin;
-            }
-            else if( castValue > valueMax ) {
-                ConfigUtil.warnFor( this );
-                ConfigUtil.LOG.warn( "Value is above the maximum! Adjusting from {} to {}.", raw, valueMax );
-                value = valueMax;
-            }
-            else {
-                value = castValue;
-            }
+        double castValue = value.doubleValue();
+        if( castValue < minValue() ) {
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Value is below the minimum! Adjusting from {} to {}.", raw, minValue() );
+            return minValue();
         }
+        else if( castValue > maxValue() ) {
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Value is above the maximum! Adjusting from {} to {}.", raw, maxValue() );
+            return maxValue();
+        }
+        return castValue;
     }
     
-    /** @return The value that should be assigned to this field in the config file. */
+    /** Writes a field value to the byte buffer; should be the inverse of {@link #deserialize}. */
     @Override
-    public Double getValue() { return value; }
+    public void serialize( Double value, FriendlyByteBuf buffer ) { buffer.writeDouble( value ); }
     
-    /** @return The default value of this field. */
+    /** Reads a new field value from the byte buffer; should be the inverse of {@link #serialize}. */
     @Override
-    public Double getDefaultValue() { return valueDefault; }
+    public Double deserialize( FriendlyByteBuf buffer ) { return buffer.readDouble(); }
     
     /** @return This field's gui component provider. */
     @Override
     @OnClient
-    public IConfigFieldWidgetProvider getWidgetProvider() {
-        return new NumberFieldWidgetProvider( this, Number::doubleValue,
-                ( number ) -> valueMin <= number.doubleValue() && number.doubleValue() <= valueMax );
+    public IConfigFieldWidgetProvider<Double> getWidgetProvider() {
+        return new NumberFieldWidgetProvider<>( this, Number::doubleValue,
+                number -> minValue() <= number.doubleValue() && number.doubleValue() <= maxValue() );
     }
     
     
@@ -168,6 +149,7 @@ public class DoubleField extends AbstractConfigField implements Supplier<Double>
      * Represents two number fields, a minimum and a maximum, combined into one.
      * This has convenience methods for returning a random value between the min (inclusive) and the max (exclusive).
      */
+    @SuppressWarnings( "ClassCanBeRecord" )
     public static class RandomRange {
         
         /** The minimum. Defines the lower limit of the range (inclusive). */
@@ -202,9 +184,9 @@ public class DoubleField extends AbstractConfigField implements Supplier<Double>
         public RandomRange( DoubleField minimum, DoubleField maximum ) {
             MINIMUM = minimum;
             MAXIMUM = maximum;
-            if( minimum.valueDefault > maximum.valueDefault ) {
+            if( minimum.getDefaultValue() > maximum.getDefaultValue() ) {
                 throw new IllegalArgumentException( String.format( "Random range has inverted default values! (%s > %s) See: (%s, %s)",
-                        minimum.valueDefault, maximum.valueDefault, minimum.getKey(), maximum.getKey() ) );
+                        minimum.getDefaultValue(), maximum.getDefaultValue(), minimum.getKey(), maximum.getKey() ) );
             }
         }
         
@@ -246,132 +228,18 @@ public class DoubleField extends AbstractConfigField implements Supplier<Double>
      * @param base       The base value.
      * @param exceptions The environment exceptions list.
      */
-    public record EnvironmentSensitive(DoubleField base, EnvironmentListField exceptions) {
+    public record EnvironmentSensitive( DoubleField base, EnvironmentListField<Double> exceptions ) {
         
         /** @return Returns the config field's value. */
-        public double get( Level level, @Nullable BlockPos pos ) { return exceptions().getOrElse( level, pos, base() ); }
+        public double getDouble( EnvironmentContext context ) { return exceptions().getOrElse( context, base() ); }
+        
+        /** @return Returns the config field's value cast to a float. */
+        public float getFloat( EnvironmentContext context ) { return (float) getDouble( context ); }
         
         /** @return Treats the config field's value as a percent chance (from 0 to 1) and returns the result of a single roll. */
-        public boolean rollChance( RandomSource random, Level level, @Nullable BlockPos pos ) { return random.nextDouble() < get( level, pos ); }
-    }
-    
-    /**
-     * Represents an environment sensitive list of weighted values. Unlike the normal weighted list, this is just a simple
-     * wrapper class, and its weights are doubles.
-     * It sacrifices automation for flexibility, largely to help with the craziness of environment list fields.
-     */
-    public static class EnvironmentSensitiveWeightedList<T> {
+        public boolean rollChance( Random random, EnvironmentContext context ) { return rollChance( JavaRandomSource.of( random ), context ); }
         
-        private final List<Entry<T>> UNDERLYING_LIST;
-        
-        /** Links an array of values to two arrays of fields as base weights and exceptions. */
-        public EnvironmentSensitiveWeightedList( T[] values, DoubleField[] baseWeights, EnvironmentListField[] weightExceptions ) {
-            if( values.length != baseWeights.length || values.length != weightExceptions.length )
-                throw new IllegalArgumentException( "All arrays must be equal length!" );
-            
-            final ArrayList<Entry<T>> list = new ArrayList<>();
-            for( int i = 0; i < values.length; i++ ) {
-                list.add( new Entry<>( values[i], new EnvironmentSensitive( baseWeights[i], weightExceptions[i] ) ) );
-                
-                // Do a bit of error checking; allows us to ignore the possibility of negative weights
-                if( baseWeights[i].valueMin < 0.0 || weightExceptions[i].valueDefault.getMinValue() < 0.0 ) {
-                    throw new IllegalArgumentException( "Weight is not allowed to be negative! See " +
-                            baseWeights[i].getKey() + " and/or " + weightExceptions[i].getKey() );
-                }
-            }
-            list.trimToSize();
-            UNDERLYING_LIST = Collections.unmodifiableList( list );
-        }
-        
-        /** @return Returns a random item from this weighted list. Null if none of the items have a positive weight. */
-        @Nullable
-        public T next( Random random, Level level, @Nullable BlockPos pos ) {
-            return next( JavaRandomSource.of( random ), level, pos );
-        }
-        
-        /** @return Returns a random item from this weighted list. Null if none of the items have a positive weight. */
-        @Nullable
-        public T next( Random random, Level level, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
-            return next( JavaRandomSource.of( random ), level, pos, selector );
-        }
-        
-        /** @return Returns a random item from this weighted list. Null if none of the items have a positive weight. */
-        @Nullable
-        public T next( RandomSource random, Level level, @Nullable BlockPos pos ) { return next( random, level, pos, null ); }
-        
-        /** @return Returns a random item from this weighted list. Null if none of the items have a positive weight. */
-        @Nullable
-        public T next( RandomSource random, Level level, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
-            // Due to the 'nebulous' nature of environment-based weights, we must recalculate weights for EVERY call
-            double[] weights = new double[UNDERLYING_LIST.size()];
-            double totalWeight = calculateWeights( weights, level, pos, selector );
-            
-            return next( random, weights, totalWeight );
-        }
-        
-        /** @return Returns a specified number of random items from this weighted list. Null if none of the items have a positive weight. */
-        @Nullable
-        public List<T> next( Random random, int count, Level level, @Nullable BlockPos pos ) {
-            return next( JavaRandomSource.of( random ), count, level, pos );
-        }
-        
-        /** @return Returns a specified number of random items from this weighted list. Null if none of the items have a positive weight. */
-        @Nullable
-        public List<T> next( Random random, int count, Level level, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
-            return next( JavaRandomSource.of( random ), count, level, pos, selector );
-        }
-        
-        /** @return Returns a specified number of random items from this weighted list. Null if none of the items have a positive weight. */
-        @Nullable
-        public List<T> next( RandomSource random, int count, Level level, @Nullable BlockPos pos ) {
-            return next( random, count, level, pos, null );
-        }
-        
-        /** @return Returns a specified number of random items from this weighted list. Null if none of the items have a positive weight. */
-        @Nullable
-        public List<T> next( RandomSource random, int count, Level level, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
-            // Due to the 'nebulous' nature of environment-based weights, we must recalculate weights for EVERY call
-            double[] weights = new double[UNDERLYING_LIST.size()];
-            double totalWeight = calculateWeights( weights, level, pos, selector );
-            if( totalWeight <= 0.0 ) return null;
-            
-            List<T> items = new ArrayList<>( count );
-            for( int i = 0; i < count; i++ ) {
-                items.add( next( random, weights, totalWeight ) );
-            }
-            return items;
-        }
-        
-        /** Calculates the current weights, fills the provided weights array, and returns the total weight. */
-        private double calculateWeights( double[] weights, Level level, @Nullable BlockPos pos, @Nullable Predicate<T> selector ) {
-            double totalWeight = 0.0;
-            for( int i = 0; i < weights.length; i++ ) {
-                final Entry<T> entry = UNDERLYING_LIST.get( i );
-                if( selector == null || selector.test( entry.VALUE ) ) {
-                    totalWeight += weights[i] = entry.WEIGHT.get( level, pos );
-                }
-            }
-            return totalWeight;
-        }
-        
-        /** Returns a random item from this weighted list. Null if none of the items have a positive weight. */
-        @Nullable
-        private T next( RandomSource random, double[] weights, double totalWeight ) {
-            if( totalWeight <= 0.0 ) return null;
-            
-            // Now we pick a random value between zero and the total weight
-            double targetWeight = totalWeight * random.nextDouble();
-            for( int i = 0; i < weights.length; i++ ) {
-                targetWeight -= weights[i];
-                if( targetWeight < 0.0 ) return UNDERLYING_LIST.get( i ).VALUE;
-            }
-            
-            ConfigUtil.LOG.error( "Error for weighted list including {}:", UNDERLYING_LIST.get( 0 ).WEIGHT.base.describeLocation() );
-            ConfigUtil.LOG.error( "Environment-sensitive weight list was unable to return a value when it should have! " +
-                    "This is probably due to error in floating point calculations, perhaps try changing the scale of weights." );
-            return null;
-        }
-        
-        private record Entry<T>(T VALUE, EnvironmentSensitive WEIGHT) { }
+        /** @return Treats the config field's value as a percent chance (from 0 to 1) and returns the result of a single roll. */
+        public boolean rollChance( RandomSource random, EnvironmentContext context ) { return random.nextDouble() < getDouble( context ); }
     }
 }

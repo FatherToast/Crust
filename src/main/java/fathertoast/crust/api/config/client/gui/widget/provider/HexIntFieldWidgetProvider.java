@@ -1,6 +1,6 @@
 package fathertoast.crust.api.config.client.gui.widget.provider;
 
-import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
+import fathertoast.crust.api.config.client.gui.widget.entry.ConfigFieldGuiEntry;
 import fathertoast.crust.api.config.common.field.IntField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -14,7 +14,7 @@ import java.util.function.Function;
  * Displays a text box for a hexadecimal number value.
  */
 @SuppressWarnings( "ClassCanBeRecord" )
-public class HexIntFieldWidgetProvider implements IConfigFieldWidgetProvider {
+public class HexIntFieldWidgetProvider implements IConfigFieldWidgetProvider<Integer> {
     
     /** The providing field. */
     protected final IntField.Hex FIELD;
@@ -38,18 +38,14 @@ public class HexIntFieldWidgetProvider implements IConfigFieldWidgetProvider {
      * @param displayValue The current raw value to display in the GUI.
      */
     @Override
-    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
-        EditBox editBox = new EditBox( listEntry.minecraft().font,
+    public void apply( List<AbstractWidget> components, ConfigFieldGuiEntry<Integer> listEntry, Integer displayValue ) {
+        EditBox editBox = new EditBox( listEntry.client().font,
                 1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for 1px frame
                 Component.literal( FIELD.getKey() ) );
         editBox.setMaxLength( 127 );
-        
-        Number startValue = TomlHelper.asNumber( displayValue );
-        editBox.setValue( startValue == null ? "" :
-                TomlHelper.toLiteral( FIELD.wrap( startValue.intValue() ) ).substring( 2 ) );
-        
-        editBox.setResponder( ( value ) -> {
-            Integer newValue = TomlHelper.parseHexInt( value );
+        editBox.setValue( TomlHelper.toLiteral( FIELD.wrap( displayValue ) ).substring( 2 ) );
+        editBox.setResponder( text -> {
+            Integer newValue = TomlHelper.parseHexInt( text );
             if( newValue == null || !VALIDATOR.apply( newValue ) ) {
                 editBox.setTextColor( INVALID_COLOR );
                 listEntry.clearValue();
@@ -59,7 +55,7 @@ public class HexIntFieldWidgetProvider implements IConfigFieldWidgetProvider {
                 listEntry.updateValue( newValue );
             }
         } );
-        
+        editBox.active = listEntry.isEditable();
         components.add( editBox );
     }
 }

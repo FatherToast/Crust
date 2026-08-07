@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.ITomlStringValue;
 import org.jetbrains.annotations.Nullable;
 
@@ -139,7 +139,7 @@ public enum OperatorValue implements ITomlStringValue {
          * @return A new value based on the value string. If the parse fails, returns a non-null default value.
          */
         @Override
-        public OperatorValue parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+        public OperatorValue parseTomlString( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
             if( value == null ) return defaultValue;
             OperatorValue op = switch( value ) {
                 case "*", "x" -> MULTIPLY;
@@ -159,7 +159,7 @@ public enum OperatorValue implements ITomlStringValue {
             return isAllowed( op ) ? op : notAllowed( field, line, op );
         }
         
-        private OperatorValue notAllowed( @Nullable AbstractConfigField field, String line, OperatorValue op ) {
+        private OperatorValue notAllowed( @Nullable IConfigField<?> field, String line, OperatorValue op ) {
             if( field != null ) {
                 ConfigUtil.warnFor( field );
                 ConfigUtil.LOG.warn( "Operator ({}) not allowed for this field! Falling back to {}. Entry: {}",

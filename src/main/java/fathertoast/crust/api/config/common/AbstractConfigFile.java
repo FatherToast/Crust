@@ -2,6 +2,8 @@ package fathertoast.crust.api.config.common;
 
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.event.config.CrustConfigEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 /**
  * Represents one config file that contains a reference for each configurable value within and a specification
@@ -31,14 +33,16 @@ public abstract class AbstractConfigFile {
     /**
      * @param cfgManager      The mod's config manager.
      * @param cfgName         Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
+     * @param clientOnly      True if this config only exists on the client side.
      * @param fileDescription Opening file comment to describe/summarize the contents of the file.
      *                        Each string is printed as a separate line.
      */
-    public AbstractConfigFile( ConfigManager cfgManager, String cfgName, String... fileDescription ) {
-        SPEC = new CrustConfigSpec( cfgManager, this, cfgName );
+    public AbstractConfigFile( ConfigManager cfgManager, String cfgName, boolean clientOnly, String... fileDescription ) {
+        SPEC = new CrustConfigSpec( cfgManager, this, cfgName, clientOnly );
         cfgManager.register( this );
         SPEC.loadingCategory = "";
         SPEC.header( TomlHelper.newComment( fileDescription ) );
+        MinecraftForge.EVENT_BUS.post( new CrustConfigEvent.File.Constructed( this ) );
     }
     
     /**
@@ -52,11 +56,12 @@ public abstract class AbstractConfigFile {
         /**
          * @param cfgManager      The mod's config manager.
          * @param cfgName         Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
+         * @param clientOnly      True if this config only exists on the client side.
          * @param fileDescription Opening file comment to describe/summarize the contents of the file.
          *                        Each string is printed as a separate line.
          */
-        public Simple( ConfigManager cfgManager, String cfgName, String... fileDescription ) {
-            super( cfgManager, cfgName, fileDescription );
+        public Simple( ConfigManager cfgManager, String cfgName, boolean clientOnly, String... fileDescription ) {
+            super( cfgManager, cfgName, clientOnly, fileDescription );
             SPEC.setupSimpleFile();
         }
     }

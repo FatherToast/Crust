@@ -37,7 +37,6 @@ import org.joml.Matrix4f;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * An entry view renderer implementation that renders a block state.
@@ -47,41 +46,37 @@ import java.util.function.Supplier;
  * the state's block will be rendered instead, if possible.
  */
 public class BlockStateEntryViewRenderer implements EntryViewWidget.EntryViewRenderer<BlockState> {
-    
     /**
      * A list of block states that most likely have
-     * bloc entity renderers associated with them.
+     * block entity renderers associated with them.
      */
     private final ArrayList<BlockState> statesWithRenderers = new ArrayList<>();
-    
     
     /**
      * Called from {@link EntryViewWidget#renderWidget(GuiGraphics, int, int, float)}
      * to render something based on the widget's field's value.
      */
     @Override
-    public void render( @Nullable Supplier<BlockState> valueSupplier, GuiGraphics graphics,
+    public void render( @Nullable BlockState displayValue, GuiGraphics graphics,
                         int widgetX, int widgetY, int mouseX, int mouseY, float partialTick ) {
-        final BlockState blockState = getValue( valueSupplier );
-        
-        if( blockState == null ) return;
+        if( displayValue == null || displayValue.isAir() ) return;
         
         final PoseStack pose = graphics.pose();
         final MultiBufferSource.BufferSource bufferSource = graphics.bufferSource();
-        final RenderShape renderShape = blockState.getRenderShape();
+        final RenderShape renderShape = displayValue.getRenderShape();
         
         // Fluids/liquids needs special handling.
-        if( blockState.getBlock() instanceof LiquidBlock && !blockState.getFluidState().isEmpty() ) {
-            renderFluidFace( blockState.getFluidState(), graphics, widgetX, widgetY );
+        if( displayValue.getBlock() instanceof LiquidBlock && !displayValue.getFluidState().isEmpty() ) {
+            renderFluidFace( displayValue.getFluidState(), graphics, widgetX, widgetY );
         }
         // Try rendering the block state as an item
         // instead if it is invisible or uses a block entity renderer.
-        else if( renderShape == RenderShape.INVISIBLE || statesWithRenderers.contains( blockState ) ) {
-            renderItemStack( blockState, graphics, widgetX, widgetY );
+        else if( renderShape == RenderShape.INVISIBLE || statesWithRenderers.contains( displayValue ) ) {
+            renderItemStack( displayValue, graphics, widgetX, widgetY );
         }
         // Otherwise render the block state itself.
         else {
-            renderBlockState( blockState, bufferSource, pose, widgetX, widgetY );
+            renderBlockState( displayValue, bufferSource, pose, widgetX, widgetY );
         }
     }
     
@@ -105,7 +100,10 @@ public class BlockStateEntryViewRenderer implements EntryViewWidget.EntryViewRen
         pose.scale( 10.0F, 10.0F, 10.0F );
         
         final BlockRenderDispatcher renderDispatcher = Minecraft.getInstance().getBlockRenderer();
-        renderDispatcher.renderSingleBlock( state, pose, bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null );
+        //noinspection DataFlowIssue null render type is allowed, Forge just doesn't like it
+        renderDispatcher.renderSingleBlock( state, pose, bufferSource,
+                LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY,
+                null );
         
         pose.popPose();
     }

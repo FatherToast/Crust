@@ -1,23 +1,31 @@
 package fathertoast.crust.api.config.client.gui.widget.provider;
 
-import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
-import fathertoast.crust.api.config.common.field.StringField;
+import fathertoast.crust.api.config.client.gui.widget.entry.ConfigFieldGuiEntry;
+import fathertoast.crust.api.config.common.field.IConfigField;
+import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
- * Displays a text box for a string value.
+ * Displays a text box for a field that can be serialized to and from a single-line string.
  */
 @SuppressWarnings( "ClassCanBeRecord" )
-public class StringFieldWidgetProvider implements IConfigFieldWidgetProvider {
+public class StringFieldWidgetProvider<T> implements IConfigFieldWidgetProvider<T> {
     
     /** The providing field. */
-    protected final StringField FIELD;
+    protected final IConfigField<T> FIELD;
+    @Nullable
+    protected final Predicate<String> VALIDATOR;
     
-    public StringFieldWidgetProvider( StringField field ) { FIELD = field; }
+    public StringFieldWidgetProvider( IConfigField<T> field, @Nullable Predicate<String> validator ) {
+        FIELD = field;
+        VALIDATOR = validator;
+    }
     
     /**
      * Called to initialize the field's gui components.
@@ -31,31 +39,24 @@ public class StringFieldWidgetProvider implements IConfigFieldWidgetProvider {
      * @param displayValue The current raw value to display in the GUI.
      */
     @Override
-    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
-        // noinspection resource
-        EditBox editBox = new EditBox( listEntry.minecraft().font,
+    public void apply( List<AbstractWidget> components, ConfigFieldGuiEntry<T> listEntry, T displayValue ) {
+        EditBox editBox = new EditBox( listEntry.client().font,
                 1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for ~1px frame
                 Component.literal( FIELD.getKey() ) );
         editBox.setMaxLength( Integer.MAX_VALUE );
-        
-        editBox.setValue( displayValue.toString() );
-        editBox.setResponder( listEntry::updateValue );
-        
-        if( FIELD.getValidator() != null ) {
-            editBox.setResponder( ( value ) -> {
-                if( value == null || !FIELD.getValidator().test( value ) ) {
-                    editBox.setTextColor( INVALID_COLOR );
-                    listEntry.clearValue();
-                }
-                else {
-                    editBox.setTextColor( DEFAULT_COLOR );
-                    listEntry.updateValue( value );
-                }
-            } );
-        }
-        else {
-            editBox.setResponder( listEntry::updateValue );
-        }
+        editBox.setValue( TomlHelper.toTomlString( displayValue ) );
+        editBox.setResponder( VALIDATOR == null ? listEntry::updateInput :
+                text -> {
+                    if( text == null || !VALIDATOR.test( text ) ) {
+                        editBox.setTextColor( INVALID_COLOR );
+                        listEntry.clearValue();
+                    }
+                    else {
+                        editBox.setTextColor( DEFAULT_COLOR );
+                        listEntry.updateInput( text );
+                    }
+                } );
+        editBox.active = listEntry.isEditable();
         components.add( editBox );
     }
 }

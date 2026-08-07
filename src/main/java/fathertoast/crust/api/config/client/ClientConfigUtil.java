@@ -1,6 +1,5 @@
 package fathertoast.crust.api.config.client;
 
-import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import net.minecraft.Util;
@@ -11,11 +10,20 @@ import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModLoadingContext;
+import org.jetbrains.annotations.ApiStatus;
+
+import java.util.function.Function;
 
 /**
  * This class contains static helper methods for client-side config functions.
  */
 public final class ClientConfigUtil {
+    /**
+     * Populated by Crust prior to client setup.
+     * Simply takes in the config manager and returns a new config select screen.
+     */
+    @ApiStatus.Internal
+    public static Function<ConfigManager, Screen> configScreenFactory;
     
     /**
      * Deprecated, use the method below instead.
@@ -42,7 +50,7 @@ public final class ClientConfigUtil {
         }
         else {
             modContainer.registerExtensionPoint( ConfigScreenHandler.ConfigScreenFactory.class,
-                    () -> new ConfigScreenHandler.ConfigScreenFactory( ( mc, parent ) -> new CrustConfigSelectScreen( null, cfgManager ) ) );
+                    () -> new ConfigScreenHandler.ConfigScreenFactory( ( mc, parent ) -> configScreenFactory.apply( cfgManager ) ) );
         }
     }
     
@@ -113,5 +121,5 @@ public final class ClientConfigUtil {
     }
     
     // Utility class
-    private ClientConfigUtil() { }
+    private ClientConfigUtil() {}
 }

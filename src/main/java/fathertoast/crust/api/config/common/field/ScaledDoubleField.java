@@ -26,21 +26,9 @@ public class ScaledDoubleField extends DoubleField {
         SCALE = scale;
     }
     
-    /**
-     * Loads this field's value from the given value or raw toml. If anything goes wrong, correct it at the lowest level possible.
-     * <p>
-     * For example, a missing value should be set to the default, while an out-of-range value should be adjusted to the
-     * nearest in-range value and print a warning explaining the change.
-     */
-    @Override
-    public void load( @Nullable Object raw ) {
-        super.load( raw );
-        valueScaled = super.get() * SCALE;
-    }
-    
     /** @return Returns the config field's value. */
     @Override
-    public Double get() { return valueScaled; }
+    public Double get() { return super.get() * SCALE; }
     
     /** @return Returns the unscaled form of the config field's value. */
     public double getUnscaled() { return super.get(); }

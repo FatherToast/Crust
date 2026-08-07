@@ -1,31 +1,30 @@
 package fathertoast.crust.api.config.client.gui.widget.provider;
 
-import fathertoast.crust.api.config.client.gui.screen.CrustConfigFileScreen;
-import fathertoast.crust.api.config.client.gui.screen.EditStringListScreen;
-import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
-import fathertoast.crust.api.config.common.field.GenericField;
-import fathertoast.crust.api.config.common.field.IStringListScreenEditable;
-import net.minecraft.client.Minecraft;
+import fathertoast.crust.api.config.client.gui.widget.entry.ConfigFieldGuiEntry;
+import fathertoast.crust.api.config.client.gui.widget.field.list.PopupStringListWidget;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
- * Provides a button to open a new screen entirely for
- * editing strings in a string list.
+ * Displays a button to open a string list editor for a field that can be serialized to and from a string list.
  */
-@SuppressWarnings( "ClassCanBeRecord" )
-public class StringListFieldWidgetProvider<V, T extends GenericField<V> & IStringListScreenEditable> implements
-        IConfigFieldWidgetProvider {
+public class StringListFieldWidgetProvider<T> implements IConfigFieldWidgetProvider<T> {
     
-    /** The providing field. */
-    protected final T FIELD;
+    Function<T, List<String>> STRING_LIST_MAPPER;
+    @Nullable
+    protected final Predicate<String> VALIDATOR;
     
-    public StringListFieldWidgetProvider( T field ) { FIELD = field; }
+    public StringListFieldWidgetProvider( Function<T, List<String>> stringListMapper, @Nullable Predicate<String> validator ) {
+        STRING_LIST_MAPPER = stringListMapper;
+        VALIDATOR = validator;
+    }
     
     /**
      * Called to initialize the field's gui components.
@@ -38,21 +37,14 @@ public class StringListFieldWidgetProvider<V, T extends GenericField<V> & IStrin
      * @param displayValue The current raw value to display in the GUI.
      */
     @Override
-    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
-        MutableComponent component = Component.translatable( "menu.crust.config.edit" );
-        
+    public void apply( List<AbstractWidget> components, ConfigFieldGuiEntry<T> listEntry, T displayValue ) {
+        MutableComponent component = listEntry.isEditable() ? Component.translatable( "menu.crust.config.edit" ) :
+                Component.translatable( "menu.crust.config.view" );
         Button editButton = new Button( 0, 0, VALUE_WIDTH, VALUE_HEIGHT,
                 component,
-                ( button ) -> {
-                    if( Minecraft.getInstance().screen instanceof CrustConfigFileScreen screen ) {
-                        Screen editScreen = new EditStringListScreen<>( screen, listEntry,
-                                FIELD.get(),//TODO use displayValue instead once we fix screen transition
-                                FIELD );
-                        Minecraft.getInstance().setScreen( editScreen );
-                    }
-                },
-                ( narratable ) -> component
-        );
+                button -> listEntry.setPopupWidget( new PopupStringListWidget<>(
+                        listEntry, STRING_LIST_MAPPER.apply( listEntry.getValue() ), VALIDATOR ) ),
+                narratable -> component );
         components.add( editButton );
     }
 }

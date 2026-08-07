@@ -1,46 +1,24 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.ITomlStringValue;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
 /**
- * A value that can be used to compare two numbers.
+ * A value that can be used to compare two self-comparable objects of the same type.
  */
+@SuppressWarnings( "unused" )
 public enum ComparatorValue implements ITomlStringValue {
     
-    EQUAL( "==" ) {
-        /** @return The result of the comparison. */
-        @Override
-        public boolean evaluate( double left, double right ) { return left == right; }
-    },
-    
-    LESS( "<" ) {
-        /** @return The result of the comparison. */
-        @Override
-        public boolean evaluate( double left, double right ) { return left < right; }
-    },
-    
-    GREATER( ">" ) {
-        /** @return The result of the comparison. */
-        @Override
-        public boolean evaluate( double left, double right ) { return left > right; }
-    },
-    
-    LESS_OR_EQUAL( "<=" ) {
-        /** @return The result of the comparison. */
-        @Override
-        public boolean evaluate( double left, double right ) { return left <= right; }
-    },
-    
-    GREATER_OR_EQUAL( ">=" ) {
-        /** @return The result of the comparison. */
-        @Override
-        public boolean evaluate( double left, double right ) { return left >= right; }
-    };
+    EQUAL( "==" ),
+    NOT_EQUAL( "!=" ),
+    LESS( "<" ),
+    GREATER( ">" ),
+    LESS_OR_EQUAL( "<=" ),
+    GREATER_OR_EQUAL( ">=" );
     
     
     /** The string representation of this operator. */
@@ -48,17 +26,38 @@ public enum ComparatorValue implements ITomlStringValue {
     
     ComparatorValue( String c ) { code = c; }
     
-    /** @return The result of the comparison. */
-    public abstract boolean evaluate( double left, double right );
+    /** @return The comparator with opposite comparison results. */
+    public ComparatorValue invert() {
+        return switch( this ) {
+            case EQUAL -> NOT_EQUAL;
+            case NOT_EQUAL -> EQUAL;
+            case LESS -> GREATER_OR_EQUAL;
+            case GREATER -> LESS_OR_EQUAL;
+            case LESS_OR_EQUAL -> GREATER;
+            case GREATER_OR_EQUAL -> LESS;
+        };
+    }
     
     /** @return The result of the comparison. */
-    public boolean evaluate( double left, Supplier<? extends Number> right ) { return evaluate( left, right.get().doubleValue() ); }
+    public <T extends Comparable<T>> boolean evaluate( T left, T right ) {
+        return switch( this ) {
+            case EQUAL -> left.compareTo( right ) == 0;
+            case NOT_EQUAL -> left.compareTo( right ) != 0;
+            case LESS -> left.compareTo( right ) < 0;
+            case GREATER -> left.compareTo( right ) > 0;
+            case LESS_OR_EQUAL -> left.compareTo( right ) <= 0;
+            case GREATER_OR_EQUAL -> left.compareTo( right ) >= 0;
+        };
+    }
     
     /** @return The result of the comparison. */
-    public boolean evaluate( Supplier<? extends Number> left, double right ) { return evaluate( left.get().doubleValue(), right ); }
+    public <T extends Comparable<T>> boolean evaluate( T left, Supplier<T> right ) { return evaluate( left, right.get() ); }
     
     /** @return The result of the comparison. */
-    public boolean evaluate( Supplier<? extends Number> left, Supplier<? extends Number> right ) { return evaluate( left.get().doubleValue(), right.get().doubleValue() ); }
+    public <T extends Comparable<T>> boolean evaluate( Supplier<T> left, T right ) { return evaluate( left.get(), right ); }
+    
+    /** @return The result of the comparison. */
+    public <T extends Comparable<T>> boolean evaluate( Supplier<T> left, Supplier<T> right ) { return evaluate( left.get(), right.get() ); }
     
     /** @return This value, converted to a single-line string. */
     @Override
@@ -96,7 +95,7 @@ public enum ComparatorValue implements ITomlStringValue {
          * @return A new value based on the value string. If the parse fails, returns a non-null default value.
          */
         @Override
-        public ComparatorValue parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+        public ComparatorValue parseTomlString( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
             if( value == null ) return defaultValue;
             return switch( value ) {
                 case "<" -> LESS;
@@ -104,6 +103,7 @@ public enum ComparatorValue implements ITomlStringValue {
                 case "<=", "=<" -> LESS_OR_EQUAL;
                 case ">=", "=>" -> GREATER_OR_EQUAL;
                 case "==", "=" -> EQUAL;
+                case "!=", "=!", "/=", "=/", "=/=", "~=", "=~" -> NOT_EQUAL; // A man of many names
                 default -> {
                     if( field != null ) {
                         ConfigUtil.warnFor( field );

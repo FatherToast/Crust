@@ -3,7 +3,7 @@ package fathertoast.crust.api.config.common.file;
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.io.*;
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.field.RestartNote;
 import fathertoast.crust.api.config.common.value.ITomlValue;
 import net.minecraft.util.StringUtil;
@@ -160,7 +160,7 @@ public class CrustTomlWriter implements ConfigWriter {
     }
     
     /** Writes a literal list of single-line strings. Assumes the indent has already been written on the first line. */
-    public void writeField( AbstractConfigField field, @Nullable RestartNote restartNote, List<String> addedComment, CharacterOutput output ) {
+    public void writeField( IConfigField<?> field, @Nullable RestartNote restartNote, List<String> addedComment, CharacterOutput output ) {
         // Write the comment, if any
         if( field.getComment() != null ) {
             writeComment( field.getComment(), output );

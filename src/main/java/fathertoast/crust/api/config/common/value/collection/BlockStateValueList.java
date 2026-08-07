@@ -10,7 +10,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 
@@ -23,7 +22,7 @@ import java.util.Collection;
  * @see fathertoast.crust.api.config.common.field.collection.BlockStateValueListField
  * @see BlockStateList BlockStateList - A similar collection that does not allow values
  */
-@ApiStatus.Experimental
+@SuppressWarnings( "unused" )
 public class BlockStateValueList<V> extends FuzzyValueList<BlockState, V> {
     
     /** Constructs an empty value list. Use this if you want to {@link #load} a value list from file/NBT. */
@@ -54,7 +53,6 @@ public class BlockStateValueList<V> extends FuzzyValueList<BlockState, V> {
     // ---- Builder Implementation ---- //
     
     /** Builder to make constructing registry value lists smoother. */
-    @ApiStatus.Experimental
     public static class Builder<V, B extends Builder<V, B>> extends AbstractBuilder<BlockState, V, BlockStateValueList<V>, B> {
         
         public Builder( IValueCodec<V> codec ) { super( codec ); }

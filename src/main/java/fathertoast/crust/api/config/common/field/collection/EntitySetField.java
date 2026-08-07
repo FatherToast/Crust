@@ -3,7 +3,6 @@ package fathertoast.crust.api.config.common.field.collection;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.EntitySet;
 import net.minecraft.world.entity.Entity;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import java.util.List;
  * Represents a config field with an entity set value.
  * Use {@link #contains(Entity)} to check if a target entity is in the set.
  */
-@ApiStatus.Experimental
 public class EntitySetField extends FuzzySetField<Entity, EntitySet> {
     
     /**

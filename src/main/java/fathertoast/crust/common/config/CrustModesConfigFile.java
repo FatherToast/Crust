@@ -4,7 +4,7 @@ import fathertoast.crust.api.config.common.AbstractConfigCategory;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.*;
-import fathertoast.crust.common.command.CommandUtil;
+import fathertoast.crust.api.lib.CrustCmdHelper;
 
 /**
  * File for configuring rules & limitations for Crust's modes.
@@ -21,7 +21,7 @@ public class CrustModesConfigFile extends AbstractConfigFile {
      * @param cfgName    Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
      */
     CrustModesConfigFile( ConfigManager cfgManager, String cfgName ) {
-        super( cfgManager, cfgName,
+        super( cfgManager, cfgName, false,
                 "This config contains options to control the 'modes' added by Crust. Some examples of Crust " +
                         "modes are magnet mode, super speed mode, and undying mode.",
                 "",
@@ -66,30 +66,29 @@ public class CrustModesConfigFile extends AbstractConfigFile {
             
             SPEC.subcategory( "op_level",
                     "The op levels (aka permission levels) required to enable/disable Crust's various modes. You can " +
-                            "disable any mode by setting this level very high (e.g., " + (CommandUtil.PERMISSION_SERVER_OP + 1) + ").",
+                            "disable any mode by setting this level very high (e.g., " + (CrustCmdHelper.PERMISSION_SERVER_OP + 1) + ").",
                     "Vanilla op levels used are:",
-                    "  " + CommandUtil.PERMISSION_NONE + " - Chat/whispers, Access to limited info",
-                    "  " + CommandUtil.PERMISSION_TRUSTED + " - Can bypass spawn protection",
-                    "  " + CommandUtil.PERMISSION_CHEAT + " - Can use cheats, Access to info that can be used to cheat",
-                    "  " + CommandUtil.PERMISSION_MODERATE + " - Can ban/whitelist players, 'Moderator'",
-                    "  " + CommandUtil.PERMISSION_SERVER_OP + " - All permissions, Server management",
-                    RestartNote.WORLD.COMMENT );
+                    "  " + CrustCmdHelper.PERMISSION_NONE + " - Chat/whispers, Access to limited info",
+                    "  " + CrustCmdHelper.PERMISSION_TRUSTED + " - Can bypass spawn protection",
+                    "  " + CrustCmdHelper.PERMISSION_CHEAT + " - Can use cheats, Access to info that can be used to cheat",
+                    "  " + CrustCmdHelper.PERMISSION_MODERATE + " - Can ban/whitelist players, 'Moderator'",
+                    "  " + CrustCmdHelper.PERMISSION_SERVER_OP + " - All permissions, Server management" );
             magnetOpLevel = SPEC.define( new IntField( "op_level.magnet",
-                    CommandUtil.PERMISSION_NONE, IntField.Range.ANY ) );
+                    CrustCmdHelper.PERMISSION_NONE, IntField.Range.ANY ), true );
             //multiMineOpLevel = SPEC.define( new IntField( "op_level.multi_mine",
-            //        CommandUtil.PERMISSION_NONE, IntField.Range.ANY ) );
+            //        CrustCommandHelper.PERMISSION_NONE, IntField.Range.ANY ) );
             undyingOpLevel = SPEC.define( new IntField( "op_level.undying",
-                    CommandUtil.PERMISSION_CHEAT, IntField.Range.ANY ) );
+                    CrustCmdHelper.PERMISSION_CHEAT, IntField.Range.ANY ), true );
             unbreakingOpLevel = SPEC.define( new IntField( "op_level.unbreaking",
-                    CommandUtil.PERMISSION_CHEAT, IntField.Range.ANY ) );
+                    CrustCmdHelper.PERMISSION_CHEAT, IntField.Range.ANY ), true );
             uneatingOpLevel = SPEC.define( new IntField( "op_level.uneating",
-                    CommandUtil.PERMISSION_CHEAT, IntField.Range.ANY ) );
+                    CrustCmdHelper.PERMISSION_CHEAT, IntField.Range.ANY ), true );
             visionOpLevel = SPEC.define( new IntField( "op_level.super_vision",
-                    CommandUtil.PERMISSION_CHEAT, IntField.Range.ANY ) );
+                    CrustCmdHelper.PERMISSION_CHEAT, IntField.Range.ANY ), true );
             speedOpLevel = SPEC.define( new IntField( "op_level.super_speed",
-                    CommandUtil.PERMISSION_CHEAT, IntField.Range.ANY ) );
+                    CrustCmdHelper.PERMISSION_CHEAT, IntField.Range.ANY ), true );
             noPickupOpLevel = SPEC.define( new IntField( "op_level.destroy_on_pickup",
-                    CommandUtil.PERMISSION_CHEAT, IntField.Range.ANY ) );
+                    CrustCmdHelper.PERMISSION_CHEAT, IntField.Range.ANY ), true );
             
             SPEC.subcategory( "default",
                     "The default settings for Crust's various modes initially applied to players. Note that these " +

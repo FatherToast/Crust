@@ -1,9 +1,8 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.ITomlStringValue;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 
@@ -16,7 +15,6 @@ import javax.annotation.Nullable;
  * @see ArrayValueCodec
  * @see fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser
  */
-@ApiStatus.Experimental
 public interface IValueCodec<V> {
     
     /** @return The value format (for example, {@literal "<Number (Any Value)>"}). */
@@ -34,7 +32,7 @@ public interface IValueCodec<V> {
      * @param value The value string to parse from.
      * @return A new value based on the value string. If the parse fails, returns a non-null default value.
      */
-    V parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value );
+    V parseTomlString( @Nullable IConfigField<?> field, String line, @Nullable String value );
     
     /** @return This codec's default value; basically, shorthand for loading a missing value. */
     default V getDefaultValue() { return parseTomlString( null, "", null ); }

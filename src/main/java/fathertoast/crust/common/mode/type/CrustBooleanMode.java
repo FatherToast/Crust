@@ -3,7 +3,7 @@ package fathertoast.crust.common.mode.type;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import fathertoast.crust.common.command.CommandUtil;
+import fathertoast.crust.api.lib.CrustCmdHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,7 +32,7 @@ public class CrustBooleanMode extends CrustMode<Boolean> {
     /** @return The argument for this mode's value when referenced by the crustmode command. */
     @Override
     public RequiredArgumentBuilder<CommandSourceStack, Boolean> commandArgument( String arg ) {
-        return CommandUtil.argument( arg, BoolArgumentType.bool() );
+        return CrustCmdHelper.argument( arg, BoolArgumentType.bool() );
     }
     
     /**

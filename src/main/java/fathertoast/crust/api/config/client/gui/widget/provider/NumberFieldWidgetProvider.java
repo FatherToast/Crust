@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.client.gui.widget.provider;
 
-import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.client.gui.widget.entry.ConfigFieldGuiEntry;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
@@ -11,21 +11,21 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Displays a text box for a number value.
+ * Displays a text box for a field that can be serialized to and from a numeric string.
  */
 @SuppressWarnings( "ClassCanBeRecord" )
-public class NumberFieldWidgetProvider implements IConfigFieldWidgetProvider {
+public class NumberFieldWidgetProvider<T extends Number> implements IConfigFieldWidgetProvider<T> {
     
     /** The providing field. */
-    protected final AbstractConfigField FIELD;
-    /** Converts the input number into a raw toml value. */
-    protected final Function<Number, Object> TO_RAW;
+    protected final IConfigField<T> FIELD;
+    /** Converts the input number into the desired type. */
+    protected final Function<Number, T> READER;
     /** Returns true when the input number is valid. */
     protected final Function<Number, Boolean> VALIDATOR;
     
-    public NumberFieldWidgetProvider( AbstractConfigField field, Function<Number, Object> toRaw, Function<Number, Boolean> validator ) {
+    public NumberFieldWidgetProvider( IConfigField<T> field, Function<Number, T> reader, Function<Number, Boolean> validator ) {
         FIELD = field;
-        TO_RAW = toRaw;
+        READER = reader;
         VALIDATOR = validator;
     }
     
@@ -41,26 +41,24 @@ public class NumberFieldWidgetProvider implements IConfigFieldWidgetProvider {
      * @param displayValue The current raw value to display in the GUI.
      */
     @Override
-    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
-        // noinspection resource
-        EditBox editBox = new EditBox( listEntry.minecraft().font,
+    public void apply( List<AbstractWidget> components, ConfigFieldGuiEntry<T> listEntry, T displayValue ) {
+        EditBox editBox = new EditBox( listEntry.client().font,
                 1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for ~1px frame
                 Component.literal( FIELD.getKey() ) );
         editBox.setMaxLength( 127 );
-        
         editBox.setValue( TomlHelper.toLiteral( displayValue ) );
-        editBox.setResponder( ( value ) -> {
-            Number newValue = TomlHelper.parseNumber( value );
+        editBox.setResponder( text -> {
+            Number newValue = TomlHelper.parseNumber( text );
             if( newValue == null || !VALIDATOR.apply( newValue ) ) {
                 editBox.setTextColor( INVALID_COLOR );
                 listEntry.clearValue();
             }
             else {
                 editBox.setTextColor( DEFAULT_COLOR );
-                listEntry.updateValue( TO_RAW.apply( newValue ) );
+                listEntry.updateValue( READER.apply( newValue ) );
             }
         } );
-        
+        editBox.active = listEntry.isEditable();
         components.add( editBox );
     }
 }

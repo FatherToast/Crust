@@ -1,6 +1,8 @@
 package fathertoast.crust.api.config.common;
 
 import fathertoast.crust.api.ICrustApi;
+import fathertoast.crust.api.config.common.file.CrustConfigSpec;
+import fathertoast.crust.api.event.config.CrustConfigEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.fml.ModList;
@@ -11,6 +13,7 @@ import org.jetbrains.annotations.ApiStatus;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Used as the hub for config access.
@@ -155,6 +158,10 @@ public final class ConfigManager {
     
     // ---- Internal Methods ---- //
     
+    /** Populated by Crust during construction. Takes in a config spec and triggers a config sync. */
+    @ApiStatus.Internal
+    public static Consumer<CrustConfigSpec> SYNC_SPEC_CONSUMER;
+    
     /**
      * Global toggle for file watching. Generally, you should not mess with this.
      * Crust automatically freezes file watchers until mod loading is complete.
@@ -204,6 +211,7 @@ public final class ConfigManager {
             throw new IllegalStateException( "Attempted to create config manager with invalid modid!" );
         
         MinecraftForge.EVENT_BUS.addListener( this::onResourceReload );
+        MinecraftForge.EVENT_BUS.post( new CrustConfigEvent.ManagerCreated( this ) );
     }
     
     /** Called by config files on creation to keep track of them. */

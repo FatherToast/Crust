@@ -13,7 +13,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 
@@ -26,7 +25,7 @@ import java.util.Collection;
  * @see fathertoast.crust.api.config.common.field.collection.AttributeOpListField
  * @see fathertoast.crust.api.config.common.value.ConfigDrivenAttributeSupplier
  */
-@ApiStatus.Experimental
+@SuppressWarnings( "unused" )
 public class AttributeOpList extends RegistryValueList<Attribute, OperationStats> {
     
     /** Constructs an empty value list. Use this if you want to {@link #load} a value list from file/NBT. */
@@ -87,7 +86,6 @@ public class AttributeOpList extends RegistryValueList<Attribute, OperationStats
     // ---- Builder Implementation ---- //
     
     /** Builder to make constructing attribute op lists smoother. */
-    @ApiStatus.Experimental
     public static class Builder<B extends Builder<B>> extends AbstractBuilder<Attribute, OperationStats, AttributeOpList, B> {
         
         public final IRegWrapper<Attribute> registry = IRegWrapper.of( ForgeRegistries.ATTRIBUTES );

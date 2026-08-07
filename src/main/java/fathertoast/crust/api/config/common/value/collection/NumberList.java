@@ -9,20 +9,21 @@ import java.util.Collection;
 /**
  * A fuzzy list used to iterate over numbers.
  *
+ * @param <T> The type of number to match against.
  * @see NumberKey
  * @see fathertoast.crust.api.config.common.field.collection.NumberListField
- * @see NumberValueList NumberValueList - A similar collection that allows values
  */
+@SuppressWarnings( "unused" )
 @ApiStatus.Experimental
 public class NumberList<T extends Number> extends FuzzyList<T> {
     
     /** Creates a new builder for a {@code byte} number list. */
-    public static NumberList.Builder<Short, ?> byteBuilder() {
+    public static NumberList.Builder<Byte, ?> byteBuilder() {
         return new NumberList.Builder<>( NumberKey.ValueType.BYTE );
     }
     
     /** Creates a new builder for a {@code short} number list. */
-    public static NumberList.Builder<Byte, ?> shortBuilder() {
+    public static NumberList.Builder<Short, ?> shortBuilder() {
         return new NumberList.Builder<>( NumberKey.ValueType.SHORT );
     }
     
@@ -84,7 +85,6 @@ public class NumberList<T extends Number> extends FuzzyList<T> {
     // ---- Builder Implementation ---- //
     
     /** Builder to make constructing item stack lists smoother. */
-    @ApiStatus.Experimental
     public static class Builder<V extends Number, B extends NumberList.Builder<V, B>> extends AbstractBuilder<V, NumberList<V>, B> {
         
         /** The {@link fathertoast.crust.api.config.common.value.collection.key.NumberKey.ValueType} of this builder. */

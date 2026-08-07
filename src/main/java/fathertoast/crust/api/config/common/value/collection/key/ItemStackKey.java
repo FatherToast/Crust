@@ -1,6 +1,6 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.KeyUsage;
 import fathertoast.crust.api.lib.NBTHelper;
 import net.minecraft.nbt.CompoundTag;
@@ -12,7 +12,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -25,7 +24,6 @@ import java.util.Objects;
  * Note that this does not support a stack size parameter; you should choose a collection that supports
  * values if you want to allow users to specify stack size.
  */
-@ApiStatus.Experimental
 public abstract class ItemStackKey<K extends RegObjKey<Item>> extends FuzzyKey<ItemStack> {
     
     /** The parser for item stack keys. */
@@ -141,7 +139,7 @@ public abstract class ItemStackKey<K extends RegObjKey<Item>> extends FuzzyKey<I
     
     /** @return A new key, parsed from a key string, or null if the key was invalid. */
     @Nullable
-    public static ItemStackKey<?> parse( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
+    public static ItemStackKey<?> parse( @Nullable IConfigField<?> field, String line, String key, boolean blacklist ) {
         String[] keyAndProps = split( key );
         CompoundTag tag = keyAndProps[1].isEmpty() ? null : NBTHelper.toNBT( keyAndProps[1] );
         if( keyAndProps[0].isEmpty() ) return tag == null ? null : new DataTagOnly( blacklist, tag );
@@ -203,7 +201,6 @@ public abstract class ItemStackKey<K extends RegObjKey<Item>> extends FuzzyKey<I
     /**
      * A key that matches any item with appropriate data tag.
      */
-    @ApiStatus.Experimental
     public static class DataTagOnly extends ItemStackKey<RegObjKey<Item>> {
         
         protected DataTagOnly( boolean blacklist, CompoundTag t ) { super( null, blacklist, t ); }
@@ -221,7 +218,6 @@ public abstract class ItemStackKey<K extends RegObjKey<Item>> extends FuzzyKey<I
     /**
      * A key that matches one specific item with appropriate data tag.
      */
-    @ApiStatus.Experimental
     public static class Basic extends ItemStackKey<RegObjKey.Basic<Item>> implements IReverseKey<ItemStack> {
         
         protected Basic( RegObjKey.Basic<Item> k, @Nullable CompoundTag t ) { super( k, k.isBlacklist(), t ); }
@@ -237,7 +233,6 @@ public abstract class ItemStackKey<K extends RegObjKey<Item>> extends FuzzyKey<I
      * A key that matches all items in a namespace that have a path starting with a specific string
      * with appropriate data tag.
      */
-    @ApiStatus.Experimental
     public static class Wildcard extends ItemStackKey<RegObjKey.Wildcard<Item>> {
         
         protected Wildcard( RegObjKey.Wildcard<Item> k, @Nullable CompoundTag t ) { super( k, k.isBlacklist(), t ); }
@@ -247,7 +242,6 @@ public abstract class ItemStackKey<K extends RegObjKey<Item>> extends FuzzyKey<I
     /**
      * A key that matches all items contained by a specific tag with appropriate data tag.
      */
-    @ApiStatus.Experimental
     public static class Tag extends ItemStackKey<RegObjKey.Tag<Item>> implements IMultiKey<ItemStack> {
         
         protected Tag( RegObjKey.Tag<Item> k, @Nullable CompoundTag t ) { super( k, k.isBlacklist(), t ); }
@@ -269,7 +263,7 @@ public abstract class ItemStackKey<K extends RegObjKey<Item>> extends FuzzyKey<I
     
     // ---- Parser Implementation ---- //
     
-    private record Parser() implements IFuzzyKeyParser<ItemStack> {
+    private record Parser( ) implements IFuzzyKeyParser<ItemStack> {
         
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
@@ -293,7 +287,7 @@ public abstract class ItemStackKey<K extends RegObjKey<Item>> extends FuzzyKey<I
          */
         @Override
         @Nullable
-        public FuzzyKey<ItemStack> parseKeyString( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
+        public FuzzyKey<ItemStack> parseKeyString( @Nullable IConfigField<?> field, String line, String key, boolean blacklist ) {
             return parse( field, line, key, blacklist );
         }
     }

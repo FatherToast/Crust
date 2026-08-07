@@ -10,7 +10,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 
@@ -23,7 +22,7 @@ import java.util.Collection;
  * @see fathertoast.crust.api.config.common.field.collection.EntityMapField
  * @see EntitySet EntitySet - A similar collection that does not allow values
  */
-@ApiStatus.Experimental
+@SuppressWarnings( "unused" )
 public class EntityMap<V> extends FuzzyMap<Entity, V> {
     
     /** Constructs an empty map. Use this if you want to {@link #load} a map from file/NBT. */
@@ -54,7 +53,6 @@ public class EntityMap<V> extends FuzzyMap<Entity, V> {
     // ---- Builder Implementation ---- //
     
     /** Builder to make constructing entity maps smoother. */
-    @ApiStatus.Experimental
     public static class Builder<V, B extends Builder<V, B>> extends AbstractBuilder<Entity, V, EntityMap<V>, B> {
         
         public Builder( IValueCodec<V> codec ) { super( codec ); }

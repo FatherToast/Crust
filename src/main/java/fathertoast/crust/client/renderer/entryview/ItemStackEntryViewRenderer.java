@@ -15,27 +15,25 @@ import java.util.function.Supplier;
  * including sub-widgets like the durability bar and stack size number.
  */
 public class ItemStackEntryViewRenderer implements EntryViewWidget.EntryViewRenderer<ItemStack> {
-    
     /**
      * Called from {@link EntryViewWidget#renderWidget(GuiGraphics, int, int, float)}
      * to render something based on the widget's field's value.
      */
     @Override
-    public void render( @Nullable Supplier<ItemStack> valueSupplier, GuiGraphics graphics,
+    public void render( @Nullable ItemStack displayValue, GuiGraphics graphics,
                         int widgetX, int widgetY, int mouseX, int mouseY, float partialTick ) {
-        final ItemStack itemStack = getValue( valueSupplier );
+        if( displayValue == null || displayValue == ItemStack.EMPTY ) return;
         
-        if( itemStack == null ) return;
-        
-        final int stackSize = itemStack.getCount();
+        final int stackSize = displayValue.getCount();
         final PoseStack stack = graphics.pose();
         
         stack.pushPose();
-        stack.translate( 0.0D, 0.0D, -150.0D );
+        stack.translate( 0.0, 0.0, -150.0 );
         
-        graphics.renderItem( itemStack, widgetX + 2, widgetY + 2 );
+        graphics.renderItem( displayValue, widgetX + 2, widgetY + 2 );
         // Render "sub-widgets" such as durability bar and stack size
-        graphics.renderItemDecorations( Minecraft.getInstance().font, itemStack, widgetX, widgetY, stackSize > 1 ? String.valueOf( stackSize ) : null );
+        graphics.renderItemDecorations( Minecraft.getInstance().font, displayValue,
+                widgetX, widgetY, stackSize > 1 ? String.valueOf( stackSize ) : null );
         
         stack.popPose();
     }

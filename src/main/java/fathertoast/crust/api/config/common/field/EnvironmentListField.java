@@ -5,27 +5,23 @@ import fathertoast.crust.api.config.client.gui.widget.provider.StringListFieldWi
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import fathertoast.crust.api.config.common.value.EnvironmentEntry;
-import fathertoast.crust.api.config.common.value.EnvironmentList;
-import fathertoast.crust.api.config.common.value.environment.AbstractEnvironment;
+import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
-import fathertoast.crust.api.lib.EnvironmentHelper;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentContext;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentEntry;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentList;
 import fathertoast.crust.api.util.OnClient;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
+import net.minecraft.network.FriendlyByteBuf;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Represents a config field with an environment list value.
  */
-@SuppressWarnings( "unused" )
-
-@Deprecated
-public class EnvironmentListField extends GenericField<EnvironmentList> implements IStringListScreenEditable {
+public class EnvironmentListField<V> extends AbstractConfigField<EnvironmentList<V>> {
     
     /**
      * Provides a description of how to use environment lists. Recommended to put at the top of any file using environment lists.
@@ -49,9 +45,7 @@ public class EnvironmentListField extends GenericField<EnvironmentList> implemen
      * <br><br>
      * This is NOT shown in the GUI.
      */
-    public static void describe1of2( CrustConfigSpec spec ) {
-        spec.paddedFileOnlyComment( verboseDescription() );
-    }
+    public static void describe1of2( CrustConfigSpec spec ) { spec.paddedFileOnlyComment( verboseDescription() ); }
     
     /**
      * Inserts the second and last part of a detailed description of how to use this field type.
@@ -64,192 +58,109 @@ public class EnvironmentListField extends GenericField<EnvironmentList> implemen
     }
     
     
+    /** This list's value codec. */
+    protected final IValueCodec<V> valueCodec;
+    /** Number of arguments used by the value codec. */
+    protected final int valueArgs;
+    
     /** Creates a new field. */
-    public EnvironmentListField( String key, EnvironmentList defaultValue, @Nullable String... description ) {
+    public EnvironmentListField( String key, EnvironmentList<V> defaultValue, @Nullable String... description ) {
         super( key, defaultValue, description );
+        valueCodec = defaultValue.codec();
+        valueArgs = defaultValue.args();
     }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoFormat( "Environment List", valueDefault,
-                "[ \"value condition1 state1 & condition2 state2 & ...\", ... ]" ) );
-        comment.add( "   Range for Values: " + TomlHelper.fieldRange( valueDefault.getMinValue(), valueDefault.getMaxValue() ) );
+        comment.add( TomlHelper.fieldInfoFormat( "Environment List", getDefaultValue(),
+                "[ \"value condition1 state1 | condition2 state2 & ...\", ... ]" ) );
+        comment.add( "   Values: " + TomlHelper.fieldInfoNoHelp( valueCodec.getFormat(), valueCodec.getDefaultValue() ) );
     }
     
     /**
-     * Loads this field's value from the given value or raw toml. If anything goes wrong, correct it at the lowest level possible.
+     * @return Reads a value from the given value or raw toml. If anything goes wrong, correct it at the lowest level
+     * possible.
      * <p>
-     * For example, a missing value should be set to the default, while an out-of-range value should be adjusted to the
-     * nearest in-range value and print a warning explaining the change.
+     * For example, a missing or unreadable value should return the default value, while an out-of-range value should be
+     * adjusted to the nearest in-range value. If any value correction is applied, print a warning to explain the change.
      */
     @Override
-    public void load( @Nullable Object raw ) {
-        if( raw == null ) {
-            value = valueDefault;
-            return;
-        }
-        
-        if( raw instanceof EnvironmentList ) {
-            value = (EnvironmentList) raw;
-        }
-        else {
-            value = parse( TomlHelper.parseStringList( raw ) );
-        }
-    }
-    
-    /** Parses a list of entry lines. */
-    private EnvironmentList parse( List<String> list ) {
-        List<EnvironmentEntry> entryList = new ArrayList<>();
-        for( String line : list ) {
-            entryList.add( parseEntry( line ) );
-        }
-        return new EnvironmentList( entryList );
-    }
-    
-    /** Parses a single entry line and returns the result. */
-    private EnvironmentEntry parseEntry( final String line ) {
-        // Parse the value out of the conditions
-        final String[] args = line.split( " ", 2 );
-        final double value = parseValue( args[0], line );
-        
-        final List<AbstractEnvironment> conditions = new ArrayList<>();
-        if( args.length > 1 ) {
-            final String[] condArgs = args[1].split( "&" );
-            for( String condArg : condArgs ) {
-                conditions.add( parseCondition( condArg.trim(), line ) );
+    public EnvironmentList<V> parse( Object raw ) {
+        if( raw instanceof EnvironmentList<?> ) {
+            try {
+                //noinspection unchecked
+                return (EnvironmentList<V>) raw;
+            }
+            catch( ClassCastException ex ) {
+                ConfigUtil.errorFor( this );
+                ConfigUtil.LOG.error( "Attempted to assign environment collection of the wrong type! Falling back to default. Invalid value: {}",
+                        raw );
+                return getDefaultValue();
             }
         }
-        return new EnvironmentEntry( value, conditions );
-    }
-    
-    /** Parses a single value argument and returns a valid result. */
-    private double parseValue( final String arg, final String line ) {
-        // Try to parse the value
-        double value;
-        try {
-            value = Double.parseDouble( arg );
-        }
-        catch( NumberFormatException ex ) {
-            // This is thrown if the string is not a parsable number
-            ConfigUtil.warnFor( this );
-            ConfigUtil.LOG.warn( "Environment entry has invalid value! Falling back to 0. Entry: {}", line );
-            value = 0.0;
-        }
-        // Verify value is within range
-        if( value < valueDefault.getMinValue() ) {
-            ConfigUtil.warnFor( this );
-            ConfigUtil.LOG.warn( "Value is below the minimum! Adjusting from {} to {}.",
-                    value, valueDefault.getMinValue() );
-            value = valueDefault.getMinValue();
-        }
-        else if( value > valueDefault.getMaxValue() ) {
-            ConfigUtil.warnFor( this );
-            ConfigUtil.LOG.warn( "Value is above the maximum! Adjusting from {} to {}.",
-                    value, valueDefault.getMaxValue() );
-            value = valueDefault.getMaxValue();
-        }
+        // All the actual loading is done through the object
+        EnvironmentList<V> value = new EnvironmentList<>( valueCodec, valueArgs );
+        value.load( this, raw );
         return value;
     }
     
-    /** Parses a single environment condition argument and returns a valid result. */
-    private AbstractEnvironment parseCondition( final String arg, final String line ) {
-        // First parse the environment name, since it defines the format for the rest
-        final String[] args = arg.split( " ", 2 );
-        
-        final String value;
-        if( args.length < 2 ) value = "";
-        else value = args[1].trim();
-        
-        return CrustEnvironmentRegistry.parse( this, args[0], value );
+    /** Writes a field value to the byte buffer; should be the inverse of {@link #deserialize}. */
+    @Override
+    public void serialize( EnvironmentList<V> value, FriendlyByteBuf buffer ) {
+        value.serialize( buffer );
+    }
+    
+    /** Reads a new field value from the byte buffer; should be the inverse of {@link #serialize}. */
+    @Override
+    public EnvironmentList<V> deserialize( FriendlyByteBuf buffer ) {
+        EnvironmentList<V> value = new EnvironmentList<>( valueCodec, valueArgs );
+        value.deserialize( buffer );
+        return value;
     }
     
     /** @return This field's gui component provider. */
     @Override
     @OnClient
-    public IConfigFieldWidgetProvider getWidgetProvider() { return new StringListFieldWidgetProvider<>( this ); }
-    
-    /** Converts the displayable string list to a field value. */
-    @Override // IStringListScreenEditable
-    public Object stringListToValue( List<String> value ) {
-        return parse( value );
-    }
-    
-    /** @return This field's line validator, or null if any string is allowed. */
-    @Override // IStringListScreenEditable
-    public Predicate<String> getLineValidator() {
-        return null;//TODO
+    public IConfigFieldWidgetProvider<EnvironmentList<V>> getWidgetProvider() {
+        return new StringListFieldWidgetProvider<>( EnvironmentList::toStringList,
+                line -> {
+                    EnvironmentEntry<V> loaded = new EnvironmentEntry<>( null, valueCodec, valueArgs, line );
+                    return ConfigUtil.noSpaces( line ).equalsIgnoreCase( ConfigUtil.noSpaces( loaded.toTomlString() ) );
+                } );
     }
     
     
-    // Convenience methods
-    
-    /** @return The value matching the given environment, or the default value if no matching environment is defined. */
-    public double getOrElse( Level world, DoubleField defaultValue ) { return get().getOrElse( world, defaultValue ); }
-    
-    /** @return The value matching the given environment, or the default value if no matching environment is defined. */
-    public double getOrElse( Level world, double defaultValue ) { return get().getOrElse( world, defaultValue ); }
-    
-    /** @return The value matching the given environment, or null if no matching environment is defined. */
-    @Nullable
-    public Double get( Level world ) { return get().get( world ); }
+    // ---- Convenience Methods ---- //
     
     /**
-     * @return The value matching the given environment, or the default value if no matching environment is defined.
-     * @throws IllegalStateException If the position is not in a fully loaded chunk.
-     * @see EnvironmentHelper#isLoaded(net.minecraft.world.level.LevelAccessor, BlockPos)
-     */
-    public double getOrElse( Level world, @Nullable BlockPos pos, DoubleField defaultValue ) { return get().getOrElse( world, pos, defaultValue ); }
-    
-    /**
-     * @return The value matching the given environment, or the default value if no matching environment is defined.
-     * @throws IllegalStateException If the position is not in a fully loaded chunk.
-     * @see EnvironmentHelper#isLoaded(net.minecraft.world.level.LevelAccessor, BlockPos)
-     */
-    public double getOrElse( Level world, BlockPos pos, double defaultValue ) { return get().getOrElse( world, pos, defaultValue ); }
-    
-    /**
-     * @return The value matching the given environment, or null if no matching environment is defined.
-     * @throws IllegalStateException If the position is not in a fully loaded chunk.
-     * @see EnvironmentHelper#isLoaded(net.minecraft.world.level.LevelAccessor, BlockPos)
+     * @return The value for the first entry that matches the given environment context,
+     * or null if no matching environment is defined.
      */
     @Nullable
-    public Double get( Level world, BlockPos pos ) { return get().get( world, pos ); }
+    public V get( EnvironmentContext context ) { return get().get( context ); }
     
     /**
-     * @return True if the position is in a fully loaded chunk.
-     * @see EnvironmentHelper#isLoaded(net.minecraft.world.level.LevelAccessor, BlockPos)
+     * @return The value for the first entry that matches the given environment context,
+     * or the default value if no matching environment is defined.
      */
-    public boolean isLoaded( Level world, BlockPos pos ) { return EnvironmentHelper.isLoaded( world, pos ); }
+    public V getOrElse( EnvironmentContext context, V defaultValue ) { return get().getOrElse( context, defaultValue ); }
     
     /**
-     * @return The value matching the given environment, or the default value if no matching environment is defined.
-     * Uses the position if it is in a fully loaded chunk, otherwise ignores it.
+     * @return The value for the first entry that matches the given environment context,
+     * or the default value if no matching environment is defined.
      */
-    public double getOrElseIfLoaded( Level world, @Nullable BlockPos pos, DoubleField defaultValue ) {
-        if( pos != null && isLoaded( world, pos ) ) return getOrElse( world, pos, defaultValue );
-        else return getOrElse( world, defaultValue );
-    }
+    public V getOrElse( EnvironmentContext context, Supplier<V> defaultValue ) { return get().getOrElse( context, defaultValue ); }
     
     /**
-     * @return The value matching the given environment, or the default value if no matching environment is defined.
-     * Uses the position if it is in a fully loaded chunk, otherwise ignores it.
+     * Note: This method is less preferred over the others, as the codec default is not really
+     * configurable. However, in some cases this may be perfectly acceptable.
+     *
+     * @return The value for the first entry that matches the given environment context,
+     * or the codec's default value if no matching environment is defined.
      */
-    public double getOrElseIfLoaded( Level world, @Nullable BlockPos pos, double defaultValue ) {
-        if( pos != null && isLoaded( world, pos ) ) return getOrElse( world, pos, defaultValue );
-        else return getOrElse( world, defaultValue );
-    }
+    public V getOrDefault( EnvironmentContext context ) { return get().getOrDefault( context ); }
     
-    /**
-     * @return The value matching the given environment, or null if no matching environment is defined.
-     * Uses the position if it is in a fully loaded chunk, otherwise ignores it.
-     */
-    @Nullable
-    public Double getIfLoaded( Level world, @Nullable BlockPos pos ) {
-        if( pos != null && isLoaded( world, pos ) ) return get( world, pos );
-        else return get( world );
-    }
-    
-    /** @return True if there are no entries in the environment condition list. */
+    /** @return True if this contains no elements. */
     public boolean isEmpty() { return get().isEmpty(); }
 }

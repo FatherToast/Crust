@@ -2,12 +2,15 @@ package fathertoast.crust.api.config.common;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
 import fathertoast.crust.api.ICrustApi;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
+import fathertoast.crust.api.config.common.file.CrustConfigFormat;
+import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingStage;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -57,23 +60,23 @@ public final class ConfigUtil {
     }
     
     /** Prints the standard debug header for field validation issues. */
-    public static void debugFor( @Nullable AbstractConfigField field ) {
-        ConfigUtil.LOG.debug( "Debug info for {}:", AbstractConfigField.describeNullable( field ) );
+    public static void debugFor( @Nullable IConfigField<?> field ) {
+        ConfigUtil.LOG.debug( "Debug info for {}:", IConfigField.describeNullable( field ) );
     }
     
     /** Prints the standard info header for field validation issues. */
-    public static void infoFor( @Nullable AbstractConfigField field ) {
-        ConfigUtil.LOG.info( "Info for {}:", AbstractConfigField.describeNullable( field ) );
+    public static void infoFor( @Nullable IConfigField<?> field ) {
+        ConfigUtil.LOG.info( "Info for {}:", IConfigField.describeNullable( field ) );
     }
     
     /** Prints the standard warning header for field validation issues. */
-    public static void warnFor( @Nullable AbstractConfigField field ) {
-        ConfigUtil.LOG.warn( "Warning for {}:", AbstractConfigField.describeNullable( field ) );
+    public static void warnFor( @Nullable IConfigField<?> field ) {
+        ConfigUtil.LOG.warn( "Warning for {}:", IConfigField.describeNullable( field ) );
     }
     
     /** Prints the standard error header for field validation issues. */
-    public static void errorFor( @Nullable AbstractConfigField field ) {
-        ConfigUtil.LOG.error( "Error for {}:", AbstractConfigField.describeNullable( field ) );
+    public static void errorFor( @Nullable IConfigField<?> field ) {
+        ConfigUtil.LOG.error( "Error for {}:", IConfigField.describeNullable( field ) );
     }
     
     /** @return The resource location as a string, stripped of any characters disallowed for TOML bare dotted keys. */
@@ -132,6 +135,23 @@ public final class ConfigUtil {
             }
         }
         return camelStr.toString();
+    }
+    
+    /** @return The mod's display name. */
+    public static String getModName( String modId ) {
+        ModContainer modContainer = ModList.get().getModContainerById( modId ).orElse( null );
+        return modContainer == null ? modId : modContainer.getModInfo().getDisplayName();
+    }
+    
+    /** @return The spec's display name. */
+    public static String getSpecName( CrustConfigSpec spec ) {
+        String name = spec.getFile().getName();
+        return ConfigUtil.properCase( decodeBareKeyString( name.substring( 0, name.length() - CrustConfigFormat.FILE_EXT.length() ) ) );
+    }
+    
+    /** @return The TOML bare key string made into something more readable. */
+    public static String decodeBareKeyString( String str ) {
+        return ConfigUtil.camelCaseToLowerSpace( str.replace( '_', ' ' ).replace( ".", " > " ).trim() );
     }
     
     /** @return The string, but with the first character changed to upper case. */
@@ -245,5 +265,5 @@ public final class ConfigUtil {
     }
     
     // Utility class
-    private ConfigUtil() { }
+    private ConfigUtil() {}
 }

@@ -1,18 +1,12 @@
 package fathertoast.crust.api.config.common.value.environment;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
+import fathertoast.crust.api.config.common.value.ITomlStringValue;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.function.Predicate;
 
-public abstract class AbstractEnvironment {
-    /** @return The string representation of this environment, as it would appear in a config file. */
-    @Override
-    public final String toString() {
-        String value = value();
-        return value == null ? name() : name() + " " + value;
-    }
+public abstract class AbstractEnvironment implements ITomlStringValue, Predicate<EnvironmentContext> {
     
     /**
      * @return The string name of this environment, as it would appear in a config file.
@@ -24,6 +18,26 @@ public abstract class AbstractEnvironment {
     @Nullable
     public abstract String value();
     
-    /** @return Returns true if this environment matches the provided environment. */
-    public abstract boolean matches( Level level, @Nullable BlockPos pos );
+    /** @return True if this environment matches the provided environment. */
+    @Override // Predicate
+    public abstract boolean test( EnvironmentContext context );
+    
+    
+    /** @return This value, converted to a single-line string. */
+    @Override
+    public final String toTomlString() {
+        String value = value();
+        return value == null ? name() : name() + " " + value;
+    }
+    
+    @Override
+    public final String toString() { return toTomlString(); }
+    
+    @Override
+    public final boolean equals( Object obj ) {
+        return obj instanceof ITomlStringValue toml && toTomlString().equalsIgnoreCase( toml.toTomlString() );
+    }
+    
+    @Override
+    public final int hashCode() { return toTomlString().hashCode(); }
 }

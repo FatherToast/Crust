@@ -1,17 +1,28 @@
-1.20.1-5.18.29
+1.20.1-5.0.0
     - Finished the built-in "toggle storm" extra inventory button.
+    - Extra inventory buttons should no longer get in the way of JEI menus (e.g., bookmarks).
+    - Added new entity class hierarchy-climbing functionality for the config entity 'extends' key.
+    - In-game editor improvements:
+        - Server configs can now be viewed and/or edited if you have the required permission level
+          (config-defined level for viewing, op level for editing).
+        - Block state and applicable vanilla registry object fields now render a preview.
+        - Sound event registry object fields now have a button that can be pressed to play the sound.
+        - List editor now allows reordering of entries.
+    - New config setting for permission level needed to view server configs (defaults to mod level).
     - Misc config tweaks.
-    - Extra inventory buttons should no longer get in the way of JEI bookmarks.
     API Changes:
-    - Added new entity class hierarchy-climbing functionality for the config entity `extends` key.
-    - Most simple config field types (fields not in the "collection" package) now implement Supplier.
-      This is a breaking change, so expect mods that depend on Crust that have not yet updated to possibly break with this version.
+    - BREAKING CHANGES, mods made on older Crust versions will NOT work with this version.
+    - Config fields can now be defined in the spec as 'synced', which causes them to be synced to clients automatically.
+    - Config files must now be declared as common or client-only.
+    - All config field types now implement Supplier.
     - Added and updated verbose descriptions for a variety of the new fuzzy collection fields.
+    - Removed deprecated collection fields and corresponding values; fuzzy collections no longer flagged as experimental.
     - Fixed BlockStateField causing a NPE if attempting to get the value before the field has loaded.
     - Added fuzzy key type and value codec for ResourceLocations.
     - Moved the method StringValueCodec#stripInvalidChars() to ResourceLocValueCodec.
     - Added new method ResourceLocationUtils#strictParseOrDefault() and refactored the old method to not do strict parsing.
     - Fully implemented BlockStateField.
+    - Added new render preview widget.
     - Added new sound player widget.
 1.20.1-4.17.28
     - Fixed EntityKey.Extends key implementation not checking class inheritance correctly,

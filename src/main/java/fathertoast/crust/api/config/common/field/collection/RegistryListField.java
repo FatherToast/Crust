@@ -3,7 +3,6 @@ package fathertoast.crust.api.config.common.field.collection;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.RegistryList;
 import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import java.util.List;
  * @see net.minecraft.core.registries.Registries
  * @see IRegWrapper
  */
-@ApiStatus.Experimental
 public class RegistryListField<T> extends FuzzyListField<T, RegistryList<T>> {
     
     /**

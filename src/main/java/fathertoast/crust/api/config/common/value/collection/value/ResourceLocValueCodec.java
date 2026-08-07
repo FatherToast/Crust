@@ -1,14 +1,12 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.util.ResourceLocationUtils;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 
 /** A simple {@code ResourceLocation} value codec. */
-@ApiStatus.Experimental
 public class ResourceLocValueCodec implements IValueCodec<ResourceLocation> {
     
     /** A strict resource location codec that uses {@link fathertoast.crust.api.util.ResourceLocationUtils#EMPTY} as the default value. */
@@ -72,7 +70,7 @@ public class ResourceLocValueCodec implements IValueCodec<ResourceLocation> {
      */
     @Override
     @SuppressWarnings( "ConstantConditions" )
-    public ResourceLocation parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+    public ResourceLocation parseTomlString( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
         if( value != null )
             value = stripInvalidChars( value );
         

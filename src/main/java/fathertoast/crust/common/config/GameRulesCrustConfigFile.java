@@ -33,7 +33,7 @@ public class GameRulesCrustConfigFile extends AbstractConfigFile {
      * @param cfgName    Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
      */
     GameRulesCrustConfigFile( ConfigManager cfgManager, String cfgName ) {
-        super( cfgManager, cfgName,
+        super( cfgManager, cfgName, false,
                 "This config allows the default game rules for world creation to be altered. Many game rules " +
                         "make testing easier, so this is handy when you need to repeatedly generate new worlds.",
                 "",

@@ -4,10 +4,29 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.MenuTooltipPositioner;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 
 public final class GuiUtil {
+    
+    /** @return True if the server is running locally. */
+    public static boolean isServerLocal() {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if( player == null ) return true;
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        return server != null && server.isSingleplayerOwner( player.getGameProfile() );
+    }
+    
+    
+    /** @return The current screen width, in GUI pixels. */
+    public static int getScreenWidth() { return Minecraft.getInstance().getWindow().getGuiScaledWidth(); }
+    
+    /** @return The current screen height, in GUI pixels. */
+    public static int getScreenHeight() { return Minecraft.getInstance().getWindow().getGuiScaledHeight(); }
+    
     
     /**
      * @return The provided tooltip positioner UNLESS the last input type was a keyboard key, in
@@ -96,6 +115,7 @@ public final class GuiUtil {
         };
     }
     
+    
     // Utility class
-    private GuiUtil() { }
+    private GuiUtil() {}
 }

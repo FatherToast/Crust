@@ -19,6 +19,7 @@ import fathertoast.crust.client.config.ClientConfigAccessorImpl;
 import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
 import fathertoast.crust.client.config.RenderSettingsCrustConfig;
 import fathertoast.crust.client.renderer.entryview.*;
+import fathertoast.crust.client.screen.CrustConfigSelectScreen;
 import fathertoast.crust.common.api.impl.CrustApi;
 import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.core.registry.CrustItems;
@@ -37,6 +38,11 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @Mod.EventBusSubscriber( value = Dist.CLIENT, modid = ICrustApi.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
 public final class ClientRegister {
+    
+    static {
+        // Provide the config button screen factory; we do it here so it's ready before client setup starts
+        ClientConfigUtil.configScreenFactory = cfgManager -> new CrustConfigSelectScreen( null, cfgManager );
+    }
     
     /** File for configuring in-game config edit button client preferences. */
     public static CfgEditorCrustConfig CONFIG_EDITOR;
@@ -58,9 +64,9 @@ public final class ClientRegister {
         // Perform first-time loading of the client-only configs
         // EXTRA_INV_BUTTONS is loaded in KeyBindingEvents
         CONFIG_EDITOR = new CfgEditorCrustConfig(
-                ConfigManager.getRequired( ICrustApi.MOD_ID ), "client_config_editor" );
+                ConfigManager.getRequired( ICrustApi.MOD_ID ), "client/config_editor" );
         RENDER_SETTINGS = new RenderSettingsCrustConfig(
-                ConfigManager.getRequired( ICrustApi.MOD_ID ), "client_render_settings" );
+                ConfigManager.getRequired( ICrustApi.MOD_ID ), "client/render_settings" );
         
         CONFIG_EDITOR.SPEC.initialize();
         EXTRA_INV_BUTTONS.SPEC.initialize();
@@ -136,5 +142,5 @@ public final class ClientRegister {
     }
     
     // Static listener, no instantiation
-    private ClientRegister() { }
+    private ClientRegister() {}
 }

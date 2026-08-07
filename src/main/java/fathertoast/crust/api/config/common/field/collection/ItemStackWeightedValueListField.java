@@ -4,7 +4,6 @@ import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.ItemStackWeightedValueList;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import java.util.List;
  * @param <V> The value type.
  * @see fathertoast.crust.api.config.common.value.collection.value.IValueCodec
  */
-@ApiStatus.Experimental
 public class ItemStackWeightedValueListField<V> extends FuzzyWeightedValueListField<ItemStack, V, ItemStackWeightedValueList<V>> {
     
     /**

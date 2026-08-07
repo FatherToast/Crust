@@ -3,9 +3,10 @@ package fathertoast.crust.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.client.SortedKeyMapping;
-import fathertoast.crust.api.config.client.gui.screen.CrustConfigSelectScreen;
+import fathertoast.crust.client.screen.CrustConfigSelectScreen;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
+import fathertoast.crust.client.screen.ScreenHelper;
 import fathertoast.crust.client.screen.widget.button.ButtonInfo;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -29,7 +30,9 @@ public final class KeyBindingEvents {
     private static final String KEY = "key." + ICrustApi.MOD_ID + ".";
     
     private static final KeyMapping CONFIG_EDITOR = new SortedKeyMapping( 0, KEY + "configs", KEY_CAT );
-    //    private static final KeyBinding EQUIP = new SortedKeyBinding( 1, KEY + "equip", KEY_CAT );
+    //    // TODO implement
+    //    private static final KeyMapping EQUIP = new SortedKeyMapping( 1, KEY + "equip", KEY_CAT,
+    //            InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_MIDDLE ).guiOnly();
     
     private static KeyMapping[] BUTTONS;
     
@@ -37,7 +40,7 @@ public final class KeyBindingEvents {
     /** Registers this mod's additional key bindings. */
     static void register( RegisterKeyMappingsEvent event ) {
         ClientRegister.EXTRA_INV_BUTTONS = new ExtraInvButtonsCrustConfig(
-                ConfigManager.getRequired( ICrustApi.MOD_ID ), "client_extra_inv_buttons" );
+                ConfigManager.getRequired( ICrustApi.MOD_ID ), "client/extra_inv_buttons" );
         init();
         
         event.register( CONFIG_EDITOR );
@@ -48,34 +51,56 @@ public final class KeyBindingEvents {
         }
     }
     
-    /** Called when a key is pressed. */
+    /** Called when a mouse button action occurs. */
+    @SubscribeEvent
+    static void onMouseInput( InputEvent.MouseButton.Pre event ) {
+        if( onInput( event.getButton(), event.getAction() ) ) event.setCanceled( true );
+    }
+    
+    /** Called when a keyboard key action occurs. */
     @SubscribeEvent
     static void onKeyInput( InputEvent.Key event ) {
+        onInput( event.getKey(), event.getAction() );
+    }
+    
+    /**
+     * Called when a mouse button or keyboard key action occurs.
+     *
+     * @return True if the input event should be canceled (only applicable to mouse button inputs).
+     */
+    private static boolean onInput( int key, int action ) {
         Minecraft minecraft = Minecraft.getInstance();
         Screen screen = minecraft.screen;
-        if( event.getKey() == InputConstants.UNKNOWN.getValue() || screen != null && screen.isPauseScreen() ) return;
-        
-        if( event.getAction() == GLFW.GLFW_PRESS ) {
-            if( event.getKey() == CONFIG_EDITOR.getKey().getValue() && CONFIG_EDITOR.isConflictContextAndModifierActive() ) {
-                // Open the config editor
-                minecraft.setScreen( new CrustConfigSelectScreen( screen ) );
-            }
-            // Equip the currently held or moused-over item
-            //            else if( event.getKey() == EQUIP.getKey().getValue() && EQUIP.isConflictContextAndModifierActive() ) {
-            //                // NYI
-            //            }
-            else {
-                // Check for extra inventory button keybinding presses
-                for( int i = 0; i < BUTTONS.length; i++ ) {
-                    KeyMapping binding = BUTTONS[i];
-                    if( event.getKey() == binding.getKey().getValue() && binding.isConflictContextAndModifierActive() ) {
-                        pressButton( i < ButtonInfo.builtInIds().size() ? ButtonInfo.builtInIds().get( i ) :
-                                "custom" + (i + 1 - ButtonInfo.builtInIds().size()) );
-                        break;
+        if( key != InputConstants.UNKNOWN.getValue() && (screen == null || !screen.isPauseScreen()) ) {
+            if( action == GLFW.GLFW_PRESS ) {
+                if( isActive( key, CONFIG_EDITOR ) ) {
+                    // Open the config editor
+                    minecraft.setScreen( new CrustConfigSelectScreen( screen ) );
+                }
+                // Equip the currently held or moused-over item
+                //                else if( screen != null && isActive( key, EQUIP ) ) {
+                //                    return ScreenHelper.equip( screen );
+                //                }
+                else {
+                    // Check for extra inventory button keybinding presses
+                    for( int i = 0; i < BUTTONS.length; i++ ) {
+                        KeyMapping binding = BUTTONS[i];
+                        if( isActive( key, binding ) ) {
+                            pressButton( i < ButtonInfo.builtInIds().size() ? ButtonInfo.builtInIds().get( i ) :
+                                    "custom" + (i + 1 - ButtonInfo.builtInIds().size()) );
+                            break;
+                        }
                     }
                 }
             }
         }
+        return false;
+        
+    }
+    
+    /** @return True if the key code should be considered an action on a specific key bind. */
+    private static boolean isActive( int key, KeyMapping keyBind ) {
+        return key == keyBind.getKey().getValue() && keyBind.isConflictContextAndModifierActive();
     }
     
     /** Presses the button described. */
@@ -137,5 +162,5 @@ public final class KeyBindingEvents {
     
     
     // Static listener, no instantiation
-    private KeyBindingEvents() { }
+    private KeyBindingEvents() {}
 }

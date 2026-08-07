@@ -5,7 +5,6 @@ import fathertoast.crust.api.config.common.value.collection.FuzzyWeightedList;
 import fathertoast.crust.api.config.common.value.collection.FuzzyWeightedValueList;
 import fathertoast.crust.api.util.JavaRandomSource;
 import net.minecraft.util.RandomSource;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -19,7 +18,6 @@ import java.util.Random;
  * @see FuzzyWeightedList
  * @see FuzzyWeightedValueList
  */
-@ApiStatus.Experimental
 public interface IRandomKey<T> extends ITomlStringValue {
     
     /** @return A value that matches this key, or null if anything goes wrong. */

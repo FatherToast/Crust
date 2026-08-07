@@ -1,18 +1,17 @@
 package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.field.collection.FuzzyWeightedValueListField;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
-import fathertoast.crust.api.config.common.value.collection.key.StringKey;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
 import fathertoast.crust.api.config.common.value.collection.key.IRandomKey;
+import fathertoast.crust.api.config.common.value.collection.key.StringKey;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
 import fathertoast.crust.api.config.common.value.collection.value.WeightedEntry;
 import fathertoast.crust.api.util.JavaRandomSource;
 import net.minecraft.util.RandomSource;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -38,6 +37,7 @@ import java.util.Random;
  * @see FuzzyWeightedValueListField
  * @see FuzzyWeightedList WeightedList - A similar collection that does not allow values
  */
+@SuppressWarnings( "unused" )
 public class FuzzyWeightedValueList<T, V> extends AbstractFuzzyCollection<T, WeightedEntry<T, V>> {
     
     /** This map's value codec. */
@@ -87,7 +87,7 @@ public class FuzzyWeightedValueList<T, V> extends AbstractFuzzyCollection<T, Wei
     /** @return The freshly loaded entry, or null if the line should be deleted. */
     @Override
     @Nullable
-    public WeightedEntry<T, V> loadLine( @Nullable AbstractConfigField field, String line ) {
+    public WeightedEntry<T, V> loadLine( @Nullable IConfigField<?> field, String line ) {
         return keyUsage().ifAllowed( WeightedEntry.parseLine( keyParser, valueCodec, field, line ) );
     }
     
@@ -147,7 +147,6 @@ public class FuzzyWeightedValueList<T, V> extends AbstractFuzzyCollection<T, Wei
     
     
     /** Boilerplate builder class for fuzzy weighted value lists. */
-    @ApiStatus.Experimental
     public static abstract class AbstractBuilder<T, V, C extends FuzzyWeightedValueList<T, V>, B extends AbstractBuilder<T, V, C, B>>
             extends AbstractFuzzyCollection.AbstractBuilder<T, WeightedEntry<T, V>, C, B> {
         
@@ -173,7 +172,6 @@ public class FuzzyWeightedValueList<T, V> extends AbstractFuzzyCollection<T, Wei
     }
     
     /** Builder class for a generic fuzzy weighted value list. */
-    @ApiStatus.Experimental
     public static class Builder<T, V, B extends Builder<T, V, B>> extends AbstractBuilder<T, V, FuzzyWeightedValueList<T, V>, B> {
         
         public final IFuzzyKeyParser<T> keyParser;
@@ -195,7 +193,6 @@ public class FuzzyWeightedValueList<T, V> extends AbstractFuzzyCollection<T, Wei
     }
     
     /** Builder class for a fuzzy weighted string-value list. */
-    @ApiStatus.Experimental
     public static class StrBuilder<V> extends Builder<String, V, StrBuilder<V>> {
         
         public StrBuilder( IValueCodec<V> codec ) { super( StringKey.PARSER, codec ); }

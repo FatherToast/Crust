@@ -1,6 +1,6 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.KeyUsage;
 import fathertoast.crust.api.util.BlockStatePropertyMap;
 import net.minecraft.resources.ResourceKey;
@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -20,7 +19,6 @@ import java.util.Iterator;
  * A key for fuzzy collections that test against or contain block states. Very similar to a Block registry
  * object key, but allows specifying block state properties in addition to (or instead of) registered blocks.
  */
-@ApiStatus.Experimental
 public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey<BlockState> {
     
     /** The parser for block state keys. */
@@ -138,7 +136,7 @@ public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey
     
     /** @return A new key, parsed from a key string, or null if the key was invalid. */
     @Nullable
-    public static BlockStateKey<?> parse( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
+    public static BlockStateKey<?> parse( @Nullable IConfigField<?> field, String line, String key, boolean blacklist ) {
         String[] keyAndProps = BlockStatePropertyMap.split( key );
         BlockStatePropertyMap properties = BlockStatePropertyMap.of( keyAndProps[1] );
         if( keyAndProps[0].isEmpty() ) return new PropsOnly( blacklist, properties );
@@ -181,7 +179,6 @@ public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey
     /**
      * A key that matches any block with appropriate block state properties.
      */
-    @ApiStatus.Experimental
     public static class PropsOnly extends BlockStateKey<RegObjKey<Block>> {
         
         protected PropsOnly( boolean blacklist, BlockStatePropertyMap p ) { super( null, blacklist, p ); }
@@ -200,7 +197,6 @@ public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey
      * A key that matches one specific block with appropriate block state properties.
      * Also functions as a block state supplier.
      */
-    @ApiStatus.Experimental
     public static class Basic extends BlockStateKey<RegObjKey.Basic<Block>> implements IReverseKey<BlockState> {
         
         protected Basic( RegObjKey.Basic<Block> k, BlockStatePropertyMap p ) { super( k, k.isBlacklist(), p ); }
@@ -219,7 +215,6 @@ public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey
      * A key that matches all blocks in a namespace that have a path starting with a specific string
      * with appropriate block state properties.
      */
-    @ApiStatus.Experimental
     public static class Wildcard extends BlockStateKey<RegObjKey.Wildcard<Block>> {
         
         protected Wildcard( RegObjKey.Wildcard<Block> k, BlockStatePropertyMap p ) { super( k, k.isBlacklist(), p ); }
@@ -229,7 +224,6 @@ public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey
     /**
      * A key that matches all blocks contained by a specific tag with appropriate block state properties.
      */
-    @ApiStatus.Experimental
     public static class Tag extends BlockStateKey<RegObjKey.Tag<Block>> implements IMultiKey<BlockState> {
         
         protected Tag( RegObjKey.Tag<Block> k, BlockStatePropertyMap p ) { super( k, k.isBlacklist(), p ); }
@@ -253,7 +247,7 @@ public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey
     
     // ---- Parser Implementation ---- //
     
-    private record Parser() implements IFuzzyKeyParser<BlockState> {
+    private record Parser( ) implements IFuzzyKeyParser<BlockState> {
         
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
@@ -277,7 +271,7 @@ public abstract class BlockStateKey<K extends RegObjKey<Block>> extends FuzzyKey
          */
         @Override
         @Nullable
-        public FuzzyKey<BlockState> parseKeyString( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
+        public FuzzyKey<BlockState> parseKeyString( @Nullable IConfigField<?> field, String line, String key, boolean blacklist ) {
             return parse( field, line, key, blacklist );
         }
     }

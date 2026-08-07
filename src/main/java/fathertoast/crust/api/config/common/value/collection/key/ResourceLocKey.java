@@ -1,9 +1,8 @@
 package fathertoast.crust.api.config.common.value.collection.key;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.KeyUsage;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -15,7 +14,6 @@ import java.util.Objects;
  * and can therefore be useful when dealing with resource locations that do not necessarily
  * point to registry objects, such as loot table IDs.
  */
-@ApiStatus.Experimental
 public class ResourceLocKey extends FuzzyKey<ResourceLocation> {
     
     /** The parser for block state keys. */
@@ -46,7 +44,7 @@ public class ResourceLocKey extends FuzzyKey<ResourceLocation> {
     
     /** @return A new key, parsed from a key string, or null if the key was invalid. */
     @Nullable
-    public static ResourceLocKey parse( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
+    public static ResourceLocKey parse( @Nullable IConfigField<?> field, String line, String key, boolean blacklist ) {
         ResourceLocation rl = ResourceLocation.tryParse( key );
         return rl == null ? null : of( rl, blacklist );
     }
@@ -76,7 +74,6 @@ public class ResourceLocKey extends FuzzyKey<ResourceLocation> {
     /**
      * A key that matches a resource location.
      */
-    @ApiStatus.Experimental
     public static class Basic extends ResourceLocKey implements IReverseKey<ResourceLocation> {
         
         protected Basic( ResourceLocation resLoc, boolean blacklist ) {
@@ -94,7 +91,7 @@ public class ResourceLocKey extends FuzzyKey<ResourceLocation> {
     
     // ---- Parser Implementation ---- //
     
-    private record Parser() implements IFuzzyKeyParser<ResourceLocation> {
+    private record Parser( ) implements IFuzzyKeyParser<ResourceLocation> {
         
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
@@ -117,7 +114,7 @@ public class ResourceLocKey extends FuzzyKey<ResourceLocation> {
          */
         @Override
         @Nullable
-        public FuzzyKey<ResourceLocation> parseKeyString( @Nullable AbstractConfigField field, String line, String key, boolean blacklist ) {
+        public FuzzyKey<ResourceLocation> parseKeyString( @Nullable IConfigField<?> field, String line, String key, boolean blacklist ) {
             return parse( field, line, key, blacklist );
         }
     }

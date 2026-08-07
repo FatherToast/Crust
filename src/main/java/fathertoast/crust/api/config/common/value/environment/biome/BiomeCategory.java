@@ -13,7 +13,7 @@ import net.minecraftforge.common.Tags;
  * The declared names should match the string passed into vanilla enums' constructors so that both enums serialize identically.
  */
 @SuppressWarnings( "ConstantConditions" )
-@Deprecated // TODO Remove when updating beyond MC 1.20
+@Deprecated( forRemoval = true ) // TODO Remove when updating beyond MC 1.20
 public enum BiomeCategory {
     
     NONE( null ),

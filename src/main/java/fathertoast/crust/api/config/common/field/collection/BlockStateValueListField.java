@@ -3,7 +3,6 @@ package fathertoast.crust.api.config.common.field.collection;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.BlockStateValueList;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import java.util.List;
  * @param <V> The value type.
  * @see fathertoast.crust.api.config.common.value.collection.value.IValueCodec
  */
-@ApiStatus.Experimental
 public class BlockStateValueListField<V> extends FuzzyValueListField<BlockState, V, BlockStateValueList<V>> {
     
     /**

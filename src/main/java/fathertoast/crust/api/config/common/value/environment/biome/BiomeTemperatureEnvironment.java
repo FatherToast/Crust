@@ -1,25 +1,24 @@
 package fathertoast.crust.api.config.common.value.environment.biome;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
+import fathertoast.crust.api.config.common.field.IConfigField;
+import fathertoast.crust.api.config.common.value.collection.value.ComparatorValue;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentContext;
 
 import javax.annotation.Nullable;
 
 public class BiomeTemperatureEnvironment extends TemperatureEnvironment {
     
-    @SuppressWarnings( "unused" )
     public BiomeTemperatureEnvironment( boolean freezing ) { super( freezing ); }
     
-    @SuppressWarnings( "unused" )
-    public BiomeTemperatureEnvironment( ComparisonOperator op, float value ) { super( op, value ); }
+    public BiomeTemperatureEnvironment( ComparatorValue op, float value ) { super( op, value ); }
     
-    public BiomeTemperatureEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
+    public BiomeTemperatureEnvironment( @Nullable IConfigField<?> field, String value ) { super( field, value ); }
     
-    /** @return Returns the actual value to compare, or Float.NaN if there isn't enough information. */
+    /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Override
-    public float getActual( Level level, @Nullable BlockPos pos ) {
-        return pos == null ? Float.NaN : level.getBiome( pos ).value().getBaseTemperature();
+    @Nullable
+    protected Float getActual( EnvironmentContext context ) {
+        return context.getBlockPos() == null ? null : context.getLevel()
+                .getBiome( context.getBlockPos() ).value().getBaseTemperature();
     }
 }

@@ -8,6 +8,7 @@ import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.collection.key.BlockStateKey;
 import fathertoast.crust.api.util.BlockStatePropertyMap;
 import fathertoast.crust.api.util.OnClient;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -15,7 +16,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -25,48 +25,42 @@ import java.util.Objects;
  * Represents a config field containing a block state value
  * wrapped in a {@link BlockStateKey.Basic} key.
  */
-@ApiStatus.Experimental
-public class BlockStateField extends GenericField<BlockStateKey.Basic> {
+@SuppressWarnings( "unused" )
+public class BlockStateField extends AbstractConfigField<BlockStateKey.Basic> {
     
-    /** @return A non-blacklist, basic block state key of the given block ID and properties. */
-    public static BlockStateKey.Basic of( ResourceLocation blockResLoc, BlockStatePropertyMap blockStateProps ) {
-        return BlockStateKey.of( blockResLoc, blockStateProps, false );
+    /** Creates a new field using a string-described block state. */
+    public BlockStateField( String key, BlockStateKey.Basic defaultValue, @Nullable String... description ) {
+        super( key, defaultValue, description );
+        
+        // Sanity checks
+        if( defaultValue.isBlacklist() ) {
+            throw new IllegalArgumentException( "Block state field cannot use a blacklist key! Invalid field: " + getKey() );
+        }
     }
-    
-    /** @return A non-blacklist, basic block state key of the given block state. */
-    public static BlockStateKey.Basic of( BlockState state ) {
-        return BlockStateKey.of( state, false );
-    }
-    
-    /**
-     * @return A non-blacklist, basic block state key containing
-     * {@link Blocks#AIR}'s default block state as its value.
-     */
-    public static BlockStateKey.Basic airKey() {
-        return of( Blocks.AIR.defaultBlockState() );
-    }
-    
     
     /** Creates a new field using a string-described block state. */
     public BlockStateField( String key, String defaultValue, @Nullable String... description ) {
-        super( key, BlockStateKey.of( defaultValue, false ), description );
-        final String[] split = BlockStatePropertyMap.split( defaultValue );
+        this( key, BlockStateKey.of( defaultValue, false ), description );
     }
     
     /** Creates a new field. */
-    public BlockStateField( String key, ResourceLocation defaultResLoc, BlockStatePropertyMap defaultProperties, @Nullable String... description ) {
-        super( key, BlockStateKey.of( defaultResLoc, defaultProperties, false ), description );
+    public BlockStateField( String key, String defaultBlock, BlockStatePropertyMap defaultProperties, @Nullable String... description ) {
+        this( key, BlockStateKey.of( defaultBlock, defaultProperties, false ), description );
+    }
+    
+    /** Creates a new field. */
+    public BlockStateField( String key, ResourceLocation defaultBlock, BlockStatePropertyMap defaultProperties, @Nullable String... description ) {
+        this( key, BlockStateKey.of( defaultBlock, defaultProperties, false ), description );
     }
     
     /** Creates a new field. */
     public BlockStateField( String key, RegistryObject<? extends Block> defaultBlock, BlockStatePropertyMap defaultProperties, @Nullable String... description ) {
-        // noinspection DataFlowIssue
-        this( key, defaultBlock.getId(), defaultProperties, description );
+        this( key, BlockStateKey.of( defaultBlock, defaultProperties, false ), description );
     }
     
     /** Creates a new field. */
     public BlockStateField( String key, ResourceKey<? extends Block> defaultBlock, BlockStatePropertyMap defaultProperties, @Nullable String... description ) {
-        this( key, defaultBlock.location(), defaultProperties, description );
+        this( key, BlockStateKey.of( defaultBlock, defaultProperties, false ), description );
     }
     
     /**
@@ -74,7 +68,7 @@ public class BlockStateField extends GenericField<BlockStateKey.Basic> {
      * blocks unless you hold off config initialization until after the blocks registry is populated.
      */
     public BlockStateField( String key, Block defaultBlock, BlockStatePropertyMap defaultProperties, @Nullable String... description ) {
-        this( key, Objects.requireNonNull( ForgeRegistries.BLOCKS.getKey( defaultBlock ) ), defaultProperties, description );
+        this( key, BlockStateKey.of( defaultBlock, defaultProperties, false ), description );
     }
     
     /**
@@ -82,72 +76,63 @@ public class BlockStateField extends GenericField<BlockStateKey.Basic> {
      * unless you hold off config initialization until after the blocks registry is populated.
      */
     public BlockStateField( String key, BlockState defaultValue, @Nullable String... description ) {
-        super( key, of( defaultValue ), description );
+        this( key, BlockStateKey.of( defaultValue, false ), description );
+    }
+    
+    /** @return This config field's block state value, or air if it does not exist. */
+    public BlockState getBlockState() {
+        return Objects.requireNonNullElse( get().asValue(), Blocks.AIR.defaultBlockState() );
     }
     
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoFormat( "Block State", valueDefault,
+        comment.add( TomlHelper.fieldInfoFormat( "Block State", getDefaultValue(),
                 "\"namespace:path[property1=value1,property2=value2,...]\"" ) );
     }
     
     /**
-     * Loads this field's value from the given raw toml value. If anything goes wrong, correct it at the lowest level possible.
+     * @return Reads a value from the given value or raw toml. If anything goes wrong, correct it at the lowest level
+     * possible.
      * <p>
-     * For example, a missing value should be set to the default, while an out-of-range value should be adjusted to the
-     * nearest in-range value.
+     * For example, a missing or unreadable value should return the default value, while an out-of-range value should be
+     * adjusted to the nearest in-range value. If any value correction is applied, print a warning to explain the change.
      */
     @Override
-    public void load( @Nullable Object raw ) {
-        if( raw == null ) {
-            value = getDefaultValue();
-            return;
-        }
-        final String[] split = BlockStatePropertyMap.split( raw.toString() );
-        final ResourceLocation blockId = ResourceLocation.tryParse( split[0] );
-        
-        if( blockId == null ) {
-            // Invalid resource location
+    public BlockStateKey.Basic parse( Object raw ) {
+        String s = raw.toString();
+        BlockStateKey<?> value = BlockStateKey.parse( null, // Suppresses parser's warnings; we'll do our own
+                s, s, false );
+        if( !(value instanceof BlockStateKey.Basic key) ) {
             ConfigUtil.warnFor( this );
             ConfigUtil.LOG.warn( "Invalid block state! Must follow the pattern \"namespace:path[property1=value1,property2=value2,...]\". Falling back to default ({}). Invalid value: {}",
                     getDefaultValue(), raw );
-            value = getDefaultValue();
-            return;
+            return getDefaultValue();
         }
-        value = of( blockId, BlockStatePropertyMap.of( split[1] ) );
+        return key;
     }
     
-    /** @return Returns the config field's value. */
+    /** Writes a field value to the byte buffer; should be the inverse of {@link #deserialize}. */
     @Override
-    public BlockStateKey.Basic get() {
-        BlockStateKey.Basic key = getValue();
-        return key == null ? airKey() : key;
-    }
+    public void serialize( BlockStateKey.Basic value, FriendlyByteBuf buffer ) { buffer.writeUtf( value.toTomlString() ); }
     
-    /** @return The value that should be assigned to this field in the config file. */
+    /** Reads a new field value from the byte buffer; should be the inverse of {@link #serialize}. */
     @Override
-    @Nullable
-    public BlockStateKey.Basic getValue() {
-        if( value == null ) {
-            return value = getDefaultValue();
-        }
-        return value;
-    }
+    public BlockStateKey.Basic deserialize( FriendlyByteBuf buffer ) { return parse( buffer.readUtf() ); }
     
-    /** @return This config field's block state value, if it exists. */
-    @Nullable
-    private BlockState getBlockState() {
-        return get().asValue();
-    }
+    // Could do this for serialization to reduce data transfer, but it does force all state props to be explicitly defined
+    //buffer.writeId( Block.BLOCK_STATE_REGISTRY, value.getBlockState() );
+    //BlockStateKey.of( buffer.readById( Block.BLOCK_STATE_REGISTRY ), false );
     
     /** @return This field's gui component provider. */
     @Override
     @OnClient
-    public IConfigFieldWidgetProvider getWidgetProvider() {
-        return new EntryViewWidgetProvider.Simple<>( this::getBlockState, EntryViewRendererRegistry.getRendererOrThrow( EntryViewRendererRegistry.BLOCK_STATE ), ( s ) -> {
-            ResourceLocation id = ResourceLocation.tryParse( BlockStatePropertyMap.split( s )[0] );
-            return id != null && ForgeRegistries.BLOCKS.containsKey( id );
-        } );
+    public IConfigFieldWidgetProvider<BlockStateKey.Basic> getWidgetProvider() {
+        return new EntryViewWidgetProvider.SimpleMapped<>( BlockStateKey.Basic::asValue,
+                EntryViewRendererRegistry.getRendererOrThrow( EntryViewRendererRegistry.BLOCK_STATE ),
+                ( string ) -> {
+                    ResourceLocation id = ResourceLocation.tryParse( BlockStatePropertyMap.split( string )[0] );
+                    return id != null && ForgeRegistries.BLOCKS.containsKey( id );
+                } );
     }
 }

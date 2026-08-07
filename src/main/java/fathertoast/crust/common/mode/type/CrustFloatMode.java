@@ -3,7 +3,7 @@ package fathertoast.crust.common.mode.type;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import fathertoast.crust.common.command.CommandUtil;
+import fathertoast.crust.api.lib.CrustCmdHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,7 +32,7 @@ public class CrustFloatMode extends CrustMode<Float> {
     /** @return The argument for this mode's value when referenced by the crustmode command. */
     @Override
     public RequiredArgumentBuilder<CommandSourceStack, Float> commandArgument( String arg ) {
-        return CommandUtil.argument( arg, FloatArgumentType.floatArg() );
+        return CrustCmdHelper.argument( arg, FloatArgumentType.floatArg() );
     }
     
     /**

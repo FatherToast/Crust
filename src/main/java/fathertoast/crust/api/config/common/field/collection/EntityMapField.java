@@ -4,7 +4,6 @@ import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.EntityMap;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import java.util.List;
  * @param <V> The value type.
  * @see fathertoast.crust.api.config.common.value.collection.value.IValueCodec
  */
-@ApiStatus.Experimental
 public class EntityMapField<V> extends FuzzyMapField<Entity, V, EntityMap<V>> {
     
     /**

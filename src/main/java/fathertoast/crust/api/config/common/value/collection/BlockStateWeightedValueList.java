@@ -10,7 +10,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 
@@ -23,7 +22,7 @@ import java.util.Collection;
  * @see fathertoast.crust.api.config.common.field.collection.BlockStateWeightedValueListField
  * @see BlockStateWeightedList BlockStateWeightedList - A similar collection that does not allow values
  */
-@ApiStatus.Experimental
+@SuppressWarnings( "unused" )
 public class BlockStateWeightedValueList<V> extends FuzzyWeightedValueList<BlockState, V> {
     
     /** Constructs an empty weighted value list. Use this if you want to {@link #load} a weighted value list from file/NBT. */
@@ -54,7 +53,6 @@ public class BlockStateWeightedValueList<V> extends FuzzyWeightedValueList<Block
     // ---- Builder Implementation ---- //
     
     /** Builder to make constructing registry weighted value lists smoother. */
-    @ApiStatus.Experimental
     public static class Builder<V, B extends Builder<V, B>> extends AbstractBuilder<BlockState, V, BlockStateWeightedValueList<V>, B> {
         
         public Builder( IValueCodec<V> codec ) { super( codec ); }

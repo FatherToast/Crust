@@ -1,15 +1,47 @@
 package fathertoast.crust.common.network.work;
 
+import fathertoast.crust.api.config.common.ConfigUtil;
+import fathertoast.crust.api.lib.CrustCmdHelper;
 import fathertoast.crust.common.block.entity.FeatureGeneratorBlockEntity;
+import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.core.Crust;
+import fathertoast.crust.common.network.CrustPacketHandler;
+import fathertoast.crust.common.network.message.serverbound.C2SConfigChangeRequest;
+import fathertoast.crust.common.network.message.serverbound.C2SConfigDataRequest;
 import fathertoast.crust.common.network.message.serverbound.C2SFeatureGeneratorData;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.server.ServerLifecycleHooks;
+import org.jetbrains.annotations.Nullable;
 
 
 public final class CrustServerWork {
+    
+    /** Sent by clients that would like to view one of the server's local config files in the config editor screen. */
+    public static void handleConfigDataRequest( C2SConfigDataRequest message, @Nullable ServerPlayer sender ) {
+        if( sender != null && CrustCmdHelper.hasPermissions( sender, CrustConfig.UTILITIES.CONFIGS.viewConfigsOpLevel.get() ) ) {
+            CrustPacketHandler.sendConfigData( message.spec(), sender );
+        }
+    }
+    
+    /** Sent by clients that would like to apply changes to one of the server's local config files. */
+    public static void handleConfigChangeRequest( C2SConfigChangeRequest message, @Nullable ServerPlayer sender ) {
+        if( sender == null ) return;
+        if( CrustCmdHelper.hasPermissions( sender, CrustCmdHelper.PERMISSION_SERVER_OP ) ) {
+            // Accept the config change
+            message.apply();
+        }
+        else {
+            // Illegal operation; player would need to have the config re-synced, but instead we kick them
+            ConfigUtil.LOG.warn( "Player attempted to edit server's configs without permission: name={}, uuid={}",
+                    sender.getGameProfile().getName(), sender.getStringUUID() );
+            sender.connection.disconnect( Component.translatable(
+                    "multiplayer.disconnect.crust.config_edit_not_allowed" ) );
+        }
+    }
     
     public static void handleFeatureGeneratorData( C2SFeatureGeneratorData message ) {
         ServerLevel level = ServerLifecycleHooks.getCurrentServer().getLevel( message.POS.dimension() );

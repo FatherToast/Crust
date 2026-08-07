@@ -1,11 +1,10 @@
 package fathertoast.crust.api.config.common.value.collection.value;
 
 import fathertoast.crust.api.config.common.ConfigUtil;
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
 import fathertoast.crust.api.config.common.field.DoubleField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.field.IntField;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Array;
@@ -19,7 +18,6 @@ import java.lang.reflect.Array;
  * @param <V> The array type.
  */
 @SuppressWarnings( "ClassCanBeRecord" )
-@ApiStatus.Experimental
 public class ArrayValueCodec<V> implements IValueCodec<V[]> {
     
     
@@ -73,7 +71,7 @@ public class ArrayValueCodec<V> implements IValueCodec<V[]> {
      * @return A new value based on the value string. If the parse fails, returns a non-null default value.
      */
     @Override
-    public V[] parseTomlString( @Nullable AbstractConfigField field, String line, @Nullable String value ) {
+    public V[] parseTomlString( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
         String[] args = IValueCodec.getArgs( value );
         int actualArgs = args.length;
         

@@ -34,7 +34,7 @@ public class ExtraInvButtonsCrustConfig extends AbstractConfigFile {
      * @param cfgName    Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
      */
     public ExtraInvButtonsCrustConfig( ConfigManager cfgManager, String cfgName ) {
-        super( cfgManager, cfgName,
+        super( cfgManager, cfgName, true,
                 "Options to modify the extra inventory buttons displayed. Extra inventory buttons are essentially " +
                         "macros that send commands for you. You still need adequate permission to run the commands.",
                 "In general, you must close and reopen your inventory to see changes made to this config." );

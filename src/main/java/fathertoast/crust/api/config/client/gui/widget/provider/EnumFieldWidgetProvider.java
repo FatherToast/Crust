@@ -1,7 +1,8 @@
 package fathertoast.crust.api.config.client.gui.widget.provider;
 
-import fathertoast.crust.api.config.client.gui.widget.CrustConfigFieldList;
-import fathertoast.crust.api.config.client.gui.widget.field.PopupListWidget;
+import fathertoast.crust.api.config.client.gui.widget.entry.ConfigFieldGuiEntry;
+import fathertoast.crust.api.config.client.gui.widget.field.list.PopupListEntry;
+import fathertoast.crust.api.config.client.gui.widget.field.list.PopupListWidget;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.EnumField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
@@ -19,7 +20,7 @@ import java.util.function.Supplier;
  * Displays a button that opens a dropdown menu for an enum value.
  */
 @SuppressWarnings( "ClassCanBeRecord" )
-public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldWidgetProvider {
+public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldWidgetProvider<T> {
     
     /** The providing field. */
     protected final EnumField<T> FIELD;
@@ -38,17 +39,17 @@ public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldW
      * @param displayValue The current raw value to display in the GUI.
      */
     @Override
-    public void apply( List<AbstractWidget> components, CrustConfigFieldList.FieldEntry listEntry, Object displayValue ) {
+    public void apply( List<AbstractWidget> components, ConfigFieldGuiEntry<T> listEntry, T displayValue ) {
         Button dropdownButton = new Button( 0, 0, VALUE_WIDTH, VALUE_HEIGHT,
-                rawToText( displayValue ), ( button ) -> openDropdownMenu( button, listEntry, this ), Supplier::get );
-        
+                toText( displayValue ), button -> openDropdownMenu( button, listEntry, this ), Supplier::get );
+        dropdownButton.active = listEntry.isEditable();
         components.add( dropdownButton );
     }
     
     /** Called when the button is pressed to open a dropdown menu popup. */
-    protected void openDropdownMenu( Button openingButton, CrustConfigFieldList.FieldEntry listEntry, EnumFieldWidgetProvider<T> provider ) {
+    protected void openDropdownMenu( Button openingButton, ConfigFieldGuiEntry<T> listEntry, EnumFieldWidgetProvider<T> provider ) {
         T[] validValues = provider.FIELD.validValues();
-        int screenHeight = listEntry.PARENT.getHeight();
+        int screenHeight = listEntry.getScreenHeight();
         int rowHeight = 20 + PopupListWidget.ENTRY_PADDING;
         int y;
         int height = validValues.length * rowHeight + PopupListWidget.ENTRY_PADDING;
@@ -77,22 +78,22 @@ public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldW
             y = screenHeight - height;
         }
         
-        PopupListWidget<PopupListWidget.WidgetListEntry> dropdownMenu = new PopupListWidget<>( openingButton.getX() - 2, y,
+        PopupListWidget<PopupListEntry> dropdownMenu = new PopupListWidget<>( openingButton.getX() - 2, y,
                 openingButton.getWidth() + 4 + (hasScrollbar ? PopupListWidget.SCROLLBAR_WIDTH + 2 : 0),
                 height, rowHeight, Component.literal( provider.FIELD.getKey() ) );
-        PopupListWidget.WidgetListEntry selectedEntry = null;
+        PopupListEntry selectedEntry = null;
         for( T value : validValues ) {
             boolean isSelected = TomlHelper.equals( value, listEntry.getValue() );
             Button selectButton = new Button( 0, 0,
                     openingButton.getWidth(), rowHeight - PopupListWidget.ENTRY_PADDING,
                     toText( value, isSelected ? ChatFormatting.GREEN : null ),
-                    ( button ) -> {
+                    button -> {
                         openingButton.setMessage( toText( value ) );
                         listEntry.updateValue( value );
                         listEntry.setPopupWidget( null );
                     }, Supplier::get );
             
-            PopupListWidget.WidgetListEntry entry = new PopupListWidget.WidgetListEntry( selectButton );
+            PopupListEntry entry = new PopupListEntry( selectButton );
             dropdownMenu.addEntry( entry );
             if( isSelected ) selectedEntry = entry;
         }
@@ -107,29 +108,11 @@ public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldW
     }
     
     /** Converts the enum into its display text component. Assumes the enum's declared name is in UPPER_UNDERSCORE format. */
-    protected Component toText( T value ) {
-        return Component.literal( toReadable( value ) );
-    }
+    protected Component toText( T value ) { return Component.literal( toReadable( value ) ); }
     
     /** Converts the enum into its display text component. Assumes the enum's declared name is in UPPER_UNDERSCORE format. */
     protected Component toText( T value, @Nullable ChatFormatting format ) {
         if( format == null ) return toText( value );
         return Component.literal( toReadable( value ) ).withStyle( format );
-    }
-    
-    /** Converts the unprocessed value into its display text component. */
-    protected Component rawToText( Object value ) {
-        try {
-            //noinspection unchecked
-            return toText( (T) value );
-        }
-        catch( ClassCastException ex ) {
-            // Not directly assignable, try parsing
-        }
-        if( value instanceof String ) {
-            return Component.literal( ConfigUtil.properCase( ((String) value)
-                    .toLowerCase( Locale.ROOT ).replace( '_', ' ' ) ) );
-        }
-        return Component.empty();
     }
 }

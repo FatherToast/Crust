@@ -12,13 +12,11 @@ import java.util.function.Predicate;
  * {@link fathertoast.crust.api.config.client.gui.screen.EditStringListScreen} and
  * {@link fathertoast.crust.api.config.client.gui.widget.provider.StringListFieldWidgetProvider}
  */
-public interface IStringListScreenEditable {
-    
-    /** Converts the displayable string list to a field value. */
-    Object stringListToValue( List<String> value );
+@Deprecated( forRemoval = true )
+public interface IStringListScreenEditable<T> {
     
     /** Converts the unprocessed value into its displayable string list. */
-    default List<String> rawToStringList( Object value ) {
+    default List<String> getAsStringList( T value ) {
         try {
             //noinspection unchecked
             return (List<String>) value;

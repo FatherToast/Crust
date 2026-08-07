@@ -1,7 +1,7 @@
 package fathertoast.crust.api.config.client.gui.widget.field.searchbar;
 
 import fathertoast.crust.api.config.client.gui.widget.SearchableSelectionList;
-import fathertoast.crust.client.ClientRegister;
+import fathertoast.crust.api.lib.CrustMath;
 import net.minecraft.client.gui.GuiGraphics;
 
 import javax.annotation.Nullable;
@@ -35,23 +35,19 @@ public interface ISearchable {
      *
      * @param graphics  The GuiGraphics instance to make draw calls to.
      * @param isFocused True if this searchable is the currently focused entry in the underlying searchable list.
-     * @param x         The x-position to draw the highlight at.
-     * @param y         The y-position to draw the highlight at.
-     * @param width     The width of the highlight rectangle to draw.
-     * @param height    The height of the highlight rectangle to draw.
      */
-    static void drawDefaultHighlight( GuiGraphics graphics, boolean isFocused, int x, int y, int width, int height ) {
+    static void drawDefaultHighlight( GuiGraphics graphics, boolean isFocused, int x1, int y1, int x2, int y2 ) {
         if( isFocused ) {
-            int color = ClientRegister.CONFIG_EDITOR.SEARCHBAR.highlightColor.get();
+            int color = Searchbar.highlightColor.get();
             
-            if( (color >>> 24) == 0 ) {
-                // Force the color to be solid if it is fully transparent.
-                color |= 0xFF000000;
+            // Force the color to be solid if it is fully transparent.
+            if( CrustMath.getAlphaBits( color ) == 0 ) {
+                color = CrustMath.bitsToARGB( 0xFF, color );
             }
-            graphics.fill( x, y, width, height, color );
+            graphics.fill( x1, y1, x2, y2, color );
         }
         else {
-            graphics.fillGradient( x, y, width, height, 0x40_878787, 0x60_878787 );
+            graphics.fillGradient( x1, y1, x2, y2, 0x40_878787, 0x60_878787 );
         }
     }
 }

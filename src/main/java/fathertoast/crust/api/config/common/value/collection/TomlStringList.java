@@ -1,11 +1,11 @@
 package fathertoast.crust.api.config.common.value.collection;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.ITomlStringValue;
 import fathertoast.crust.api.lib.NBTHelper;
 import net.minecraft.nbt.CompoundTag;
-import org.jetbrains.annotations.ApiStatus;
+import net.minecraft.network.FriendlyByteBuf;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -21,7 +21,6 @@ import java.util.stream.Stream;
  * Extending classes should typically provide a no-args constructor to support load operations,
  * as well as a var-args constructor and/or a builder to simplify default value creation.
  */
-@ApiStatus.Experimental
 public abstract class TomlStringList<T extends ITomlStringValue> implements IStringArrayValue, Iterable<T> {
     
     private List<T> underlyingList;
@@ -41,7 +40,7 @@ public abstract class TomlStringList<T extends ITomlStringValue> implements IStr
      * Loads this value from the given raw TOML value. If anything goes wrong, correct it at the lowest level possible.
      * If the field is null, error reporting is suppressed.
      */
-    public void load( @Nullable AbstractConfigField field, Object raw ) {
+    public void load( @Nullable IConfigField<?> field, Object raw ) {
         load( field, TomlHelper.parseStringList( raw ) );
     }
     
@@ -53,9 +52,9 @@ public abstract class TomlStringList<T extends ITomlStringValue> implements IStr
      * @param value List value to load from. This generally comes from a TOML string array value
      *              (config loading) or a string list tag (NBT loading).
      */
-    public abstract void load( @Nullable AbstractConfigField field, List<String> value );
+    public abstract void load( @Nullable IConfigField<?> field, List<String> value );
     
-    /** Call this to set the list value during {@link #load(AbstractConfigField, List)}. */
+    /** Call this to set the list value during {@link #load(IConfigField, List)}. */
     protected void setList( Collection<? extends T> newList ) { underlyingList = List.copyOf( newList ); }
     
     
@@ -64,6 +63,17 @@ public abstract class TomlStringList<T extends ITomlStringValue> implements IStr
     
     /** Convenience method to write this value to NBT. */
     public void write( CompoundTag tag, String name ) { NBTHelper.putStringList( tag, name, toStringList() ); }
+    
+    
+    /** Convenience method to write this value to byte buffer. */
+    public void serialize( FriendlyByteBuf buffer ) {
+        buffer.writeCollection( toStringList(), FriendlyByteBuf::writeUtf );
+    }
+    
+    /** Convenience method to load this value from byte buffer. */
+    public void deserialize( FriendlyByteBuf buffer ) {
+        load( null, buffer.readList( FriendlyByteBuf::readUtf ) );
+    }
     
     
     /** @return An unmodifiable list of objects that represent this object's value when written to file. */

@@ -11,7 +11,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 
@@ -28,7 +27,7 @@ import java.util.Collection;
  * @see fathertoast.crust.api.config.common.field.collection.RegistryWeightedValueListField
  * @see RegistryWeightedList RegistryWeightedList - A similar collection that does not allow values
  */
-@ApiStatus.Experimental
+@SuppressWarnings( "unused" )
 public class RegistryWeightedValueList<T, V> extends FuzzyWeightedValueList<T, V> {
     /** The target registry. */
     private final IRegWrapper<T> registry;
@@ -78,7 +77,6 @@ public class RegistryWeightedValueList<T, V> extends FuzzyWeightedValueList<T, V
     // ---- Builder Implementation ---- //
     
     /** Builder to make constructing registry weighted value lists smoother. */
-    @ApiStatus.Experimental
     public static class Builder<T, V, B extends Builder<T, V, B>> extends AbstractBuilder<T, V, RegistryWeightedValueList<T, V>, B> {
         
         public final IRegWrapper<T> registry;

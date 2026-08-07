@@ -1,31 +1,26 @@
 package fathertoast.crust.api.config.common.value.environment.time;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.value.environment.CompareFloatEnvironment;
-import fathertoast.crust.api.config.common.value.environment.ComparisonOperator;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.dimension.DimensionType;
+import fathertoast.crust.api.config.common.field.IConfigField;
+import fathertoast.crust.api.config.common.value.collection.value.ComparatorValue;
+import fathertoast.crust.api.config.common.value.collection.value.FloatValueCodec;
+import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentContext;
+import fathertoast.crust.api.config.common.value.environment.core.CompareFloatEnvironment;
 
 import javax.annotation.Nullable;
 
 public class MoonBrightnessEnvironment extends CompareFloatEnvironment {
     
-    public MoonBrightnessEnvironment( ComparisonOperator op, float value ) { super( op, value ); }
+    public MoonBrightnessEnvironment( ComparatorValue op, float value ) { super( op, value ); }
     
-    public MoonBrightnessEnvironment( AbstractConfigField field, String value ) { super( field, value ); }
+    public MoonBrightnessEnvironment( @Nullable IConfigField<?> field, String value ) { super( field, value ); }
     
-    /** @return The minimum value that can be given to the value. */
+    /** @return The value codec used. */
     @Override
-    protected float getMinValue() { return 0.0F; }
+    protected IValueCodec<Float> getValueCodec() { return FloatValueCodec.PERCENT; }
     
-    /** @return The maximum value that can be given to the value. */
+    /** @return Returns the actual value to compare, or null if there isn't enough information. */
     @Override
-    protected float getMaxValue() { return 1.0F; }
-    
-    /** @return Returns the actual value to compare, or Float.NaN if there isn't enough information. */
-    @Override
-    public float getActual( Level level, @Nullable BlockPos pos ) {
-        return pos == null ? Float.NaN : DimensionType.MOON_BRIGHTNESS_PER_PHASE[level.dimensionType().moonPhase( level.dayTime() )];
-    }
+    @Nullable
+    protected Float getActual( EnvironmentContext context ) { return context.getLevel().getMoonBrightness(); }
 }

@@ -17,7 +17,7 @@ public class TestConfigReadme extends AbstractConfigFile.Simple {
      * @param cfgName    Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
      */
     public TestConfigReadme( ConfigManager cfgManager, String cfgName ) {
-        super( cfgManager, cfgName,
+        super( cfgManager, cfgName, false,
                 "Contains detailed/verbose descriptions of every field type that provides it." );
         
         // Field descriptions

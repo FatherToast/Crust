@@ -1,6 +1,7 @@
 package fathertoast.crust.api.config.client.gui.widget.field;
 
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 /**
  * A helper class for handling the text string contained in a text box.
  */
+@ApiStatus.Experimental // Not implemented, might never be
 public class TextBoxContent {
     
     /** The parent text box. */

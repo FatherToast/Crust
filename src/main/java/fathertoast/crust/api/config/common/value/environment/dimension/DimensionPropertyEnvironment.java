@@ -1,23 +1,21 @@
 package fathertoast.crust.api.config.common.value.environment.dimension;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
-import fathertoast.crust.api.config.common.value.environment.EnumEnvironment;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
+import fathertoast.crust.api.config.common.field.IConfigField;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentContext;
+import fathertoast.crust.api.config.common.value.environment.core.PredicateEnumEnvironment;
 import net.minecraft.world.level.dimension.DimensionType;
 
 import javax.annotation.Nullable;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
-public class DimensionPropertyEnvironment extends EnumEnvironment<DimensionPropertyEnvironment.Value> {
-    
+public class DimensionPropertyEnvironment extends PredicateEnumEnvironment<DimensionPropertyEnvironment.Value> {
     /**
      * Represents all boolean values defined by dimension type, named to match data pack format.
      *
      * @see <a href="https://minecraft.fandom.com/wiki/Custom_dimension#Syntax">Data pack format (Minecraft Wiki)</a>
      */
     @SuppressWarnings( "SpellCheckingInspection" )
-    public enum Value {
+    public enum Value implements Predicate<EnvironmentContext> {
         ULTRAWARM( DimensionType::ultraWarm ),
         NATURAL( DimensionType::natural ),
         HAS_SKYLIGHT( DimensionType::hasSkyLight ),
@@ -28,18 +26,15 @@ public class DimensionPropertyEnvironment extends EnumEnvironment<DimensionPrope
         RESPAWN_ANCHOR_WORKS( DimensionType::respawnAnchorWorks ),
         HAS_RAIDS( DimensionType::hasRaids );
         
-        private final Function<DimensionType, Boolean> SUPPLIER;
+        private final Predicate<DimensionType> PREDICATE;
         
-        Value( Function<DimensionType, Boolean> supplier ) { SUPPLIER = supplier; }
+        Value( Predicate<DimensionType> supplier ) { PREDICATE = supplier; }
         
-        public boolean of( DimensionType dimType ) { return SUPPLIER.apply( dimType ); }
+        @Override // Predicate
+        public boolean test( EnvironmentContext context ) { return PREDICATE.test( context.getLevel().dimensionType() ); }
     }
     
     public DimensionPropertyEnvironment( Value value, boolean invert ) { super( value, invert ); }
     
-    public DimensionPropertyEnvironment( AbstractConfigField field, String value ) { super( field, value, Value.values() ); }
-    
-    /** @return Returns true if this environment matches the provided environment. */
-    @Override
-    public boolean matches( Level level, @Nullable BlockPos pos ) { return VALUE.of( level.dimensionType() ) != INVERT; }
+    public DimensionPropertyEnvironment( @Nullable IConfigField<?> field, String value ) { super( field, value, Value.values() ); }
 }

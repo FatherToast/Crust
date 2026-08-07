@@ -7,27 +7,22 @@ import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.lib.CrustMath;
 import fathertoast.crust.api.util.OnClient;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.RandomSource;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Supplier;
 
 /**
  * Represents a config field with a long value.
  */
-public class LongField extends AbstractConfigField implements Supplier<Long> {
+public class LongField extends AbstractConfigField<Long> {
     
-    /** The default field value. */
-    private final long valueDefault;
     /** The minimum field value. */
     private final long valueMin;
     /** The maximum field value. */
     private final long valueMax;
-    
-    /** The underlying field value. */
-    private long value;
     
     /** Creates a new field that accepts a common range of values. */
     public LongField( String key, long defaultValue, LongField.Range range, @Nullable String... description ) {
@@ -36,29 +31,24 @@ public class LongField extends AbstractConfigField implements Supplier<Long> {
     
     /** Creates a new field that accepts a specialized range of values. */
     public LongField( String key, long defaultValue, long min, long max, @Nullable String... description ) {
-        super( key, description );
-        valueDefault = defaultValue;
+        super( key, defaultValue, description );
         valueMin = min;
         valueMax = max;
         
         // Sanity checks
-        if( valueMin >= valueMax ) {
+        if( min >= max ) {
             throw new IllegalArgumentException( "Maximum value must be greater than the minimum! Invalid field: " + getKey() );
         }
-        if( valueDefault < valueMin || valueDefault > valueMax ) {
+        if( defaultValue < min || defaultValue > max ) {
             throw new IllegalArgumentException( "Default value is outside of allowed range! Invalid field: " + getKey() );
         }
     }
     
     /** @return Returns the config field's value. */
-    @Override
-    public Long get() { return value; }
-    
-    /** @return Returns the config field's value. */
-    public long getLong() { return value; }
+    public long getLong() { return get(); }
     
     /** @return Returns the config field's value cast down to a 32-bit integer. */
-    public int getInt() { return (int) value; }
+    public int getInt() { return (int) getLong(); }
     
     /** @return Treats the config field's value as a 1-in-X chance and returns the result of a single roll. */
     public boolean rollChance( Random random ) { return getLong() > 0 && random.nextLong( getLong() ) == 0; }
@@ -72,63 +62,58 @@ public class LongField extends AbstractConfigField implements Supplier<Long> {
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoRange( valueDefault, minValue(), maxValue() ) );
+        comment.add( TomlHelper.fieldInfoRange( getDefaultValue(), minValue(), maxValue() ) );
     }
     
     /**
-     * Loads this field's value from the given value or raw toml. If anything goes wrong, correct it at the lowest level possible.
+     * @return Reads a value from the given value or raw toml. If anything goes wrong, correct it at the lowest level
+     * possible.
      * <p>
-     * For example, a missing value should be set to the default, while an out-of-range value should be adjusted to the
-     * nearest in-range value and print a warning explaining the change.
+     * For example, a missing or unreadable value should return the default value, while an out-of-range value should be
+     * adjusted to the nearest in-range value. If any value correction is applied, print a warning to explain the change.
      */
     @Override
-    public void load( @Nullable Object raw ) {
+    public Long parse( Object raw ) {
         Number newValue = TomlHelper.readAsNumber( this, raw );
         if( newValue == null ) {
-            if( raw != null ) {
-                ConfigUtil.warnFor( this );
-                ConfigUtil.LOG.warn( "Invalid long! Falling back to default ({}). Invalid value: {}",
-                        valueDefault, raw );
-            }
-            value = valueDefault;
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Invalid long! Falling back to default ({}). Invalid value: {}",
+                    getDefaultValue(), raw );
+            return getDefaultValue();
         }
-        else {
-            long castValue = newValue.longValue();
-            if( castValue < valueMin ) {
-                ConfigUtil.warnFor( this );
-                ConfigUtil.LOG.warn( "Value is below the minimum! Adjusting from {} to {}.", raw, valueMin );
-                value = valueMin;
-            }
-            else if( castValue > valueMax ) {
-                ConfigUtil.warnFor( this );
-                ConfigUtil.LOG.warn( "Value is above the maximum! Adjusting from {} to {}.", raw, valueMax );
-                value = valueMax;
-            }
-            else {
-                if( (double) castValue != newValue.doubleValue() ) {
-                    ConfigUtil.warnFor( this );
-                    ConfigUtil.LOG.warn( "Floating point value given for integer! Truncating value {} to {}.",
-                            raw, castValue );
-                }
-                value = castValue;
-            }
+        long castValue = newValue.longValue();
+        if( castValue < minValue() ) {
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Value is below the minimum! Adjusting from {} to {}.", raw, minValue() );
+            return minValue();
         }
+        else if( castValue > maxValue() ) {
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Value is above the maximum! Adjusting from {} to {}.", raw, maxValue() );
+            return maxValue();
+        }
+        if( (double) castValue != newValue.doubleValue() ) {
+            ConfigUtil.warnFor( this );
+            ConfigUtil.LOG.warn( "Floating point value given for integer! Truncating value {} to {}.",
+                    raw, castValue );
+        }
+        return castValue;
     }
     
-    /** @return The value that should be assigned to this field in the config file. */
+    /** Writes a field value to the byte buffer; should be the inverse of {@link #deserialize}. */
     @Override
-    public Long getValue() { return value; }
+    public void serialize( Long value, FriendlyByteBuf buffer ) { buffer.writeLong( value ); }
     
-    /** @return The default value of this field. */
+    /** Reads a new field value from the byte buffer; should be the inverse of {@link #serialize}. */
     @Override
-    public Long getDefaultValue() { return valueDefault; }
+    public Long deserialize( FriendlyByteBuf buffer ) { return buffer.readLong(); }
     
     /** @return This field's gui component provider. */
     @Override
     @OnClient
-    public IConfigFieldWidgetProvider getWidgetProvider() {
-        return new NumberFieldWidgetProvider( this, Number::longValue,
-                ( number ) -> number.longValue() >= valueMin && number.longValue() <= valueMax );
+    public IConfigFieldWidgetProvider<Long> getWidgetProvider() {
+        return new NumberFieldWidgetProvider<>( this, Number::longValue,
+                number -> number.longValue() >= valueMin && number.longValue() <= valueMax );
     }
     
     
@@ -191,9 +176,9 @@ public class LongField extends AbstractConfigField implements Supplier<Long> {
         public RandomRange( LongField minimum, LongField maximum ) {
             MINIMUM = minimum;
             MAXIMUM = maximum;
-            if( minimum.valueDefault > maximum.valueDefault ) {
+            if( minimum.getDefaultValue() > maximum.getDefaultValue() ) {
                 throw new IllegalArgumentException( String.format( "Random range has inverted default values! (%s > %s) See: (%s, %s)",
-                        minimum.valueDefault, maximum.valueDefault, minimum.getKey(), maximum.getKey() ) );
+                        minimum.getDefaultValue(), maximum.getDefaultValue(), minimum.getKey(), maximum.getKey() ) );
             }
         }
         

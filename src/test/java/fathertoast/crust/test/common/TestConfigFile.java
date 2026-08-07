@@ -5,14 +5,13 @@ import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.config.common.field.collection.*;
-import fathertoast.crust.api.config.common.value.EnvironmentEntry;
-import fathertoast.crust.api.config.common.value.EnvironmentList;
 import fathertoast.crust.api.config.common.value.collection.*;
 import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
 import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
 import fathertoast.crust.api.config.common.value.collection.key.ResourceLocKey;
 import fathertoast.crust.api.config.common.value.collection.value.*;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentList;
 import fathertoast.crust.api.config.common.value.environment.biome.BiomeCategory;
 import fathertoast.crust.api.lib.CrustObjects;
 import fathertoast.crust.api.util.BlockStatePropertyMap;
@@ -41,7 +40,9 @@ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -57,7 +58,7 @@ public class TestConfigFile extends AbstractConfigFile {
      * @param cfgName    Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
      */
     TestConfigFile( ConfigManager cfgManager, String cfgName ) {
-        super( cfgManager, cfgName,
+        super( cfgManager, cfgName, false,
                 "Test config file." );
         
         GENERAL = new General( this );
@@ -67,6 +68,7 @@ public class TestConfigFile extends AbstractConfigFile {
     /**
      * Category for testing configs.
      */
+    @SuppressWarnings( "removal" )
     public static class General extends AbstractConfigCategory<TestConfigFile> {
         // Primitives
         public final BooleanField booleanField;
@@ -109,11 +111,10 @@ public class TestConfigFile extends AbstractConfigFile {
         public final RegistryWeightedValueListField<MobEffect, MobEffectStats> registryWeightedValueListField;
         public final NumberSetField<Integer> numberSetField;
         public final NumberListField<Double> numberListField;
-        // Misc collections
         public final AttributeOpListField attributeOpListField;
-        public final EnvironmentListField environmentListField;
+        // Misc collections
+        public final EnvironmentListField<Integer> environmentListField;
         public final StringListField stringListField;
-        public final PredicateStringListField predicateStringListField;
         // Misc tests
         public final BooleanField longCommentField;
         // Deprecated
@@ -272,7 +273,6 @@ public class TestConfigFile extends AbstractConfigFile {
                             .addWildcard( "minecraft", "oak" )
                             .buildWithDefault() ), General::testCallback ) ).field();
             
-            // noinspection deprecation
             blockStateMapField = SPEC.define( new InjectionWrapperField<>(
                     new BlockStateMapField<>( "block_state_map_field", new BlockStateMap.Builder<>( EnumValueCodec.of( BiomeCategory.NONE ) )
                             .put( Blocks.ANVIL, BiomeCategory.BADLANDS )
@@ -421,18 +421,14 @@ public class TestConfigFile extends AbstractConfigFile {
                     new NumberSetField<>( "number_set_field", NumberSet.intBuilder()
                             .addBlacklist( 4 )
                             .betweenInclusive( 0, 50 )
-                            .build() ), General::testCallback ).field() );
+                            .build() ), General::testCallback ) ).field();
             
             numberListField = SPEC.define( new InjectionWrapperField<>(
                     new NumberListField<>( "number_list_field", NumberList.doubleBuilder()
                             .add( 4.0 )
                             .add( 4.1 )
                             .add( 4.5 )
-                            .build() ), General::testCallback ).field() );
-            
-            // ---- Misc. collections ---- //
-            SPEC.callback( General::printLine );
-            SPEC.newLine();
+                            .build() ), General::testCallback ) ).field();
             
             AttributeOpList.Builder<?> attributes = new AttributeOpList.Builder<>();
             for( Attribute attribute : ForgeRegistries.ATTRIBUTES.getValues() )
@@ -440,20 +436,23 @@ public class TestConfigFile extends AbstractConfigFile {
             attributeOpListField = SPEC.define( new InjectionWrapperField<>(
                     new AttributeOpListField( "attribute_list", attributes.build() ), General::testCallback ) ).field();
             
+            // ---- Misc. collections ---- //
+            SPEC.callback( General::printLine );
+            SPEC.newLine();
+            
             environmentListField = SPEC.define( new InjectionWrapperField<>(
-                    new EnvironmentListField( "environment_list_field", new EnvironmentList(
-                            EnvironmentEntry.builder( SPEC, 0.0 ).belowSeaLevel().isRaining().build(),
-                            EnvironmentEntry.builder( SPEC, 1.0 ).aboveGoldLevel().isRaining().build(),
-                            EnvironmentEntry.builder( SPEC, 666.0 ).inBiome( BiomeTags.IS_FOREST ).build(),
-                            EnvironmentEntry.builder( SPEC, 20.0 ).afterMonthsOrApocalypseDifficulty( 1 ).build(),
-                            EnvironmentEntry.builder( SPEC, 6.9 ).inOverworld().build(),
-                            EnvironmentEntry.builder( SPEC, -1.0 ).build() )
-                            .setRange( DoubleField.Range.ANY ) ), General::testCallback ) ).field();
+                    new EnvironmentListField<>( "environment_list_field", EnvironmentList
+                            .builder( IntValueCodec.ANY )
+                            .entryBuilder( 0 ).belowSeaLevel().or().isRaining().build()
+                            .entryBuilder( 1 ).aboveGoldLevel().and().isRaining().or().aboveMountainLevel().build()
+                            .entryBuilder( 666 ).inBiome( BiomeTags.IS_FOREST ).and().isThundering().build()
+                            .entryBuilder( 20 ).afterMonthsOrApocalypseDifficulty( 1 ).build()
+                            .entryBuilder( 7 ).inOverworld().build()
+                            .entryBuilder( -1 ).build()
+                            .build() ), General::testCallback ) ).field();
             
             stringListField = SPEC.define( new InjectionWrapperField<>(
-                    new StringListField( "string_list", Arrays.asList( "test0", "test1", "test2" ) ), General::testCallback ) ).field();
-            predicateStringListField = SPEC.define( new InjectionWrapperField<>(
-                    new PredicateStringListField( "predicate_string_list", Arrays.asList( "test0", "test1", "test2", "test3" ),
+                    new StringListField( "string_list", Arrays.asList( "test0", "test1", "test2", "test3" ),
                             ( line ) -> !line.contains( ":" ) ), General::testCallback ) ).field();
             
             // ---- Misc. tests ---- //
@@ -524,8 +523,8 @@ public class TestConfigFile extends AbstractConfigFile {
             //                            (String[]) null ), General::testCallback ) ).field();
         }
         
-        private static void testCallback( AbstractConfigField field ) {
-            TestCrust.LOG.info( "{} = {}", field.getKey(), field.getValue() );
+        private static void testCallback( IConfigField<?> field ) {
+            TestCrust.LOG.info( "{} = {}", field.getKey(), field.get() );
         }
         
         private static void printLine() { TestCrust.LOG.info( "--------" ); }
@@ -550,7 +549,7 @@ public class TestConfigFile extends AbstractConfigFile {
      */
     public static class Environment extends AbstractConfigCategory<TestConfigFile> {
         
-        public final EnvironmentListField[] fields;
+        public final List<EnvironmentListField<Integer>> fields;
         
         Environment( TestConfigFile parent ) {
             super( parent, "environments", "The environments selected and sensed by the " +
@@ -558,20 +557,18 @@ public class TestConfigFile extends AbstractConfigFile {
                     "environmental stimulus that may be experienced by the config prior to the commencement of " +
                     "the launch cycle." );
             
-            AbstractConfigField dummy = new BooleanField( "ignore_me", false, (String[]) null );
+            IConfigField<?> dummy = new BooleanField( "ignore_me", false, (String[]) null );
             dummy.setSpec( SPEC );
             
             Set<String> environments = CrustEnvironmentRegistry.getNames();
-            fields = new EnvironmentListField[environments.size()];
+            fields = new ArrayList<>( environments.size() );
             int i = 0;
-            TestCrust.LOG.warn( "TEST TEST TEST - Please ignore the following warnings - TEST TEST TEST" );
             for( String env : environments ) {
-                fields[i++] = SPEC.define( new EnvironmentListField( env,
-                        new EnvironmentList( new EnvironmentEntry( 1.0,
-                                CrustEnvironmentRegistry.parse( dummy, env, "" ) ) ),
-                        (String[]) null ) );
+                fields.add( SPEC.define( new EnvironmentListField<>( env, EnvironmentList.builder( IntValueCodec.NON_NEGATIVE )
+                        .add( i, env )
+                        .build(),
+                        (String[]) null ) ) );
             }
-            TestCrust.LOG.warn( "TEST TEST TEST - End of scheduled warnings, carry on - TEST TEST TEST" );
         }
     }
 }

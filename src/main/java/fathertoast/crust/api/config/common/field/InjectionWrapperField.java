@@ -8,13 +8,13 @@ import java.util.function.Consumer;
  * <p>
  * This field can wrap any other config field, and the actual method used to inject its value is defined at construction.
  */
-public class InjectionWrapperField<T extends AbstractConfigField> extends AbstractWrapperField<T> {
+public class InjectionWrapperField<T, F extends IConfigField<T>> extends AbstractWrapperField<T, F> {
     
     /** The callback used any time the wrapped field value is (re)loaded. */
-    private final Consumer<T> injectionCallback;
+    private final Consumer<F> injectionCallback;
     
     /** Creates a new injection wrapper field that performs a generic load callback function to auto-inject the value. */
-    public InjectionWrapperField( T field, Consumer<T> callback ) {
+    public InjectionWrapperField( F field, Consumer<F> callback ) {
         super( field );
         injectionCallback = callback;
     }

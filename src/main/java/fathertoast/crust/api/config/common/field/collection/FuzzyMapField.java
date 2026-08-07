@@ -5,7 +5,6 @@ import fathertoast.crust.api.config.common.value.collection.FuzzyMap;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
 import net.minecraft.util.RandomSource;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -23,12 +22,10 @@ import java.util.Random;
  * @see fathertoast.crust.api.config.common.value.collection.value.IValueCodec
  * @see FuzzySetField
  */
-@ApiStatus.Experimental
 public class FuzzyMapField<T, V, F extends FuzzyMap<T, V>> extends AbstractFuzzyCollectionField<T, FuzzyEntry<T, V>, F> {
     
     /** A simple implementation for using generic fuzzy maps without the extra type parameter. */
     @SuppressWarnings( "unused" )
-    @ApiStatus.Experimental
     public static class Generic<T, V> extends FuzzyMapField<T, V, FuzzyMap<T, V>> {
         /** Creates a new field. */
         public Generic( String key, FuzzyMap<T, V> defaultValue, @Nullable String... description ) {
@@ -44,13 +41,13 @@ public class FuzzyMapField<T, V, F extends FuzzyMap<T, V>> extends AbstractFuzzy
     /** Adds info about the field type, format, and bounds to the end of a field's description. */
     @Override
     public void appendFieldInfo( List<String> comment ) {
-        comment.add( TomlHelper.fieldInfoNoDefault( valueDefault.getTypeName() + " Map",
+        comment.add( TomlHelper.fieldInfoNoDefault( getDefaultValue().getTypeName() + " Map",
                 "[ \"" + FuzzyKey.keyWithValue( "key_1", "value_1" ) + "\", \"" +
                         FuzzyKey.keyWithValue( "key_2", FuzzyKey.BLACKLIST_VALUE ) + "\", \"" +
                         FuzzyKey.keyWithValue( "key_3", "value_3" ) + "\", ... ]" ) );
-        comment.add( "Key Patterns: " + valueDefault.getKeyPatterns() );
-        comment.add( "Value Format: " + valueDefault.getValueFormat() );
-        comment.add( TomlHelper.fieldInfoOnlyDefault( valueDefault ) );
+        comment.add( "Key Patterns: " + getDefaultValue().getKeyPatterns() );
+        comment.add( "Value Format: " + getDefaultValue().getValueFormat() );
+        comment.add( TomlHelper.fieldInfoOnlyDefault( getDefaultValue() ) );
     }
     
     

@@ -13,16 +13,17 @@ import java.util.Collection;
  * @see fathertoast.crust.api.config.common.field.collection.NumberSetField
  * @see NumberMap NumberMap - A similar collection that allows values
  */
+@SuppressWarnings( "unused" )
 @ApiStatus.Experimental
 public class NumberSet<T extends Number> extends FuzzySet<T> {
     
     /** Creates a new builder for a {@code byte} number set. */
-    public static Builder<Short, ?> byteBuilder() {
+    public static Builder<Byte, ?> byteBuilder() {
         return new Builder<>( NumberKey.ValueType.BYTE );
     }
     
     /** Creates a new builder for a {@code short} number set. */
-    public static Builder<Byte, ?> shortBuilder() {
+    public static Builder<Short, ?> shortBuilder() {
         return new Builder<>( NumberKey.ValueType.SHORT );
     }
     
@@ -90,7 +91,6 @@ public class NumberSet<T extends Number> extends FuzzySet<T> {
     // ---- Builder Implementation ---- //
     
     /** Builder to make constructing item stack sets smoother. */
-    @ApiStatus.Experimental
     public static class Builder<V extends Number, B extends NumberSet.Builder<V, B>> extends AbstractBuilder<V, NumberSet<V>, B> {
         
         /** The {@link fathertoast.crust.api.config.common.value.collection.key.NumberKey.ValueType} of this builder. */

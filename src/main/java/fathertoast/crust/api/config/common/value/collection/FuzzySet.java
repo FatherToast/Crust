@@ -1,11 +1,10 @@
 package fathertoast.crust.api.config.common.value.collection;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.key.DefaultKey;
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
-import fathertoast.crust.api.config.common.value.collection.key.StringKey;
 import fathertoast.crust.api.config.common.value.collection.key.IFuzzyKeyParser;
-import org.jetbrains.annotations.ApiStatus;
+import fathertoast.crust.api.config.common.value.collection.key.StringKey;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -32,7 +31,7 @@ import java.util.Objects;
  * @see fathertoast.crust.api.config.common.field.collection.FuzzySetField
  * @see FuzzyMap FuzzyMap - A similar collection that allows values
  */
-@ApiStatus.Experimental
+@SuppressWarnings( "unused" )
 public class FuzzySet<T> extends AbstractFuzzyCollection<T, FuzzyKey<T>> {
     
     /** Constructs an empty set. Use this if you want to {@link #load} a set from file/NBT. */
@@ -63,7 +62,7 @@ public class FuzzySet<T> extends AbstractFuzzyCollection<T, FuzzyKey<T>> {
      *              (config loading) or a string list tag (NBT loading).
      */
     @Override
-    public void load( @Nullable AbstractConfigField field, List<String> value ) {
+    public void load( @Nullable IConfigField<?> field, List<String> value ) {
         super.load( field, value );
         checkUnreachableForMatching( field, this );
     }
@@ -71,13 +70,12 @@ public class FuzzySet<T> extends AbstractFuzzyCollection<T, FuzzyKey<T>> {
     /** @return The freshly loaded entry, or null if the line should be deleted. */
     @Override
     @Nullable
-    public FuzzyKey<T> loadLine( @Nullable AbstractConfigField field, String line ) {
+    public FuzzyKey<T> loadLine( @Nullable IConfigField<?> field, String line ) {
         return keyUsage().ifAllowed( FuzzyKey.parseLine( keyParser, field, line ) );
     }
     
     
     /** Boilerplate builder class for fuzzy sets. */
-    @ApiStatus.Experimental
     public static abstract class AbstractBuilder<T, C extends FuzzySet<T>, B extends AbstractBuilder<T, C, B>>
             extends AbstractFuzzyCollection.AbstractBuilder<T, FuzzyKey<T>, C, B> {
         
@@ -93,7 +91,6 @@ public class FuzzySet<T> extends AbstractFuzzyCollection<T, FuzzyKey<T>> {
     }
     
     /** Builder class for a generic fuzzy set. */
-    @ApiStatus.Experimental
     public static class Builder<T, B extends Builder<T, B>> extends AbstractBuilder<T, FuzzySet<T>, B> {
         
         public final IFuzzyKeyParser<T> keyParser;
@@ -112,7 +109,6 @@ public class FuzzySet<T> extends AbstractFuzzyCollection<T, FuzzyKey<T>> {
     }
     
     /** Builder class for a fuzzy string set. */
-    @ApiStatus.Experimental
     public static class StrBuilder extends Builder<String, StrBuilder> {
         
         public StrBuilder() { super( StringKey.PARSER ); }

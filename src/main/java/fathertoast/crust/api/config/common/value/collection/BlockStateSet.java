@@ -9,7 +9,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 
@@ -20,7 +19,7 @@ import java.util.Collection;
  * @see fathertoast.crust.api.config.common.field.collection.BlockStateSetField
  * @see BlockStateMap BlockStateMap - A similar collection that allows values
  */
-@ApiStatus.Experimental
+@SuppressWarnings( "unused" )
 public class BlockStateSet extends FuzzySet<BlockState> {
     
     /** Constructs an empty set. Use this if you want to {@link #load} a set from file/NBT. */
@@ -47,7 +46,6 @@ public class BlockStateSet extends FuzzySet<BlockState> {
     // ---- Builder Implementation ---- //
     
     /** Builder to make constructing block state sets smoother. */
-    @ApiStatus.Experimental
     public static class Builder<B extends Builder<B>> extends AbstractBuilder<BlockState, BlockStateSet, B> {
         
         /** @return A new fuzzy set reflecting the current state of this builder. */
