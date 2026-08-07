@@ -431,8 +431,6 @@ public class TestConfigFile extends AbstractConfigFile {
                             .exactly( 4.1F )
                             .exactly( 4.2F )
                             .exactly( 4.3F )
-                            .lessOrEq( 30.0F )
-                            .divisibleBy( 6.5F )
                             .build() ), General::testCallback ) ).field();
             
             numberMapField = SPEC.define( new InjectionWrapperField<>(
@@ -447,7 +445,6 @@ public class TestConfigFile extends AbstractConfigFile {
                     new NumberValueListField<>( "number_value_list_field", NumberValueList.longBuilder( EnumValueCodec.of( Rarity.COMMON ) )
                             .exactly( 200235325000030L, Rarity.EPIC )
                             .exactly( -200235325000030L, Rarity.UNCOMMON )
-                            .greaterThan( 0L, Rarity.RARE )
                             .build() ), General::testCallback ) ).field();
             
             
