@@ -111,7 +111,7 @@ public class TestConfigFile extends AbstractConfigFile {
         public final RegistryWeightedValueListField<MobEffect, MobEffectStats> registryWeightedValueListField;
         public final NumberSetField<Integer> numberSetField;
         public final NumberListField<Float> numberListField;
-        public final NumberMapField<Byte, SoundInstanceStats> numberMapField;
+        public final NumberMapField<Byte, SoundData> numberMapField;
         public final NumberValueListField<Long, Rarity> numberValueListField;
         // Misc collections
         public final AttributeOpListField attributeOpListField;
@@ -435,12 +435,12 @@ public class TestConfigFile extends AbstractConfigFile {
                             .build() ), General::testCallback ) ).field();
             
             numberMapField = SPEC.define( new InjectionWrapperField<>(
-                    new NumberMapField<>( "number_map_field", NumberMap.byteBuilder( SoundInstanceStats.CODEC )
-                            .exactly( (byte) 1, SoundInstanceStats.of( SoundEvents.CREEPER_DEATH ) )
-                            .exactly( (byte) 4, SoundInstanceStats.of( SoundEvents.ALLAY_AMBIENT_WITH_ITEM ) )
+                    new NumberMapField<>( "number_map_field", NumberMap.byteBuilder( SoundData.CODEC )
+                            .exactly( (byte) 1, SoundData.of( SoundEvents.CREEPER_DEATH ) )
+                            .exactly( (byte) 4, SoundData.of( SoundEvents.ALLAY_AMBIENT_WITH_ITEM ) )
                             .lessThanBlacklist( (byte) 20 )
-                            .greaterThan( (byte) 8, SoundInstanceStats.of( SoundEvents.LLAMA_SPIT ) )
-                            .buildWithDefault( SoundInstanceStats.of( SoundEvents.FROGSPAWNSTEP ) ) ), General::testCallback ) ).field();
+                            .greaterThan( (byte) 8, SoundData.of( SoundEvents.LLAMA_SPIT ) )
+                            .buildWithDefault( SoundData.of( SoundEvents.FROGSPAWNSTEP ) ) ), General::testCallback ) ).field();
             
             numberValueListField = SPEC.define( new InjectionWrapperField<>(
                     new NumberValueListField<>( "number_value_list_field", NumberValueList.longBuilder( EnumValueCodec.of( Rarity.COMMON ) )

@@ -1,6 +1,6 @@
 package fathertoast.crust.api.config.common.value.collection;
 
-import fathertoast.crust.api.config.common.field.AbstractConfigField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
@@ -89,7 +89,7 @@ public class NumberValueList<T extends Number, V> extends FuzzyValueList<T, V> {
     /** @return The freshly loaded entry, or null if the line should be deleted. */
     @Override
     @Nullable
-    public FuzzyEntry<T, V> loadLine( @Nullable AbstractConfigField field, String line ) {
+    public FuzzyEntry<T, V> loadLine( @Nullable IConfigField<?> field, String line ) {
         return super.loadLine( field, line );
     }
     
