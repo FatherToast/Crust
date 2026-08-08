@@ -51,9 +51,8 @@ public class AbsorptionElement extends Element {
         this.cfgAccess = cfgAccess;
         this.absorptionAmount = absorptionAmount;
         this.absorptionCapacity = absorptionCapacity;
-        this.amountAsText = "x" + IDisplayHelper.get().humanReadableNumber( absorptionAmount, "", false );
+        this.amountAsText = getAbsorptionAsText( absorptionAmount );
     }
-    
     
     /**
      * Calculates the default reserved area of this element.
@@ -109,7 +108,7 @@ public class AbsorptionElement extends Element {
             
             for( int i = 1; i <= heartCount; ++i ) {
                 // Draw empty hearts first based on absorption capacity
-                if( i <= absorptionCapacity ) {
+                if( i <= Mth.ceil( absorptionCapacity ) ) {
                     renderHeart( guiGraphics, Gui.HeartType.CONTAINER, x + xOffset, y, false );
                 }
                 // Draw absorption hearts based on absorption amount
@@ -140,7 +139,7 @@ public class AbsorptionElement extends Element {
      * @param y         The Y position to draw the heart icon at.
      * @param half      Ture if half a heart should be rendered instead of a whole heart.
      */
-    private void renderHeart( GuiGraphics graphics, Gui.HeartType heartType, float x, float y, boolean half ) {
+    private static void renderHeart( GuiGraphics graphics, Gui.HeartType heartType, float x, float y, boolean half ) {
         // Texture, x, y, width, height, u, v, regWidth, regHeight, textureWidth, textureHeight
         graphics.blit( GUI_ICONS, (int) x, (int) y,
                 8, 8,
@@ -148,5 +147,14 @@ public class AbsorptionElement extends Element {
                 9, 9,
                 256, 256
         );
+    }
+    
+    /** @return The specified absorption amount as a heart count string. */
+    private static String getAbsorptionAsText( float absorptionAmount ) {
+        int hearts = (int) Math.floor( absorptionAmount );
+        if( hearts % 2 > 0.0 ) {
+            return "x" + (hearts / 2) + ".5";
+        }
+        return "x" + hearts / 2;
     }
 }
