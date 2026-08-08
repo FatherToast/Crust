@@ -24,7 +24,7 @@ import net.minecraftforge.fml.common.Mod;
 public class TestGameEventHandler {
     
     @SubscribeEvent( priority = EventPriority.NORMAL )
-    static void onLivingHurt( LivingHurtEvent event ) {
+    public static void onLivingHurt( LivingHurtEvent event ) {
         // noinspection resource
         final Level level = event.getEntity().level();
         
@@ -57,13 +57,12 @@ public class TestGameEventHandler {
                 // Hurrah! Let us celebrate with murder and fireworks :D
                 FireworkRocketEntity rocket = new FireworkRocketEntity( level, new ItemStack( Items.FIREWORK_ROCKET ), event.getEntity() );
                 level.addFreshEntity( rocket );
-                event.getEntity().kill();
             }
         }
     }
     
     @SubscribeEvent( priority = EventPriority.NORMAL )
-    static void onAdvancementLoad( AdvancementLoadEvent event ) {
+    public static void onAdvancementLoad( AdvancementLoadEvent event ) {
         final ResourceLocation advancementId = event.getId();
         
         /// Test for modifying criteria.
