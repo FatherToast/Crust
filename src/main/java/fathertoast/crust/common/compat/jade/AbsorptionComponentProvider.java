@@ -44,6 +44,8 @@ public class AbsorptionComponentProvider implements IEntityComponentProvider, IS
                 final float absorptionAmount = tag.getCompound( TAG_CRUST_DATA ).getFloat( TAG_ABSORPTION );
                 final float absorptionCapacity;
                 
+                // If Natural Absorption is installed, we fetch the entity's absorption capacity
+                // from the API. Otherwise, we just set the capacity to the same value as current absorption.
                 if( Crust.NA_INSTALLED && cfgAccess.get( CrustJadePlugin.Config.ENTITY_ABSORPTION_SHOW_CAPACITY ) ) {
                     absorptionCapacity = (float) NaturalAbsorptionPlugin.getMaxAbsorption( livingEntity );
                 }
@@ -83,7 +85,7 @@ public class AbsorptionComponentProvider implements IEntityComponentProvider, IS
     /** @return Whether this component is enabled by default. */
     @Override
     public boolean enabledByDefault() {
-        return false;
+        return Crust.NA_INSTALLED;
     }
     
     /**

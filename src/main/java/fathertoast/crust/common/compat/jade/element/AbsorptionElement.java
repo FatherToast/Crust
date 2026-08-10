@@ -31,7 +31,10 @@ public class AbsorptionElement extends Element {
     private final float absorptionAmount;
     /** The absorption amount as readable text. */
     private final String amountAsText;
-    /** The absorption capacity to draw (when Natural Absorption is installed). */
+    /**
+     * If Natural Absorption is installed, this is the entity's absorption capacity.
+     * If not, this is the same as {@link #absorptionAmount}.
+     */
     private final float absorptionCapacity;
     
     /** Provides access to Jade's config values. */
@@ -114,12 +117,13 @@ public class AbsorptionElement extends Element {
                     renderHeart( guiGraphics, Gui.HeartType.CONTAINER, x + xOffset, y + yOffset, false );
                     xOffset += 8;
                 }
-                // Increment Y-offset when we need to go to a new row
+                // Increment Y-offset and reset X-offset to start a new row
                 if( i % heartsPerLine == 0 ) {
                     yOffset += 10;
                     xOffset = 0;
                 }
             }
+            // reset offsets before drawing hearts
             xOffset = 0;
             yOffset = 0;
             
@@ -134,7 +138,7 @@ public class AbsorptionElement extends Element {
                     renderHeart( guiGraphics, Gui.HeartType.ABSORBING, x + xOffset, y + yOffset, true );
                     xOffset += 8;
                 }
-                // Increment Y-offset when we need to go to a new row
+                // Increment Y-offset and reset X-offset to start a new row
                 if( i % heartsPerLine == 0 ) {
                     yOffset += 10;
                     xOffset = 0;
@@ -153,7 +157,6 @@ public class AbsorptionElement extends Element {
      * @param half      Ture if half a heart should be rendered instead of a whole heart.
      */
     private static void renderHeart( GuiGraphics graphics, Gui.HeartType heartType, float x, float y, boolean half ) {
-        // Texture, x, y, width, height, u, v, regWidth, regHeight, textureWidth, textureHeight
         graphics.blit( GUI_ICONS, (int) x, (int) y,
                 8, 8,
                 heartType.getX( half, false ), 0,
