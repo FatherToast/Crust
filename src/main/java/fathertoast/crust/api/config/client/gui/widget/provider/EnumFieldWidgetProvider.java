@@ -6,9 +6,11 @@ import fathertoast.crust.api.config.client.gui.widget.field.list.PopupListWidget
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.EnumField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
+import fathertoast.crust.api.config.common.value.ITooltipEnum;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
@@ -92,6 +94,11 @@ public class EnumFieldWidgetProvider<T extends Enum<T>> implements IConfigFieldW
                         listEntry.updateValue( value );
                         listEntry.setPopupWidget( null );
                     }, Supplier::get );
+            // Provide a tooltip for enums that support it
+            if( value instanceof ITooltipEnum tooltipSupplier ) {
+                Component tooltip = tooltipSupplier.getTooltip();
+                if( tooltip != null ) selectButton.setTooltip( Tooltip.create( tooltip ) );
+            }
             
             PopupListEntry entry = new PopupListEntry( selectButton );
             dropdownMenu.addEntry( entry );
