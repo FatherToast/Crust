@@ -270,13 +270,12 @@ public class PopupStringListWidget<T> extends FullScreenPopupListWidget<PopupLis
             EDIT_BOX.active = editable;
             widgets.add( EDIT_BOX );
             
-            RESET_BUTTON = new ResetButton( button -> clearValue() );
-            RESET_BUTTON.setX( WIDTH - ResetButton.WIDTH - ENTRY_PADDING - DeleteButton.WIDTH );
-            RESET_BUTTON.setY( 1 );
+            RESET_BUTTON = new ResetButton( WIDTH - ResetButton.WIDTH - ENTRY_PADDING - DeleteButton.WIDTH, 1,
+                    button -> clearValue() );
             RESET_BUTTON.active = false;
             widgets.add( RESET_BUTTON );
             
-            Button deleteButton = new DeleteButton( button -> {
+            Button deleteButton = new DeleteButton( WIDTH - DeleteButton.WIDTH, 1, button -> {
                 parent.entries().remove( this );
                 parent.updateReorderingButtons();
                 parent.updateChangedState();
@@ -285,8 +284,6 @@ public class PopupStringListWidget<T> extends FullScreenPopupListWidget<PopupLis
                     parent.setScrollDistance( parent.getScrollDistance() );
                 }
             } );
-            deleteButton.setX( WIDTH - DeleteButton.WIDTH );
-            deleteButton.setY( 1 );
             deleteButton.active = editable;
             widgets.add( deleteButton );
             

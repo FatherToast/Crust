@@ -75,10 +75,12 @@ public class TestClientForgeEventHandler {
                     
                     // Poll state of each environment condition at player's position and print result
                     TestCrust.LOG.info( "Environment Test Results (-1 is 'no match'):" );
-                    for( EnvironmentListField<Integer> env : TestCrust.CONFIG.ENVIRONMENT.fields ) {
-                        TestCrust.LOG.info( "  {} = {}", env.getKey(),
-                                env.getOrElse( EnvironmentContext.withTarget( minecraft.player ), -1 ) );
-                    }
+                    TestCrust.LOG.info( "  {} = {}", TestCrust.CONFIG.GENERAL.environmentListField.getKey(),
+                            TestCrust.CONFIG.GENERAL.environmentListField.getOrElse( EnvironmentContext.withTarget( minecraft.player ), -1 ) );
+                    //                    for( EnvironmentListField<Integer> env : TestCrust.CONFIG.ENVIRONMENT.fields ) {
+                    //                        TestCrust.LOG.info( "  {} = {}", env.getKey(),
+                    //                                env.getOrElse( EnvironmentContext.withTarget( minecraft.player ), -1 ) );
+                    //                    }
                 }
             }
         }

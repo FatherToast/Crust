@@ -95,5 +95,5 @@ public class StringField extends AbstractConfigField<String> {
     /** @return This field's gui component provider. */
     @Override
     @OnClient
-    public IConfigFieldWidgetProvider<String> getWidgetProvider() { return new StringFieldWidgetProvider<>( this, getValidator() ); }
+    public IConfigFieldWidgetProvider<String> getWidgetProvider() { return new StringFieldWidgetProvider<>( getValidator() ); }
 }

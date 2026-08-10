@@ -12,13 +12,12 @@ import java.util.Objects;
 
 /**
  * A simple 3-state (disabled, normal, highlighted) textured button designed to work
- * with any texture that has a raster size of <b>width * (height * 3)</b>.
+ * with any texture that has a raster size of <b>width x (height * 3)</b>.
  */
 public class SimpleTextureButton extends Button {
     
     /** A resource location pointing to the texture to use for this button. */
     private final ResourceLocation TEXTURE;
-    
     
     public SimpleTextureButton( int x, int y, int width, int height, @Nullable Component tooltip, ResourceLocation texture, Button.OnPress onPress ) {
         super( x, y, width, height, Component.empty(), onPress, DEFAULT_NARRATION );

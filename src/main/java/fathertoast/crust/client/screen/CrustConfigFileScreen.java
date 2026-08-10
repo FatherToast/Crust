@@ -7,6 +7,7 @@ import fathertoast.crust.api.config.client.gui.widget.field.searchbar.Searchbar;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.client.ClientRegister;
+import fathertoast.crust.client.renderer.entryview.EntityTypeEntryViewRenderer;
 import fathertoast.crust.client.screen.widget.CrustConfigFieldList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
@@ -111,7 +112,10 @@ public class CrustConfigFileScreen extends Screen {
     
     /** Called to close the screen. */
     @Override
-    public void onClose() { if( minecraft != null ) minecraft.setScreen( LAST_SCREEN ); }
+    public void onClose() {
+        if( minecraft != null ) minecraft.setScreen( LAST_SCREEN );
+        EntityTypeEntryViewRenderer.releaseInstances();
+    }
     
     /** Called to set up the screen before displaying it. */
     @Override
@@ -295,6 +299,8 @@ public class CrustConfigFileScreen extends Screen {
     /** Called to render the screen. */
     @Override
     public void render( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks ) {
+        setTooltip( null );
+        
         if( popupWidget == null ) {
             renderMain( graphics, mouseX, mouseY, partialTicks );
         }
@@ -312,7 +318,6 @@ public class CrustConfigFileScreen extends Screen {
     protected void renderMain( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks ) {
         renderBackground( graphics );
         
-        setTooltip( null );
         fieldList.render( graphics, mouseX, mouseY, partialTicks );
         
         super.render( graphics, mouseX, mouseY, partialTicks );
@@ -326,7 +331,6 @@ public class CrustConfigFileScreen extends Screen {
         graphics.fillGradient( 0, 0, width, height,
                 0xC0_101010, 0xD0_101010 );
         
-        setTooltip( null );
         popup.render( graphics, mouseX, mouseY, partialTicks );
         
         graphics.pose().popPose();

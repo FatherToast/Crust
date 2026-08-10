@@ -92,7 +92,12 @@ public record BlockStatePropertyMap( Map<String, String> map ) implements
     }
     
     /** @return The property and value, converted to a single-line string. */
-    public static String combine( String property, String value ) { return property + VALUE_SEPARATOR + value; }
+    public static String combine( String property, String value ) { return combine( property, value, false ); }
+    
+    /** @return The property and value, converted to a single-line string. */
+    public static String combine( String property, String value, boolean addSpaces ) {
+        return property + (addSpaces ? " " + VALUE_SEPARATOR + " " : VALUE_SEPARATOR) + value;
+    }
     
     /**
      * @return A new property-value map, extracted from the provided string. Ignores all whitespace.

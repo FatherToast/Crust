@@ -7,17 +7,20 @@ import fathertoast.crust.api.config.client.gui.widget.field.EntryViewWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static fathertoast.crust.api.config.common.value.collection.key.EntityKey.Extends.ErroredEntity;
@@ -35,80 +38,110 @@ public class EntityTypeEntryViewRenderer implements EntryViewWidget.EntryViewRen
     /** A map of entity types linked to related entity instances. */
     private static final Map<EntityType<?>, Entity> ENTITY_INSTANCES = new HashMap<>();
     
+    /** Called when a config file screen is closed to free up memory. */
+    public static void releaseInstances() { ENTITY_INSTANCES.clear(); }
     
-    /**
-     * Called from {@link EntryViewWidget#renderWidget(GuiGraphics, int, int, float)}
-     * to render something based on the widget's field's value.
-     */
-    @Override
-    public void render( @Nullable EntityType<?> displayValue, GuiGraphics graphics,
-                        int widgetX, int widgetY, int mouseX, int mouseY, float partialTick ) {
-        if( displayValue == null ) return;
-        
-        final PoseStack stack = graphics.pose();
-        
-        ClientLevel level = Minecraft.getInstance().level;
-        
-        // Check if the game's level object exists.
-        // If it does, we render the entity type's entity model.
-        if( level != null ) {
-            // Create entity instances when they are needed.
-            final Entity entity = ENTITY_INSTANCES.computeIfAbsent( displayValue, ( type ) -> {
-                try {
-                    Entity instance = type.create( level );
-                    if( instance != null ) {
-                        return instance;
-                    }
-                }
-                catch( Exception e ) {
-                    // noinspection CallToPrintStackTrace
-                    e.printStackTrace();
-                }
-                return new ErroredEntity( type, level );
-            } );
-            
-            
-            if( !(entity instanceof ErroredEntity) ) {
-                stack.pushPose();
-                
-                float scale = 0.53125F;
-                float girth = Math.max( entity.getBbWidth(), entity.getBbHeight() );
-                if( girth > 1.0F ) scale /= girth;
-                
-                // X, Y and depth (Z)
-                stack.translate( widgetX + 10, widgetY + 18, 150 );
-                // Flip the pose so we don't render things upside-down
-                stack.mulPoseMatrix( (new Matrix4f()).scaling( 1.0F, -1.0F, 1.0F ) );
-                // Standard transforms used for blocks in GUIs
-                stack.mulPose( Axis.XP.rotationDegrees( 30.0F ) );
-                stack.mulPose( Axis.YN.rotationDegrees( 225.0F ) );
-                stack.scale( scale, scale, scale );
-                
-                // noinspection unchecked
-                EntityRenderer<Entity> renderer = (EntityRenderer<Entity>) Minecraft.getInstance().getEntityRenderDispatcher().getRenderer( entity );
-                //TODO ?
-                // renderer.render( entity, 0.0F, partialTick, stack, graphics.bufferSource(), LightTexture.FULL_BRIGHT );
-                
-                stack.popPose();
-            }
-        }
-        // Otherwise, try rendering the entity type's spawn egg if it exists.
-        else {
+    private static Entity getEntity( EntityType<?> entityType, ClientLevel level ) {
+        return ENTITY_INSTANCES.computeIfAbsent( entityType, type -> {
             try {
-                final ItemStack displayStack = SPAWN_EGG_STACKS.get( displayValue );
-                
-                if( !displayStack.isEmpty() ) {
-                    EntryViewWidget.EntryViewRenderer<ItemStack> itemStackRenderer = EntryViewRendererRegistry.getRendererOrThrow( EntryViewRendererRegistry.ITEM_STACK );
-                    itemStackRenderer.render( displayStack, graphics, widgetX, widgetY, mouseX, mouseY, partialTick );
+                Entity instance = type.create( level );
+                if( instance != null ) {
+                    return instance;
                 }
             }
             catch( Exception e ) {
                 // noinspection CallToPrintStackTrace
                 e.printStackTrace();
             }
+            return new ErroredEntity( type, level );
+        } );
+    }
+    
+    
+    /**
+     * Called from {@link EntryViewWidget#renderWidget(GuiGraphics, int, int, float)}
+     * to render something based on the widget's field's value.
+     */
+    @Override
+    public void render( EntityType<?> displayValue, GuiGraphics graphics,
+                        int widgetX, int widgetY, int mouseX, int mouseY, float partialTick ) {
+        // Check if the game's level object exists.
+        // If it does, try to render the entity type's entity model.
+        ClientLevel level = Minecraft.getInstance().level;
+        float width = displayValue.getWidth();
+        float height = displayValue.getHeight();
+        if( level != null && (width > 0.0F || height > 0.0F) ) {
+            // Create entity instances when they are needed.
+            final Entity entity = getEntity( displayValue, level );
+            if( !(entity instanceof ErroredEntity) ) {
+                PoseStack poseStack = graphics.pose();
+                poseStack.pushPose();
+                
+                // Scale to fit the bounding box in a 16x16 area
+                float scale;
+                float yOffset;
+                if( width > 0.0F ) {
+                    float diagonalWidth = 1.4142135623731F * width;
+                    if( height > 0.0F ) {
+                        float diagonalHeight = Mth.sqrt( diagonalWidth * diagonalWidth + height * height ) *
+                                (float) Math.sin( Math.atan2( height, diagonalWidth ) + 0.523598775598299 );
+                        scale = 16.0F / Math.max( diagonalWidth, diagonalHeight );
+                        yOffset = (diagonalHeight - height) / 2.0F * scale;
+                    }
+                    else {
+                        scale = 16.0F / diagonalWidth;
+                        yOffset = 0.0F;
+                    }
+                }
+                else {
+                    scale = 18.475208614068F / height;
+                    yOffset = 0.0F;
+                }
+                
+                // X, Y and depth (Z)
+                poseStack.translate( widgetX + 10, widgetY + 17 - yOffset, -100 );
+                // Flip the pose so we don't render things upside-down
+                poseStack.mulPoseMatrix( new Matrix4f().scaling( 1.0F, -1.0F, 1.0F ) );
+                // Standard transforms used for blocks in GUIs, but flipped 180 deg around Y axis
+                poseStack.mulPose( Axis.XP.rotationDegrees( 30.0F ) );
+                poseStack.mulPose( Axis.YN.rotationDegrees( 45.0F ) );
+                poseStack.scale( scale, scale, scale );
+                
+                renderEntity( Minecraft.getInstance().getEntityRenderDispatcher().getRenderer( entity ),
+                        entity, 0.0F, 0.0F, poseStack, graphics );
+                
+                poseStack.popPose();
+                return;
+            }
+        }
+        // Otherwise, try rendering the entity type's spawn egg if it exists.
+        try {
+            final ItemStack displayStack = SPAWN_EGG_STACKS.get( displayValue );
+            if( !displayStack.isEmpty() ) {
+                EntryViewWidget.EntryViewRenderer<ItemStack> itemStackRenderer = EntryViewRendererRegistry.getRendererOrThrow( EntryViewRendererRegistry.ITEM_STACK );
+                itemStackRenderer.render( displayStack, graphics, widgetX, widgetY, mouseX, mouseY, partialTick );
+            }
+        }
+        catch( Exception e ) {
+            // noinspection CallToPrintStackTrace
+            e.printStackTrace();
         }
     }
     
+    private <T extends Entity> void renderEntity( EntityRenderer<T> renderer, Entity entity, float rotation, float partialTick,
+                                                  PoseStack poseStack, GuiGraphics graphics ) {
+        //noinspection unchecked
+        renderer.render( (T) entity, rotation, partialTick, poseStack,
+                graphics.bufferSource(), LightTexture.FULL_BRIGHT );
+    }
+    
+    /** Called when the display value is changed to populate the widget's tooltip. */
+    @Override
+    public void updateTooltip( List<FormattedCharSequence> tooltip, EntityType<?> displayValue ) {
+        addLine( tooltip, displayValue.getDescription() );
+    }
+    
+    /** Called after mod loading has completed to perform any required setup before use. */
     @Override
     public void setup() {
         for( EntityType<?> entityType : ForgeRegistries.ENTITY_TYPES ) {

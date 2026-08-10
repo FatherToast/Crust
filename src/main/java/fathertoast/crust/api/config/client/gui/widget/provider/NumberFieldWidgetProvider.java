@@ -1,7 +1,6 @@
 package fathertoast.crust.api.config.client.gui.widget.provider;
 
 import fathertoast.crust.api.config.client.gui.widget.entry.ConfigFieldGuiEntry;
-import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
@@ -16,15 +15,12 @@ import java.util.function.Function;
 @SuppressWarnings( "ClassCanBeRecord" )
 public class NumberFieldWidgetProvider<T extends Number> implements IConfigFieldWidgetProvider<T> {
     
-    /** The providing field. */
-    protected final IConfigField<T> FIELD;
     /** Converts the input number into the desired type. */
     protected final Function<Number, T> READER;
     /** Returns true when the input number is valid. */
     protected final Function<Number, Boolean> VALIDATOR;
     
-    public NumberFieldWidgetProvider( IConfigField<T> field, Function<Number, T> reader, Function<Number, Boolean> validator ) {
-        FIELD = field;
+    public NumberFieldWidgetProvider( Function<Number, T> reader, Function<Number, Boolean> validator ) {
         READER = reader;
         VALIDATOR = validator;
     }
@@ -44,7 +40,7 @@ public class NumberFieldWidgetProvider<T extends Number> implements IConfigField
     public void apply( List<AbstractWidget> components, ConfigFieldGuiEntry<T> listEntry, T displayValue ) {
         EditBox editBox = new EditBox( listEntry.client().font,
                 1, 1, VALUE_WIDTH - 2, VALUE_HEIGHT - 2, // Account for ~1px frame
-                Component.literal( FIELD.getKey() ) );
+                Component.literal( listEntry.getField().getKey() ) );
         editBox.setMaxLength( 127 );
         editBox.setValue( TomlHelper.toLiteral( displayValue ) );
         editBox.setResponder( text -> {

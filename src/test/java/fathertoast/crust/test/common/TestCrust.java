@@ -3,7 +3,6 @@ package fathertoast.crust.test.common;
 import fathertoast.crust.api.CrustPlugin;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.ICrustPlugin;
-import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
@@ -20,10 +19,8 @@ public class TestCrust implements ICrustPlugin {
     
     
     /** File for testing the config api. */
-    public static final TestConfigFile CONFIG = new TestConfigFile(
-            ConfigManager.getRequired( ICrustApi.MOD_ID ), "test/test_config" );
-    public static final TestConfigReadme README = new TestConfigReadme(
-            ConfigManager.getRequired( ICrustApi.MOD_ID ), "test/readme" );
+    public static final TestConfigFile CONFIG = new TestConfigFile( "test/test_config" );
+    public static final TestConfigReadme README = new TestConfigReadme( "test/readme" );
     
     
     /** Called by Crust after {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}. */

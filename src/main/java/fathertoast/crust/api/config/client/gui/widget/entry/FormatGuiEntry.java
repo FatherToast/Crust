@@ -106,7 +106,7 @@ public abstract class FormatGuiEntry extends ConfigGuiEntry {
         /** @return The tooltip to render when the mouse is over this entry. Null if no tooltip should render. */
         @Override
         @Nullable
-        public List<FormattedCharSequence> getTooltip() { return TOOLTIP; }
+        public List<FormattedCharSequence> getTooltip( int mouseX, int mouseY ) { return TOOLTIP; }
     }
     
     /**
@@ -162,7 +162,7 @@ public abstract class FormatGuiEntry extends ConfigGuiEntry {
         /** @return The tooltip to render when the mouse is over this entry. Null if no tooltip should render. */
         @Override
         @Nullable
-        public List<FormattedCharSequence> getTooltip() { return TOOLTIP; }
+        public List<FormattedCharSequence> getTooltip( int mouseX, int mouseY ) { return TOOLTIP; }
         
         /** @return An identifying String to be looked up by a {@link Searchbar} */
         @Override // ISearchable

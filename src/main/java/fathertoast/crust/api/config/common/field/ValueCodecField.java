@@ -62,5 +62,9 @@ public class ValueCodecField<T> extends AbstractConfigField<T> {
     
     /** @return This field's gui component provider. */
     @Override
-    public IConfigFieldWidgetProvider<T> getWidgetProvider() { return new StringFieldWidgetProvider<>( this, null ); }
+    public IConfigFieldWidgetProvider<T> getWidgetProvider() {
+        return new StringFieldWidgetProvider<>( valueCodec::toTomlString, text ->
+                text.equalsIgnoreCase( valueCodec.toTomlString(
+                        valueCodec.parseTomlString( null, text, text ) ) ) );
+    }
 }

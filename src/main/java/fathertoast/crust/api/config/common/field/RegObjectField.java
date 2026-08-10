@@ -150,7 +150,7 @@ public class RegObjectField<T> extends AbstractConfigField<RegObjKey.Basic<T>> {
             return new SoundPlayerWidgetProvider<>( key ->
                     SoundData.of( ResourceLocation.parse( key.keyString() ) ), lineValidator() );
         }
-        return new EntryViewWidgetProvider.SimpleMapped<>( RegObjKey.Basic::asValue,
+        return new EntryViewWidgetProvider<>( RegObjKey.Basic::asValue,
                 EntryViewRendererRegistry.getForRegistry( getRegistry().registryKey() ),
                 lineValidator() );
         

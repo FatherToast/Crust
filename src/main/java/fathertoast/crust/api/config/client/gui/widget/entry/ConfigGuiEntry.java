@@ -41,7 +41,7 @@ public abstract class ConfigGuiEntry extends ContainerObjectSelectionList.Entry<
     
     /** @return The tooltip to render when the mouse is over this entry. Null if no tooltip should render. */
     @Nullable
-    public List<FormattedCharSequence> getTooltip() { return null; }
+    public List<FormattedCharSequence> getTooltip( int mouseX, int mouseY ) { return null; }
     
     /** @return Narrations for this entry. */
     @Override

@@ -1,7 +1,7 @@
 package fathertoast.crust.test.common;
 
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
-import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.BooleanField;
 import fathertoast.crust.api.config.common.field.EnvironmentListField;
 import fathertoast.crust.api.config.common.field.collection.*;
@@ -13,11 +13,10 @@ import fathertoast.crust.api.config.common.field.collection.*;
 public class TestConfigReadme extends AbstractConfigFile.Simple {
     
     /**
-     * @param cfgManager The mod's config manager.
-     * @param cfgName    Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
+     * @param cfgName Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
      */
-    public TestConfigReadme( ConfigManager cfgManager, String cfgName ) {
-        super( cfgManager, cfgName, false,
+    public TestConfigReadme( String cfgName ) {
+        super( ICrustApi.MOD_ID, cfgName, false,
                 "Contains detailed/verbose descriptions of every field type that provides it." );
         
         // Field descriptions

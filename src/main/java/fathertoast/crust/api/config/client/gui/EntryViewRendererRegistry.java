@@ -29,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @see EntryViewWidget.EntryViewRenderer
  * @see EntryViewWidget
  */
-@ApiStatus.Experimental
 public final class EntryViewRendererRegistry {
     
     /** Internal map of renderers by ID. */
@@ -132,5 +131,5 @@ public final class EntryViewRendererRegistry {
     
     
     // No instantiation
-    private EntryViewRendererRegistry() { }
+    private EntryViewRendererRegistry() {}
 }

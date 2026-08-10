@@ -141,7 +141,7 @@ public class ItemStackField extends AbstractConfigField<ItemStackKey.Basic> {
     @Override
     @OnClient
     public IConfigFieldWidgetProvider<ItemStackKey.Basic> getWidgetProvider() {
-        return new EntryViewWidgetProvider.SimpleMapped<>( ItemStackKey.Basic::asValue,
+        return new EntryViewWidgetProvider<>( ItemStackKey.Basic::asValue,
                 EntryViewRendererRegistry.getRendererOrThrow( EntryViewRendererRegistry.ITEM_STACK ),
                 ( string ) -> {
                     ResourceLocation id = ResourceLocation.tryParse( string.split( "\\{" )[0] );

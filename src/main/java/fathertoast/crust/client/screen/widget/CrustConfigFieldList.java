@@ -70,7 +70,7 @@ public class CrustConfigFieldList extends SearchableSelectionList<ConfigGuiEntry
         if( isMouseOver( mouseX, mouseY ) ) {
             ConfigGuiEntry entryMouseOver = getEntryAtPosition( mouseX, mouseY );
             if( entryMouseOver != null ) {
-                PARENT.setTooltip( entryMouseOver.getTooltip() );
+                PARENT.setTooltip( entryMouseOver.getTooltip( mouseX, mouseY ) );
             }
         }
     }
