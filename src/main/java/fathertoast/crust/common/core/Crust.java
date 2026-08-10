@@ -8,16 +8,19 @@ import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDi
 import fathertoast.crust.common.api.impl.CrustApi;
 import fathertoast.crust.common.api.impl.PlayerVelocityWatcher;
 import fathertoast.crust.common.command.CrustArgumentTypes;
+import fathertoast.crust.common.compat.naturalabsorption.NaturalAbsorptionPlugin;
 import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.core.registry.*;
 import fathertoast.crust.common.network.CrustPacketHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingStage;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import org.apache.logging.log4j.LogManager;
@@ -101,6 +104,9 @@ public class Crust {
     /** API instance. */
     public final CrustApi API;
     
+    /** True if Natural Absorption is installed. */
+    public static boolean NA_INSTALLED;
+    
     
     public Crust( FMLJavaModLoadingContext context ) {
         INSTANCE = this;
@@ -129,12 +135,18 @@ public class Crust {
         CrustStructureProcessors.register( modBus );
         
         modBus.addListener( this::onCommonSetup );
+        modBus.addListener( this::sendIMCMessages );
         
         MinecraftForge.EVENT_BUS.register( PlayerVelocityWatcher.INSTANCE );
     }
     
     private void onCommonSetup( FMLCommonSetupEvent event ) {
         event.enqueueWork( this::processPlugins );
+    }
+    
+    public void sendIMCMessages( InterModEnqueueEvent event ) {
+        NA_INSTALLED = InterModComms.sendTo( "naturalabsorption", "getNaturalAbsorptionAPI",
+                () -> NaturalAbsorptionPlugin.RECEIVER );
     }
     
     @SuppressWarnings( "all" )

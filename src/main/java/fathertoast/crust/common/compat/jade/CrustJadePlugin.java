@@ -29,9 +29,7 @@ public final class CrustJadePlugin implements IWailaPlugin {
     private void addConfigEntries( IWailaClientRegistration reg ) {
         reg.addConfig( Config.ENTITY_MAX_ABSORPTION_FOR_RENDER, 20.0F, 1.0F, 40.0F, false );
         reg.addConfig( Config.ENTITY_ABSORPTION_ICONS_PER_LINE, 10, 1, 10, false );
-        reg.addConfig( Config.ENTITY_ABSORPTION_SHOW_FRACTIONS, false );
-        
-        reg.addConfig( Config.ENTITY_ABSORPTION_CAPACITY, true );
+        reg.addConfig( Config.ENTITY_ABSORPTION_SHOW_CAPACITY, true );
     }
     
     
@@ -40,9 +38,7 @@ public final class CrustJadePlugin implements IWailaPlugin {
         ResourceLocation ENTITY_ABSORPTION = id( "entity_absorption" );
         ResourceLocation ENTITY_MAX_ABSORPTION_FOR_RENDER = id( ENTITY_ABSORPTION, "max_for_render" );
         ResourceLocation ENTITY_ABSORPTION_ICONS_PER_LINE = id( ENTITY_ABSORPTION, "icons_per_line" );
-        ResourceLocation ENTITY_ABSORPTION_SHOW_FRACTIONS = id( ENTITY_ABSORPTION, "show_fractions" );
-        
-        ResourceLocation ENTITY_ABSORPTION_CAPACITY = id( ENTITY_ABSORPTION, "capacity" );
+        ResourceLocation ENTITY_ABSORPTION_SHOW_CAPACITY = id( ENTITY_ABSORPTION, "show_capacity" );
         
         
         /** Convenience method for creating a resource location with the Crust namespace. */

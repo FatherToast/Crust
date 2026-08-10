@@ -146,5 +146,5 @@
   "config.jade.plugin_crust.entity_absorption.show_fractions": "Show Fractions",
   "config.jade.plugin_crust.entity_absorption.max_for_render": "Max Absorption for Render",
   "config.jade.plugin_crust.entity_absorption.icons_per_line": "Icons per Line",
-  "config.jade.plugin_crust.entity_absorption.capacity": "Show Capacity (NA compat)"
+  "config.jade.plugin_crust.entity_absorption.show_capacity": "Show Capacity (NA compat)"
 }

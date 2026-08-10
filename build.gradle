@@ -103,6 +103,10 @@ dependencies {
     // runtimeOnly fg.deobf("blank:apocalypse:1.20.1-4.11.10-r:all")
     compileOnly fg.deobf("blank:apocalypse:1.20.1-4.11.10-r:api")
 
+    // Natural Absorption & API
+    runtimeOnly fg.deobf("blank:naturalabsorption:1.20.1-2.1.8")
+    compileOnly fg.deobf("blank:naturalabsorption:1.20.1-2.1.8:api")
+
     // Other toasty mods // TODO Re-add later!
     // runtimeOnly fg.deobf("curse.maven:deadlyworld-60098:${dw_version}")
     // runtimeOnly fg.deobf("curse.maven:specialmobs-59968:${sm_version}")

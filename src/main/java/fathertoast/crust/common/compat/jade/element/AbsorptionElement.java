@@ -31,7 +31,10 @@ public class AbsorptionElement extends Element {
     private final float absorptionAmount;
     /** The absorption amount as readable text. */
     private final String amountAsText;
-    /** The absorption capacity to draw (when Natural Absorption is installed). */
+    /**
+     * If Natural Absorption is installed, this is the entity's absorption capacity.
+     * If not, this is the same as {@link #absorptionAmount}.
+     */
     private final float absorptionCapacity;
     
     /** Provides access to Jade's config values. */
@@ -66,11 +69,11 @@ public class AbsorptionElement extends Element {
         
         // Render text instead of icons if absorption amount
         // is greater than the configured max.
-        if( absorptionAmount > maxAbsorption ) {
+        if( absorptionCapacity > maxAbsorption ) {
             return new Vec2( (float) (10 + Minecraft.getInstance().font.width( amountAsText )), 10.0F );
         }
         else {
-            float heartCount = absorptionAmount * 0.5F;
+            float heartCount = absorptionCapacity * 0.5F;
             int heartsPerLine = (int) Math.min( iconsPerLine, Math.ceil( heartCount ) );
             int lineCount = (int) Math.ceil( heartCount / iconsPerLine );
             
@@ -91,39 +94,53 @@ public class AbsorptionElement extends Element {
     public void render( GuiGraphics guiGraphics, float x, float y, float maxX, float maxY ) {
         final float maxHeartIcons = cfgAccess.getFloat( CrustJadePlugin.Config.ENTITY_MAX_ABSORPTION_FOR_RENDER );
         final int iconsPerLine = cfgAccess.getInt( CrustJadePlugin.Config.ENTITY_ABSORPTION_ICONS_PER_LINE );
-        final int heartsPerLine = (int) Math.min( iconsPerLine, Math.ceil( absorptionAmount ) );
-        
-        int xOffset = 0;
+        final int heartsPerLine = (int) Math.min( iconsPerLine, Math.ceil( absorptionCapacity ) );
         
         // Draw absorption as text if amount is greater than
         // the configured maximum that can be drawn with icons
-        if( absorptionAmount > maxHeartIcons ) {
+        if( absorptionCapacity > maxHeartIcons ) {
             renderHeart( guiGraphics, Gui.HeartType.CONTAINER, x, y, false );
             renderHeart( guiGraphics, Gui.HeartType.ABSORBING, x, y, false );
             IDisplayHelper.get().drawText( guiGraphics, amountAsText, x + 10.5F, y, IThemeHelper.get().getNormalColor() );
         }
         else {
             final float absorption = absorptionAmount * 0.5F;
-            final int heartCount = Mth.ceil( absorption );
+            final float capacity = absorptionCapacity * 0.5F;
+            final int heartCount = Mth.ceil( capacity );
+            
+            float xOffset = 0;
+            float yOffset = 0;
+            
+            // Draw empty hearts first based on absorption capacity
+            for( int i = 1; i <= heartCount; ++i ) {
+                if( i <= Mth.floor( capacity ) ) {
+                    renderHeart( guiGraphics, Gui.HeartType.CONTAINER, x + xOffset, y + yOffset, false );
+                    xOffset += 8;
+                }
+                // Increment Y-offset and reset X-offset to start a new row
+                if( i % heartsPerLine == 0 ) {
+                    yOffset += 10;
+                    xOffset = 0;
+                }
+            }
+            // reset offsets before drawing hearts
+            xOffset = 0;
+            yOffset = 0;
             
             for( int i = 1; i <= heartCount; ++i ) {
-                // Draw empty hearts first based on absorption capacity
-                if( i <= Mth.ceil( absorptionCapacity ) ) {
-                    renderHeart( guiGraphics, Gui.HeartType.CONTAINER, x + xOffset, y, false );
-                }
                 // Draw absorption hearts based on absorption amount
                 if( i <= Mth.floor( absorption ) ) {
-                    renderHeart( guiGraphics, Gui.HeartType.ABSORBING, x + xOffset, y, false );
+                    renderHeart( guiGraphics, Gui.HeartType.ABSORBING, x + xOffset, y + yOffset, false );
                     xOffset += 8;
                 }
                 // Draw a half of an absorption heart, if needed
                 if( (float) i > absorption && (float) i < absorption + 1.0F ) {
-                    renderHeart( guiGraphics, Gui.HeartType.ABSORBING, x + xOffset, y, true );
+                    renderHeart( guiGraphics, Gui.HeartType.ABSORBING, x + xOffset, y + yOffset, true );
                     xOffset += 8;
                 }
-                // Increment Y-offset when we need to go to a new row
+                // Increment Y-offset and reset X-offset to start a new row
                 if( i % heartsPerLine == 0 ) {
-                    y += 10.0F;
+                    yOffset += 10;
                     xOffset = 0;
                 }
             }
@@ -140,7 +157,6 @@ public class AbsorptionElement extends Element {
      * @param half      Ture if half a heart should be rendered instead of a whole heart.
      */
     private static void renderHeart( GuiGraphics graphics, Gui.HeartType heartType, float x, float y, boolean half ) {
-        // Texture, x, y, width, height, u, v, regWidth, regHeight, textureWidth, textureHeight
         graphics.blit( GUI_ICONS, (int) x, (int) y,
                 8, 8,
                 heartType.getX( half, false ), 0,

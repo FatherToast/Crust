@@ -2,6 +2,8 @@ package fathertoast.crust.common.compat.jade;
 
 import fathertoast.crust.api.lib.NBTHelper;
 import fathertoast.crust.common.compat.jade.element.AbsorptionElement;
+import fathertoast.crust.common.compat.naturalabsorption.NaturalAbsorptionPlugin;
+import fathertoast.crust.common.core.Crust;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -35,13 +37,22 @@ public class AbsorptionComponentProvider implements IEntityComponentProvider, IS
      */
     @Override
     public void appendTooltip( ITooltip tooltip, EntityAccessor accessor, IPluginConfig cfgAccess ) {
-        if( accessor.getEntity() instanceof LivingEntity ) {
+        if( accessor.getEntity() instanceof LivingEntity livingEntity ) {
             final CompoundTag tag = accessor.getServerData();
             
             if( NBTHelper.containsCompound( tag, TAG_CRUST_DATA ) && NBTHelper.containsNumber( tag.getCompound( TAG_CRUST_DATA ), TAG_ABSORPTION ) ) {
                 final float absorptionAmount = tag.getCompound( TAG_CRUST_DATA ).getFloat( TAG_ABSORPTION );
-                // TODO NA compat
-                tooltip.add( new AbsorptionElement( cfgAccess, absorptionAmount, absorptionAmount ) );
+                final float absorptionCapacity;
+                
+                // If Natural Absorption is installed, we fetch the entity's absorption capacity
+                // from the API. Otherwise, we just set the capacity to the same value as current absorption.
+                if( Crust.NA_INSTALLED && cfgAccess.get( CrustJadePlugin.Config.ENTITY_ABSORPTION_SHOW_CAPACITY ) ) {
+                    absorptionCapacity = (float) NaturalAbsorptionPlugin.getMaxAbsorption( livingEntity );
+                }
+                else {
+                    absorptionCapacity = tag.getCompound( TAG_CRUST_DATA ).getFloat( TAG_ABSORPTION );
+                }
+                tooltip.add( new AbsorptionElement( cfgAccess, absorptionAmount, absorptionCapacity ) );
             }
         }
     }
@@ -74,7 +85,7 @@ public class AbsorptionComponentProvider implements IEntityComponentProvider, IS
     /** @return Whether this component is enabled by default. */
     @Override
     public boolean enabledByDefault() {
-        return false;
+        return Crust.NA_INSTALLED;
     }
     
     /**
@@ -86,6 +97,6 @@ public class AbsorptionComponentProvider implements IEntityComponentProvider, IS
     @Override
     public int getDefaultPriority() {
         // Jade's health provider's default priority is -4501.
-        return -4500;
+        return -4502;
     }
 }
