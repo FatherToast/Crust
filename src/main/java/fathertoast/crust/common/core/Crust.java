@@ -32,6 +32,7 @@ public class Crust {
      *       '+' = incomplete new feature, '?' = feature to consider adding)
      *  - configs
      *      - config button opens config folder or in-game editor
+     *      - automated syncing of specified server-side fields
      *      - in-game config editor
      *          - menu buttons and hotkey to access
      *          + raw toml text box for default field widget
@@ -44,6 +45,7 @@ public class Crust {
      *              + reg entry list
      *              + dimension ID based sub-lists
      *  - events
+     *      - Crust config lifecycle events
      *      - advancement load event
      *      ? structure generating event
      *  - helpers

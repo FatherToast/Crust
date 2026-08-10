@@ -6,6 +6,7 @@ import fathertoast.crust.api.config.common.AbstractConfigFile;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
+import fathertoast.crust.api.event.config.CrustConfigEvent;
 import fathertoast.crust.api.lib.CrustCmdHelper;
 import fathertoast.crust.client.ClientRegister;
 import fathertoast.crust.client.screen.widget.entry.FileGuiEntry;
@@ -15,6 +16,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.Event;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -30,12 +33,12 @@ public class CrustConfigFileList extends SearchableSelectionList<FileGuiEntry> {
     
     public final int maxNameWidth;
     
-    public CrustConfigFileList( Screen parent, Minecraft game, ConfigManager cfgManager ) {
-        super( game, parent.width + 45, parent.height,
+    public CrustConfigFileList( Screen parent, Minecraft client, ConfigManager cfgManager ) {
+        super( client, parent.width + 45, parent.height,
                 43, parent.height - 32, 20 );
         // Check permissions
-        boolean canEdit = CrustCmdHelper.hasPermissions( game.player, CrustCmdHelper.PERMISSION_SERVER_OP );
-        boolean canRead = canEdit || CrustCmdHelper.hasPermissions( game.player, CrustConfig.UTILITIES.CONFIGS.viewConfigsOpLevel.get() );
+        boolean canEdit = CrustCmdHelper.hasPermissions( client.player, CrustCmdHelper.PERMISSION_SERVER_OP );
+        boolean canRead = canEdit || CrustCmdHelper.hasPermissions( client.player, CrustConfig.UTILITIES.CONFIGS.viewConfigsOpLevel.get() );
         Visibility visibility = ClientRegister.CONFIG_EDITOR.EDIT_SCREEN.fileVisibility.get();
         
         // Gather all managed config files and sort
@@ -43,8 +46,25 @@ public class CrustConfigFileList extends SearchableSelectionList<FileGuiEntry> {
         ArrayList<SortableFile> cfgFiles = new ArrayList<>();
         for( AbstractConfigFile cfgFile : cfgManager.getConfigs() ) {
             // Check file visibility
-            FileState state = cfgFile.SPEC.CLIENT_ONLY || canEdit ? FileState.FULL_ACCESS :
-                    canRead ? FileState.READ_ONLY : FileState.NO_ACCESS;
+            FileState state;
+            if( cfgFile.SPEC.CLIENT_ONLY ) {
+                state = FileState.FULL_ACCESS;
+            }
+            else {
+                Event event = new CrustConfigEvent.File.WriteAccessRequest( cfgFile.SPEC.FILE, client.player );
+                MinecraftForge.EVENT_BUS.post( event );
+                Event.Result result = event.getResult();
+                if( result == Event.Result.ALLOW || result == Event.Result.DEFAULT && canEdit ) {
+                    state = FileState.FULL_ACCESS;
+                }
+                else {
+                    event = new CrustConfigEvent.File.ReadAccessRequest( cfgFile.SPEC.FILE, client.player );
+                    MinecraftForge.EVENT_BUS.post( event );
+                    result = event.getResult();
+                    state = result == Event.Result.ALLOW || result == Event.Result.DEFAULT && canRead ?
+                            FileState.READ_ONLY : FileState.NO_ACCESS;
+                }
+            }
             if( visibility.shouldShow( state ) ) {
                 cfgFiles.add( new SortableFile( rootPath, cfgFile, state ) );
             }
@@ -70,7 +90,7 @@ public class CrustConfigFileList extends SearchableSelectionList<FileGuiEntry> {
                 if( cfgFile.STATE == FileState.FULL_ACCESS ) name.withStyle( ChatFormatting.AQUA );
                 else name.withStyle( ChatFormatting.DARK_GRAY );
             }
-            int nameWidth = game.font.width( name );
+            int nameWidth = client.font.width( name );
             if( nameWidth > currentMaxWidth ) currentMaxWidth = nameWidth;
             
             addEntry( new FileGuiEntry.File( this, name, cfgFile.SPEC, cfgFile.STATE ) );
