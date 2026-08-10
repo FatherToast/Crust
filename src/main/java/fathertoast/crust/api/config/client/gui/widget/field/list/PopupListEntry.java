@@ -100,7 +100,7 @@ public class PopupListEntry extends AbstractPopupListEntry<PopupListEntry> {
     @Override
     public boolean keyPressed( int key, int scancode, int mods ) {
         for( AbstractWidget w : WIDGETS ) {
-            if( w.keyPressed( key, scancode, mods ) ) return true;
+            if( w.isFocused() && w.keyPressed( key, scancode, mods ) ) return true;
         }
         return false;
     }
@@ -117,7 +117,7 @@ public class PopupListEntry extends AbstractPopupListEntry<PopupListEntry> {
     @Override
     public boolean keyReleased( int key, int scancode, int mods ) {
         for( AbstractWidget w : WIDGETS ) {
-            if( w.keyReleased( key, scancode, mods ) ) return true;
+            if( w.isFocused() && w.keyReleased( key, scancode, mods ) ) return true;
         }
         return false;
     }
@@ -126,7 +126,7 @@ public class PopupListEntry extends AbstractPopupListEntry<PopupListEntry> {
     @Override
     public boolean charTyped( char codePoint, int mods ) {
         for( AbstractWidget w : WIDGETS ) {
-            if( w.charTyped( codePoint, mods ) ) return true;
+            if( w.isFocused() && w.charTyped( codePoint, mods ) ) return true;
         }
         return false;
     }
