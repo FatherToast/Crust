@@ -58,7 +58,7 @@ public class EntryViewWidget<T, V> extends AbstractWidget implements ITooltipWid
         RENDERER.render( display, graphics, getX(), getY(), mouseX, mouseY, partialTick );
     }
     
-    /** @return The tooltip to render when the mouse is over this entry. Null if no tooltip should render. */
+    /** @return The tooltip to render when the mouse is over this widget. Null if no tooltip should render. */
     @Override // ITooltipWidget
     @Nullable
     public List<FormattedCharSequence> getTooltip( int mouseX, int mouseY ) { return TOOLTIP.isEmpty() ? null : TOOLTIP; }
