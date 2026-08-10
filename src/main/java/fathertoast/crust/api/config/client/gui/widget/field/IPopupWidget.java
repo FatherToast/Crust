@@ -15,7 +15,10 @@ public interface IPopupWidget {
      * @param mouseKey The mouse key that was clicked (see {@link InputConstants.Type#MOUSE}).
      * @return True if the popup should be closed.
      */
-    default boolean mouseClickedOutOfBounds( double x, double y, int mouseKey ) { return true; }
+    default boolean mouseClickedOutOfBounds( double x, double y, int mouseKey ) { return !isFullScreen(); }
+    
+    /** @return True if this widget covers the entire screen. Causes the screen to skip rendering if so. */
+    default boolean isFullScreen() { return false; }
     
     /** @return True if this popup should close when the Esc key is pressed. */
     default boolean shouldCloseOnEsc() { return true; }

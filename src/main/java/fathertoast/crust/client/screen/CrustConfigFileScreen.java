@@ -305,7 +305,9 @@ public class CrustConfigFileScreen extends Screen {
             renderMain( graphics, mouseX, mouseY, partialTicks );
         }
         else {
-            renderMain( graphics, Integer.MIN_VALUE, Integer.MIN_VALUE, partialTicks );
+            if( !(popupWidget instanceof IPopupWidget popup) || !popup.isFullScreen() ) {
+                renderMain( graphics, Integer.MIN_VALUE, Integer.MIN_VALUE, partialTicks );
+            }
             renderPopup( graphics, popupWidget, mouseX, mouseY, partialTicks );
         }
         

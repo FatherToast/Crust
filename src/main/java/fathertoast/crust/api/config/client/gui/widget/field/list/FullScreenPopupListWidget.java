@@ -211,14 +211,9 @@ public class FullScreenPopupListWidget<E extends AbstractPopupListEntry<E>> exte
         return false;
     }
     
-    /**
-     * Called when a mouse button is clicked out of the widget's bounds.
-     *
-     * @param mouseKey The mouse key that was clicked (see {@link InputConstants.Type#MOUSE}).
-     * @return True if the popup should be closed.
-     */
-    @Override // IPopupWidget - Really it should be impossible to click out of bounds, but just in case
-    public boolean mouseClickedOutOfBounds( double x, double y, int mouseKey ) { return false; }
+    /** @return True if this widget covers the entire screen. Causes the screen to skip rendering if so. */
+    @Override // IPopupWidget
+    public final boolean isFullScreen() { return true; }
     
     /** Called when the footer is clicked. */
     protected void clickedFooter( int footerX, int footerY ) {}
