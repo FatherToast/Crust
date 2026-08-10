@@ -35,7 +35,7 @@ import java.util.function.Supplier;
  * @param <V> The type of value this codec reads/writes; should be this multi-value codec itself.
  * @see MobEffectStats An example multi-value codec implementation.
  */
-public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements IValueCodec<V> {
+public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements IValueCodec<V>, ITomlStringValue {
     /**
      * Call this to define a sub-value for this multi-value codec.
      * Should only be called during instantiation; either in field definitions or in the constructor.
@@ -128,6 +128,13 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
             clone.subValues.get( i ).load( field, line, i < args.length ? args[i] : null );
         }
         return clone;
+    }
+    
+    /** @return This sub-value, converted to a single-line string. */
+    @Override // ITomlStringValue
+    public String toTomlString() {
+        //noinspection unchecked
+        return toTomlString( (V) this );
     }
     
     /** List of all sub-values that have been defined via {@link #subValue(IValueCodec)}. */

@@ -78,7 +78,7 @@ public class ColorPickerPopupWidget extends Screen {//TODO migrate to popup widg
         final int originalColor = FIELD.get();
         
         // Preview widget
-        colorPreviewWidget = new ColorPreviewWidget( 230, 105, 70 );
+        colorPreviewWidget = new ColorPreviewWidget( 230, 105 );
         colorPreviewWidget.setColor( originalColor, FIELD.usesAlpha() );
         
         // Color edit box

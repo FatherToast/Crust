@@ -123,7 +123,7 @@ public class IntField extends AbstractConfigField<Integer> {
     /** @return This field's gui component provider. */
     @Override
     public IConfigFieldWidgetProvider<Integer> getWidgetProvider() {
-        return new NumberFieldWidgetProvider<>( this, Number::intValue,
+        return new NumberFieldWidgetProvider<>( Number::intValue,
                 number -> valueMin <= number.intValue() && number.intValue() <= valueMax );
     }
     

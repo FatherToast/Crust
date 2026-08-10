@@ -75,7 +75,7 @@ public class FuzzyKeyField<T> extends AbstractConfigField<FuzzyKey<T>> {
     /** @return This field's gui component provider. */
     @Override
     public IConfigFieldWidgetProvider<FuzzyKey<T>> getWidgetProvider() {
-        return new StringFieldWidgetProvider<>( this,
+        return new StringFieldWidgetProvider<>(
                 ( string ) -> keyUsage.ifAllowed( keyParser.parseKeyString(
                         null, string, string, false ) ) != null );
     }

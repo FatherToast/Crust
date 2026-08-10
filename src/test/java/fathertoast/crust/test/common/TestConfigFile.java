@@ -1,14 +1,15 @@
 package fathertoast.crust.test.common;
 
+import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.common.AbstractConfigCategory;
 import fathertoast.crust.api.config.common.AbstractConfigFile;
-import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.config.common.field.collection.*;
 import fathertoast.crust.api.config.common.value.collection.*;
 import fathertoast.crust.api.config.common.value.collection.key.IRegWrapper;
 import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
 import fathertoast.crust.api.config.common.value.collection.key.ResourceLocKey;
+import fathertoast.crust.api.config.common.value.collection.key.StringKey;
 import fathertoast.crust.api.config.common.value.collection.value.*;
 import fathertoast.crust.api.config.common.value.environment.CrustEnvironmentRegistry;
 import fathertoast.crust.api.config.common.value.environment.EnvironmentList;
@@ -32,6 +33,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -54,11 +56,10 @@ public class TestConfigFile extends AbstractConfigFile {
     public final Environment ENVIRONMENT;
     
     /**
-     * @param cfgManager The mod's config manager.
-     * @param cfgName    Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
+     * @param cfgName Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
      */
-    TestConfigFile( ConfigManager cfgManager, String cfgName ) {
-        super( cfgManager, cfgName, false,
+    TestConfigFile( String cfgName ) {
+        super( ICrustApi.MOD_ID, cfgName, false,
                 "Test config file." );
         
         GENERAL = new General( this );
@@ -73,21 +74,22 @@ public class TestConfigFile extends AbstractConfigFile {
         // Primitives
         public final BooleanField booleanField;
         public final IntField intField;
-        public final LongField longField;
         public final ColorIntField colorIntField;
         public final ColorIntField colorIntFieldAlpha;
+        public final LongField longField;
         public final DoubleField doubleField;
         public final ScaledDoubleField scaledDoubleField;
         public final SqrDoubleField sqrDoubleField;
         // Simple objects
         public final StringField stringField;
         public final EnumField<BiomeCategory> enumField;
-        public final BlockStateField blockStateField;
-        public final ItemStackField itemStackField;
-        //        public final FuzzyKeyField<String> fuzzyKeyField;
-        //        public final ValueCodecField<SoundInstanceStats> valueCodecField;
+        public final FuzzyKeyField<String> fuzzyKeyField;
+        public final ValueCodecField<SoundData> valueCodecField;
+        // Previewed objects
         public final RegObjectField<Block> blockRegObjectField;
+        public final BlockStateField blockStateField;
         public final RegObjectField<Item> itemRegObjectField;
+        public final ItemStackField itemStackField;
         public final RegObjectField<MobEffect> mobEffectRegObjectField;
         public final RegObjectField<EntityType<?>> entityTypeRegObjectField;
         public final RegObjectField<SoundEvent> soundRegObjectField;
@@ -115,23 +117,16 @@ public class TestConfigFile extends AbstractConfigFile {
         public final NumberValueListField<Long, Rarity> numberValueListField;
         // Misc collections
         public final AttributeOpListField attributeOpListField;
-        // Misc collections
+        // Misc. collections
         public final EnvironmentListField<Integer> environmentListField;
         public final StringListField stringListField;
-        // Misc tests
+        // Misc. tests
         public final BooleanField longCommentField;
-        // Deprecated
-        //        public final BlockListField blockListField;
-        //        public final EntityListField entityListField;
-        //        public final RegistryEntryListField<EntityType<?>> registryEntryListField;
-        //        public final RegistryEntryValueListField<MobEffect> registryEntryValueListField;
-        //        public final LazyRegistryEntryListField<MobEffect> lazyRegistryEntryListField;
         
         General( TestConfigFile parent ) {
             super( parent, "general", generateFormatTest() );
             
             SPEC.comment( generateFormatTest() );
-            
             
             // Tester for each field type, by category
             
@@ -144,12 +139,13 @@ public class TestConfigFile extends AbstractConfigFile {
             
             intField = SPEC.define( new InjectionWrapperField<>(
                     new IntField( "int", 1, IntField.Range.ANY ), General::testCallback ) ).field();
-            longField = SPEC.define( new InjectionWrapperField<>(
-                    new LongField( "long", Long.MAX_VALUE, LongField.Range.POSITIVE ), General::testCallback ) ).field();
             colorIntField = SPEC.define( new InjectionWrapperField<>(
                     new ColorIntField( "color_int_rgb", 0x00FFFF, false ), General::testCallback ) ).field();
             colorIntFieldAlpha = SPEC.define( new InjectionWrapperField<>(
                     new ColorIntField( "color_int_argb", 0x77FF00FF, true ), General::testCallback ) ).field();
+            
+            longField = SPEC.define( new InjectionWrapperField<>(
+                    new LongField( "long", Long.MAX_VALUE, LongField.Range.POSITIVE ), General::testCallback ) ).field();
             
             doubleField = SPEC.define( new InjectionWrapperField<>(
                     new DoubleField( "double", 1.0, DoubleField.Range.ANY ), General::testCallback ) ).field();
@@ -169,13 +165,13 @@ public class TestConfigFile extends AbstractConfigFile {
             enumField = SPEC.define( new InjectionWrapperField<>(
                     new EnumField<>( "enum", BiomeCategory.NONE ), General::testCallback ) ).field();
             
-            blockStateField = SPEC.define( new InjectionWrapperField<>(
-                    new BlockStateField( "block_state", Blocks.BROWN_CANDLE_CAKE.defaultBlockState() ), General::testCallback ) ).field();
+            fuzzyKeyField = SPEC.define( new InjectionWrapperField<>(
+                    new FuzzyKeyField<>( "fuzzy_key", StringKey.of( "bink", false ), StringKey.PARSER ), General::testCallback ) ).field();
             
-            itemStackField = SPEC.define( new InjectionWrapperField<>(
-                    new ItemStackField( "item_stack", new ItemStack( Items.BEEF, 22 ) ), General::testCallback ) ).field();
+            valueCodecField = SPEC.define( new InjectionWrapperField<>(
+                    new ValueCodecField<>( "value_codec", SoundData.CODEC ), General::testCallback ) ).field();
             
-            // ---- Single registry objects ---- //
+            // ---- Previewed objects ---- //
             SPEC.callback( General::printLine );
             SPEC.newLine();
             
@@ -183,9 +179,19 @@ public class TestConfigFile extends AbstractConfigFile {
                     new RegObjectField<>( "block_reg_object", IRegWrapper.of( ForgeRegistries.BLOCKS ),
                             Blocks.ICE ), General::testCallback ) ).field();
             
+            blockStateField = SPEC.define( new InjectionWrapperField<>(
+                    new BlockStateField( "block_state", Blocks.BROWN_CANDLE_CAKE.defaultBlockState() ), General::testCallback ) ).field();
+            
             itemRegObjectField = SPEC.define( new InjectionWrapperField<>(
                     new RegObjectField<>( "item_reg_object", IRegWrapper.of( ForgeRegistries.ITEMS ),
                             ResourceKey.create( Registries.ITEM, ResourceLocation.withDefaultNamespace( "stick" ) ) ), General::testCallback ) ).field();
+            
+            ItemStack itemStack = new ItemStack( Items.DIAMOND_HOE );
+            itemStack.setDamageValue( (int) (itemStack.getMaxDamage() * 0.8) );
+            itemStack.enchant( Enchantments.LOYALTY, 1 );
+            itemStack.enchant( Enchantments.BINDING_CURSE, 1 );
+            itemStackField = SPEC.define( new InjectionWrapperField<>(
+                    new ItemStackField( "item_stack", itemStack ), General::testCallback ) ).field();
             
             mobEffectRegObjectField = SPEC.define( new InjectionWrapperField<>(
                     new RegObjectField<>( "mob_effect_reg_object", IRegWrapper.of( ForgeRegistries.MOB_EFFECTS ),
@@ -499,51 +505,6 @@ public class TestConfigFile extends AbstractConfigFile {
                             "been used as kitchen and eating utensils in most countries of Sinosphere for over three " +
                             "millennia? They are held in the dominant hand, secured by fingers, and wielded as extensions " +
                             "of the hand, to pick up food. Truly exciting." ) );
-            
-            // ---- Deprecated ---- //
-            
-            //            blockListField = SPEC.define( new InjectionWrapperField<>(
-            //                    new BlockListField( "block_list", new BlockList(
-            //                            List.of( "crust" ),
-            //                            List.of( BlockTags.ENDERMAN_HOLDABLE ),
-            //                            new BlockEntry( Blocks.GRASS_BLOCK ),
-            //                            new BlockEntry( Blocks.FURNACE.defaultBlockState().setValue( AbstractFurnaceBlock.LIT, true ) ) ),
-            //                            (String[]) null ), General::testCallback ) ).field();
-            //            entityListField = SPEC.define( new InjectionWrapperField<>(
-            //                    new EntityListField( "entity_list", new EntityList(
-            //                            new DefaultValueEntry( 0.0 ),
-            //                            new EntityEntry( EntityType.CREEPER, true, 1.0 ),
-            //                            new EntityEntry( EntityType.ZOMBIE, false, 2.0 )
-            //                    ).addTagEntries( List.of(
-            //                                    new EntityTagEntry( EntityTypeTags.SKELETONS, 2.0 )
-            //                            ) )
-            //                            .addNamespaceEntries( List.of(
-            //                                    new NamespaceRegistryEntry( ICrustApi.MOD_ID, 2.0 ),
-            //                                    new NamespaceRegistryEntry( "minecraft", 1.5 )
-            //                            ) )
-            //                            .setSingleValue().setRange( 0.0, 2.0 ),
-            //                            (String[]) null ), General::testCallback ) ).field();
-            //            registryEntryListField = SPEC.define( new InjectionWrapperField<>(
-            //                    new RegistryEntryListField<>( "registry_entry_list",
-            //                            new RegistryEntryList<>( ForgeRegistries.ENTITY_TYPES,
-            //                                    List.of( ICrustApi.MOD_ID ),
-            //                                    List.of( EntityTypeTags.FALL_DAMAGE_IMMUNE ),
-            //                                    EntityType.SHEEP, EntityType.ALLAY ),
-            //                            (String[]) null ), General::testCallback ) ).field();
-            //            registryEntryValueListField = SPEC.define( new InjectionWrapperField<>(
-            //                    new RegistryEntryValueListField<>( "registry_entry_value_list",
-            //                            new RegistryEntryValueList<>( new DefaultValueEntry( 0.0 ), () -> ForgeRegistries.MOB_EFFECTS,
-            //                                    new RegistryValueEntry<>( ForgeRegistries.MOB_EFFECTS.getKey( MobEffects.CONFUSION ), 1.2 ),
-            //                                    new RegistryValueEntry<>( ForgeRegistries.MOB_EFFECTS.getKey( MobEffects.ABSORPTION ), 2.0 )
-            //                            ).setSingleValue(),
-            //                            (String[]) null ), General::testCallback ) ).field();
-            //            lazyRegistryEntryListField = SPEC.define( new InjectionWrapperField<>(
-            //                    new LazyRegistryEntryListField<>( "lazy_registry_entry_list",
-            //                            new LazyRegistryEntryList<>( ForgeRegistries.MOB_EFFECTS,
-            //                                    List.of( "minecraft" ),
-            //                                    null,
-            //                                    MobEffects.CONFUSION ),
-            //                            (String[]) null ), General::testCallback ) ).field();
         }
         
         private static void testCallback( IConfigField<?> field ) {

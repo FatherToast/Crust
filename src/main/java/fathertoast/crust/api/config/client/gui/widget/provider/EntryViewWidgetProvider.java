@@ -3,7 +3,6 @@ package fathertoast.crust.api.config.client.gui.widget.provider;
 import fathertoast.crust.api.config.client.gui.widget.entry.ConfigFieldGuiEntry;
 import fathertoast.crust.api.config.client.gui.widget.field.EntryViewWidget;
 import fathertoast.crust.api.config.common.file.TomlHelper;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
@@ -18,19 +17,27 @@ import java.util.function.Predicate;
  * something based on the current value of the text box.
  *
  * @param <T> The type of value the field provides.
+ * @param <V> The type of value the renderer displays.
  */
-public abstract class EntryViewWidgetProvider<T> implements IConfigFieldWidgetProvider<T> {
+public class EntryViewWidgetProvider<T, V> implements IConfigFieldWidgetProvider<T> {
     
+    /** Converts the field's value type to the renderer's value type. */
+    protected final Function<T, V> VALUE_MAPPER;
+    /** The entry renderer use to render a config value. */
+    private final EntryViewWidget.EntryViewRenderer<V> RENDERER;
     /** An optional line validator. */
     @Nullable
     protected final Predicate<String> VALIDATOR;
     
     /**
-     * Constructs a new instance of this widget provider with the specified supplier and an optional line validator.
-     *
-     * @param lineValidator An optional line validator for the text box provided by this provider.
+     * @param valueMapper   Maps a field value to the value we want to render.
+     * @param renderer      The renderer we use.
+     * @param lineValidator An optional line validator for the text box provided.
      */
-    public EntryViewWidgetProvider( @Nullable Predicate<String> lineValidator ) {
+    public EntryViewWidgetProvider( Function<T, V> valueMapper, EntryViewWidget.EntryViewRenderer<V> renderer,
+                                    @Nullable Predicate<String> lineValidator ) {
+        VALUE_MAPPER = valueMapper;
+        RENDERER = renderer;
         VALIDATOR = lineValidator;
     }
     
@@ -47,7 +54,7 @@ public abstract class EntryViewWidgetProvider<T> implements IConfigFieldWidgetPr
      */
     @Override
     public void apply( List<AbstractWidget> components, ConfigFieldGuiEntry<T> listEntry, T displayValue ) {
-        EntryViewWidget<T> entryViewWidget = new EntryViewWidget<>( this::renderEntry, displayValue,
+        EntryViewWidget<T, V> entryViewWidget = new EntryViewWidget<>( VALUE_MAPPER, RENDERER, displayValue,
                 VALUE_WIDTH - EntryViewWidget.DEFAULT_SIZE, 0 );
         
         EditBox editBox = new EditBox( listEntry.client().font, 1, 1,
@@ -77,26 +84,13 @@ public abstract class EntryViewWidgetProvider<T> implements IConfigFieldWidgetPr
         components.add( editBox );
     }
     
-    /**
-     * Allows rendering something based on the
-     * current value of this provider's field.
-     */
-    public abstract void renderEntry( @Nullable T displayValue, GuiGraphics graphics,
-                                      int widgetX, int widgetY, int mouseX, int mouseY, float partialTick );
-    
     
     /**
-     * Simple implementation that allows passing an {@link EntryViewWidget.EntryViewRenderer}
-     * instance in the constructor instead of having to override
-     * {@link EntryViewWidgetProvider#renderEntry(Object, GuiGraphics, int, int, int, int, float)}.
+     * Simple implementation for field types that exactly match their renderer type.
      *
      * @param <T> The type of value the field provides.
      */
-    public static class Simple<T> extends EntryViewWidgetProvider<T> {
-        
-        /** The entry renderer used to render a config value. */
-        private final EntryViewWidget.EntryViewRenderer<T> RENDERER;
-        
+    public static class Simple<T> extends EntryViewWidgetProvider<T, T> {
         /**
          * Constructs a new instance of this widget provider with the specified supplier and an optional line validator.
          *
@@ -104,51 +98,7 @@ public abstract class EntryViewWidgetProvider<T> implements IConfigFieldWidgetPr
          * @param lineValidator An optional line validator for the text box provided by this provider.
          */
         public Simple( EntryViewWidget.EntryViewRenderer<T> renderer, @Nullable Predicate<String> lineValidator ) {
-            super( lineValidator );
-            RENDERER = renderer;
-        }
-        
-        @Override
-        public void renderEntry( @Nullable T displayValue, GuiGraphics graphics,
-                                 int widgetX, int widgetY, int mouseX, int mouseY, float partialTick ) {
-            RENDERER.render( displayValue, graphics, widgetX, widgetY, mouseX, mouseY, partialTick );
-        }
-    }
-    
-    /**
-     * Simple implementation that allows passing an {@link EntryViewWidget.EntryViewRenderer}
-     * instance in the constructor and a mapping function instead of having to override
-     * {@link EntryViewWidgetProvider#renderEntry(Object, GuiGraphics, int, int, int, int, float)}.
-     *
-     * @param <T> The type of value the field provides.
-     * @param <V> The renderer type.
-     */
-    public static class SimpleMapped<T, V> extends EntryViewWidgetProvider<T> {
-        
-        /** The providing field. */
-        protected final Function<T, V> VALUE_MAPPER;
-        /** The entry renderer used to render a config value. */
-        private final EntryViewWidget.EntryViewRenderer<V> RENDERER;
-        
-        /**
-         * Constructs a new instance of this widget provider with the specified supplier and an optional line validator.
-         *
-         * @param valueMapper   Maps a field value to the thing we need to render.
-         * @param renderer      The entry view renderer we use.
-         * @param lineValidator An optional line validator for the text box provided by this provider.
-         */
-        public SimpleMapped( Function<T, V> valueMapper, EntryViewWidget.EntryViewRenderer<V> renderer, @Nullable Predicate<String> lineValidator ) {
-            super( lineValidator );
-            VALUE_MAPPER = valueMapper;
-            RENDERER = renderer;
-        }
-        
-        @Override
-        public void renderEntry( @Nullable T displayValue, GuiGraphics graphics,
-                                 int widgetX, int widgetY, int mouseX, int mouseY, float partialTick ) {
-            if( displayValue == null ) return;
-            RENDERER.render( VALUE_MAPPER.apply( displayValue ), graphics,
-                    widgetX, widgetY, mouseX, mouseY, partialTick );
+            super( value -> value, renderer, lineValidator );
         }
     }
 }

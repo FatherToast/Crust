@@ -128,7 +128,7 @@ public class BlockStateField extends AbstractConfigField<BlockStateKey.Basic> {
     @Override
     @OnClient
     public IConfigFieldWidgetProvider<BlockStateKey.Basic> getWidgetProvider() {
-        return new EntryViewWidgetProvider.SimpleMapped<>( BlockStateKey.Basic::asValue,
+        return new EntryViewWidgetProvider<>( BlockStateKey.Basic::asValue,
                 EntryViewRendererRegistry.getRendererOrThrow( EntryViewRendererRegistry.BLOCK_STATE ),
                 ( string ) -> {
                     ResourceLocation id = ResourceLocation.tryParse( BlockStatePropertyMap.split( string )[0] );

@@ -3,8 +3,11 @@ package fathertoast.crust.client.renderer.entryview;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import fathertoast.crust.api.config.client.gui.EntryViewRendererRegistry;
 import fathertoast.crust.api.config.client.gui.widget.field.EntryViewWidget;
 import fathertoast.crust.api.lib.CrustMath;
+import fathertoast.crust.api.util.BlockStatePropertyMap;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -17,6 +20,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -31,11 +36,11 @@ import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,9 +62,9 @@ public class BlockStateEntryViewRenderer implements EntryViewWidget.EntryViewRen
      * to render something based on the widget's field's value.
      */
     @Override
-    public void render( @Nullable BlockState displayValue, GuiGraphics graphics,
+    public void render( BlockState displayValue, GuiGraphics graphics,
                         int widgetX, int widgetY, int mouseX, int mouseY, float partialTick ) {
-        if( displayValue == null || displayValue.isAir() ) return;
+        if( displayValue.isAir() ) return;
         
         final PoseStack pose = graphics.pose();
         final MultiBufferSource.BufferSource bufferSource = graphics.bufferSource();
@@ -83,21 +88,24 @@ public class BlockStateEntryViewRenderer implements EntryViewWidget.EntryViewRen
     /** Renders the given block state as an item stack. */
     private void renderItemStack( BlockState state, GuiGraphics graphics, int x, int y ) {
         // Params: stack, x, y, seed, depth
-        graphics.renderItem( new ItemStack( state.getBlock() ), x + 2, y + 2, 0, Integer.MIN_VALUE );
+        graphics.renderItem( new ItemStack( state.getBlock() ), x + 2, y + 2, 0, -250 );
     }
     
     /** Renders the given block state with transforms similar to GUI items. */
     private void renderBlockState( BlockState state, MultiBufferSource.BufferSource bufferSource, PoseStack pose, int x, int y ) {
         pose.pushPose();
+        
+        // A somewhat OK-ish looking scale, perchance
+        float scale = 10.170791846265F;
+        
         // X, Y and depth (Z)
-        pose.translate( x + 10, y + 18, 15 );
+        pose.translate( x + 10, y + 18, -100 );
         // Flip the pose so we don't render things upside-down
-        pose.mulPoseMatrix( (new Matrix4f()).scaling( 1.0F, -1.0F, 1.0F ) );
+        pose.mulPoseMatrix( new Matrix4f().scaling( 1.0F, -1.0F, 1.0F ) );
         // Standard transforms used for blocks in GUIs
         pose.mulPose( Axis.XP.rotationDegrees( 30.0F ) );
         pose.mulPose( Axis.YN.rotationDegrees( 225.0F ) );
-        // A somewhat OK-ish looking scale, perchance
-        pose.scale( 10.0F, 10.0F, 10.0F );
+        pose.scale( scale, scale, scale );
         
         final BlockRenderDispatcher renderDispatcher = Minecraft.getInstance().getBlockRenderer();
         //noinspection DataFlowIssue null render type is allowed, Forge just doesn't like it
@@ -129,10 +137,24 @@ public class BlockStateEntryViewRenderer implements EntryViewWidget.EntryViewRen
         RenderSystem.disableBlend();
     }
     
-    /**
-     * Called after mod loading has completed to
-     * perform any required setup before use.
-     */
+    /** Called when the display value is changed to populate the widget's tooltip. */
+    @Override
+    public void updateTooltip( List<FormattedCharSequence> tooltip, BlockState displayValue ) {
+        EntryViewRendererRegistry.getRendererOrThrow( EntryViewRendererRegistry.BLOCK )
+                .updateTooltip( tooltip, displayValue.getBlock() );
+        
+        Map<String, String> props = BlockStatePropertyMap.of( displayValue ).map();
+        if( !props.isEmpty() ) {
+            tooltip.add( FormattedCharSequence.EMPTY );
+            addLine( tooltip, Component.translatable( "menu.crust.config.field.block_state.properties" )
+                    .withStyle( ChatFormatting.BLUE ) );
+            
+            props.forEach( ( prop, value ) ->
+                    addLine( tooltip, BlockStatePropertyMap.combine( prop, value, true ) ) );
+        }
+    }
+    
+    /** Called after mod loading has completed to perform any required setup before use. */
     @Override
     public void setup() {
         final Map<BlockEntityType<?>, BlockEntityRendererProvider<?>> providers;

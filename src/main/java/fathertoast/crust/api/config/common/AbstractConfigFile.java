@@ -31,6 +31,17 @@ public abstract class AbstractConfigFile {
     public final CrustConfigSpec SPEC;
     
     /**
+     * @param modId           The mod id associated with this file's config manager.
+     * @param cfgName         Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
+     * @param clientOnly      True if this config only exists on the client side.
+     * @param fileDescription Opening file comment to describe/summarize the contents of the file.
+     *                        Each string is printed as a separate line.
+     */
+    public AbstractConfigFile( String modId, String cfgName, boolean clientOnly, String... fileDescription ) {
+        this( ConfigManager.getRequired( modId ), cfgName, clientOnly, fileDescription );
+    }
+    
+    /**
      * @param cfgManager      The mod's config manager.
      * @param cfgName         Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
      * @param clientOnly      True if this config only exists on the client side.
@@ -53,6 +64,17 @@ public abstract class AbstractConfigFile {
      * See {@link fathertoast.crust.client.config.RenderSettingsCrustConfig} for a simple example config implementation.
      */
     public static abstract class Simple extends AbstractConfigFile {
+        /**
+         * @param modId           The mod id associated with this file's config manager.
+         * @param cfgName         Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").
+         * @param clientOnly      True if this config only exists on the client side.
+         * @param fileDescription Opening file comment to describe/summarize the contents of the file.
+         *                        Each string is printed as a separate line.
+         */
+        public Simple( String modId, String cfgName, boolean clientOnly, String... fileDescription ) {
+            this( ConfigManager.getRequired( modId ), cfgName, clientOnly, fileDescription );
+        }
+        
         /**
          * @param cfgManager      The mod's config manager.
          * @param cfgName         Name for the new config file. May include a file path (e.g. "folder/subfolder/filename").

@@ -1,6 +1,7 @@
 package fathertoast.crust.client.screen.widget.entry;
 
 import fathertoast.crust.api.config.client.gui.widget.entry.ConfigFieldGuiEntry;
+import fathertoast.crust.api.config.client.gui.widget.field.ITooltipWidget;
 import fathertoast.crust.api.config.client.gui.widget.field.ResetButton;
 import fathertoast.crust.api.config.client.gui.widget.provider.IConfigFieldWidgetProvider;
 import fathertoast.crust.api.config.common.field.IConfigField;
@@ -8,10 +9,12 @@ import fathertoast.crust.api.config.common.field.RestartNote;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.client.screen.widget.CrustConfigFieldList;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
@@ -55,10 +58,11 @@ public class FieldGuiEntry<T> extends ConfigFieldGuiEntry<T> {
             }
         }
         
-        RESET_BUTTON = new ResetButton( button -> {
-            updateValue( getField().getDefaultValue() );
-            populateComponents();
-        } );
+        RESET_BUTTON = new ResetButton( 0, 0, // Position gets set when populated
+                button -> {
+                    updateValue( getField().getDefaultValue() );
+                    populateComponents();
+                } );
         RESET_BUTTON.active = isEditable() && !TomlHelper.equals( getField().getDefaultValue(), getValue() );
         populateComponents();
     }
@@ -118,14 +122,25 @@ public class FieldGuiEntry<T> extends ConfigFieldGuiEntry<T> {
     
     /** @return The tooltip to render when the mouse is over this entry. Null if no tooltip should render. */
     @Override
-    public List<FormattedCharSequence> getTooltip() { return TOOLTIP; }
+    @Nullable
+    public List<FormattedCharSequence> getTooltip( int mouseX, int mouseY ) {
+        if( mouseX < PARENT.getRowRight() - IConfigFieldWidgetProvider.VALUE_WIDTH - CrustConfigFieldList.RESET_BUTTON_WIDTH - CrustConfigFieldList.SCROLL_WIDTH )
+            return TOOLTIP;
+        for( OffsetWidget component : RENDER_COMPONENTS ) {
+            if( component.WIDGET.isHovered() ) {
+                if( component.WIDGET instanceof ITooltipWidget widget ) return widget.getTooltip( mouseX, mouseY );
+                Tooltip tooltip = component.WIDGET.getTooltip();
+                return tooltip == null ? null : tooltip.toCharSequence( Minecraft.getInstance() );
+            }
+        }
+        return null;
+    }
     
     @Override
     public void setFocused( @Nullable GuiEventListener component ) {
         if( component instanceof EditBox editBox ) PARENT.PARENT.setFocusedTextBox( editBox );
         super.setFocused( component );
     }
-    
     
     /** Renders this list entry. */
     @Override

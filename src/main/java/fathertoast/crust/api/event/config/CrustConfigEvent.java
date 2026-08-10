@@ -145,19 +145,52 @@ public class CrustConfigEvent extends Event {
         /**
          * Fired when a common-sided config file has been selected in the in-game editor.
          * <p>
-         * When a player joins a server, a sync packet is sent to that player for each synced config.
-         * After a synced config is {@linkplain Loaded reloaded}, a sync packet is sent to each player for that config.
+         * On the client, this happens for each common-side file shown when a mod is selected,
+         * after the {@link WriteAccessRequest} event and only if write access was denied.<p>
+         * On the server, this happens when the player tries to open a file.
          * <p>
-         * This event is not cancelable and does not have a result.
+         * This event has a result:<p>
+         * * {@link Result#ALLOW} means read access will be granted.<p>
+         * * {@link Result#DEFAULT} means the player's permissions will be checked against the config setting.<p>
+         * * {@link Result#DENY} means read access will be denied.
          * <p>
          * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
          */
+        @Event.HasResult
         public static class ReadAccessRequest extends File {
             /** The player requesting the read-access data. */
             public final Player player;
             
             @ApiStatus.Internal
             public ReadAccessRequest( AbstractConfigFile cfgFile, Player thePlayer ) {
+                super( cfgFile );
+                player = thePlayer;
+            }
+        }
+        
+        /**
+         * Fired when a common-sided config file has been edited in the in-game editor.
+         * <p>
+         * On the client, this happens for each common-side file shown when a mod is selected,
+         * before the {@link ReadAccessRequest} event.<p>
+         * On the server, this happens when the player tries to save changes to a file.
+         * <p>
+         * Note that if write access is denied on the server side, the player will be forcibly disconnected.
+         * <p>
+         * This event has a result:<p>
+         * * {@link Result#ALLOW} means write access will be granted.<p>
+         * * {@link Result#DEFAULT} means the player's permissions will be checked.<p>
+         * * {@link Result#DENY} means write access will be denied.
+         * <p>
+         * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+         */
+        @Event.HasResult
+        public static class WriteAccessRequest extends File {
+            /** The player requesting the read-access data. */
+            public final Player player;
+            
+            @ApiStatus.Internal
+            public WriteAccessRequest( AbstractConfigFile cfgFile, Player thePlayer ) {
                 super( cfgFile );
                 player = thePlayer;
             }

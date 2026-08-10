@@ -112,7 +112,7 @@ public class DoubleField extends AbstractConfigField<Double> {
     @Override
     @OnClient
     public IConfigFieldWidgetProvider<Double> getWidgetProvider() {
-        return new NumberFieldWidgetProvider<>( this, Number::doubleValue,
+        return new NumberFieldWidgetProvider<>( Number::doubleValue,
                 number -> minValue() <= number.doubleValue() && number.doubleValue() <= maxValue() );
     }
     

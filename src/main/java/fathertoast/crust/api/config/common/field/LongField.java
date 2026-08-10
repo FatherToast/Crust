@@ -112,7 +112,7 @@ public class LongField extends AbstractConfigField<Long> {
     @Override
     @OnClient
     public IConfigFieldWidgetProvider<Long> getWidgetProvider() {
-        return new NumberFieldWidgetProvider<>( this, Number::longValue,
+        return new NumberFieldWidgetProvider<>( Number::longValue,
                 number -> number.longValue() >= valueMin && number.longValue() <= valueMax );
     }
     

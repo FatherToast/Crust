@@ -5,10 +5,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import fathertoast.crust.api.config.client.gui.widget.field.EntryViewWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
+import java.util.List;
 
 /**
  * An entry view renderer implementation that renders an item stack,
@@ -20,15 +22,14 @@ public class ItemStackEntryViewRenderer implements EntryViewWidget.EntryViewRend
      * to render something based on the widget's field's value.
      */
     @Override
-    public void render( @Nullable ItemStack displayValue, GuiGraphics graphics,
+    public void render( ItemStack displayValue, GuiGraphics graphics,
                         int widgetX, int widgetY, int mouseX, int mouseY, float partialTick ) {
-        if( displayValue == null || displayValue == ItemStack.EMPTY ) return;
+        if( displayValue == ItemStack.EMPTY ) return;
         
         final int stackSize = displayValue.getCount();
         final PoseStack stack = graphics.pose();
         
         stack.pushPose();
-        stack.translate( 0.0, 0.0, -150.0 );
         
         graphics.renderItem( displayValue, widgetX + 2, widgetY + 2 );
         // Render "sub-widgets" such as durability bar and stack size
@@ -36,5 +37,15 @@ public class ItemStackEntryViewRenderer implements EntryViewWidget.EntryViewRend
                 widgetX, widgetY, stackSize > 1 ? String.valueOf( stackSize ) : null );
         
         stack.popPose();
+    }
+    
+    /** Called when the display value is changed to populate the widget's tooltip. */
+    @Override
+    public void updateTooltip( List<FormattedCharSequence> tooltip, ItemStack displayValue ) {
+        if( !displayValue.isEmpty() ) {
+            for( Component line : Screen.getTooltipFromItem( Minecraft.getInstance(), displayValue ) ) {
+                addLine( tooltip, line );
+            }
+        }
     }
 }
