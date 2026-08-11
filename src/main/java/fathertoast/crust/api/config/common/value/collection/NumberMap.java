@@ -18,47 +18,47 @@ import java.util.Collection;
  */
 @SuppressWarnings( "unused" )
 @ApiStatus.Experimental
-public class NumberMap<T extends Number, V> extends FuzzyMap<T, V> {
+public class NumberMap<T extends Number, V> extends FuzzyMap<T, V> implements INumberCollection {
     
     /** Creates a new builder for a {@code byte} number list. */
     public static <V> NumberMap.Builder<Byte, V, ?> byteBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberMap.Builder<>( NumberKey.ValueType.BYTE, valueCodec );
+        return new NumberMap.Builder<>( NumberKey.NumberType.BYTE, valueCodec );
     }
     
     /** Creates a new builder for a {@code short} number list. */
     public static <V> NumberMap.Builder<Short, V, ?> shortBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberMap.Builder<>( NumberKey.ValueType.SHORT, valueCodec );
+        return new NumberMap.Builder<>( NumberKey.NumberType.SHORT, valueCodec );
     }
     
     /** Creates a new builder for an {@code int} number list. */
     public static <V> NumberMap.Builder<Integer, V, ?> intBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberMap.Builder<>( NumberKey.ValueType.INT, valueCodec );
+        return new NumberMap.Builder<>( NumberKey.NumberType.INT, valueCodec );
     }
     
     /** Creates a new builder for a {@code long} number list. */
     public static <V> NumberMap.Builder<Long, V, ?> longBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberMap.Builder<>( NumberKey.ValueType.LONG, valueCodec );
+        return new NumberMap.Builder<>( NumberKey.NumberType.LONG, valueCodec );
     }
     
     /** Creates a new builder for a {@code float} number list. */
     public static <V> NumberMap.Builder<Float, V, ?> floatBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberMap.Builder<>( NumberKey.ValueType.FLOAT, valueCodec );
+        return new NumberMap.Builder<>( NumberKey.NumberType.FLOAT, valueCodec );
     }
     
     /** Creates a new builder for a {@code double} number list. */
     public static <V> NumberMap.Builder<Double, V, ?> doubleBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberMap.Builder<>( NumberKey.ValueType.DOUBLE, valueCodec );
+        return new NumberMap.Builder<>( NumberKey.NumberType.DOUBLE, valueCodec );
     }
     
     
-    /** The {@link NumberKey.ValueType} of this number list. */
-    private final NumberKey.ValueType valueType;
+    /** The {@link NumberKey.NumberType} of this number list. */
+    private final NumberKey.NumberType numberType;
     
     
     /** Constructs an empty map. Use this if you want to {@link #load} a map from file/NBT. */
-    public NumberMap( NumberKey.ValueType type, IValueCodec<V> codec ) {
+    public NumberMap( NumberKey.NumberType type, IValueCodec<V> codec ) {
         super( NumberKey.getParserForType( type ), codec );
-        valueType = type;
+        numberType = type;
     }
     
     /**
@@ -66,43 +66,48 @@ public class NumberMap<T extends Number, V> extends FuzzyMap<T, V> {
      * during config definition, however the {@link BlockStateMap.Builder} is much easier.
      */
     @SafeVarargs
-    public NumberMap( NumberKey.ValueType type, IValueCodec<V> codec, FuzzyEntry<T, V>... keys ) {
+    public NumberMap( NumberKey.NumberType type, IValueCodec<V> codec, FuzzyEntry<T, V>... keys ) {
         super( NumberKey.getParserForType( type ), codec, keys );
-        valueType = type;
+        numberType = type;
     }
     
     /**
      * Constructs a map containing the entries provided. You may use this for creating default values
      * during config definition, however the {@link BlockStateMap.Builder} is much easier.
      */
-    public NumberMap( NumberKey.ValueType type, IValueCodec<V> codec, Collection<FuzzyEntry<T, V>> keys ) {
+    public NumberMap( NumberKey.NumberType type, IValueCodec<V> codec, Collection<FuzzyEntry<T, V>> keys ) {
         super( NumberKey.getParserForType( type ), codec, keys );
-        valueType = type;
+        numberType = type;
     }
     
     /** @return A fresh, empty collection of the same type as this one. */
     @Override
-    public NumberMap<T, V> makeNew() { return new NumberMap<>( valueType, valueCodec ); }
+    public NumberMap<T, V> makeNew() { return new NumberMap<>( numberType, valueCodec ); }
+    
+    /** @return This number collection's number value type. */
+    @Override
+    public NumberKey.NumberType getNumberType() {
+        return numberType;
+    }
     
     
     // ---- Builder Implementation ---- //
     
-    /** Builder to make constructing block state maps smoother. */
+    /** Builder to make constructing number maps smoother. */
     public static class Builder<T extends Number, V, B extends NumberMap.Builder<T, V, B>> extends AbstractBuilder<T, V, NumberMap<T, V>, B> {
         
-        /** The {@link fathertoast.crust.api.config.common.value.collection.key.NumberKey.ValueType} of this builder. */
-        private final NumberKey.ValueType valueType;
+        /** The {@link NumberKey.NumberType} of this builder. */
+        private final NumberKey.NumberType numberType;
         
         
-        /** For internal use. Use one of the builder methods above. */
-        private Builder( NumberKey.ValueType type, IValueCodec<V> codec ) {
+        public Builder( NumberKey.NumberType type, IValueCodec<V> codec ) {
             super( codec );
-            valueType = type;
+            numberType = type;
         }
         
         /** @return A new number map reflecting the current state of this builder. */
         @Override
-        public NumberMap<T, V> build() { return new NumberMap<>( valueType, valueCodec, list ); }
+        public NumberMap<T, V> build() { return new NumberMap<>( numberType, valueCodec, list ); }
         
         
         // ---- Exact Value Keys ---- //

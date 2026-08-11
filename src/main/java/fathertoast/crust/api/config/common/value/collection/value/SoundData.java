@@ -40,8 +40,8 @@ public class SoundData extends MultiValueCodec<SoundData> {
     
     
     /** The sound event ID. Defaults to "crust:empty". */
-    public final SubValue<ResourceLocation> soundId = subValue( ResourceLocValueCodec.DEFAULT,
-            ResourceLocValueCodec.DEFAULT.getFormat() );
+    public final SubValue<ResourceLocation> soundId = subValue( ResourceLocationCodec.DEFAULT,
+            ResourceLocationCodec.DEFAULT.getFormat() );
     /** The playback volume, which is effectively the hearing range (0.0 ~). */
     public SubValue<Float> volume = subValue( FloatValueCodec.NON_NEGATIVE,
             DoubleValueCodec.NON_NEGATIVE.getFormat( "Volume" ) );
@@ -56,7 +56,7 @@ public class SoundData extends MultiValueCodec<SoundData> {
     }
     
     /** The no-args constructor used to create the codec "singleton" and for value loading. */
-    public SoundData() {}
+    public SoundData() { }
     
     /** @return The saved sound event value, or null if invalid. */
     @Nullable

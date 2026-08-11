@@ -6,27 +6,27 @@ import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 
-/** A simple {@code ResourceLocation} value codec. */
-public class ResourceLocValueCodec implements IValueCodec<ResourceLocation> {
+/** A simple {@link ResourceLocation} value codec. */
+public class ResourceLocationCodec implements IValueCodec<ResourceLocation> {
     
     /** A strict resource location codec that uses {@link fathertoast.crust.api.util.ResourceLocationUtils#EMPTY} as the default value. */
-    public static final ResourceLocValueCodec DEFAULT = of( ResourceLocationUtils.EMPTY, true );
+    public static final ResourceLocationCodec DEFAULT = of( ResourceLocationUtils.EMPTY, true );
     
     
     /**
      * @param strictParse If true, the returned codec will not accept resource location strings without specified namespace when parsing.
      * @return A resource location codec with the specified default. Missing or empty strings will be loaded as the default value.
      */
-    public static ResourceLocValueCodec of( ResourceLocation defaultValue, boolean strictParse ) {
-        return new ResourceLocValueCodec( defaultValue, strictParse );
+    public static ResourceLocationCodec of( ResourceLocation defaultValue, boolean strictParse ) {
+        return new ResourceLocationCodec( defaultValue, strictParse );
     }
     
     /**
      * @param strictParse If true, the returned codec will not accept resource location strings without specified namespace when parsing.
      * @return A resource location codec with the specified default. Missing or empty strings will be loaded as the default value.
      */
-    public static ResourceLocValueCodec of( String defaultValue, boolean strictParse ) {
-        return new ResourceLocValueCodec( defaultValue, strictParse );
+    public static ResourceLocationCodec of( String defaultValue, boolean strictParse ) {
+        return new ResourceLocationCodec( defaultValue, strictParse );
     }
     
     
@@ -40,13 +40,12 @@ public class ResourceLocValueCodec implements IValueCodec<ResourceLocation> {
      */
     public final boolean strict;
     
-    
-    private ResourceLocValueCodec( ResourceLocation def, boolean strictParse ) {
+    private ResourceLocationCodec( ResourceLocation def, boolean strictParse ) {
         defaultValue = def;
         strict = strictParse;
     }
     
-    private ResourceLocValueCodec( String def, boolean strictParse ) {
+    private ResourceLocationCodec( String def, boolean strictParse ) {
         defaultValue = ResourceLocationUtils.strictTryParse( def );
         strict = strictParse;
         

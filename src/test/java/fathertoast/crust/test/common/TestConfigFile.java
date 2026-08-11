@@ -97,24 +97,30 @@ public class TestConfigFile extends AbstractConfigFile {
         public final FuzzyListField<Long, FuzzyList<Long>> fuzzyListField;
         public final FuzzySetField<ResourceLocation, FuzzySet<ResourceLocation>> fuzzySetField;
         public final FuzzyMapField<Double, String, FuzzyMap<Double, String>> fuzzyMapField;
+        
         public final EntitySetField entitySetField;
         public final EntityMapField<Double[]> entityMapField;
+        
         public final BlockStateSetField blockStateSetField;
         public final BlockStateMapField<BiomeCategory> blockStateMapField;
         public final BlockStateListField blockStateListField;
         public final BlockStateValueListField<Double> blockStateValueListField;
         public final BlockStateWeightedListField blockStateWeightedListField;
         public final BlockStateWeightedValueListField<Double> blockStateWeightedValueListField;
+        
         public final RegistrySetField<EntityType<?>> registrySetField;
         public final RegistryMapField<EntityType<?>, Integer> registryMapField;
         public final RegistryListField<Instrument> registryListFieldVn;
         public final RegistryValueListField<DamageType, String> registryValueListFieldDn;
         public final RegistryWeightedListField<ConfiguredFeature<?, ?>> registryWeightedListField;
         public final RegistryWeightedValueListField<MobEffect, MobEffectStats> registryWeightedValueListField;
+        
         public final NumberSetField<Integer> numberSetField;
         public final NumberListField<Float> numberListField;
         public final NumberMapField<Byte, SoundData> numberMapField;
         public final NumberValueListField<Long, Rarity> numberValueListField;
+        public final NumberWeightedListField<Short> numberWeightedListField;
+        public final NumberWeightedValueListField<Double, ResourceLocation> numberWeightedValueListField;
         // Misc collections
         public final AttributeOpListField attributeOpListField;
         // Misc. collections
@@ -427,33 +433,56 @@ public class TestConfigFile extends AbstractConfigFile {
                             .buildWithNull( 69 ) ), General::testCallback ) ).field();
             
             numberSetField = SPEC.define( new InjectionWrapperField<>(
-                    new NumberSetField<>( "number_set_field", NumberSet.intBuilder()
-                            .exactlyBlacklist( 4 )
-                            .betweenInclusive( 0, 50 )
-                            .build() ), General::testCallback ) ).field();
+                    new NumberSetField<>( "number_set_field",
+                            NumberSet.intBuilder()
+                                    .exactlyBlacklist( 4 )
+                                    .betweenInclusive( 0, 50 )
+                                    .build() ), General::testCallback ) ).field();
             
             // We can test iterator usage (lists) via callback log outputs
             numberListField = SPEC.define( new InjectionWrapperField<>(
-                    new NumberListField<>( "number_list_field", NumberList.floatBuilder()
-                            .exactly( 4.1F )
-                            .exactly( 4.2F )
-                            .exactly( 4.3F )
-                            .build() ), General::testCallback ) ).field();
+                    new NumberListField<>( "number_list_field",
+                            NumberList.floatBuilder()
+                                    .exactly( 4.1F )
+                                    .exactly( 4.2F )
+                                    .exactly( 4.3F )
+                                    .build() ), General::testCallback ) ).field();
             
             numberMapField = SPEC.define( new InjectionWrapperField<>(
-                    new NumberMapField<>( "number_map_field", NumberMap.byteBuilder( SoundData.CODEC )
-                            .exactly( (byte) 1, SoundData.of( SoundEvents.CREEPER_DEATH ) )
-                            .exactly( (byte) 4, SoundData.of( SoundEvents.ALLAY_AMBIENT_WITH_ITEM ) )
-                            .lessThanBlacklist( (byte) 20 )
-                            .greaterThan( (byte) 8, SoundData.of( SoundEvents.LLAMA_SPIT ) )
-                            .buildWithDefault( SoundData.of( SoundEvents.FROGSPAWNSTEP ) ) ), General::testCallback ) ).field();
+                    new NumberMapField<>( "number_map_field",
+                            NumberMap.byteBuilder( SoundData.CODEC )
+                                    .exactly( (byte) 1, SoundData.of( SoundEvents.CREEPER_DEATH ) )
+                                    .exactly( (byte) 4, SoundData.of( SoundEvents.ALLAY_AMBIENT_WITH_ITEM ) )
+                                    .lessThanBlacklist( (byte) 20 )
+                                    .greaterThan( (byte) 8, SoundData.of( SoundEvents.LLAMA_SPIT ) )
+                                    .buildWithDefault( SoundData.of( SoundEvents.FROGSPAWNSTEP ) ) ), General::testCallback ) ).field();
             
             numberValueListField = SPEC.define( new InjectionWrapperField<>(
-                    new NumberValueListField<>( "number_value_list_field", NumberValueList.longBuilder( EnumValueCodec.of( Rarity.COMMON ) )
-                            .exactly( 200235325000030L, Rarity.EPIC )
-                            .exactly( -200235325000030L, Rarity.UNCOMMON )
-                            .build() ), General::testCallback ) ).field();
+                    new NumberValueListField<>( "number_value_list_field",
+                            NumberValueList.longBuilder( EnumValueCodec.of( Rarity.COMMON ) )
+                                    .exactly( 200235325000030L, Rarity.EPIC )
+                                    .exactly( -200235325000030L, Rarity.UNCOMMON )
+                                    .build() ), General::testCallback ) ).field();
             
+            numberWeightedListField = SPEC.define( new InjectionWrapperField<>(
+                    new NumberWeightedListField<>( "number_weighted_list_field",
+                            NumberWeightedList.shortBuilder()
+                                    .exactly( 100, (short) 4 )
+                                    .exactly( 100, (short) 2 )
+                                    .exactly( 200, (short) 6 )
+                                    .exactly( 250, (short) 17 )
+                                    .exactly( 0, (short) 0 )
+                                    .build() ), General::testCallback ) ).field();
+            
+            numberWeightedValueListField = SPEC.define( new InjectionWrapperField<>(
+                    new NumberWeightedValueListField<>( "number_weighted_value_list_field",
+                            NumberWeightedValueList.doubleBuilder( ResourceLocationCodec.of( ResourceLocationUtils.EMPTY, true ) )
+                                    .exactly( 1, -13.13, BuiltInLootTables.FISHERMAN_GIFT )
+                                    .exactly( 1, 0.0, BuiltInLootTables.BASTION_BRIDGE )
+                                    .exactly( 3, 4.0, BuiltInLootTables.SHEEP_GREEN )
+                                    .exactly( 5, 8.1, BuiltInLootTables.VILLAGE_MASON )
+                                    .exactly( 5, 11.11, BuiltInLootTables.IGLOO_CHEST )
+                                    .build() ), General::testCallback ) ).field();
             
             // ---- Misc. collections ---- //
             SPEC.callback( General::printLine );

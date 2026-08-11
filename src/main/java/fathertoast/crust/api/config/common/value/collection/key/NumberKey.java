@@ -5,7 +5,6 @@ import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.KeyUsage;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
 import net.minecraft.util.RandomSource;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -26,44 +25,44 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
     
     /** @return A parser appropriate for bytes, optionally with a value codec. */
     public static IFuzzyKeyParser<Byte> byteParser( @Nullable IValueCodec<Byte> codec ) {
-        if( codec != null ) return new Parser<>( ValueType.BYTE, codec );
+        if( codec != null ) return new Parser<>( NumberType.BYTE, codec );
         // noinspection unchecked
-        return (Parser<Byte>) PARSERS.get( ValueType.BYTE );
+        return (Parser<Byte>) PARSERS.get( NumberType.BYTE );
     }
     
     /** @return A parser appropriate for shorts, optionally with a value codec. */
     public static IFuzzyKeyParser<Short> shortParser( @Nullable IValueCodec<Short> codec ) {
-        if( codec != null ) return new Parser<>( ValueType.SHORT, codec );
+        if( codec != null ) return new Parser<>( NumberType.SHORT, codec );
         // noinspection unchecked
-        return (Parser<Short>) PARSERS.get( ValueType.SHORT );
+        return (Parser<Short>) PARSERS.get( NumberType.SHORT );
     }
     
     /** @return A parser appropriate for integers, optionally with a value codec. */
     public static IFuzzyKeyParser<Integer> intParser( @Nullable IValueCodec<Integer> codec ) {
-        if( codec != null ) return new Parser<>( ValueType.SHORT, codec );
+        if( codec != null ) return new Parser<>( NumberType.SHORT, codec );
         // noinspection unchecked
-        return (Parser<Integer>) PARSERS.get( ValueType.INT );
+        return (Parser<Integer>) PARSERS.get( NumberType.INT );
     }
     
     /** @return A parser appropriate for longs, optionally with a value codec. */
     public static IFuzzyKeyParser<Long> longParser( @Nullable IValueCodec<Long> codec ) {
-        if( codec != null ) return new Parser<>( ValueType.LONG, codec );
+        if( codec != null ) return new Parser<>( NumberType.LONG, codec );
         // noinspection unchecked
-        return (Parser<Long>) PARSERS.get( ValueType.LONG );
+        return (Parser<Long>) PARSERS.get( NumberType.LONG );
     }
     
     /** @return A parser appropriate for floats, optionally with a value codec. */
     public static IFuzzyKeyParser<Float> floatParser( @Nullable IValueCodec<Float> codec ) {
-        if( codec != null ) return new Parser<>( ValueType.FLOAT, codec );
+        if( codec != null ) return new Parser<>( NumberType.FLOAT, codec );
         // noinspection unchecked
-        return (Parser<Float>) PARSERS.get( ValueType.FLOAT );
+        return (Parser<Float>) PARSERS.get( NumberType.FLOAT );
     }
     
     /** @return A parser appropriate for doubles, optionally with a value codec. */
     public static IFuzzyKeyParser<Double> doubleParser( @Nullable IValueCodec<Double> codec ) {
-        if( codec != null ) return new Parser<>( ValueType.DOUBLE, codec );
+        if( codec != null ) return new Parser<>( NumberType.DOUBLE, codec );
         // noinspection unchecked
-        return (Parser<Double>) PARSERS.get( ValueType.DOUBLE );
+        return (Parser<Double>) PARSERS.get( NumberType.DOUBLE );
     }
     
     
@@ -122,7 +121,7 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
             throw new IllegalArgumentException( "Attempted to instantiate number key with no specified value!" );
         
         final T firstValue = values[0];
-        final ValueType type = getFromNumber( firstValue );
+        final NumberType type = getFromNumber( firstValue );
         
         if( type == null )
             throw new IllegalArgumentException( "Attempted to construct NumberKey with an unsupported type: " + firstValue.getClass() );
@@ -140,17 +139,17 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
     }
     
     /**
-     * @return The {@link ValueType} of the given number.
+     * @return The {@link NumberType} of the given number.
      * Returns null if no appropriate value type exists.
      */
     @Nullable
-    public static <T extends Number> ValueType getFromNumber( T value ) {
-        if( value instanceof Byte ) return ValueType.BYTE;
-        else if( value instanceof Short ) return ValueType.SHORT;
-        else if( value instanceof Integer ) return ValueType.INT;
-        else if( value instanceof Long ) return ValueType.LONG;
-        else if( value instanceof Float ) return ValueType.FLOAT;
-        else if( value instanceof Double ) return ValueType.DOUBLE;
+    public static <T extends Number> NumberKey.NumberType getFromNumber( T value ) {
+        if( value instanceof Byte ) return NumberType.BYTE;
+        else if( value instanceof Short ) return NumberType.SHORT;
+        else if( value instanceof Integer ) return NumberType.INT;
+        else if( value instanceof Long ) return NumberType.LONG;
+        else if( value instanceof Float ) return NumberType.FLOAT;
+        else if( value instanceof Double ) return NumberType.DOUBLE;
         
         return null;
     }
@@ -163,13 +162,13 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
     /** This key's value. */
     protected final T value;
     /** This key's value type. */
-    protected final ValueType type;
+    protected final NumberType type;
     
     /** This key's comparison operator. */
     protected final ComparisonOp op;
     
     
-    private NumberKey( T value, ValueType type, ComparisonOp op, boolean blacklist ) {
+    private NumberKey( T value, NumberType type, ComparisonOp op, boolean blacklist ) {
         super( blacklist );
         this.value = value;
         this.type = type;
@@ -181,8 +180,8 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
      */
     public static class Exactly<T extends Number> extends NumberKey<T> implements IReverseKey<T> {
         
-        protected Exactly( T value, ValueType valueType, boolean blacklist ) {
-            super( value, valueType, ComparisonOp.EXACTLY, blacklist );
+        protected Exactly( T value, NumberType numberType, boolean blacklist ) {
+            super( value, numberType, ComparisonOp.EXACTLY, blacklist );
         }
         
         /** @return This key's numeric value. */
@@ -198,8 +197,8 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
      */
     public static class NotEquals<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
-        protected NotEquals( T value, ValueType valueType, boolean blacklist ) {
-            super( value, valueType, ComparisonOp.EXACTLY, blacklist );
+        protected NotEquals( T value, NumberType numberType, boolean blacklist ) {
+            super( value, numberType, ComparisonOp.EXACTLY, blacklist );
         }
         
         /** @return True if this key matches the target. */
@@ -228,8 +227,8 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
      */
     public static class GreaterThan<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
-        protected GreaterThan( T value, ValueType valueType, boolean blacklist ) {
-            super( value, valueType, ComparisonOp.GREATER, blacklist );
+        protected GreaterThan( T value, NumberType numberType, boolean blacklist ) {
+            super( value, numberType, ComparisonOp.GREATER, blacklist );
         }
         
         /** @return True if this key matches the target. */
@@ -258,8 +257,8 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
      */
     public static class LessThan<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
-        protected LessThan( T value, ValueType valueType, boolean blacklist ) {
-            super( value, valueType, ComparisonOp.LESS, blacklist );
+        protected LessThan( T value, NumberType numberType, boolean blacklist ) {
+            super( value, numberType, ComparisonOp.LESS, blacklist );
         }
         
         /** @return True if this key matches the target. */
@@ -288,8 +287,8 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
      */
     public static class GreaterOrEqual<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
-        protected GreaterOrEqual( T value, ValueType valueType, boolean blacklist ) {
-            super( value, valueType, ComparisonOp.GREATER_OR_EQUAL, blacklist );
+        protected GreaterOrEqual( T value, NumberType numberType, boolean blacklist ) {
+            super( value, numberType, ComparisonOp.GREATER_OR_EQUAL, blacklist );
         }
         
         /** @return True if this key matches the target. */
@@ -318,8 +317,8 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
      */
     public static class LessOrEqual<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
-        protected LessOrEqual( T value, ValueType valueType, boolean blacklist ) {
-            super( value, valueType, ComparisonOp.LESS_OR_EQUAL, blacklist );
+        protected LessOrEqual( T value, NumberType numberType, boolean blacklist ) {
+            super( value, numberType, ComparisonOp.LESS_OR_EQUAL, blacklist );
         }
         
         /** @return True if this key matches the target. */
@@ -348,8 +347,8 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
      */
     public static class DivisibleBy<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
         
-        protected DivisibleBy( T value, ValueType valueType, boolean blacklist ) {
-            super( value, valueType, ComparisonOp.MODULO, blacklist );
+        protected DivisibleBy( T value, NumberType numberType, boolean blacklist ) {
+            super( value, numberType, ComparisonOp.MODULO, blacklist );
         }
         
         /** @return True if this key matches the target. */
@@ -389,8 +388,8 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
          * @param minValue The lower limit of this key's value range.
          * @param maxValue The upper limit of this key's value range.
          */
-        protected BetweenInclusive( T minValue, T maxValue, ValueType valueType, boolean blacklist ) {
-            super( minValue, valueType, ComparisonOp.BETWEEN_INCLUSIVE, blacklist );
+        protected BetweenInclusive( T minValue, T maxValue, NumberType numberType, boolean blacklist ) {
+            super( minValue, numberType, ComparisonOp.BETWEEN_INCLUSIVE, blacklist );
             this.maxValue = maxValue;
         }
         
@@ -434,15 +433,15 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
         return Objects.equals( value, target );
     }
     
-    /** Represents a numeric value type. */
-    public enum ValueType {
+    /** Represents a type of number. */
+    public enum NumberType {
         BYTE( "Byte" ), SHORT( "Short" ),
         INT( "Integer" ), LONG( "Long" ),
         FLOAT( "Float" ), DOUBLE( "Double" );
         
         final String name;
         
-        ValueType( String name ) {
+        NumberType( String name ) {
             this.name = name;
         }
         
@@ -452,9 +451,7 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
         }
     }
     
-    /**
-     * Represents a numerical comparison operation.
-     */
+    /** Represents a numerical comparison operation. */
     public enum ComparisonOp {
         // The order here is important; the default number key parsers
         // iterate through each value here in order to determine what type of
@@ -466,7 +463,7 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
             @Override
             @Nullable
             @SuppressWarnings( "unchecked" )
-            public <T extends Number> FuzzyKey<T> parseSpecialKey( @Nullable IConfigField<?> field, String line, String key, ValueType valueType,
+            public <T extends Number> FuzzyKey<T> parseSpecialKey( @Nullable IConfigField<?> field, String line, String key, NumberType numberType,
                                                                    boolean blacklist, Function<String, ?> numberParser ) {
                 final String[] parts = key.split( "~", 2 );
                 if( parts.length != 2 ) return null;
@@ -486,7 +483,7 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
                     }
                     return null;
                 }
-                return new BetweenInclusive<>( minValue, maxValue, valueType, blacklist );
+                return new BetweenInclusive<>( minValue, maxValue, numberType, blacklist );
             }
         };
         
@@ -503,12 +500,13 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
         
         /**
          * @return This comparison op's special key parsing result, if any.
+         * <br><br>
          * By default, a comparison op is not responsible for key parsing,
-         * but for ops that require a different key format than <strong>'identifier + value'</strong>
-         * entirely can override parsing by returning something else than null.
+         * but for ops that require a different key format than <strong>'identifier + value'</strong>,
+         * this method can be used to return a custom parsed key.
          */
         @Nullable
-        public <T extends Number> FuzzyKey<T> parseSpecialKey( @Nullable IConfigField<?> field, String line, String key, ValueType valueType,
+        public <T extends Number> FuzzyKey<T> parseSpecialKey( @Nullable IConfigField<?> field, String line, String key, NumberType numberType,
                                                                boolean blacklist, Function<String, ?> numberParser ) {
             return null;
         }
@@ -517,18 +515,18 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
     // ---- Parser Implementation ---- //
     
     /** Default parsers with no value codecs. */
-    private static final Map<ValueType, Parser<?>> PARSERS = new HashMap<>();
+    private static final Map<NumberType, Parser<?>> PARSERS = new HashMap<>();
     
     static {
-        for( ValueType t : ValueType.values() ) PARSERS.put( t, new Parser<>( t, null ) );
+        for( NumberType numberType : NumberType.values() ) PARSERS.put( numberType, new Parser<>( numberType, null ) );
     }
     
     /**
-     * @param type  A {@link ValueType} representing the type of value.
+     * @param type  A {@link NumberType} representing the type of value.
      * @param codec Value codec for parsing. This is optional.
      */
-    private record Parser<T extends Number>( ValueType type,
-                                             @Nullable IValueCodec<T> codec ) implements IFuzzyKeyParser<T> {
+    private record Parser<T extends Number>(NumberType type,
+                                            @Nullable IValueCodec<T> codec) implements IFuzzyKeyParser<T> {
         
         /** @return The key parser's type name (e.g., "Fuzzy"). */
         @Override
@@ -628,8 +626,8 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
         }
     }
     
-    /** @return The number key parser associated with the specified {@link ValueType}. */
-    public static <T extends Number> IFuzzyKeyParser<T> getParserForType( ValueType type ) {
+    /** @return The number key parser associated with the specified {@link NumberType}. */
+    public static <T extends Number> IFuzzyKeyParser<T> getParserForType( NumberType type ) {
         // noinspection unchecked
         return (IFuzzyKeyParser<T>) PARSERS.get( type );
     }

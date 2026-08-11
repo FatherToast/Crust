@@ -2,6 +2,7 @@ package fathertoast.crust.api.config.common.field.collection;
 
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.NumberValueList;
+import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
@@ -35,15 +36,8 @@ public class NumberValueListField<T extends Number, V> extends FuzzyValueListFie
                 "the field description for details." );
         
         comment.add( "" );
-        comment.add( "  Entries will only match one exact value, unless a specific comparison identifier is used." );
-        comment.add( "  Below is a list of supported comparison identifiers that can be added to the start of " +
-                "the entry to match a range of values:" );
-        comment.add( "    '<' - Matches all values that are lower than the key's value." );
-        comment.add( "    '>' - Matches all values that are greater than the key's value." );
-        comment.add( "    '<=' - Matches all values that are lower or equal tto the key's value." );
-        comment.add( "    '>=' - Matches all values that are greater or equal to key's value." );
-        comment.add( "    '!=' - Matches all values that not equal to the key's value." );
-        comment.add( "    '%' - Matches all values that are perfectly divisibly by the key's value." );
+        comment.add( "  Unlike other number collections such as Number Map or Number Set, this field type does not support "
+                + "the use of special comparison identifiers ('>', '<', '!=' etc.)." );
         
         comment.add( "" );
         comment.add( "  Specific range entries (defined by the '~' symbol) are not supported by this field type." );
@@ -71,4 +65,10 @@ public class NumberValueListField<T extends Number, V> extends FuzzyValueListFie
     public NumberValueListField( String key, NumberValueList<T, V> defaultValue, @Nullable String... description ) {
         super( key, defaultValue, description );
     }
+    
+    
+    // ---- Convenience Methods ---- //
+    
+    /** @return This field's number value type. */
+    public NumberKey.NumberType getNumberType() { return getDefaultValue().getNumberType(); }
 }

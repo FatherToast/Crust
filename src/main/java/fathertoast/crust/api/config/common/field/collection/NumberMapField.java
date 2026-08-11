@@ -2,7 +2,9 @@ package fathertoast.crust.api.config.common.field.collection;
 
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.NumberMap;
+import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
 import net.minecraft.util.RandomSource;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.List;
  * @param <T> The number type to match against (integer, float, long etc.).
  * @param <V> The value type.
  */
+@ApiStatus.Experimental
 public class NumberMapField<T extends Number, V> extends FuzzyMapField<T, V, NumberMap<T, V>> {
     
     /**
@@ -80,4 +83,10 @@ public class NumberMapField<T extends Number, V> extends FuzzyMapField<T, V, Num
     public NumberMapField( String key, NumberMap<T, V> defaultValue, @Nullable String... description ) {
         super( key, defaultValue, description );
     }
+    
+    
+    // ---- Convenience Methods ---- //
+    
+    /** @return This field's number value type. */
+    public NumberKey.NumberType getNumberType() { return getDefaultValue().getNumberType(); }
 }

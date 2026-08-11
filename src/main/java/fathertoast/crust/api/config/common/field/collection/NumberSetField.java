@@ -2,6 +2,7 @@ package fathertoast.crust.api.config.common.field.collection;
 
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.NumberSet;
+import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
@@ -17,6 +18,7 @@ import java.util.List;
  * longs, floats and doubles.
  *
  * @param <T> The number type to match against (integer, float, long etc.).
+ * @see fathertoast.crust.api.config.common.value.collection.key.NumberKey.NumberType
  * @see Number
  */
 @ApiStatus.Experimental
@@ -28,7 +30,7 @@ public class NumberSetField<T extends Number> extends FuzzySetField<T, NumberSet
      */
     public static List<String> verboseDescription() {
         final List<String> comment = new ArrayList<>();
-        comment.add( "Number Set fields: General format = [ \"value\", ... ]" );
+        comment.add( "Number Set fields: General format = [ \"number\", ... ]" );
         comment.add( "  Number Sets are collections of numerical values used exclusively for matching." );
         comment.add( "  The type of numerical value used depends on the field, so make sure to read " +
                 "the field description for details." );
@@ -80,4 +82,10 @@ public class NumberSetField<T extends Number> extends FuzzySetField<T, NumberSet
     public NumberSetField( String key, NumberSet<T> defaultValue, @Nullable String... description ) {
         super( key, defaultValue, description );
     }
+    
+    
+    // ---- Convenience Methods ---- //
+    
+    /** @return This field's number value type. */
+    public NumberKey.NumberType getNumberType() { return getDefaultValue().getNumberType(); }
 }

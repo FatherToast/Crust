@@ -9,53 +9,54 @@ import java.util.Collection;
 /**
  * A fuzzy set used to match numbers.
  *
+ * @param <T> The type of number to match against.
  * @see NumberKey
  * @see fathertoast.crust.api.config.common.field.collection.NumberSetField
  * @see NumberMap NumberMap - A similar collection that allows values
  */
 @SuppressWarnings( "unused" )
 @ApiStatus.Experimental
-public class NumberSet<T extends Number> extends FuzzySet<T> {
+public class NumberSet<T extends Number> extends FuzzySet<T> implements INumberCollection {
     
     /** Creates a new builder for a {@code byte} number set. */
     public static Builder<Byte, ?> byteBuilder() {
-        return new Builder<>( NumberKey.ValueType.BYTE );
+        return new Builder<>( NumberKey.NumberType.BYTE );
     }
     
     /** Creates a new builder for a {@code short} number set. */
     public static Builder<Short, ?> shortBuilder() {
-        return new Builder<>( NumberKey.ValueType.SHORT );
+        return new Builder<>( NumberKey.NumberType.SHORT );
     }
     
     /** Creates a new builder for an {@code int} number set. */
     public static Builder<Integer, ?> intBuilder() {
-        return new Builder<>( NumberKey.ValueType.INT );
+        return new Builder<>( NumberKey.NumberType.INT );
     }
     
     /** Creates a new builder for a {@code long} number set. */
     public static Builder<Long, ?> longBuilder() {
-        return new Builder<>( NumberKey.ValueType.LONG );
+        return new Builder<>( NumberKey.NumberType.LONG );
     }
     
     /** Creates a new builder for a {@code float} number set. */
     public static Builder<Float, ?> floatBuilder() {
-        return new Builder<>( NumberKey.ValueType.FLOAT );
+        return new Builder<>( NumberKey.NumberType.FLOAT );
     }
     
     /** Creates a new builder for a {@code double} number set. */
     public static Builder<Double, ?> doubleBuilder() {
-        return new Builder<>( NumberKey.ValueType.DOUBLE );
+        return new Builder<>( NumberKey.NumberType.DOUBLE );
     }
     
     
-    /** The {@link NumberKey.ValueType} of this number set. */
-    private final NumberKey.ValueType valueType;
+    /** The {@link NumberKey.NumberType} of this number set. */
+    private final NumberKey.NumberType numberType;
     
     
     /** Constructs an empty set. Use this if you want to {@link #load} a set from file/NBT. */
-    public NumberSet( NumberKey.ValueType type ) {
+    public NumberSet( NumberKey.NumberType type ) {
         super( NumberKey.getParserForType( type ) );
-        valueType = type;
+        numberType = type;
     }
     
     /**
@@ -63,48 +64,48 @@ public class NumberSet<T extends Number> extends FuzzySet<T> {
      * during config definition, however the {@link NumberSet.Builder} is much easier.
      */
     @SafeVarargs
-    public NumberSet( NumberKey.ValueType type, FuzzyKey<T>... keys ) {
+    public NumberSet( NumberKey.NumberType type, FuzzyKey<T>... keys ) {
         super( NumberKey.getParserForType( type ), keys );
-        valueType = type;
+        numberType = type;
     }
     
     /**
      * Constructs a set containing the keys provided. You may use this for creating default values
      * during config definition, however the {@link NumberSet.Builder} is much easier.
      */
-    public NumberSet( NumberKey.ValueType type, Collection<FuzzyKey<T>> keys ) {
+    public NumberSet( NumberKey.NumberType type, Collection<FuzzyKey<T>> keys ) {
         super( NumberKey.getParserForType( type ), keys );
-        valueType = type;
+        numberType = type;
     }
     
-    /** @return A fresh, empty collection of the same valueType as this one. */
+    /** @return A fresh, empty collection of the same numberType as this one. */
     @Override
     public NumberSet<T> makeNew() {
-        return new NumberSet<>( valueType );
+        return new NumberSet<>( numberType );
     }
     
+    /** @return This number collection's number value type. */
     @Override
-    public KeyUsage keyUsage() {
-        return super.keyUsage();
+    public NumberKey.NumberType getNumberType() {
+        return numberType;
     }
     
     // ---- Builder Implementation ---- //
     
-    /** Builder to make constructing item stack sets smoother. */
+    /** Builder to make constructing number sets smoother. */
     public static class Builder<V extends Number, B extends NumberSet.Builder<V, B>> extends AbstractBuilder<V, NumberSet<V>, B> {
         
-        /** The {@link fathertoast.crust.api.config.common.value.collection.key.NumberKey.ValueType} of this builder. */
-        private final NumberKey.ValueType valueType;
+        /** The {@link NumberKey.NumberType} of this builder. */
+        private final NumberKey.NumberType numberType;
         
         
-        /** For internal use. Use one of the builder methods above. */
-        private Builder( NumberKey.ValueType type ) {
-            valueType = type;
+        public Builder( NumberKey.NumberType type ) {
+            numberType = type;
         }
         
         /** @return A new number set reflecting the current state of this builder. */
         @Override
-        public NumberSet<V> build() { return new NumberSet<>( valueType, list ); }
+        public NumberSet<V> build() { return new NumberSet<>( numberType, list ); }
         
         
         // ---- Exact Value Keys ---- //
