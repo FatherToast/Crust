@@ -15,6 +15,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -57,11 +58,16 @@ public class CrustConfigFileScreen extends Screen {
     private Button bottomRightButton;
     
     /** The currently focused text box, if any. */
+    @Nullable
     private EditBox focusedTextBox;
     /** The search bar for looking up entries in {@link CrustConfigFileScreen#fieldList}. */
     private Searchbar searchbar;
     
+    /** The widget currently being dragged, if any. */
+    @Nullable
+    private GuiEventListener dragging;
     /** The currently open popup widget, if any. */
+    @Nullable
     private AbstractWidget popupWidget;
     
     /** Creates a new config file screen. */
@@ -84,6 +90,13 @@ public class CrustConfigFileScreen extends Screen {
     
     /** @return The current scroll position. */
     public double getScrollAmount() { return fieldList.getScrollAmount(); }
+    
+    /** Called when a widget is clicked. */
+    public void setDragging( @Nullable GuiEventListener entry ) { dragging = entry; }
+    
+    /** @return The widget currently being dragged. */
+    @Nullable
+    public GuiEventListener getDragging() { return dragging; }
     
     /** Called to open a 'popup widget'. Setting to null closes any open popup. */
     public void setPopupWidget( @Nullable AbstractWidget popup ) {
@@ -199,7 +212,15 @@ public class CrustConfigFileScreen extends Screen {
             else popupWidget = null;
             return true;
         }
-        return super.mouseClicked( x, y, mouseKey );
+        
+        for( GuiEventListener widget : children() ) {
+            if( widget.mouseClicked( x, y, mouseKey ) ) {
+                setFocused( widget );
+                if( mouseKey == 0 ) setDragging( widget );
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
@@ -214,6 +235,11 @@ public class CrustConfigFileScreen extends Screen {
             popupWidget.mouseReleased( x, y, mouseKey );
             return true;
         }
+        if( getDragging() != null ) {
+            getDragging().mouseReleased( x, y, mouseKey );
+            setDragging( null );
+            return true;
+        }
         return super.mouseReleased( x, y, mouseKey );
     }
     
@@ -222,6 +248,10 @@ public class CrustConfigFileScreen extends Screen {
     public boolean mouseDragged( double x, double y, int mouseKey, double deltaX, double deltaY ) {
         if( popupWidget != null ) {
             popupWidget.mouseDragged( x, y, mouseKey, deltaX, deltaY );
+            return true;
+        }
+        if( getDragging() != null ) {
+            getDragging().mouseDragged( x, y, mouseKey, deltaX, deltaY );
             return true;
         }
         return super.mouseDragged( x, y, mouseKey, deltaX, deltaY );

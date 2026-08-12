@@ -172,7 +172,6 @@ public class FullScreenPopupListWidget<E extends AbstractPopupListEntry<E>> exte
         // Give added widgets priority
         for( AbstractWidget widget : children() ) {
             if( widget.mouseClicked( x, y, mouseKey ) ) {
-                widget.setFocused( true );
                 setFocused( widget );
                 if( mouseKey == 0 ) setDraggingChild( widget );
                 return true;
@@ -202,12 +201,9 @@ public class FullScreenPopupListWidget<E extends AbstractPopupListEntry<E>> exte
         // Finally, find the entry being clicked on, if any
         E entry = getEntryAtPosition( x, y );
         if( entry != null ) {
-            if( entry.mouseClicked( x, y, mouseKey ) ) {
-                setFocused( entry );
-                setDragging( entry );
-                return true;
-            }
+            return entry.mouseClicked( x, y, mouseKey );
         }
+        
         return false;
     }
     

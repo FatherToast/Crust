@@ -264,7 +264,6 @@ public class PopupStringListWidget<T> extends FullScreenPopupListWidget<PopupLis
                         }
                         else {
                             EDIT_BOX.setTextColor( IConfigFieldWidgetProvider.INVALID_COLOR );
-                            clearValue();
                         }
                     } );
             EDIT_BOX.active = editable;

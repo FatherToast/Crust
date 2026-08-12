@@ -1,6 +1,7 @@
 package fathertoast.crust.test.common;
 
 import fathertoast.crust.api.ICrustApi;
+import fathertoast.crust.api.config.common.value.environment.EnvironmentContext;
 import fathertoast.crust.api.event.advancement.AdvancementLoadEvent;
 import fathertoast.crust.api.event.advancement.IModifiableAdvancement;
 import fathertoast.crust.api.event.advancement.IModifiableDisplayInfo;
@@ -9,48 +10,70 @@ import net.minecraft.advancements.FrameType;
 import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.List;
+
 @Mod.EventBusSubscriber( modid = ICrustApi.MOD_ID )
 public class TestGameEventHandler {
     
+    private static int elCountastico;
+    
+    //@SubscribeEvent // Comment the annotation out to 'turn off' this console spam
+    static void onServerTick( TickEvent.ServerTickEvent event ) {
+        if( event.phase == TickEvent.Phase.END ) {
+            if( elCountastico++ > 40 ) {
+                elCountastico = 0;
+                
+                List<ServerPlayer> players = event.getServer().getPlayerList().getPlayers();
+                if( players.isEmpty() ) return;
+                ServerPlayer player = players.get( 0 );
+                
+                TestCrust.LOG.info( "Environment Test Results for {} (-1 is 'no match'):", player.getGameProfile().getName() );
+                TestCrust.LOG.info( "  {} = {}", TestCrust.CONFIG.GENERAL.environmentListField.getKey(),
+                        TestCrust.CONFIG.GENERAL.environmentListField.getOrElse(
+                                EnvironmentContext.withTarget( player ), -1 ) );
+            }
+        }
+    }
+    
     @SubscribeEvent( priority = EventPriority.NORMAL )
-    public static void onLivingHurt( LivingHurtEvent event ) {
-        // noinspection resource
+    static void onLivingHurt( LivingHurtEvent event ) {
         final Level level = event.getEntity().level();
         
         if( level.isClientSide() ) return;
-        
-        // Test registry map
-        EntityType<?> entityType = event.getEntity().getType();
-        Integer intVal = TestCrust.CONFIG.GENERAL.registryMapField.get( entityType );
-        if( intVal == null ) {
-            TestCrust.LOG.debug( "Entity NOT matched: {}", entityType );
-        }
-        else {
-            TestCrust.LOG.debug( "Value = {} for entity: {}", intVal, entityType );
-        }
-        
-        // Test entity map
-        Double[] doubles = TestCrust.CONFIG.GENERAL.entityMapField.get( event.getEntity() );
-        if( doubles == null ) {
-            TestCrust.LOG.debug( "Entity NOT matched: {}", entityType );
-        }
-        else {
-            TestCrust.LOG.debug( "Values = {} for entity: {}", doubles, entityType );
-        }
-        
-        // Test number set
         if( event.getSource().getEntity() instanceof Player player ) {
+            // Test registry map
+            EntityType<?> entityType = event.getEntity().getType();
+            Integer intVal = TestCrust.CONFIG.GENERAL.registryMapField.get( entityType );
+            if( intVal == null ) {
+                TestCrust.LOG.debug( "Entity NOT matched: {}", entityType );
+            }
+            else {
+                TestCrust.LOG.debug( "Value = {} for entity: {}", intVal, entityType );
+            }
+            
+            // Test entity map
+            Double[] doubles = TestCrust.CONFIG.GENERAL.entityMapField.get( event.getEntity() );
+            if( doubles == null ) {
+                TestCrust.LOG.debug( "Entity NOT matched: {}", entityType );
+            }
+            else {
+                TestCrust.LOG.debug( "Values = {} for entity: {}", doubles, entityType );
+            }
+            
+            // Test number set
             ItemStack heldStack = player.getMainHandItem();
             
             if( TestCrust.CONFIG.GENERAL.numberSetField.contains( heldStack.getCount() ) ) {
@@ -62,7 +85,7 @@ public class TestGameEventHandler {
     }
     
     @SubscribeEvent( priority = EventPriority.NORMAL )
-    public static void onAdvancementLoad( AdvancementLoadEvent event ) {
+    static void onAdvancementLoad( AdvancementLoadEvent event ) {
         final ResourceLocation advancementId = event.getId();
         
         /// Test for modifying criteria.

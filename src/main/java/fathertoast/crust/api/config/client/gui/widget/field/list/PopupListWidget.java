@@ -185,6 +185,7 @@ public class PopupListWidget<E extends AbstractPopupListEntry<E>> extends Abstra
     // ---- Input Handling ---- //
     
     /** The currently focused element. */
+    @Nullable
     private GuiEventListener focused;
     
     /** @return The currently focused element. */
@@ -192,9 +193,14 @@ public class PopupListWidget<E extends AbstractPopupListEntry<E>> extends Abstra
     public GuiEventListener getFocused() { return focused; }
     
     /** Sets the currently focused element. */
-    public void setFocused( @Nullable GuiEventListener value ) { focused = value; }
+    public void setFocused( @Nullable GuiEventListener value ) {
+        if( focused != null ) focused.setFocused( false );
+        if( value != null ) value.setFocused( true );
+        focused = value;
+    }
     
     /** The currently selected list entry. */
+    @Nullable
     private E selected;
     
     /** @return The currently selected list entry. */
@@ -204,15 +210,16 @@ public class PopupListWidget<E extends AbstractPopupListEntry<E>> extends Abstra
     /** Sets the currently selected list entry. */
     public void setSelected( @Nullable E value ) { selected = value; }
     
-    /** The item currently being dragged. */
-    private E dragging;
-    
-    /** Called when an entry is clicked. */
-    public void setDragging( @Nullable E entry ) { dragging = entry; }
-    
-    /** Return the entry currently being dragged. */
+    /** The widget currently being dragged, if any. */
     @Nullable
-    public E getDragging() { return dragging; }
+    private GuiEventListener dragging;
+    
+    /** Called when a widget is clicked. */
+    public void setDragging( @Nullable GuiEventListener entry ) { dragging = entry; }
+    
+    /** @return The widget currently being dragged. */
+    @Nullable
+    public GuiEventListener getDragging() { return dragging; }
     
     /** @return True if the entry at a particular index is the selected entry. */
     protected boolean isSelectedItem( int index ) { return getEntry( index ).equals( getSelected() ); }
@@ -298,10 +305,7 @@ public class PopupListWidget<E extends AbstractPopupListEntry<E>> extends Abstra
         // Find the entry being clicked on
         E entry = getEntryAtPosition( x, y );
         if( entry != null ) {
-            if( entry.mouseClicked( x, y, mouseKey ) ) {
-                setDragging( entry );
-                return true;
-            }
+            return entry.mouseClicked( x, y, mouseKey );
         }
         // Otherwise, we assume the header was clicked
         else if( mouseKey == 0 ) {
@@ -332,6 +336,7 @@ public class PopupListWidget<E extends AbstractPopupListEntry<E>> extends Abstra
         if( getDragging() != null ) {
             getDragging().mouseReleased( x, y, mouseKey );
             setDragging( null );
+            return true;
         }
         return false;
     }
@@ -339,8 +344,8 @@ public class PopupListWidget<E extends AbstractPopupListEntry<E>> extends Abstra
     /** Called when the mouse is moved while a mouse button is held. */
     @Override
     public boolean mouseDragged( double x, double y, int mouseKey, double deltaX, double deltaY ) {
-        if( getDragging() != null && mouseKey == 0 &&
-                getDragging().mouseDragged( x, y, mouseKey, deltaX, deltaY ) ) {
+        if( getDragging() != null ) {
+            getDragging().mouseDragged( x, y, mouseKey, deltaX, deltaY );
             return true;
         }
         

@@ -49,7 +49,6 @@ public class StringFieldWidgetProvider<T> implements IConfigFieldWidgetProvider<
                 text -> {
                     if( text == null || !VALIDATOR.test( text ) ) {
                         editBox.setTextColor( INVALID_COLOR );
-                        listEntry.clearValue();
                     }
                     else {
                         editBox.setTextColor( DEFAULT_COLOR );

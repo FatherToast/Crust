@@ -48,85 +48,10 @@ public class PopupListEntry extends AbstractPopupListEntry<PopupListEntry> {
     public boolean mouseClicked( double x, double y, int mouseKey ) {
         for( AbstractWidget w : WIDGETS ) {
             if( w.mouseClicked( x, y, mouseKey ) ) {
-                w.setFocused( true );
                 popup.setFocused( w );
+                if( mouseKey == 0 ) popup.setDragging( w );
                 return true;
             }
-        }
-        return false;
-    }
-    
-    /**
-     * Called when a mouse button is released.
-     *
-     * @param mouseKey The mouse key that was released (see {@link InputConstants.Type#MOUSE}).
-     * @return True if the event has been handled.
-     */
-    @Override
-    public boolean mouseReleased( double x, double y, int mouseKey ) {
-        for( AbstractWidget w : WIDGETS ) {
-            if( w.mouseReleased( x, y, mouseKey ) ) return true;
-        }
-        return false;
-    }
-    
-    /** Called when the mouse is moved while a mouse button is held. */
-    @Override
-    public boolean mouseDragged( double x, double y, int mouseKey, double deltaX, double deltaY ) {
-        for( AbstractWidget w : WIDGETS ) {
-            if( w.mouseDragged( x, y, mouseKey, deltaX, deltaY ) ) return true;
-        }
-        return false;
-    }
-    
-    /** Called when the mouse wheel is scrolled. */
-    @Override
-    public boolean mouseScrolled( double x, double y, double deltaScroll ) {
-        for( AbstractWidget w : WIDGETS ) {
-            if( w.mouseScrolled( x, y, deltaScroll ) ) return true;
-        }
-        return false;
-    }
-    
-    /**
-     * Called when a keyboard key is pressed.
-     *
-     * @param key      The keyboard key that was pressed (see {@link InputConstants.Type#KEYSYM}).
-     * @param scancode The system-specific scancode of the key (see {@link InputConstants.Type#SCANCODE}).
-     * @param mods     Bitfield describing which modifier keys were held down.
-     * @return True if the event has been handled.
-     * @see org.lwjgl.glfw.GLFWKeyCallbackI#invoke(long, int, int, int, int)
-     */
-    @Override
-    public boolean keyPressed( int key, int scancode, int mods ) {
-        for( AbstractWidget w : WIDGETS ) {
-            if( w.isFocused() && w.keyPressed( key, scancode, mods ) ) return true;
-        }
-        return false;
-    }
-    
-    /**
-     * Called when a keyboard key is released.
-     *
-     * @param key      The keyboard key that was released (see {@link InputConstants.Type#KEYSYM}).
-     * @param scancode The system-specific scancode of the key (see {@link InputConstants.Type#SCANCODE}).
-     * @param mods     Bitfield describing which modifier keys were held down.
-     * @return True if the event has been handled.
-     * @see org.lwjgl.glfw.GLFWKeyCallbackI#invoke(long, int, int, int, int)
-     */
-    @Override
-    public boolean keyReleased( int key, int scancode, int mods ) {
-        for( AbstractWidget w : WIDGETS ) {
-            if( w.isFocused() && w.keyReleased( key, scancode, mods ) ) return true;
-        }
-        return false;
-    }
-    
-    /** Called when a character is typed. */
-    @Override
-    public boolean charTyped( char codePoint, int mods ) {
-        for( AbstractWidget w : WIDGETS ) {
-            if( w.isFocused() && w.charTyped( codePoint, mods ) ) return true;
         }
         return false;
     }

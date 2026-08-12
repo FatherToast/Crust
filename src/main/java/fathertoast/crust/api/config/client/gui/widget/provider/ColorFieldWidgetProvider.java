@@ -62,7 +62,6 @@ public class ColorFieldWidgetProvider implements IConfigFieldWidgetProvider<Inte
             if( newValue == null || !isValid( FIELD, newValue ) ) {
                 previewWidget.setColor( 0, true );
                 editBox.setTextColor( INVALID_COLOR );
-                listEntry.clearValue();
             }
             else {
                 previewWidget.setColor( newValue, FIELD.usesAlpha() );
