@@ -34,7 +34,6 @@ public class RegistryWeightedValueListField<T, V> extends FuzzyWeightedValueList
     public static List<String> verboseDescription() {
         final List<String> comment = new ArrayList<>();
         comment.add( "Registry Weighted Value List fields: General format = [ \"weight namespace:path value1 value2 ...\", ... ]" );
-        comment.add( "   are arrays of weights linked to a registry key-value pair." );
         comment.add( "  Registry Weighted Value Lists are collections of registry keys linked to one " +
                 "or more values, in addition to weights for random selection." );
         comment.add( "  Many things in the game, such as blocks and potions, are identified by their key within " +

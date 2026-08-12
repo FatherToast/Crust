@@ -1,8 +1,9 @@
 package fathertoast.crust.api.config.common.field.collection;
 
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
-import fathertoast.crust.api.config.common.value.collection.NumberList;
+import fathertoast.crust.api.config.common.value.collection.NumberWeightedValueList;
 import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
+import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
@@ -10,24 +11,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a config field with a number list value.
- * Use {@link #entries()} to iterate through the defined list.
+ * Represents a config field with a number weighted value list value.
+ * Use {@link #next(RandomSource)} to draw a random key-value pair, or null if empty or nothing is drawn.
+ * <p>
+ * Allows any value type that has a codec.
+ * <p>
+ * Allows all primitive number types as keys: bytes, shorts, ints, longs, floats and doubles.
  *
- * @param <T> The number type of this list (integer, float, long etc.).
+ * @param <T> The type of list (i.e., the number type).
+ * @param <V> The value type.
+ * @see fathertoast.crust.api.config.common.value.collection.value.IValueCodec
+ * @see NumberKey
+ * @see Number
  */
 @ApiStatus.Experimental
-public class NumberListField<T extends Number> extends FuzzyListField<T, NumberList<T>> {
+public class NumberWeightedValueListField<T extends Number, V> extends FuzzyWeightedValueListField<T, V, NumberWeightedValueList<T, V>> {
     
     /**
      * Provides a detailed description of how to use this field type.
-     * Recommended putting at the top of any file using block lists.
+     * Recommended to put at the top of any file using this field type.
      */
     public static List<String> verboseDescription() {
         final List<String> comment = new ArrayList<>();
-        comment.add( "Number List fields: General format = [ \"number\", ... ]" );
-        comment.add( "  Number Lists are collections of numbers." );
-        comment.add( "  The type of number used depends on the field, so make sure to read " +
-                "the field description for details." );
+        comment.add( "Number Weighted Value List fields: General format = [ \"weight number value1 value2 ...\", ... ]" );
+        comment.add( "  Number Weighted Value Lists are collections of number keys linked to one " +
+                "or more values, in addition to weights for random selection." );
+        comment.add( "  Which type of values and how many values are linked to each entry varies, " +
+                "so make sure to read the field description for details." );
+        comment.add( "  Entry-value pairs with higher weight are more likely to be chosen, while pairs with a weight of 0 will " +
+                "never be chosen. Weights cannot be negative." );
         
         comment.add( "" );
         comment.add( "  Unlike other number collections such as Number Map or Number Set, this field type does not support "
@@ -38,9 +50,6 @@ public class NumberListField<T extends Number> extends FuzzyListField<T, NumberL
         
         comment.add( "" );
         comment.add( "  Wildcard, blacklist, tag and default entries are not supported by this field type." );
-        
-        comment.add( "" );
-        comment.add( "  IMPORTANT: The order of entries in this list matters!" );
         return comment;
     }
     
@@ -54,9 +63,8 @@ public class NumberListField<T extends Number> extends FuzzyListField<T, NumberL
         spec.paddedFileOnlyComment( verboseDescription() );
     }
     
-    
     /** Creates a new field. */
-    public NumberListField( String key, NumberList<T> defaultValue, @Nullable String... description ) {
+    public NumberWeightedValueListField( String key, NumberWeightedValueList<T, V> defaultValue, @Nullable String... description ) {
         super( key, defaultValue, description );
     }
     

@@ -170,7 +170,7 @@ public class StringValueCodec implements IValueCodec<String> {
         @Override
         public String correctValue( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
             return value == null ? defaultValue : ResourceLocation.isValidResourceLocation( value ) ? value :
-                    ResourceLocValueCodec.stripInvalidChars( value );
+                    ResourceLocationCodec.stripInvalidChars( value );
         }
     }
 }

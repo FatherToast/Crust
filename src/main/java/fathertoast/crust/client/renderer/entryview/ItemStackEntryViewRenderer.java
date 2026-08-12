@@ -31,8 +31,7 @@ public class ItemStackEntryViewRenderer implements EntryViewWidget.EntryViewRend
         
         stack.pushPose();
         
-        // TODO figure out how to render this farther back to prevent over-rendering, preferably at z = -100
-        graphics.renderItem( displayValue, widgetX + 2, widgetY + 2 );
+        graphics.renderItem( displayValue, widgetX + 2, widgetY + 2, 0, -100 );
         // Render "sub-widgets" such as durability bar and stack size
         graphics.renderItemDecorations( Minecraft.getInstance().font, displayValue,
                 widgetX, widgetY, stackSize > 1 ? String.valueOf( stackSize ) : null );

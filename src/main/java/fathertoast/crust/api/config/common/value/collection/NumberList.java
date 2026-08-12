@@ -15,47 +15,47 @@ import java.util.Collection;
  */
 @SuppressWarnings( "unused" )
 @ApiStatus.Experimental
-public class NumberList<T extends Number> extends FuzzyList<T> {
+public class NumberList<T extends Number> extends FuzzyList<T> implements INumberCollection {
     
     /** Creates a new builder for a {@code byte} number list. */
     public static NumberList.Builder<Byte, ?> byteBuilder() {
-        return new NumberList.Builder<>( NumberKey.ValueType.BYTE );
+        return new NumberList.Builder<>( NumberKey.NumberType.BYTE );
     }
     
     /** Creates a new builder for a {@code short} number list. */
     public static NumberList.Builder<Short, ?> shortBuilder() {
-        return new NumberList.Builder<>( NumberKey.ValueType.SHORT );
+        return new NumberList.Builder<>( NumberKey.NumberType.SHORT );
     }
     
     /** Creates a new builder for an {@code int} number list. */
     public static NumberList.Builder<Integer, ?> intBuilder() {
-        return new NumberList.Builder<>( NumberKey.ValueType.INT );
+        return new NumberList.Builder<>( NumberKey.NumberType.INT );
     }
     
     /** Creates a new builder for a {@code long} number list. */
     public static NumberList.Builder<Long, ?> longBuilder() {
-        return new NumberList.Builder<>( NumberKey.ValueType.LONG );
+        return new NumberList.Builder<>( NumberKey.NumberType.LONG );
     }
     
     /** Creates a new builder for a {@code float} number list. */
     public static NumberList.Builder<Float, ?> floatBuilder() {
-        return new NumberList.Builder<>( NumberKey.ValueType.FLOAT );
+        return new NumberList.Builder<>( NumberKey.NumberType.FLOAT );
     }
     
     /** Creates a new builder for a {@code double} number list. */
     public static NumberList.Builder<Double, ?> doubleBuilder() {
-        return new NumberList.Builder<>( NumberKey.ValueType.DOUBLE );
+        return new NumberList.Builder<>( NumberKey.NumberType.DOUBLE );
     }
     
     
-    /** The {@link NumberKey.ValueType} of this number list. */
-    private final NumberKey.ValueType valueType;
+    /** The {@link NumberKey.NumberType} of this number list. */
+    private final NumberKey.NumberType numberType;
     
     
     /** Constructs an empty list. Use this if you want to {@link #load} a list from file/NBT. */
-    public NumberList( NumberKey.ValueType type ) {
+    public NumberList( NumberKey.NumberType type ) {
         super( NumberKey.getParserForType( type ) );
-        valueType = type;
+        numberType = type;
     }
     
     /**
@@ -63,63 +63,50 @@ public class NumberList<T extends Number> extends FuzzyList<T> {
      * during config definition, however the {@link ItemStackList.Builder} is much easier.
      */
     @SafeVarargs
-    public NumberList( NumberKey.ValueType type, FuzzyKey<T>... keys ) {
+    public NumberList( NumberKey.NumberType type, FuzzyKey<T>... keys ) {
         super( NumberKey.getParserForType( type ), keys );
-        valueType = type;
+        numberType = type;
     }
     
     /**
      * Constructs a list containing the keys provided. You may use this for creating default values
      * during config definition, however the {@link ItemStackList.Builder} is much easier.
      */
-    public NumberList( NumberKey.ValueType type, Collection<FuzzyKey<T>> keys ) {
+    public NumberList( NumberKey.NumberType type, Collection<FuzzyKey<T>> keys ) {
         super( NumberKey.getParserForType( type ), keys );
-        valueType = type;
+        numberType = type;
     }
     
     /** @return A fresh, empty collection of the same type as this one. */
     @Override
-    public NumberList<T> makeNew() { return new NumberList<>( valueType ); }
+    public NumberList<T> makeNew() { return new NumberList<>( numberType ); }
+    
+    /** @return This number collection's number value type. */
+    @Override
+    public NumberKey.NumberType getNumberType() {
+        return numberType;
+    }
     
     
     // ---- Builder Implementation ---- //
     
-    /** Builder to make constructing item stack lists smoother. */
+    /** Builder to make constructing number lists smoother. */
     public static class Builder<V extends Number, B extends NumberList.Builder<V, B>> extends AbstractBuilder<V, NumberList<V>, B> {
         
-        /** The {@link fathertoast.crust.api.config.common.value.collection.key.NumberKey.ValueType} of this builder. */
-        private final NumberKey.ValueType valueType;
+        /** The {@link NumberKey.NumberType} of this builder. */
+        private final NumberKey.NumberType numberType;
         
         
-        /** For internal use. Use one of the builder methods above. */
-        private Builder( NumberKey.ValueType type ) {
-            valueType = type;
+        public Builder( NumberKey.NumberType type ) {
+            numberType = type;
         }
         
         /** @return A new number list reflecting the current state of this builder. */
         @Override
-        public NumberList<V> build() { return new NumberList<>( valueType, list ); }
+        public NumberList<V> build() { return new NumberList<>( numberType, list ); }
         
         
         /** Adds a key based on the value. Matches only the provided value. */
         public B exactly( V value ) { return add( NumberKey.exactly( value, false ) ); }
-        
-        /** Adds a key based on the value. Matches all values that are not equal to the given value. */
-        public B notEquals( V value ) { return add( NumberKey.notEquals( value, false ) ); }
-        
-        /** Adds a key based on the value. Matches all values that are lower than the given value. */
-        public B lessThan( V value ) { return add( NumberKey.lessThan( value, false ) ); }
-        
-        /** Adds a key based on the value. Matches all values greater than the given value. */
-        public B greaterThan( V value ) { return add( NumberKey.greaterThan( value, false ) ); }
-        
-        /** Adds a key based on the value. Matches all values that are lower or equal to the given value. */
-        public B lessOrEq( V value ) { return add( NumberKey.lessOrEqual( value, false ) ); }
-        
-        /** Adds a key based on the value. Matches all values that are greater than or equal to the given value. */
-        public B greaterOrEq( V value ) { return add( NumberKey.greaterOrEqual( value, false ) ); }
-        
-        /** Adds a key based on the value. Matches all values that are perfectly divisible by (0 remainder) the given value. */
-        public B divisibleBy( V value ) { return add( NumberKey.divisibleBy( value, false ) ); }
     }
 }
