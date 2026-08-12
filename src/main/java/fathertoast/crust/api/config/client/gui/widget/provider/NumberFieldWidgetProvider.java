@@ -47,7 +47,6 @@ public class NumberFieldWidgetProvider<T extends Number> implements IConfigField
             Number newValue = TomlHelper.parseNumber( text );
             if( newValue == null || !VALIDATOR.apply( newValue ) ) {
                 editBox.setTextColor( INVALID_COLOR );
-                listEntry.clearValue();
             }
             else {
                 editBox.setTextColor( DEFAULT_COLOR );

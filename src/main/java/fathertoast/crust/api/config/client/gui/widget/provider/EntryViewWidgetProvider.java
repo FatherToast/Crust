@@ -70,13 +70,12 @@ public class EntryViewWidgetProvider<T, V> implements IConfigFieldWidgetProvider
                 text -> {
                     if( text == null || !VALIDATOR.test( text ) ) {
                         editBox.setTextColor( INVALID_COLOR );
-                        listEntry.clearValue();
                     }
                     else {
                         editBox.setTextColor( DEFAULT_COLOR );
                         listEntry.updateInput( text );
+                        entryViewWidget.updateDisplay( listEntry.getValue() );
                     }
-                    entryViewWidget.updateDisplay( listEntry.getValue() );
                 } );
         editBox.active = listEntry.isEditable();
         

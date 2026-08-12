@@ -506,7 +506,6 @@ public class TestConfigFile extends AbstractConfigFile {
                             .entryBuilder( 666 ).inBiome( BiomeTags.IS_FOREST ).and().isThundering().build()
                             .entryBuilder( 20 ).afterMonthsOrApocalypseDifficulty( 1 ).build()
                             .entryBuilder( 7 ).inOverworld().build()
-                            .entryBuilder( -1 ).build()
                             .build() ), General::testCallback ) ).field();
             
             stringListField = SPEC.define( new InjectionWrapperField<>(
@@ -570,15 +569,12 @@ public class TestConfigFile extends AbstractConfigFile {
                     "environmental stimulus that may be experienced by the config prior to the commencement of " +
                     "the launch cycle." );
             
-            IConfigField<?> dummy = new BooleanField( "ignore_me", false, (String[]) null );
-            dummy.setSpec( SPEC );
-            
             Set<String> environments = CrustEnvironmentRegistry.getNames();
             fields = new ArrayList<>( environments.size() );
             int i = 0;
             for( String env : environments ) {
                 fields.add( SPEC.define( new EnvironmentListField<>( env, EnvironmentList.builder( IntValueCodec.NON_NEGATIVE )
-                        .add( i, env )
+                        .add( ++i, env )
                         .build(),
                         (String[]) null ) ) );
             }

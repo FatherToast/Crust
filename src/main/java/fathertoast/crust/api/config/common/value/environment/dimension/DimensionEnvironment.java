@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 /**
  * Dimensions: {@link Level#OVERWORLD}, {@link Level#NETHER}, and {@link Level#END}.
  */
-public class DimensionEnvironment extends RegistryEnvironment<Level> {
+public class DimensionEnvironment extends RegistryEnvironment<Level> {//TODO this doesn't seem to work
     
     public static final IRegWrapper<Level> REGISTRY = IRegWrapper.forKey( Registries.DIMENSION );
     

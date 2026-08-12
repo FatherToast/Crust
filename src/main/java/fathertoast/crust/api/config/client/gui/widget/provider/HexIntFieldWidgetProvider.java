@@ -48,7 +48,6 @@ public class HexIntFieldWidgetProvider implements IConfigFieldWidgetProvider<Int
             Integer newValue = TomlHelper.parseHexInt( text );
             if( newValue == null || !VALIDATOR.apply( newValue ) ) {
                 editBox.setTextColor( INVALID_COLOR );
-                listEntry.clearValue();
             }
             else {
                 editBox.setTextColor( DEFAULT_COLOR );
