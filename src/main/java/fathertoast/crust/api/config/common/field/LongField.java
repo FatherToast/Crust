@@ -194,33 +194,33 @@ public class LongField extends AbstractConfigField<Long> {
         /** @return The maximum value field. */
         public LongField getMaxField() { return MAXIMUM; }
         
-        /**
-         * @return A random value between the minimum and the maximum (inclusive).
-         * <br><br>
-         * All this method does is try and grab the seed from the given RandomSource instance,
-         * such that it can be used to instantiate a new {@link Random} object
-         * that we can call {@link LongField.RandomRange#next(Random)} with.
-         * <br><br>
-         * If you end up needing to call this often, it is likely better to call the below method
-         * that takes a {@link Random} instance instead when possible, as {@link RandomSource} does not
-         * provide a method for generating a bounded random long.
-         * @see CrustMath#getRandomSourceSeed(RandomSource)
-         */
+        /** @return A random value between the minimum and the maximum (inclusive). */
         public long next( RandomSource random ) {
-            return next( new Random( CrustMath.getRandomSourceSeed( random ) ) );
+            try {
+                return CrustMath.nextLong( random, getMin(), getMax() + 1L );
+            }
+            catch( IllegalArgumentException ex ) {
+                warnInvalidRange();
+                return getMin();
+            }
         }
         
         /** @return A random value between the minimum and the maximum (inclusive). */
         public long next( Random random ) {
             try {
-                return random.nextLong( getMin(), getMax() );
+                return random.nextLong( getMin(), getMax() + 1L );
             }
             catch( IllegalArgumentException ex ) {
-                ConfigUtil.warnFor( MAXIMUM );
-                ConfigUtil.LOG.warn( "Values for range are invalid; min ({}) is greater than max ({})! Ignoring maximum value.",
-                        getMin(), getMax() );
+                warnInvalidRange();
                 return getMin();
             }
+        }
+        
+        /** Convenience method for logging a warning for invalid min-max range. */
+        private void warnInvalidRange() {
+            ConfigUtil.warnFor( MAXIMUM );
+            ConfigUtil.LOG.warn( "Values for range are invalid; min ({}) is greater than max ({})! Ignoring maximum value.",
+                    getMin(), getMax() );
         }
     }
 }

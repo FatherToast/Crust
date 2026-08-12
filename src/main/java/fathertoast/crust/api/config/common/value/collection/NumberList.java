@@ -2,6 +2,7 @@ package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
+import fathertoast.crust.api.lib.number.NumberType;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
@@ -19,41 +20,41 @@ public class NumberList<T extends Number> extends FuzzyList<T> implements INumbe
     
     /** Creates a new builder for a {@code byte} number list. */
     public static NumberList.Builder<Byte, ?> byteBuilder() {
-        return new NumberList.Builder<>( NumberKey.NumberType.BYTE );
+        return new NumberList.Builder<>( NumberType.BYTE );
     }
     
     /** Creates a new builder for a {@code short} number list. */
     public static NumberList.Builder<Short, ?> shortBuilder() {
-        return new NumberList.Builder<>( NumberKey.NumberType.SHORT );
+        return new NumberList.Builder<>( NumberType.SHORT );
     }
     
     /** Creates a new builder for an {@code int} number list. */
     public static NumberList.Builder<Integer, ?> intBuilder() {
-        return new NumberList.Builder<>( NumberKey.NumberType.INT );
+        return new NumberList.Builder<>( NumberType.INT );
     }
     
     /** Creates a new builder for a {@code long} number list. */
     public static NumberList.Builder<Long, ?> longBuilder() {
-        return new NumberList.Builder<>( NumberKey.NumberType.LONG );
+        return new NumberList.Builder<>( NumberType.LONG );
     }
     
     /** Creates a new builder for a {@code float} number list. */
     public static NumberList.Builder<Float, ?> floatBuilder() {
-        return new NumberList.Builder<>( NumberKey.NumberType.FLOAT );
+        return new NumberList.Builder<>( NumberType.FLOAT );
     }
     
     /** Creates a new builder for a {@code double} number list. */
     public static NumberList.Builder<Double, ?> doubleBuilder() {
-        return new NumberList.Builder<>( NumberKey.NumberType.DOUBLE );
+        return new NumberList.Builder<>( NumberType.DOUBLE );
     }
     
     
-    /** The {@link NumberKey.NumberType} of this number list. */
-    private final NumberKey.NumberType numberType;
+    /** The {@link NumberType} of this number list. */
+    private final NumberType numberType;
     
     
     /** Constructs an empty list. Use this if you want to {@link #load} a list from file/NBT. */
-    public NumberList( NumberKey.NumberType type ) {
+    public NumberList( NumberType type ) {
         super( NumberKey.getParserForType( type ) );
         numberType = type;
     }
@@ -63,7 +64,7 @@ public class NumberList<T extends Number> extends FuzzyList<T> implements INumbe
      * during config definition, however the {@link ItemStackList.Builder} is much easier.
      */
     @SafeVarargs
-    public NumberList( NumberKey.NumberType type, FuzzyKey<T>... keys ) {
+    public NumberList( NumberType type, FuzzyKey<T>... keys ) {
         super( NumberKey.getParserForType( type ), keys );
         numberType = type;
     }
@@ -72,7 +73,7 @@ public class NumberList<T extends Number> extends FuzzyList<T> implements INumbe
      * Constructs a list containing the keys provided. You may use this for creating default values
      * during config definition, however the {@link ItemStackList.Builder} is much easier.
      */
-    public NumberList( NumberKey.NumberType type, Collection<FuzzyKey<T>> keys ) {
+    public NumberList( NumberType type, Collection<FuzzyKey<T>> keys ) {
         super( NumberKey.getParserForType( type ), keys );
         numberType = type;
     }
@@ -83,7 +84,7 @@ public class NumberList<T extends Number> extends FuzzyList<T> implements INumbe
     
     /** @return This number collection's number value type. */
     @Override
-    public NumberKey.NumberType getNumberType() {
+    public NumberType getNumberType() {
         return numberType;
     }
     
@@ -93,11 +94,11 @@ public class NumberList<T extends Number> extends FuzzyList<T> implements INumbe
     /** Builder to make constructing number lists smoother. */
     public static class Builder<V extends Number, B extends NumberList.Builder<V, B>> extends AbstractBuilder<V, NumberList<V>, B> {
         
-        /** The {@link NumberKey.NumberType} of this builder. */
-        private final NumberKey.NumberType numberType;
+        /** The {@link NumberType} of this builder. */
+        private final NumberType numberType;
         
         
-        public Builder( NumberKey.NumberType type ) {
+        public Builder( NumberType type ) {
             numberType = type;
         }
         

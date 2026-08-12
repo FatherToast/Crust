@@ -1,6 +1,6 @@
 package fathertoast.crust.api.config.common.value.collection;
 
-import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
+import fathertoast.crust.api.lib.number.NumberType;
 
 /**
  * Represents a fuzzy collection that contains
@@ -9,5 +9,5 @@ import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
 public interface INumberCollection {
     
     /** @return This number collection's number value type. */
-    NumberKey.NumberType getNumberType();
+    NumberType getNumberType();
 }

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
 @SuppressWarnings( "unused" )
@@ -43,7 +44,7 @@ public final class CrustMath {
     }
     
     /**
-     * Convenience method for getting the seed form various vanilla implementations of {@link RandomSource}.
+     * Convenience method for getting the seed from various vanilla implementations of {@link RandomSource}.
      *
      * @return The seed of the given {@link RandomSource}. If the implementation is not
      * supported or something goes wrong, a new pseudorandomly generated seed from
@@ -54,8 +55,55 @@ public final class CrustMath {
         try {
             return RANDOM_SOURCE_SEED_GETTER.apply( random );
         }
-        catch( Exception ignored ) {}
+        catch( Exception ignored ) { }
         return random.nextLong();
+    }
+    
+    /**
+     * Uses the given random source's seed to generate a pseudorandom long
+     * with the current thread-local random.
+     *
+     * @param random The {@link RandomSource} to get the seed from.
+     * @return The generated long value.
+     * @see ThreadLocalRandom#nextLong(long)
+     */
+    public static long nextLong( RandomSource random ) {
+        final ThreadLocalRandom rng = ThreadLocalRandom.current();
+        rng.setSeed( getRandomSourceSeed( random ) );
+        return rng.nextLong();
+    }
+    
+    /**
+     * Uses the given random source's seed to generate a pseudorandom long
+     * with the current thread-local random.
+     *
+     * @param random The {@link RandomSource} to get the seed from.
+     * @param bound  the upper bound (exclusive) for the returned value.
+     *               Must be positive.
+     * @return The generated long value.
+     * @see ThreadLocalRandom#nextLong(long)
+     */
+    public static long nextLong( RandomSource random, long bound ) {
+        final ThreadLocalRandom rng = ThreadLocalRandom.current();
+        rng.setSeed( getRandomSourceSeed( random ) );
+        return rng.nextLong( bound );
+    }
+    
+    /**
+     * Uses the given random source's seed to generate a pseudorandom long
+     * with the current thread-local random.
+     *
+     * @param random The {@link RandomSource} to get the seed from.
+     * @param origin The minimum value that can be returned.
+     * @param bound  the upper bound (exclusive) for the returned value.
+     *               Must be positive.
+     * @return The generated long value.
+     * @see ThreadLocalRandom#nextLong(long, long) (long)
+     */
+    public static long nextLong( RandomSource random, long origin, long bound ) {
+        ThreadLocalRandom rng = ThreadLocalRandom.current();
+        rng.setSeed( getRandomSourceSeed( random ) );
+        return rng.nextLong( origin, bound );
     }
     
     
@@ -112,5 +160,5 @@ public final class CrustMath {
     
     
     // Utility class
-    private CrustMath() {}
+    private CrustMath() { }
 }

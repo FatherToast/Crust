@@ -2,7 +2,7 @@ package fathertoast.crust.api.config.common.field.collection;
 
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.NumberValueList;
-import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
+import fathertoast.crust.api.lib.number.NumberType;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
@@ -70,5 +70,5 @@ public class NumberValueListField<T extends Number, V> extends FuzzyValueListFie
     // ---- Convenience Methods ---- //
     
     /** @return This field's number value type. */
-    public NumberKey.NumberType getNumberType() { return getDefaultValue().getNumberType(); }
+    public NumberType getNumberType() { return getDefaultValue().getNumberType(); }
 }

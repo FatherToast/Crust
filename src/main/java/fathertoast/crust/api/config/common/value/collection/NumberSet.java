@@ -2,6 +2,7 @@ package fathertoast.crust.api.config.common.value.collection;
 
 import fathertoast.crust.api.config.common.value.collection.key.FuzzyKey;
 import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
+import fathertoast.crust.api.lib.number.NumberType;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
@@ -20,41 +21,41 @@ public class NumberSet<T extends Number> extends FuzzySet<T> implements INumberC
     
     /** Creates a new builder for a {@code byte} number set. */
     public static Builder<Byte, ?> byteBuilder() {
-        return new Builder<>( NumberKey.NumberType.BYTE );
+        return new Builder<>( NumberType.BYTE );
     }
     
     /** Creates a new builder for a {@code short} number set. */
     public static Builder<Short, ?> shortBuilder() {
-        return new Builder<>( NumberKey.NumberType.SHORT );
+        return new Builder<>( NumberType.SHORT );
     }
     
     /** Creates a new builder for an {@code int} number set. */
     public static Builder<Integer, ?> intBuilder() {
-        return new Builder<>( NumberKey.NumberType.INT );
+        return new Builder<>( NumberType.INT );
     }
     
     /** Creates a new builder for a {@code long} number set. */
     public static Builder<Long, ?> longBuilder() {
-        return new Builder<>( NumberKey.NumberType.LONG );
+        return new Builder<>( NumberType.LONG );
     }
     
     /** Creates a new builder for a {@code float} number set. */
     public static Builder<Float, ?> floatBuilder() {
-        return new Builder<>( NumberKey.NumberType.FLOAT );
+        return new Builder<>( NumberType.FLOAT );
     }
     
     /** Creates a new builder for a {@code double} number set. */
     public static Builder<Double, ?> doubleBuilder() {
-        return new Builder<>( NumberKey.NumberType.DOUBLE );
+        return new Builder<>( NumberType.DOUBLE );
     }
     
     
-    /** The {@link NumberKey.NumberType} of this number set. */
-    private final NumberKey.NumberType numberType;
+    /** The {@link NumberType} of this number set. */
+    private final NumberType numberType;
     
     
     /** Constructs an empty set. Use this if you want to {@link #load} a set from file/NBT. */
-    public NumberSet( NumberKey.NumberType type ) {
+    public NumberSet( NumberType type ) {
         super( NumberKey.getParserForType( type ) );
         numberType = type;
     }
@@ -64,7 +65,7 @@ public class NumberSet<T extends Number> extends FuzzySet<T> implements INumberC
      * during config definition, however the {@link NumberSet.Builder} is much easier.
      */
     @SafeVarargs
-    public NumberSet( NumberKey.NumberType type, FuzzyKey<T>... keys ) {
+    public NumberSet( NumberType type, FuzzyKey<T>... keys ) {
         super( NumberKey.getParserForType( type ), keys );
         numberType = type;
     }
@@ -73,7 +74,7 @@ public class NumberSet<T extends Number> extends FuzzySet<T> implements INumberC
      * Constructs a set containing the keys provided. You may use this for creating default values
      * during config definition, however the {@link NumberSet.Builder} is much easier.
      */
-    public NumberSet( NumberKey.NumberType type, Collection<FuzzyKey<T>> keys ) {
+    public NumberSet( NumberType type, Collection<FuzzyKey<T>> keys ) {
         super( NumberKey.getParserForType( type ), keys );
         numberType = type;
     }
@@ -86,7 +87,7 @@ public class NumberSet<T extends Number> extends FuzzySet<T> implements INumberC
     
     /** @return This number collection's number value type. */
     @Override
-    public NumberKey.NumberType getNumberType() {
+    public NumberType getNumberType() {
         return numberType;
     }
     
@@ -95,11 +96,11 @@ public class NumberSet<T extends Number> extends FuzzySet<T> implements INumberC
     /** Builder to make constructing number sets smoother. */
     public static class Builder<V extends Number, B extends NumberSet.Builder<V, B>> extends AbstractBuilder<V, NumberSet<V>, B> {
         
-        /** The {@link NumberKey.NumberType} of this builder. */
-        private final NumberKey.NumberType numberType;
+        /** The {@link NumberType} of this builder. */
+        private final NumberType numberType;
         
         
-        public Builder( NumberKey.NumberType type ) {
+        public Builder( NumberType type ) {
             numberType = type;
         }
         

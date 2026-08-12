@@ -2,7 +2,7 @@ package fathertoast.crust.api.config.common.field.collection;
 
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.config.common.value.collection.NumberMap;
-import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
+import fathertoast.crust.api.lib.number.NumberType;
 import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -88,5 +88,5 @@ public class NumberMapField<T extends Number, V> extends FuzzyMapField<T, V, Num
     // ---- Convenience Methods ---- //
     
     /** @return This field's number value type. */
-    public NumberKey.NumberType getNumberType() { return getDefaultValue().getNumberType(); }
+    public NumberType getNumberType() { return getDefaultValue().getNumberType(); }
 }

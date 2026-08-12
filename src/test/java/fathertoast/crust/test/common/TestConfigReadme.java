@@ -39,6 +39,13 @@ public class TestConfigReadme extends AbstractConfigFile.Simple {
         RegistryWeightedListField.describe( SPEC );
         RegistryWeightedValueListField.describe( SPEC );
         
+        NumberListField.describe( SPEC );
+        NumberMapField.describe( SPEC );
+        NumberSetField.describe( SPEC );
+        NumberValueListField.describe( SPEC );
+        NumberWeightedListField.describe( SPEC );
+        NumberWeightedValueListField.describe( SPEC );
+        
         SPEC.define( new BooleanField( "toast_mode", true,
                 "This field only exists to prevent the spec from getting angry." ) );
         

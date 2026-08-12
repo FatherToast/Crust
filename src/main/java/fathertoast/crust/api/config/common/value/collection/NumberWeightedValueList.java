@@ -3,6 +3,7 @@ package fathertoast.crust.api.config.common.value.collection;
 import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
 import fathertoast.crust.api.config.common.value.collection.value.WeightedEntry;
+import fathertoast.crust.api.lib.number.NumberType;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
@@ -12,41 +13,41 @@ public class NumberWeightedValueList<T extends Number, V> extends FuzzyWeightedV
     
     /** Creates a new builder for a {@code byte} number weighted value list. */
     public static <V> NumberWeightedValueList.Builder<Byte, V, ?> byteBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberWeightedValueList.Builder<>( NumberKey.NumberType.BYTE, valueCodec );
+        return new NumberWeightedValueList.Builder<>( NumberType.BYTE, valueCodec );
     }
     
     /** Creates a new builder for a {@code short} number weighted value list. */
     public static <V> NumberWeightedValueList.Builder<Short, V, ?> shortBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberWeightedValueList.Builder<>( NumberKey.NumberType.SHORT, valueCodec );
+        return new NumberWeightedValueList.Builder<>( NumberType.SHORT, valueCodec );
     }
     
     /** Creates a new builder for an {@code int} number weighted value list. */
     public static <V> NumberWeightedValueList.Builder<Integer, V, ?> intBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberWeightedValueList.Builder<>( NumberKey.NumberType.INT, valueCodec );
+        return new NumberWeightedValueList.Builder<>( NumberType.INT, valueCodec );
     }
     
     /** Creates a new builder for a {@code long} number weighted value list. */
     public static <V> NumberWeightedValueList.Builder<Long, V, ?> longBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberWeightedValueList.Builder<>( NumberKey.NumberType.LONG, valueCodec );
+        return new NumberWeightedValueList.Builder<>( NumberType.LONG, valueCodec );
     }
     
     /** Creates a new builder for a {@code float} number weighted value list. */
     public static <V> NumberWeightedValueList.Builder<Float, V, ?> floatBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberWeightedValueList.Builder<>( NumberKey.NumberType.FLOAT, valueCodec );
+        return new NumberWeightedValueList.Builder<>( NumberType.FLOAT, valueCodec );
     }
     
     /** Creates a new builder for a {@code double} number weighted value list. */
     public static <V> NumberWeightedValueList.Builder<Double, V, ?> doubleBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberWeightedValueList.Builder<>( NumberKey.NumberType.DOUBLE, valueCodec );
+        return new NumberWeightedValueList.Builder<>( NumberType.DOUBLE, valueCodec );
     }
     
     
-    /** The {@link NumberKey.NumberType} of this number weighted value list. */
-    private final NumberKey.NumberType numberType;
+    /** The {@link NumberType} of this number weighted value list. */
+    private final NumberType numberType;
     
     
     /** Constructs an empty weighted value list. Use this if you want to {@link #load} a weighted value list from file/NBT. */
-    public NumberWeightedValueList( NumberKey.NumberType type, IValueCodec<V> codec ) {
+    public NumberWeightedValueList( NumberType type, IValueCodec<V> codec ) {
         super( NumberKey.getParserForType( type ), codec );
         numberType = type;
     }
@@ -56,7 +57,7 @@ public class NumberWeightedValueList<T extends Number, V> extends FuzzyWeightedV
      * during config definition, however the {@link NumberWeightedValueList.Builder} is much easier.
      */
     @SafeVarargs
-    public NumberWeightedValueList( NumberKey.NumberType type, IValueCodec<V> codec, WeightedEntry<T, V>... keys ) {
+    public NumberWeightedValueList( NumberType type, IValueCodec<V> codec, WeightedEntry<T, V>... keys ) {
         super( NumberKey.getParserForType( type ), codec, keys );
         numberType = type;
     }
@@ -65,7 +66,7 @@ public class NumberWeightedValueList<T extends Number, V> extends FuzzyWeightedV
      * Constructs a weighted value list containing the entries provided. You may use this for creating default values
      * during config definition, however the {@link NumberWeightedValueList.Builder} is much easier.
      */
-    public NumberWeightedValueList( NumberKey.NumberType type, IValueCodec<V> codec, Collection<WeightedEntry<T, V>> keys ) {
+    public NumberWeightedValueList( NumberType type, IValueCodec<V> codec, Collection<WeightedEntry<T, V>> keys ) {
         super( NumberKey.getParserForType( type ), codec, keys );
         numberType = type;
     }
@@ -76,7 +77,7 @@ public class NumberWeightedValueList<T extends Number, V> extends FuzzyWeightedV
     
     /** @return This number collection's number value type. */
     @Override
-    public NumberKey.NumberType getNumberType() {
+    public NumberType getNumberType() {
         return numberType;
     }
     
@@ -87,11 +88,11 @@ public class NumberWeightedValueList<T extends Number, V> extends FuzzyWeightedV
     @ApiStatus.Experimental
     public static class Builder<T extends Number, V, B extends NumberWeightedValueList.Builder<T, V, B>> extends AbstractBuilder<T, V, NumberWeightedValueList<T, V>, B> {
         
-        /** The {@link NumberKey.NumberType} of this builder. */
-        private final NumberKey.NumberType numberType;
+        /** The {@link NumberType} of this builder. */
+        private final NumberType numberType;
         
         
-        public Builder( NumberKey.NumberType type, IValueCodec<V> codec ) {
+        public Builder( NumberType type, IValueCodec<V> codec ) {
             super( codec );
             numberType = type;
         }

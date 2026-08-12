@@ -4,6 +4,7 @@ import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.key.NumberKey;
 import fathertoast.crust.api.config.common.value.collection.value.FuzzyEntry;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
+import fathertoast.crust.api.lib.number.NumberType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,41 +25,41 @@ public class NumberValueList<T extends Number, V> extends FuzzyValueList<T, V> i
     
     /** Creates a new builder for a {@code byte} number value list. */
     public static <V> NumberValueList.Builder<Byte, V, ?> byteBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberValueList.Builder<>( NumberKey.NumberType.BYTE, valueCodec );
+        return new NumberValueList.Builder<>( NumberType.BYTE, valueCodec );
     }
     
     /** Creates a new builder for a {@code short} number value list. */
     public static <V> NumberValueList.Builder<Short, V, ?> shortBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberValueList.Builder<>( NumberKey.NumberType.SHORT, valueCodec );
+        return new NumberValueList.Builder<>( NumberType.SHORT, valueCodec );
     }
     
     /** Creates a new builder for an {@code int} number value list. */
     public static <V> NumberValueList.Builder<Integer, V, ?> intBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberValueList.Builder<>( NumberKey.NumberType.INT, valueCodec );
+        return new NumberValueList.Builder<>( NumberType.INT, valueCodec );
     }
     
     /** Creates a new builder for a {@code long} number value list. */
     public static <V> NumberValueList.Builder<Long, V, ?> longBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberValueList.Builder<>( NumberKey.NumberType.LONG, valueCodec );
+        return new NumberValueList.Builder<>( NumberType.LONG, valueCodec );
     }
     
     /** Creates a new builder for a {@code float} number value list. */
     public static <V> NumberValueList.Builder<Float, V, ?> floatBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberValueList.Builder<>( NumberKey.NumberType.FLOAT, valueCodec );
+        return new NumberValueList.Builder<>( NumberType.FLOAT, valueCodec );
     }
     
     /** Creates a new builder for a {@code double} number value list. */
     public static <V> NumberValueList.Builder<Double, V, ?> doubleBuilder( IValueCodec<V> valueCodec ) {
-        return new NumberValueList.Builder<>( NumberKey.NumberType.DOUBLE, valueCodec );
+        return new NumberValueList.Builder<>( NumberType.DOUBLE, valueCodec );
     }
     
     
-    /** The {@link NumberKey.NumberType} of this number value list. */
-    private final NumberKey.NumberType numberType;
+    /** The {@link NumberType} of this number value list. */
+    private final NumberType numberType;
     
     
     /** Constructs an empty value list. Use this if you want to {@link #load} a value list from file/NBT. */
-    public NumberValueList( NumberKey.NumberType type, IValueCodec<V> codec ) {
+    public NumberValueList( NumberType type, IValueCodec<V> codec ) {
         super( NumberKey.getParserForType( type ), codec );
         numberType = type;
     }
@@ -68,7 +69,7 @@ public class NumberValueList<T extends Number, V> extends FuzzyValueList<T, V> i
      * during config definition, however the {@link NumberValueList.Builder} is much easier.
      */
     @SafeVarargs
-    public NumberValueList( NumberKey.NumberType type, IValueCodec<V> codec, FuzzyEntry<T, V>... keys ) {
+    public NumberValueList( NumberType type, IValueCodec<V> codec, FuzzyEntry<T, V>... keys ) {
         super( NumberKey.getParserForType( type ), codec, keys );
         numberType = type;
     }
@@ -77,7 +78,7 @@ public class NumberValueList<T extends Number, V> extends FuzzyValueList<T, V> i
      * Constructs a value list containing the entries provided. You may use this for creating default values
      * during config definition, however the {@link NumberValueList.Builder} is much easier.
      */
-    public NumberValueList( NumberKey.NumberType type, IValueCodec<V> codec, Collection<FuzzyEntry<T, V>> keys ) {
+    public NumberValueList( NumberType type, IValueCodec<V> codec, Collection<FuzzyEntry<T, V>> keys ) {
         super( NumberKey.getParserForType( type ), codec, keys );
         numberType = type;
     }
@@ -95,7 +96,7 @@ public class NumberValueList<T extends Number, V> extends FuzzyValueList<T, V> i
     
     /** @return This number collection's number value type. */
     @Override
-    public NumberKey.NumberType getNumberType() {
+    public NumberType getNumberType() {
         return numberType;
     }
     
@@ -105,11 +106,11 @@ public class NumberValueList<T extends Number, V> extends FuzzyValueList<T, V> i
     @ApiStatus.Experimental
     public static class Builder<T extends Number, V, B extends NumberValueList.Builder<T, V, B>> extends AbstractBuilder<T, V, NumberValueList<T, V>, B> {
         
-        /** The {@link NumberKey.NumberType} of this builder. */
-        private final NumberKey.NumberType numberType;
+        /** The {@link NumberType} of this builder. */
+        private final NumberType numberType;
         
         
-        public Builder( NumberKey.NumberType type, IValueCodec<V> codec ) {
+        public Builder( NumberType type, IValueCodec<V> codec ) {
             super( codec );
             numberType = type;
         }

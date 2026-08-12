@@ -4,14 +4,16 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.value.collection.KeyUsage;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
+import fathertoast.crust.api.lib.CrustMath;
+import fathertoast.crust.api.lib.number.NumberType;
+import fathertoast.crust.api.lib.number.RangedNumberIterator;
 import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
+
+// TODO - CHECK INSANE OVERFLOW THING THAT HAPPENED IN CFG EDITOR
 
 /**
  * A key for fuzzy collections that test against a specific type of numeric value.
@@ -143,7 +145,7 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
      * Returns null if no appropriate value type exists.
      */
     @Nullable
-    public static <T extends Number> NumberKey.NumberType getFromNumber( T value ) {
+    public static <T extends Number> NumberType getFromNumber( T value ) {
         if( value instanceof Byte ) return NumberType.BYTE;
         else if( value instanceof Short ) return NumberType.SHORT;
         else if( value instanceof Integer ) return NumberType.INT;
@@ -375,7 +377,7 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
     /**
      * A key that matches all values between a minimum and maximum value (both inclusive).
      */
-    public static class BetweenInclusive<T extends Number> extends NumberKey<T> implements IRandomKey<T> {
+    public static class BetweenInclusive<T extends Number> extends NumberKey<T> implements IMultiKey<T> {
         
         /** The upper limit value used to determine the range of this key. */
         private final T maxValue;
@@ -414,10 +416,32 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
         }
         
         /** @return A value that matches this key, or null if anything goes wrong. */
+        @SuppressWarnings( "unchecked" )
         @Nullable
         @Override // IRandomKey
         public T nextValue( RandomSource random ) {
-            return value;
+            final int min = value.intValue();
+            final int max = maxValue.intValue();
+            
+            return switch( type ) {
+                case BYTE -> (T) Byte.valueOf( (byte) (random.nextIntBetweenInclusive( min, max )) );
+                case SHORT -> (T) Short.valueOf( (short) (random.nextIntBetweenInclusive( min, max )) );
+                case INT -> (T) Integer.valueOf( random.nextIntBetweenInclusive( min, max ) );
+                case FLOAT ->
+                        (T) Float.valueOf( (float) (random.nextIntBetweenInclusive( min, max )) * random.nextFloat() );
+                case DOUBLE -> (T) Double.valueOf( random.nextIntBetweenInclusive( min, max ) * random.nextDouble() );
+                case LONG -> {
+                    final long minLong = value.longValue();
+                    final long maxLong = maxValue.longValue();
+                    yield (T) Long.valueOf( CrustMath.nextLong( random, minLong, maxLong ) );
+                }
+            };
+        }
+        
+        @Override
+        @Nullable
+        public Iterator<T> getValueIterator() {
+            return new RangedNumberIterator<>( type, value, maxValue );
         }
     }
     
@@ -433,23 +457,6 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
         return Objects.equals( value, target );
     }
     
-    /** Represents a type of number. */
-    public enum NumberType {
-        BYTE( "Byte" ), SHORT( "Short" ),
-        INT( "Integer" ), LONG( "Long" ),
-        FLOAT( "Float" ), DOUBLE( "Double" );
-        
-        final String name;
-        
-        NumberType( String name ) {
-            this.name = name;
-        }
-        
-        /** @return The display name of the type. */
-        public String getName() {
-            return name;
-        }
-    }
     
     /** Represents a numerical comparison operation. */
     public enum ComparisonOp {
@@ -607,7 +614,7 @@ public class NumberKey<T extends Number> extends FuzzyKey<T> {
                     if( field != null ) {
                         ConfigUtil.warnFor( field );
                         ConfigUtil.LOG.warn( "Found invalid value ({}) in entry '{}', expected value with type '{}'! Field does not use a value codec; entry will be discarded.",
-                                key, line, type.name.toLowerCase( Locale.ROOT ) );
+                                key, line, type.name().toLowerCase( Locale.ROOT ) );
                     }
                     return null;
                 }
