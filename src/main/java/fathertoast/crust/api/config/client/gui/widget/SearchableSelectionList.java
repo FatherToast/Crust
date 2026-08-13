@@ -30,11 +30,7 @@ public abstract class SearchableSelectionList<T extends ContainerObjectSelection
         this.searchbar = searchbar;
     }
     
-    /**
-     * Tells the underlying searchbar to forcibly run a new search.
-     * Make sure to call this if the number of elements/children in
-     * this list changes.
-     */
+    /** Tells the underlying searchbar to forcibly run a new search. */
     protected void rerunSearch() {
         if( searchbar != null && !searchbar.getValue().isEmpty() )
             searchbar.search( searchbar.getValue(), true );

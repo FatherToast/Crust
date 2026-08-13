@@ -8,9 +8,7 @@ import javax.annotation.Nullable;
 /** Contains various convenience methods related to {@link ResourceLocation}. */
 public final class ResourceLocationUtils {
     
-    /**
-     * A ResourceLocation whose purpose is to point to "nothing" in the context it is being used.
-     */
+    /** A resource location whose purpose is to point to "nothing" in the context it is being used. */
     public static final ResourceLocation EMPTY = ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, "empty" );
     
     
