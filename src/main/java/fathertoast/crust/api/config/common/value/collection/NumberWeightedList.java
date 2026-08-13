@@ -107,7 +107,14 @@ public class NumberWeightedList<T extends Number> extends FuzzyWeightedList<T> i
         public NumberWeightedList<T> build() { return new NumberWeightedList<>( numberType, list ); }
         
         
-        /** Adds a key based on the resource location. Matches only the provided number. */
+        /** Adds a weighted key based on the number. Matches only the provided number. */
         public B exactly( int weight, T key ) { return add( weight, NumberKey.exactly( key, false ) ); }
+        
+        /** Adds a weighted key based on the specified min and max. Matches all values between the specified minimum and maximum (inclusive) values. */
+        public B betweenInclusive( int weight, T min, T max ) {
+            if( !NumberKey.isValidRange( min, max ) )
+                throw new IllegalArgumentException( "Min value must be less than max value!" );
+            return add( weight, NumberKey.betweenInclusive( min, max, false ) );
+        }
     }
 }

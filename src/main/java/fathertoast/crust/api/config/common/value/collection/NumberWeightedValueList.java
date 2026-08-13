@@ -105,5 +105,11 @@ public class NumberWeightedValueList<T extends Number, V> extends FuzzyWeightedV
         /** Adds a key-value pair based on the number. */
         public B exactly( int weight, T number, V value ) { return put( weight, NumberKey.exactly( number, false ), value ); }
         
+        /** Adds a key-value pair based on the specified min and max. Matches all values between the specified minimum and maximum (inclusive) values. */
+        public B betweenInclusive( int weight, T min, T max, V value ) {
+            if( !NumberKey.isValidRange( min, max ) )
+                throw new IllegalArgumentException( "Min value must be less than max value!" );
+            return put( weight, NumberKey.betweenInclusive( min, max, false ), value );
+        }
     }
 }

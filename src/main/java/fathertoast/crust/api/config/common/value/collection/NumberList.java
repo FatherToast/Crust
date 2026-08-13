@@ -109,5 +109,12 @@ public class NumberList<T extends Number> extends FuzzyList<T> implements INumbe
         
         /** Adds a key based on the value. Matches only the provided value. */
         public B exactly( V value ) { return add( NumberKey.exactly( value, false ) ); }
+        
+        /** Adds a key based on the specified min and max. Matches all values between the specified minimum and maximum (inclusive) values. */
+        public B betweenInclusive( V min, V max ) {
+            if( !NumberKey.isValidRange( min, max ) )
+                throw new IllegalArgumentException( "Min value must be less than max value!" );
+            return add( NumberKey.betweenInclusive( min, max, false ) );
+        }
     }
 }

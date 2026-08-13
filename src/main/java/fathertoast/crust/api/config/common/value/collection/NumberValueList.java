@@ -122,5 +122,12 @@ public class NumberValueList<T extends Number, V> extends FuzzyValueList<T, V> i
         
         /** Adds a key-value pair based on the number. Matches only the provided number. */
         public B exactly( T number, V value ) { return put( NumberKey.exactly( number, false ), value ); }
+        
+        /** Adds a key-value pair based on the specified min and max. Matches all values between the specified minimum and maximum (inclusive) values. */
+        public B betweenInclusive( T min, T max, V value ) {
+            if( !NumberKey.isValidRange( min, max ) )
+                throw new IllegalArgumentException( "Min value must be less than max value!" );
+            return put( NumberKey.betweenInclusive( min, max, false ), value );
+        }
     }
 }
