@@ -143,6 +143,23 @@ public final class EnvironmentContext {
         this( placeContext.level(), placeContext.chunkGenerator(), target );
     }
     
+    @Override
+    public String toString() {
+        return "EnvironmentContext{" +
+                "levelAccess=" + levelAccess +
+                ", fullLevel=" + fullLevel +
+                ", worldGenLevel=" + worldGenLevel +
+                ", chunkGenerator=" + chunkGenerator +
+                ", targetEntity=" + targetEntity +
+                ", targetPos=" + targetPos +
+                ", targetBlockPos=" + targetBlockPos +
+                ", responsibleEntity=" + responsibleEntity +
+                ", responsiblePos=" + responsiblePos +
+                ", responsibleBlockPos=" + responsibleBlockPos +
+                ", responsibleTool=" + responsibleTool +
+                '}';
+    }
+    
     
     // ---- Context-Building Methods ---- //
     

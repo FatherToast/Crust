@@ -19,8 +19,8 @@ import fathertoast.crust.api.config.common.value.environment.time.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraftforge.common.Tags;
@@ -230,19 +230,19 @@ public class EnvironmentEntry<V> implements ITomlStringValue, Predicate<Environm
             return in( new DimensionPropertyEnvironment( property, invert ) );
         }
         
-        public OpBuilder<V> inOverworld() { return inDimension( Level.OVERWORLD, false ); }
+        public OpBuilder<V> inOverworld() { return inDimension( LevelStem.OVERWORLD, false ); }
         
-        public OpBuilder<V> notInOverworld() { return inDimension( Level.OVERWORLD, true ); }
+        public OpBuilder<V> notInOverworld() { return inDimension( LevelStem.OVERWORLD, true ); }
         
-        public OpBuilder<V> inNether() { return inDimension( Level.NETHER, false ); }
+        public OpBuilder<V> inNether() { return inDimension( LevelStem.NETHER, false ); }
         
-        public OpBuilder<V> notInNether() { return inDimension( Level.NETHER, true ); }
+        public OpBuilder<V> notInNether() { return inDimension( LevelStem.NETHER, true ); }
         
-        public OpBuilder<V> inTheEnd() { return inDimension( Level.END, false ); }
+        public OpBuilder<V> inTheEnd() { return inDimension( LevelStem.END, false ); }
         
-        public OpBuilder<V> notInTheEnd() { return inDimension( Level.END, true ); }
+        public OpBuilder<V> notInTheEnd() { return inDimension( LevelStem.END, true ); }
         
-        private OpBuilder<V> inDimension( ResourceKey<Level> dimType, boolean invert ) {
+        private OpBuilder<V> inDimension( ResourceKey<LevelStem> dimType, boolean invert ) {
             return in( DimensionEnvironment.of( dimType, invert ) );
         }
         
