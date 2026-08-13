@@ -34,7 +34,7 @@ public class ItemStackEntryViewRenderer implements EntryViewWidget.EntryViewRend
         graphics.renderItem( displayValue, widgetX + 2, widgetY + 2, 0, -100 );
         // Render "sub-widgets" such as durability bar and stack size
         graphics.renderItemDecorations( Minecraft.getInstance().font, displayValue,
-                widgetX, widgetY, stackSize > 1 ? String.valueOf( stackSize ) : null );
+                widgetX + 2, widgetY + 2, stackSize > 1 ? String.valueOf( stackSize ) : null );
         
         stack.popPose();
     }
