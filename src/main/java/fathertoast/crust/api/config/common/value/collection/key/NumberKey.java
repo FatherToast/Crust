@@ -13,8 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
-// TODO - CHECK INSANE OVERFLOW THING THAT HAPPENED IN CFG EDITOR
-
 /**
  * A key for fuzzy collections that test against a specific type of numeric value.
  * <br><br>

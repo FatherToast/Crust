@@ -40,7 +40,8 @@ public class NumberValueListField<T extends Number, V> extends FuzzyValueListFie
                 + "the use of special comparison identifiers ('>', '<', '!=' etc.)." );
         
         comment.add( "" );
-        comment.add( "  Specific range entries (defined by the '~' symbol) are not supported by this field type." );
+        comment.add( "  To match a specific range between two values you can use the '~' symbol." );
+        comment.add( "  For example, the entry '5~44' will match all values between 5 and 44 (both inclusive)." );
         
         comment.add( "" );
         comment.add( "  Wildcard, blacklist, tag and default entries are not supported by this field type." );

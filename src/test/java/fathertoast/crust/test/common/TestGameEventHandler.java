@@ -12,6 +12,7 @@ import net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
@@ -47,9 +48,12 @@ public class TestGameEventHandler {
         }
     }
     
+    @SuppressWarnings( "LoggingSimilarMessage" )
     @SubscribeEvent( priority = EventPriority.NORMAL )
     public static void onLivingHurt( LivingHurtEvent event ) {
+        // noinspection resource
         final Level level = event.getEntity().level();
+        final RandomSource rng = level.getRandom();
         
         if( level.isClientSide() ) return;
         if( event.getSource().getEntity() instanceof Player player ) {
@@ -72,11 +76,14 @@ public class TestGameEventHandler {
                 TestCrust.LOG.debug( "Values = {} for entity: {}", doubles, entityType );
             }
             
-            // Test number list
-            for( float f : TestCrust.CONFIG.GENERAL.numberListField.entries() ) {
-                player.displayClientMessage( Component.literal( "Next float: " + f ), false );
+            // Test number weighted list
+            Short s = TestCrust.CONFIG.GENERAL.numberWeightedListField.next( rng );
+            if( s == null ) {
+                player.displayClientMessage( Component.literal( "No short value was picked!" ), false );
             }
-            player.displayClientMessage( Component.literal( "---------------------------" ), false );
+            else {
+                player.displayClientMessage( Component.literal( "Picked short: " + s ), false );
+            }
         }
     }
     
