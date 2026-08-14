@@ -3,10 +3,9 @@ package fathertoast.crust.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.client.SortedKeyMapping;
-import fathertoast.crust.client.screen.CrustConfigSelectScreen;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.client.config.ExtraInvButtonsCrustConfig;
-import fathertoast.crust.client.screen.ScreenHelper;
+import fathertoast.crust.client.screen.CrustConfigSelectScreen;
 import fathertoast.crust.client.screen.widget.button.ButtonInfo;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -30,9 +29,6 @@ public final class KeyBindingEvents {
     private static final String KEY = "key." + ICrustApi.MOD_ID + ".";
     
     private static final KeyMapping CONFIG_EDITOR = new SortedKeyMapping( 0, KEY + "configs", KEY_CAT );
-    //    // TODO implement
-    //    private static final KeyMapping EQUIP = new SortedKeyMapping( 1, KEY + "equip", KEY_CAT,
-    //            InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_MIDDLE ).guiOnly();
     
     private static KeyMapping[] BUTTONS;
     
@@ -73,14 +69,10 @@ public final class KeyBindingEvents {
         Screen screen = minecraft.screen;
         if( key != InputConstants.UNKNOWN.getValue() && (screen == null || !screen.isPauseScreen()) ) {
             if( action == GLFW.GLFW_PRESS ) {
+                // Open the config editor
                 if( isActive( key, CONFIG_EDITOR ) ) {
-                    // Open the config editor
                     minecraft.setScreen( new CrustConfigSelectScreen( screen ) );
                 }
-                // Equip the currently held or moused-over item
-                //                else if( screen != null && isActive( key, EQUIP ) ) {
-                //                    return ScreenHelper.equip( screen );
-                //                }
                 else {
                     // Check for extra inventory button keybinding presses
                     for( int i = 0; i < BUTTONS.length; i++ ) {
@@ -139,26 +131,6 @@ public final class KeyBindingEvents {
             BUTTONS[index + i] = new SortedKeyMapping( index + i, key + "custom" + (i + 1), KEY_CAT_BUTTONS );
         }
     }
-    
-    //    public static class Key {
-    //
-    //        /** @return A new object that holds info about a specific keystroke with no modifiers. */
-    //        public static Key of( String key ) { return of( KeyModifier.NONE, key ); }
-    //
-    //        /** @return A new object that holds info about a specific keystroke, including required modifier. */
-    //        public static Key of( KeyModifier modifier, String key ) { return new Key( modifier, code( key ) ); }
-    //
-    //        /** @return The key code for a keyboard key. */
-    //        public static InputConstants.Key code( String key ) { return InputConstants.getKey( "key.keyboard." + key ); }
-    //
-    //        final KeyModifier MODIFIER;
-    //        final InputConstants.Key KEY_CODE;
-    //
-    //        private Key( KeyModifier modifier, InputConstants.Key keyCode ) {
-    //            MODIFIER = modifier;
-    //            KEY_CODE = keyCode;
-    //        }
-    //    }
     
     
     // Static listener, no instantiation

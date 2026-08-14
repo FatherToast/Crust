@@ -69,7 +69,6 @@ public class Crust {
      *  - tools
      *      + starting inventory
      *      ? inventory presets/loadouts
-     *      - hotkey to equip from creative inv
      *      - extra inventory buttons (command-driven)
      *          - can have hotkey assigned
      *          - built-in buttons
