@@ -40,12 +40,12 @@ public class ResourceLocationCodec implements IValueCodec<ResourceLocation> {
      */
     public final boolean strict;
     
-    private ResourceLocationCodec( ResourceLocation def, boolean strictParse ) {
+    protected ResourceLocationCodec( ResourceLocation def, boolean strictParse ) {
         defaultValue = def;
         strict = strictParse;
     }
     
-    private ResourceLocationCodec( String def, boolean strictParse ) {
+    protected ResourceLocationCodec( String def, boolean strictParse ) {
         defaultValue = ResourceLocationUtils.strictTryParse( def );
         strict = strictParse;
         

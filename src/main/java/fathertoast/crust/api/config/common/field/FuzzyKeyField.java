@@ -76,7 +76,7 @@ public class FuzzyKeyField<T> extends AbstractConfigField<FuzzyKey<T>> {
     @Override
     public IConfigFieldWidgetProvider<FuzzyKey<T>> getWidgetProvider() {
         return new StringFieldWidgetProvider<>(
-                ( string ) -> keyUsage.ifAllowed( keyParser.parseKeyString(
-                        null, string, string, false ) ) != null );
+                text -> keyUsage.ifAllowed( keyParser.parseKeyString(
+                        null, text, text, false ) ) != null );
     }
 }

@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Displays a text box for a field that can be serialized to and from a numeric string.
@@ -18,9 +19,9 @@ public class NumberFieldWidgetProvider<T extends Number> implements IConfigField
     /** Converts the input number into the desired type. */
     protected final Function<Number, T> READER;
     /** Returns true when the input number is valid. */
-    protected final Function<Number, Boolean> VALIDATOR;
+    protected final Predicate<Number> VALIDATOR;
     
-    public NumberFieldWidgetProvider( Function<Number, T> reader, Function<Number, Boolean> validator ) {
+    public NumberFieldWidgetProvider( Function<Number, T> reader, Predicate<Number> validator ) {
         READER = reader;
         VALIDATOR = validator;
     }
@@ -45,13 +46,8 @@ public class NumberFieldWidgetProvider<T extends Number> implements IConfigField
         editBox.setValue( TomlHelper.toLiteral( displayValue ) );
         editBox.setResponder( text -> {
             Number newValue = TomlHelper.parseNumber( text );
-            if( newValue == null || !VALIDATOR.apply( newValue ) ) {
-                editBox.setTextColor( INVALID_COLOR );
-            }
-            else {
-                editBox.setTextColor( DEFAULT_COLOR );
-                listEntry.updateValue( READER.apply( newValue ) );
-            }
+            editBox.setTextColor( newValue != null && VALIDATOR.test( newValue ) ? DEFAULT_COLOR : INVALID_COLOR );
+            listEntry.updateValue( READER.apply( newValue ) );
         } );
         editBox.active = listEntry.isEditable();
         components.add( editBox );

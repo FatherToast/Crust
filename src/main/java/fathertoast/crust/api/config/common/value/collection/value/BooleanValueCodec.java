@@ -23,7 +23,7 @@ public class BooleanValueCodec implements IValueCodec<Boolean>, IValueCorrector<
     
     public final boolean defaultValue;
     
-    private BooleanValueCodec( boolean def ) { defaultValue = def; }
+    protected BooleanValueCodec( boolean def ) { defaultValue = def; }
     
     /** @return The value format (for example, {@literal "<Number (Any Value)>"}). */
     @Override

@@ -202,7 +202,7 @@ public class IntField extends AbstractConfigField<Integer> {
         @OnClient
         public IConfigFieldWidgetProvider<Integer> getWidgetProvider() {
             return new HexIntFieldWidgetProvider( this,
-                    ( number ) -> minValue() <= number && number <= maxValue() );
+                    number -> minValue() <= number && number <= maxValue() );
         }
     }
     

@@ -258,13 +258,9 @@ public class PopupStringListWidget<T> extends FullScreenPopupListWidget<PopupLis
             EDIT_BOX.setValue( value == null ? "" : value );
             EDIT_BOX.setResponder( validator == null ? this::updateValue :
                     text -> {
-                        if( validator.test( text ) ) {
-                            EDIT_BOX.setTextColor( IConfigFieldWidgetProvider.DEFAULT_COLOR );
-                            updateValue( text );
-                        }
-                        else {
-                            EDIT_BOX.setTextColor( IConfigFieldWidgetProvider.INVALID_COLOR );
-                        }
+                        EDIT_BOX.setTextColor( validator.test( text ) ? IConfigFieldWidgetProvider.DEFAULT_COLOR :
+                                IConfigFieldWidgetProvider.INVALID_COLOR );
+                        updateValue( text );
                     } );
             EDIT_BOX.active = editable;
             widgets.add( EDIT_BOX );

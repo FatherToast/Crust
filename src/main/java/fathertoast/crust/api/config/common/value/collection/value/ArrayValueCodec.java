@@ -43,7 +43,7 @@ public class ArrayValueCodec<V> implements IValueCodec<V[]> {
     public final IValueCodec<V> elementCodec;
     public final Class<V> typeClass;
     
-    private ArrayValueCodec( int len, Class<V> type, IValueCodec<V> codec ) {
+    protected ArrayValueCodec( int len, Class<V> type, IValueCodec<V> codec ) {
         length = len;
         elementCodec = codec;
         typeClass = type;

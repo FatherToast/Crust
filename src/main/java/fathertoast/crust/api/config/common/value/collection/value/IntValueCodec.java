@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 /**
  * An integer value codec. Defines a default value and an allowed value range.
  */
-@SuppressWarnings( "ClassCanBeRecord" )
 public class IntValueCodec implements IValueCodec<Integer>, IValueCorrector<Integer> {
     
     /** The standard integer codec for any value. Defaults to 0. */
@@ -36,7 +35,7 @@ public class IntValueCodec implements IValueCodec<Integer>, IValueCorrector<Inte
     public final int minValue;
     public final int maxValue;
     
-    private IntValueCodec( int def, int min, int max ) {
+    protected IntValueCodec( int def, int min, int max ) {
         if( def < min || max < def ) throw new IllegalArgumentException( "Default value must be within range!" );
         if( max <= min ) throw new IllegalArgumentException( "Maximum value must be greater than minimum value!" );
         defaultValue = def;
@@ -62,14 +61,22 @@ public class IntValueCodec implements IValueCodec<Integer>, IValueCorrector<Inte
     @Override // IValueCodec
     public Integer parseTomlString( @Nullable IConfigField<?> field, String line, @Nullable String value ) {
         if( value == null ) return defaultValue;
-        Object v = TomlHelper.parseStringPrimitive( value );
-        if( v instanceof Number numberValue ) {
-            if( field != null && (double) numberValue.intValue() != numberValue.doubleValue() ) {
-                ConfigUtil.warnFor( field );
-                ConfigUtil.LOG.warn( "Floating point value given for integer! Truncating value {} to {}.",
-                        numberValue.doubleValue(), numberValue.intValue() );
+        if( value.startsWith( "0x" ) ) {
+            Integer v = TomlHelper.parseHexInt( value.substring( 2 ) );
+            if( v != null ) {
+                return correctValue( field, line, v );
             }
-            return correctValue( field, line, numberValue.intValue() );
+        }
+        else {
+            Object v = TomlHelper.parseStringPrimitive( value );
+            if( v instanceof Number numberValue ) {
+                if( field != null && (double) numberValue.intValue() != numberValue.doubleValue() ) {
+                    ConfigUtil.warnFor( field );
+                    ConfigUtil.LOG.warn( "Floating point value given for integer! Truncating value {} to {}.",
+                            numberValue.doubleValue(), numberValue.intValue() );
+                }
+                return correctValue( field, line, numberValue.intValue() );
+            }
         }
         if( field != null ) {
             ConfigUtil.warnFor( field );

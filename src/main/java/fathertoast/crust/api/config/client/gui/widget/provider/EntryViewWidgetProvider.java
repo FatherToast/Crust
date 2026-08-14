@@ -68,14 +68,9 @@ public class EntryViewWidgetProvider<T, V> implements IConfigFieldWidgetProvider
                     entryViewWidget.updateDisplay( listEntry.getValue() );
                 } :
                 text -> {
-                    if( text == null || !VALIDATOR.test( text ) ) {
-                        editBox.setTextColor( INVALID_COLOR );
-                    }
-                    else {
-                        editBox.setTextColor( DEFAULT_COLOR );
-                        listEntry.updateInput( text );
-                        entryViewWidget.updateDisplay( listEntry.getValue() );
-                    }
+                    editBox.setTextColor( VALIDATOR.test( text ) ? DEFAULT_COLOR : INVALID_COLOR );
+                    listEntry.updateInput( text );
+                    entryViewWidget.updateDisplay( listEntry.getValue() );
                 } );
         editBox.active = listEntry.isEditable();
         

@@ -39,7 +39,7 @@ public class DoubleValueCodec implements IValueCodec<Double>, IValueCorrector<Do
     public final double minValue;
     public final double maxValue;
     
-    private DoubleValueCodec( double def, double min, double max ) {
+    protected DoubleValueCodec( double def, double min, double max ) {
         if( def < min || max < def ) throw new IllegalArgumentException( "Default value must be within range!" );
         if( max <= min ) throw new IllegalArgumentException( "Maximum value must be greater than minimum value!" );
         defaultValue = def;

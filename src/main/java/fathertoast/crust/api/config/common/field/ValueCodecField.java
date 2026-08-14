@@ -6,6 +6,7 @@ import fathertoast.crust.api.config.client.gui.widget.provider.StringFieldWidget
 import fathertoast.crust.api.config.common.file.CrustTomlWriter;
 import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.collection.value.IValueCodec;
+import fathertoast.crust.api.config.common.value.collection.value.IValueCorrector;
 import net.minecraft.network.FriendlyByteBuf;
 
 import javax.annotation.Nullable;

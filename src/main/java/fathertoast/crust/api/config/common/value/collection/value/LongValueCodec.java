@@ -35,7 +35,7 @@ public class LongValueCodec implements IValueCodec<Long>, IValueCorrector<Long> 
     public final long minValue;
     public final long maxValue;
     
-    private LongValueCodec( long def, long min, long max ) {
+    protected LongValueCodec( long def, long min, long max ) {
         if( def < min || max < def ) throw new IllegalArgumentException( "Default value must be within range!" );
         if( max <= min ) throw new IllegalArgumentException( "Maximum value must be greater than minimum value!" );
         defaultValue = def;
@@ -45,7 +45,7 @@ public class LongValueCodec implements IValueCodec<Long>, IValueCorrector<Long> 
     
     /** @return The value format (for example, {@literal "<Number (Any Value)>"}). */
     @Override
-    public String getFormat() { return getFormat( "Long" ); }
+    public String getFormat() { return getFormat( "Integer" ); }
     
     /** @return The value format (for example, {@literal "<Number (Any Value)>"}). */
     public String getFormat( String name ) {

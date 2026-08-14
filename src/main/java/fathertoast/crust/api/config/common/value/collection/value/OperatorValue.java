@@ -106,7 +106,7 @@ public enum OperatorValue implements ITomlStringValue {
         /** 0b001: assign, 0b010: multiply/divide, 0b100: add/subtract */
         private final byte disableFlags;
         
-        private Codec( OperatorValue def, int flags ) {
+        protected Codec( OperatorValue def, int flags ) {
             defaultValue = def;
             disableFlags = (byte) flags;
             if( !isAllowed( def ) ) throw new IllegalArgumentException( "Default value must be an allowed type!" );

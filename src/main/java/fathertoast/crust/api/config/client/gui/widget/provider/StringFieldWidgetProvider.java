@@ -47,13 +47,8 @@ public class StringFieldWidgetProvider<T> implements IConfigFieldWidgetProvider<
         editBox.setValue( TomlHelper.toTomlString( displayValue ) );
         editBox.setResponder( VALIDATOR == null ? listEntry::updateInput :
                 text -> {
-                    if( text == null || !VALIDATOR.test( text ) ) {
-                        editBox.setTextColor( INVALID_COLOR );
-                    }
-                    else {
-                        editBox.setTextColor( DEFAULT_COLOR );
-                        listEntry.updateInput( text );
-                    }
+                    editBox.setTextColor( VALIDATOR.test( text ) ? DEFAULT_COLOR : INVALID_COLOR );
+                    listEntry.updateInput( text );
                 } );
         editBox.active = listEntry.isEditable();
         components.add( editBox );

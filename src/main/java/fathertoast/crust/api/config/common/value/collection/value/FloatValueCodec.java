@@ -33,7 +33,7 @@ public class FloatValueCodec implements IValueCodec<Float>, IValueCorrector<Floa
     public final float minValue;
     public final float maxValue;
     
-    private FloatValueCodec( float def, float min, float max ) {
+    protected FloatValueCodec( float def, float min, float max ) {
         if( def < min || max < def ) throw new IllegalArgumentException( "Default value must be within range!" );
         if( max <= min ) throw new IllegalArgumentException( "Maximum value must be greater than minimum value!" );
         defaultValue = def;

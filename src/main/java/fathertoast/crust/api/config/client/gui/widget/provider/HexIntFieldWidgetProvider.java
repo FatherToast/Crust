@@ -8,7 +8,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Displays a text box for a hexadecimal number value.
@@ -19,9 +19,9 @@ public class HexIntFieldWidgetProvider implements IConfigFieldWidgetProvider<Int
     /** The providing field. */
     protected final IntField.Hex FIELD;
     /** Returns true when the input number is valid. */
-    protected final Function<Integer, Boolean> VALIDATOR;
+    protected final Predicate<Integer> VALIDATOR;
     
-    public HexIntFieldWidgetProvider( IntField.Hex field, Function<Integer, Boolean> validator ) {
+    public HexIntFieldWidgetProvider( IntField.Hex field, Predicate<Integer> validator ) {
         FIELD = field;
         VALIDATOR = validator;
     }
@@ -46,13 +46,8 @@ public class HexIntFieldWidgetProvider implements IConfigFieldWidgetProvider<Int
         editBox.setValue( TomlHelper.toLiteral( FIELD.wrap( displayValue ) ).substring( 2 ) );
         editBox.setResponder( text -> {
             Integer newValue = TomlHelper.parseHexInt( text );
-            if( newValue == null || !VALIDATOR.apply( newValue ) ) {
-                editBox.setTextColor( INVALID_COLOR );
-            }
-            else {
-                editBox.setTextColor( DEFAULT_COLOR );
-                listEntry.updateValue( newValue );
-            }
+            editBox.setTextColor( newValue != null && VALIDATOR.test( newValue ) ? DEFAULT_COLOR : INVALID_COLOR );
+            listEntry.updateValue( newValue );
         } );
         editBox.active = listEntry.isEditable();
         components.add( editBox );

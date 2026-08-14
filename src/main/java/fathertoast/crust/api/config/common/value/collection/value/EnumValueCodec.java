@@ -45,7 +45,7 @@ public class EnumValueCodec<V extends Enum<V>> implements IValueCodec<V>, IValue
     public final V defaultValue;
     public final V[] validValues;
     
-    private EnumValueCodec( V def, V[] valid ) {
+    protected EnumValueCodec( V def, V[] valid ) {
         defaultValue = def;
         validValues = valid;
     }

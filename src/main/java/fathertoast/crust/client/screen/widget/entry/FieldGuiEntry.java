@@ -79,8 +79,13 @@ public class FieldGuiEntry<T> extends ConfigFieldGuiEntry<T> {
         for( AbstractWidget component : COMPONENTS ) RENDER_COMPONENTS.add( new OffsetWidget( component ) );
     }
     
-    /** Call this to change the field's pending "new" value. */
-    public void updateValue( T value ) {
+    /** Call this to change the field's pending "new" value. Null deletes the pending value. */
+    @Override
+    public void updateValue( @Nullable T value ) {
+        if( value == null ) {
+            clearValue();
+            return;
+        }
         if( !isEditable() ) return;
         pendingValue = value;
         RESET_BUTTON.active = !TomlHelper.equals( getField().getDefaultValue(), value );

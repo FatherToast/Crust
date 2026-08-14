@@ -49,7 +49,7 @@ public class StringValueCodec implements IValueCodec<String> {
     
     public final IValueCorrector<String> corrector;
     
-    private StringValueCodec( IValueCorrector<String> c ) { corrector = c; }
+    protected StringValueCodec( IValueCorrector<String> c ) { corrector = c; }
     
     /** @return The value format (e.g., {@literal "<Number (Any Value)>"}). */
     @Override

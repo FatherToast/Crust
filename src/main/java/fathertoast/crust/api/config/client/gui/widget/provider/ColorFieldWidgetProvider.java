@@ -66,8 +66,8 @@ public class ColorFieldWidgetProvider implements IConfigFieldWidgetProvider<Inte
             else {
                 previewWidget.setColor( newValue, FIELD.usesAlpha() );
                 editBox.setTextColor( DEFAULT_COLOR );
-                listEntry.updateValue( newValue );
             }
+            listEntry.updateValue( newValue );
         } );
         editBox.active = listEntry.isEditable();
         

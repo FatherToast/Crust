@@ -137,6 +137,9 @@ public abstract class MultiValueCodec<V extends MultiValueCodec<V>> implements I
         return toTomlString( (V) this );
     }
     
+    @Override
+    public String toString() { return toTomlString(); }
+    
     /** List of all sub-values that have been defined via {@link #subValue(IValueCodec)}. */
     @ApiStatus.Internal
     final List<SubValue<?>> subValues = new ArrayList<>();

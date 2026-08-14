@@ -73,13 +73,13 @@ public abstract class ConfigFieldGuiEntry<T> extends ConfigGuiEntry {
     }
     
     /** Call this to change the field's pending "new" value based on a string input. */
-    public void updateInput( String text ) { updateValue( FIELD.parse( text ) ); }
+    public void updateInput( @Nullable String text ) { updateValue( text == null ? null : FIELD.parse( text ) ); }
     
     /** Call this to change the field's pending "new" value based on a string list input. */
-    public void updateInput( List<String> text ) { updateValue( FIELD.parse( text ) ); }
+    public void updateInput( @Nullable List<String> text ) { updateValue( text == null ? null : FIELD.parse( text ) ); }
     
-    /** Call this to change the field's pending "new" value. */
-    public abstract void updateValue( T value );
+    /** Call this to change the field's pending "new" value. Null deletes the pending value. */
+    public abstract void updateValue( @Nullable T value );
     
     /** Call this to delete the field's pending "new" value. */
     public abstract void clearValue();

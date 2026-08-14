@@ -82,7 +82,7 @@ public enum ComparatorValue implements ITomlStringValue {
         
         private final ComparatorValue defaultValue;
         
-        private Codec( ComparatorValue def ) { defaultValue = def; }
+        protected Codec( ComparatorValue def ) { defaultValue = def; }
         
         /** @return The value format (for example, {@literal "<Number (Any Value)>"}). */
         @Override

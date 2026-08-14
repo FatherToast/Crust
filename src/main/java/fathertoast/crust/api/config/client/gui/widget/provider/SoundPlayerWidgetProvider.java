@@ -80,14 +80,9 @@ public class SoundPlayerWidgetProvider<T> implements IConfigFieldWidgetProvider<
                     soundPlayerWidget.setSoundData( SOUND_DATA_MAPPER.apply( listEntry.getValue() ) );
                 } :
                 text -> {
-                    if( text == null || !VALIDATOR.test( text ) ) {
-                        editBox.setTextColor( INVALID_COLOR );
-                    }
-                    else {
-                        editBox.setTextColor( DEFAULT_COLOR );
-                        listEntry.updateInput( text );
-                        soundPlayerWidget.setSoundData( SOUND_DATA_MAPPER.apply( listEntry.getValue() ) );
-                    }
+                    editBox.setTextColor( VALIDATOR.test( text ) ? DEFAULT_COLOR : INVALID_COLOR );
+                    listEntry.updateInput( text );
+                    soundPlayerWidget.setSoundData( SOUND_DATA_MAPPER.apply( listEntry.getValue() ) );
                 } );
         editBox.active = listEntry.isEditable();
         
