@@ -23,11 +23,6 @@ import java.util.List;
  */
 public abstract class FormatGuiEntry extends ConfigGuiEntry {
     
-    // TODO Do we need this?
-    //@Nullable
-    //@Override
-    //public ComponentPath nextFocusPath( FocusNavigationEvent event ) { return super.nextFocusPath( event ); }
-    
     @Override
     public List<? extends GuiEventListener> children() { return Collections.emptyList(); }
     
