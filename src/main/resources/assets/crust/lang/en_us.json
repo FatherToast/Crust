@@ -30,6 +30,8 @@
 
   "menu.crust.config.file.title": "%s Config: %s",
   "menu.crust.config.file.subtitle": "File: %s",
+  "menu.crust.config.file.fetching": "Retrieving file from server...",
+  "menu.crust.config.file.no_fetch": "...server has still not responded, something is probably wrong",
 
   "menu.crust.config.search_bar.hint": "Search...",
 

@@ -34,11 +34,16 @@ public class CrustConfigFetchScreen extends Screen {
     /** The spec of the 'opened' config file. */
     public final CrustConfigSpec SPEC;
     
-    /** The subtitle to in a tooltip for the title. */
+    /** The subtitle to display in a tooltip for the title. */
     private final Component SUBTITLE;
+    /** The message to display on screen. */
+    private final Component MESSAGE;
+    private final Component FAIL_MESSAGE;
     
     /** True if this config is editable. */
     private final boolean EDITABLE;
+    
+    private int ticksOnScreen;
     
     /** Creates a new config selection screen, opened to the mod select page. */
     public CrustConfigFetchScreen( Screen parent, CrustConfigSpec spec, boolean editable ) {
@@ -49,6 +54,8 @@ public class CrustConfigFetchScreen extends Screen {
         SPEC = spec;
         SUBTITLE = Component.translatable( "menu.crust.config.file.subtitle",
                 ConfigUtil.toRelativePath( spec.getFile() ) ).withStyle( ChatFormatting.DARK_GRAY );
+        MESSAGE = Component.translatable( "menu.crust.config.file.fetching" );
+        FAIL_MESSAGE = Component.translatable( "menu.crust.config.file.no_fetch" );
         EDITABLE = editable;
     }
     
@@ -64,9 +71,6 @@ public class CrustConfigFetchScreen extends Screen {
         // Header content
         addRenderableWidget( TextWithSubtitle.create( this, font, width / 2, 8, true, getTitle(), SUBTITLE ) );
         
-        // Primary screen content
-        //TODO maybe display some text that says it's waiting for the data from server
-        
         // Footer content
         addRenderableWidget( new Button( width / 2 - 155, height - 29,
                 150, 20, Component.translatable( "menu.crust.config.open_folder" ),
@@ -80,10 +84,26 @@ public class CrustConfigFetchScreen extends Screen {
         CrustPacketHandler.sendConfigDataRequest( SPEC );
     }
     
+    /** Called each tick to update animations. */
+    @Override
+    public void tick() {
+        ticksOnScreen++;
+    }
+    
     /** Called to render the screen. */
     @Override
     public void render( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks ) {
         renderBackground( graphics );
+        if( ticksOnScreen >= 20 ) {
+            graphics.drawCenteredString( font, MESSAGE,
+                    width / 2, (int) (height * 0.4F), 0xFFFFFF );
+            graphics.drawCenteredString( font, Component.literal( Integer.toString( ticksOnScreen / 20 ) ),
+                    width / 2, height / 2, 0xFFFFFF );
+            if( ticksOnScreen >= 200 ) {
+                graphics.drawCenteredString( font, FAIL_MESSAGE,
+                        width / 2, (int) (height * 0.6F), 0xFFFFFF );
+            }
+        }
         super.render( graphics, mouseX, mouseY, partialTicks );
     }
     
