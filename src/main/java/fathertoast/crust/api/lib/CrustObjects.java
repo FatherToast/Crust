@@ -97,7 +97,7 @@ public final class CrustObjects {
         }
     }
     
-    //    // TODO Figure out resource
+    //    // TODO Figure out how to do this without breaking resource things (JER?)
     //    /** The loot parameter types provided by Crust. */
     //    public interface Loot {
     //
