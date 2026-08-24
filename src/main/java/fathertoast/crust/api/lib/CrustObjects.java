@@ -9,11 +9,14 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.valueproviders.FloatProviderType;
+import net.minecraft.util.valueproviders.IntProviderType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.levelgen.heightproviders.HeightProviderType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -65,6 +68,24 @@ public final class CrustObjects {
         RegistryObject<StructureProcessorType<?>> FEATURE_GEN_ACTIVATOR = structureProcessor( "feature_gen_activator" );
     }
     
+    /** The integer provider types provided by Crust. */
+    public interface IntProviders {
+        RegistryObject<IntProviderType<?>> CFG_CONSTANT = intProvider( "config_constant" );
+        RegistryObject<IntProviderType<?>> CFG_UNIFORM = intProvider( "config_uniform" );
+        RegistryObject<IntProviderType<?>> CFG_COUNT = intProvider( "config_count" );
+    }
+    
+    /** The float provider types provided by Crust. */
+    public interface FloatProviders {
+        RegistryObject<FloatProviderType<?>> CFG_CONSTANT = floatProvider( "config_constant" );
+        RegistryObject<FloatProviderType<?>> CFG_UNIFORM = floatProvider( "config_uniform" );
+    }
+    
+    /** The height provider types provided by Crust. */
+    public interface HeightProviders {
+        RegistryObject<HeightProviderType<?>> CFG_UNIFORM = heightProvider( "config_uniform" );
+    }
+    
     /** The command argument types provided by Crust. */
     public interface CommandArguments {
         RegistryObject<ArgumentTypeInfo<ArgumentType<PortalBuilder>, ?>> PORTAL_TYPE = cmdArg( "portal_type" );
@@ -104,6 +125,18 @@ public final class CrustObjects {
     @SuppressWarnings( "SameParameterValue" )
     private static RegistryObject<StructureProcessorType<?>> structureProcessor( String name ) { return ro( name, Registries.STRUCTURE_PROCESSOR ); }
     
+    /** @return An object holder for an integer provider type. */
+    @SuppressWarnings( "SameParameterValue" )
+    private static RegistryObject<IntProviderType<?>> intProvider( String name ) { return ro( name, Registries.INT_PROVIDER_TYPE ); }
+    
+    /** @return An object holder for a float provider type. */
+    @SuppressWarnings( "SameParameterValue" )
+    private static RegistryObject<FloatProviderType<?>> floatProvider( String name ) { return ro( name, Registries.FLOAT_PROVIDER_TYPE ); }
+    
+    /** @return An object holder for a height provider type. */
+    @SuppressWarnings( "SameParameterValue" )
+    private static RegistryObject<HeightProviderType<?>> heightProvider( String name ) { return ro( name, Registries.HEIGHT_PROVIDER_TYPE ); }
+    
     /** @return An object holder for a command argument type. */
     @SuppressWarnings( "SameParameterValue" )
     private static <T extends ArgumentType<?>> RegistryObject<ArgumentTypeInfo<T, ?>> cmdArg( String name ) { return ro( name, ForgeRegistries.COMMAND_ARGUMENT_TYPES ); }
@@ -126,5 +159,5 @@ public final class CrustObjects {
     
     
     // Utility class
-    private CrustObjects() {}
+    private CrustObjects() { }
 }
