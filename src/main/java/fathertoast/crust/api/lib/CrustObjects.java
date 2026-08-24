@@ -97,33 +97,34 @@ public final class CrustObjects {
         }
     }
     
-    /** The loot parameter types provided by Crust. */
-    public interface Loot {
-        
-        /** The loot pool entry types provided by Crust. */
-        interface PoolEntries {
-        }
-        
-        /** The loot item function types provided by Crust. */
-        interface ItemFunctions {
-        }
-        
-        /** The loot item condition types provided by Crust. */
-        interface ItemConditions {
-        }
-        
-        /** The loot number provider types provided by Crust. */
-        interface NumberProviders {
-        }
-        
-        /** The loot NBT provider types provided by Crust. */
-        interface NBTProviders {
-        }
-        
-        /** The loot score provider types provided by Crust. */
-        interface ScoreboardNameProviders {
-        }
-    }
+    //    // TODO Figure out resource
+    //    /** The loot parameter types provided by Crust. */
+    //    public interface Loot {
+    //
+    //        /** The loot pool entry types provided by Crust. */
+    //        interface PoolEntries {
+    //        }
+    //
+    //        /** The loot item function types provided by Crust. */
+    //        interface ItemFunctions {
+    //        }
+    //
+    //        /** The loot item condition types provided by Crust. */
+    //        interface ItemConditions {
+    //        }
+    //
+    //        /** The loot number provider types provided by Crust. */
+    //        interface NumberProviders {
+    //        }
+    //
+    //        /** The loot NBT provider types provided by Crust. */
+    //        interface NBTProviders {
+    //        }
+    //
+    //        /** The loot score provider types provided by Crust. */
+    //        interface ScoreboardNameProviders {
+    //        }
+    //    }
     
     /** The command argument types provided by Crust. */
     public interface CommandArguments {
