@@ -2,6 +2,8 @@ package fathertoast.crust.api.config.common;
 
 import com.mojang.serialization.Codec;
 import fathertoast.crust.api.config.common.field.IConfigField;
+import fathertoast.crust.api.lib.NBTHelper;
+import net.minecraft.nbt.CompoundTag;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
@@ -15,6 +17,20 @@ public class ConfigFieldReference<V> implements Supplier<V> {
     public static final Codec<ConfigFieldReference<Boolean>> BOOLEAN_CODEC = makeCodec();
     public static final Codec<ConfigFieldReference<Integer>> INT_CODEC = makeCodec();
     public static final Codec<ConfigFieldReference<Double>> DOUBLE_CODEC = makeCodec();
+    
+    /** Convenience method for creating a field reference codec with the inferred type. */
+    public static <V> Codec<ConfigFieldReference<V>> makeCodec() {
+        return Codec.STRING.xmap( ConfigFieldReference::new, ConfigFieldReference::toString );
+    }
+    
+    /**
+     * @return A new field reference loaded from the NBT compound, or null if the named tag is not present.
+     * @see #writeToNbt(CompoundTag, String)
+     */
+    @Nullable
+    public static <V> ConfigFieldReference<V> readFromNbt( CompoundTag tag, String name ) {
+        return NBTHelper.containsString( tag, name ) ? new ConfigFieldReference<>( tag.getString( name ) ) : null;
+    }
     
     
     /** The ID of the mod that owns the target field's config. */
@@ -55,7 +71,7 @@ public class ConfigFieldReference<V> implements Supplier<V> {
     public ConfigFieldReference( String address ) {
         final String[] parts = address.split( ":", 3 );
         if( parts.length != 3 ) {
-            ConfigUtil.LOG.error( "Invalid config field address: '{}'", address );
+            ConfigUtil.LOG.error( "Invalid config field address: '{}' (must be in the format \"namespace:config_file:field_key\")", address );
         }
         this.modId = parts.length > 0 ? parts[0] : "";
         this.file = parts.length > 1 ? parts[1] : "";
@@ -66,7 +82,7 @@ public class ConfigFieldReference<V> implements Supplier<V> {
     /** @return The config field value; prints an error and returns the error value if it fails. */
     public V getOrElse( V errorValue ) {
         if( !check() ) {
-            ConfigUtil.LOG.error( "Invalid boolean field: {}", this );
+            ConfigUtil.LOG.error( "Invalid field reference: {}", this );
             return errorValue;
         }
         // noinspection ConstantConditions
@@ -92,14 +108,22 @@ public class ConfigFieldReference<V> implements Supplier<V> {
                 setField = (IConfigField<V>) foundField;
                 return true;
             }
-            catch( ClassCastException ignored ) { }
+            catch( ClassCastException ignored ) {}
         }
         // Field was either not found or not the correct type
         return false;
     }
     
+    /** @return This field reference, serialized to a string. */
     @Override
     public String toString() { return modId + ":" + file + ":" + key; }
+    
+    /**
+     * Writes this field reference to the NBT compound with the given name.
+     *
+     * @see #readFromNbt(CompoundTag, String)
+     */
+    public void writeToNbt( CompoundTag tag, String name ) { tag.putString( name, toString() ); }
     
     
     /**
@@ -112,11 +136,7 @@ public class ConfigFieldReference<V> implements Supplier<V> {
      */
     @Nullable
     protected static IConfigField<?> getField( String modId, String specName, String fieldKey ) {
-        return ConfigManager.getRequiredConfig( modId, specName ).SPEC.getFields().get( fieldKey );
-    }
-    
-    /** Convenience method for creating a field reference codec with the inferred type. */
-    public static <V> Codec<ConfigFieldReference<V>> makeCodec() {
-        return Codec.STRING.xmap( ConfigFieldReference::new, ConfigFieldReference::toString );
+        AbstractConfigFile config = ConfigManager.getConfig( modId, specName );
+        return config == null ? null : config.SPEC.getFields().get( fieldKey );
     }
 }

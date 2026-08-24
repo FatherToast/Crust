@@ -3,14 +3,20 @@ package fathertoast.crust.api.config.common.value.provider;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fathertoast.crust.api.config.common.ConfigFieldReference;
-import fathertoast.crust.api.config.common.field.DoubleField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.lib.CrustObjects;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.IntProviderType;
 
-/** A config-driven int provider that samples a count value from a referenced config double field. */
+/**
+ * A config-driven int provider that samples a count value from a double config field.
+ * <p>
+ * When the count has an integer value, it will simply provide the integer value.
+ * Otherwise, it provides an integer that is on average equal to the double value
+ * (for example, a count of 5.6 is 40% chance for 5 and 60% chance for 6).
+ */
 public class ConfigCountIntProvider extends IntProvider {
     
     /** The codec used for this provider's registered provider type. */
@@ -20,7 +26,7 @@ public class ConfigCountIntProvider extends IntProvider {
     
     
     /** Creates and returns a new instance that references the given field. */
-    public static ConfigCountIntProvider of( DoubleField count ) {
+    public static ConfigCountIntProvider of( IConfigField<Double> count ) {
         return new ConfigCountIntProvider( new ConfigFieldReference<>( count ) );
     }
     
@@ -34,7 +40,6 @@ public class ConfigCountIntProvider extends IntProvider {
      * @param count The field reference acting as this provider's value.
      */
     private ConfigCountIntProvider( ConfigFieldReference<Double> count ) { value = count; }
-    
     
     /** @return This provider's config field reference. */
     public ConfigFieldReference<Double> get() { return value; }
@@ -63,8 +68,8 @@ public class ConfigCountIntProvider extends IntProvider {
     
     /** @return This provider's type. */
     @Override
-    public IntProviderType<?> getType() { return CrustObjects.IntProviders.CFG_COUNT.get(); }
+    public IntProviderType<?> getType() { return CrustObjects.LevelGen.IntProviders.CFG_COUNT.get(); }
     
     @Override // Object
-    public String toString() { return "[@" + value + "]"; }
+    public String toString() { return "x@" + value; }
 }

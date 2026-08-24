@@ -44,10 +44,12 @@ public final class CrustObjects {
         RegistryObject<PortalBuilder> END = portal( "end_portal" );
     }
     
+    /** The blocks provided by Crust. */
     public interface Blocks {
         RegistryObject<Block> FEATURE_GENERATOR = block( "feature_generator" );
     }
     
+    /** The block entity types provided by Crust. */
     public interface BlockEntities {
         RegistryObject<BlockEntityType<?>> FEATURE_GENERATOR = blockEntity( Blocks.FEATURE_GENERATOR );
     }
@@ -68,22 +70,59 @@ public final class CrustObjects {
         RegistryObject<StructureProcessorType<?>> FEATURE_GEN_ACTIVATOR = structureProcessor( "feature_gen_activator" );
     }
     
-    /** The integer provider types provided by Crust. */
-    public interface IntProviders {
-        RegistryObject<IntProviderType<?>> CFG_CONSTANT = intProvider( "config_constant" );
-        RegistryObject<IntProviderType<?>> CFG_UNIFORM = intProvider( "config_uniform" );
-        RegistryObject<IntProviderType<?>> CFG_COUNT = intProvider( "config_count" );
+    /** The level generation objects provided by Crust. */
+    public interface LevelGen {
+        
+        /** The float provider types provided by Crust. */
+        interface FloatProviders {
+            RegistryObject<FloatProviderType<?>> CFG_CONSTANT = floatProvider( "config_constant" );
+            RegistryObject<FloatProviderType<?>> CFG_UNIFORM = floatProvider( "config_uniform" );
+            RegistryObject<FloatProviderType<?>> CFG_TRIANGLE = floatProvider( "config_triangle" );
+        }
+        
+        /** The integer provider types provided by Crust. */
+        interface IntProviders {
+            RegistryObject<IntProviderType<?>> CFG_CONSTANT = intProvider( "config_constant" );
+            RegistryObject<IntProviderType<?>> CFG_UNIFORM = intProvider( "config_uniform" );
+            RegistryObject<IntProviderType<?>> CFG_BIASED_TO_BOTTOM = intProvider( "config_biased_to_bottom" );
+            RegistryObject<IntProviderType<?>> CFG_COUNT = intProvider( "config_count" );
+            RegistryObject<IntProviderType<?>> CFG_TRIANGLE = intProvider( "config_triangle" );
+        }
+        
+        /** The height provider types provided by Crust. */
+        interface HeightProviders {
+            RegistryObject<HeightProviderType<?>> CFG_CONSTANT = heightProvider( "config_constant" );
+            RegistryObject<HeightProviderType<?>> CFG_UNIFORM = heightProvider( "config_uniform" );
+            RegistryObject<HeightProviderType<?>> CFG_TRIANGLE = heightProvider( "config_triangle" );
+        }
     }
     
-    /** The float provider types provided by Crust. */
-    public interface FloatProviders {
-        RegistryObject<FloatProviderType<?>> CFG_CONSTANT = floatProvider( "config_constant" );
-        RegistryObject<FloatProviderType<?>> CFG_UNIFORM = floatProvider( "config_uniform" );
-    }
-    
-    /** The height provider types provided by Crust. */
-    public interface HeightProviders {
-        RegistryObject<HeightProviderType<?>> CFG_UNIFORM = heightProvider( "config_uniform" );
+    /** The loot parameter types provided by Crust. */
+    public interface Loot {
+        
+        /** The loot pool entry types provided by Crust. */
+        interface PoolEntries {
+        }
+        
+        /** The loot item function types provided by Crust. */
+        interface ItemFunctions {
+        }
+        
+        /** The loot item condition types provided by Crust. */
+        interface ItemConditions {
+        }
+        
+        /** The loot number provider types provided by Crust. */
+        interface NumberProviders {
+        }
+        
+        /** The loot NBT provider types provided by Crust. */
+        interface NBTProviders {
+        }
+        
+        /** The loot score provider types provided by Crust. */
+        interface ScoreboardNameProviders {
+        }
     }
     
     /** The command argument types provided by Crust. */
@@ -101,44 +140,30 @@ public final class CrustObjects {
     private static RegistryObject<MobEffect> effect( String name ) { return ro( name, ForgeRegistries.MOB_EFFECTS ); }
     
     /** @return An object holder for a block. */
-    @SuppressWarnings( "SameParameterValue" )
     private static RegistryObject<Block> block( String name ) { return ro( name, ForgeRegistries.BLOCKS ); }
     
     /** @return An object holder for a block entity type. */
-    @SuppressWarnings( "SameParameterValue" )
     private static RegistryObject<BlockEntityType<?>> blockEntity( String name ) { return ro( name, ForgeRegistries.BLOCK_ENTITY_TYPES ); }
     
-    /**
-     * @return An object holder for a block entity type,
-     * using the same ID as the given block registry object.
-     */
-    @SuppressWarnings( "SameParameterValue" )
-    private static RegistryObject<BlockEntityType<?>> blockEntity( RegistryObject<Block> regObj ) {
-        return blockEntity( Objects.requireNonNull( regObj.getId() ).getPath() );
-    }
+    /** @return An object holder for a block entity type, using the same ID as the given block registry object. */
+    private static RegistryObject<BlockEntityType<?>> blockEntity( RegistryObject<Block> regObj ) { return blockEntity( Objects.requireNonNull( regObj.getId() ).getPath() ); }
     
     /** @return An object holder for an entity type. */
-    @SuppressWarnings( "SameParameterValue" )
     private static <T extends Entity> RegistryObject<EntityType<T>> entity( String name ) { return ro( name, ForgeRegistries.ENTITY_TYPES ); }
     
     /** @return An object holder for a structure processor type. */
-    @SuppressWarnings( "SameParameterValue" )
     private static RegistryObject<StructureProcessorType<?>> structureProcessor( String name ) { return ro( name, Registries.STRUCTURE_PROCESSOR ); }
     
     /** @return An object holder for an integer provider type. */
-    @SuppressWarnings( "SameParameterValue" )
     private static RegistryObject<IntProviderType<?>> intProvider( String name ) { return ro( name, Registries.INT_PROVIDER_TYPE ); }
     
     /** @return An object holder for a float provider type. */
-    @SuppressWarnings( "SameParameterValue" )
     private static RegistryObject<FloatProviderType<?>> floatProvider( String name ) { return ro( name, Registries.FLOAT_PROVIDER_TYPE ); }
     
     /** @return An object holder for a height provider type. */
-    @SuppressWarnings( "SameParameterValue" )
     private static RegistryObject<HeightProviderType<?>> heightProvider( String name ) { return ro( name, Registries.HEIGHT_PROVIDER_TYPE ); }
     
     /** @return An object holder for a command argument type. */
-    @SuppressWarnings( "SameParameterValue" )
     private static <T extends ArgumentType<?>> RegistryObject<ArgumentTypeInfo<T, ?>> cmdArg( String name ) { return ro( name, ForgeRegistries.COMMAND_ARGUMENT_TYPES ); }
     
     /** @return An object holder for a Forge registry object. */
@@ -146,8 +171,7 @@ public final class CrustObjects {
         return RegistryObject.create( rl( name ), reg );
     }
     
-    /** @return An object holder for a custom registry object. */
-    @SuppressWarnings( "SameParameterValue" )
+    /** @return An object holder for a vanilla/custom registry object. */
     private static <T> RegistryObject<T> ro( String name, ResourceKey<? extends Registry<T>> registryKey ) {
         return RegistryObject.createOptional( rl( name ), registryKey, ICrustApi.MOD_ID );
     }
@@ -159,5 +183,5 @@ public final class CrustObjects {
     
     
     // Utility class
-    private CrustObjects() { }
+    private CrustObjects() {}
 }

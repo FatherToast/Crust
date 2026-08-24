@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fathertoast.crust.api.config.common.ConfigFieldReference;
 import fathertoast.crust.api.config.common.ConfigUtil;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.field.IntField;
 import fathertoast.crust.api.lib.CrustObjects;
 import net.minecraft.util.Mth;
@@ -13,24 +14,25 @@ import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProviderType;
 
 /**
- * Modified copy-paste of {@link net.minecraft.world.level.levelgen.heightproviders.UniformHeight} that gets
- * its min and max values from two config int fields, or a {@link IntField.RandomRange random range field}.
- */
-public class ConfigHeightProvider extends HeightProvider {
+ * Modified copy-paste of {@link net.minecraft.world.level.levelgen.heightproviders.TrapezoidHeight} that gets
+ * its min and max values from two int config fields, or a {@link IntField.RandomRange random range field}.
+ * The plateau is hard-locked to 0 so that this provider only uses two fields.
+ */ // TODO add support for anchors (new config field type?)
+public class ConfigTriangleHeightProvider extends HeightProvider {
     
     /** The codec used for this provider's registered provider type. */
-    public static final Codec<ConfigHeightProvider> CODEC = RecordCodecBuilder.create( inst -> inst.group(
-            ConfigFieldReference.INT_CODEC.fieldOf( "min_inclusive" ).forGetter( ConfigHeightProvider::getMinInclusive ),
-            ConfigFieldReference.INT_CODEC.fieldOf( "max_inclusive" ).forGetter( ConfigHeightProvider::getMaxInclusive )
-    ).apply( inst, ConfigHeightProvider::new ) );
+    public static final Codec<ConfigTriangleHeightProvider> CODEC = RecordCodecBuilder.create( inst -> inst.group(
+            ConfigFieldReference.INT_CODEC.fieldOf( "min_inclusive" ).forGetter( ConfigTriangleHeightProvider::getMinInclusive ),
+            ConfigFieldReference.INT_CODEC.fieldOf( "max_inclusive" ).forGetter( ConfigTriangleHeightProvider::getMaxInclusive )
+    ).apply( inst, ConfigTriangleHeightProvider::new ) );
     
     
     /** Creates and returns a new instance that references the given random-range field. */
-    public static ConfigHeightProvider of( IntField.RandomRange range ) { return of( range.getMinField(), range.getMaxField() ); }
+    public static ConfigTriangleHeightProvider of( IntField.RandomRange range ) { return of( range.getMinField(), range.getMaxField() ); }
     
     /** Creates and returns a new instance that references the given fields. */
-    public static ConfigHeightProvider of( IntField min, IntField max ) {
-        return new ConfigHeightProvider( new ConfigFieldReference<>( min ), new ConfigFieldReference<>( max ) );
+    public static ConfigTriangleHeightProvider of( IConfigField<Integer> min, IConfigField<Integer> max ) {
+        return new ConfigTriangleHeightProvider( new ConfigFieldReference<>( min ), new ConfigFieldReference<>( max ) );
     }
     
     
@@ -45,11 +47,10 @@ public class ConfigHeightProvider extends HeightProvider {
      * @param min The min value field reference.
      * @param max The max value field reference.
      */
-    private ConfigHeightProvider( ConfigFieldReference<Integer> min, ConfigFieldReference<Integer> max ) {
+    private ConfigTriangleHeightProvider( ConfigFieldReference<Integer> min, ConfigFieldReference<Integer> max ) {
         minInclusive = min;
         maxInclusive = max;
     }
-    
     
     /** @return This provider's min value config field reference. */
     public ConfigFieldReference<Integer> getMinInclusive() { return minInclusive; }
@@ -64,20 +65,24 @@ public class ConfigHeightProvider extends HeightProvider {
         Integer max = maxInclusive.get();
         
         if( min == null || max == null ) {
-            ConfigUtil.LOG.error( "Invalid height range: {}", this );
-            return Integer.MAX_VALUE;
+            ConfigUtil.LOG.error( "Invalid triangle height range: {}", this );
+            return 0;
         }
         if( min > max ) {
-            ConfigUtil.LOG.warn( "Empty height range: {}", this );
+            ConfigUtil.LOG.warn( "Empty triangle height range: {}", this );
             return min;
         }
-        return Mth.randomBetweenInclusive( random, min, max );
+        int range = max - min;
+        if( 0 >= range ) return min;
+        int midrange = range / 2;
+        return min + Mth.randomBetweenInclusive( random, 0, range - midrange ) +
+                Mth.randomBetweenInclusive( random, 0, midrange );
     }
     
     /** @return This provider's type. */
     @Override
-    public HeightProviderType<?> getType() { return CrustObjects.HeightProviders.CFG_UNIFORM.get(); }
+    public HeightProviderType<?> getType() { return CrustObjects.LevelGen.HeightProviders.CFG_TRIANGLE.get(); }
     
     @Override // Object
-    public String toString() { return "[@" + minInclusive + "-@" + maxInclusive + "]"; }
+    public String toString() { return "triangle (@" + minInclusive + "-@" + maxInclusive + ")"; }
 }

@@ -3,7 +3,7 @@ package fathertoast.crust.api.config.common.value.provider;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fathertoast.crust.api.config.common.ConfigFieldReference;
-import fathertoast.crust.api.config.common.field.DoubleField;
+import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.lib.CrustObjects;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.FloatProvider;
@@ -11,7 +11,7 @@ import net.minecraft.util.valueproviders.FloatProviderType;
 
 /**
  * Modified copy-paste of {@link net.minecraft.util.valueproviders.ConstantFloat} that gets
- * its value from a double field reference.
+ * its value from a double config field.
  */
 public class ConfigConstantFloatProvider extends FloatProvider {
     
@@ -22,7 +22,7 @@ public class ConfigConstantFloatProvider extends FloatProvider {
     
     
     /** Creates and returns a new instance that references the given field. */
-    public static ConfigConstantFloatProvider of( DoubleField value ) {
+    public static ConfigConstantFloatProvider of( IConfigField<Double> value ) {
         return new ConfigConstantFloatProvider( new ConfigFieldReference<>( value ) );
     }
     
@@ -36,7 +36,6 @@ public class ConfigConstantFloatProvider extends FloatProvider {
      * @param val The field reference acting as this provider's value.
      */
     private ConfigConstantFloatProvider( ConfigFieldReference<Double> val ) { value = val; }
-    
     
     /** @return This provider's config field reference. */
     public ConfigFieldReference<Double> get() { return value; }
@@ -61,8 +60,8 @@ public class ConfigConstantFloatProvider extends FloatProvider {
     
     /** @return This provider's type. */
     @Override
-    public FloatProviderType<?> getType() { return CrustObjects.FloatProviders.CFG_CONSTANT.get(); }
+    public FloatProviderType<?> getType() { return CrustObjects.LevelGen.FloatProviders.CFG_CONSTANT.get(); }
     
     @Override // Object
-    public String toString() { return "[@" + value + "]"; }
+    public String toString() { return "@" + value; }
 }

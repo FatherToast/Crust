@@ -6,24 +6,25 @@ import fathertoast.crust.api.config.common.ConfigFieldReference;
 import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.lib.CrustObjects;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.valueproviders.IntProvider;
-import net.minecraft.util.valueproviders.IntProviderType;
+import net.minecraft.world.level.levelgen.WorldGenerationContext;
+import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
+import net.minecraft.world.level.levelgen.heightproviders.HeightProviderType;
 
 /**
- * Modified copy-paste of {@link net.minecraft.util.valueproviders.ConstantInt} that gets
+ * Modified copy-paste of {@link net.minecraft.world.level.levelgen.heightproviders.ConstantHeight} that gets
  * its value from an int config field.
- */
-public class ConfigConstantIntProvider extends IntProvider {
+ */ // TODO add support for anchors (new config field type?)
+public class ConfigConstantHeightProvider extends HeightProvider {
     
     /** The codec used for this provider's registered provider type. */
-    public static final Codec<ConfigConstantIntProvider> CODEC = RecordCodecBuilder.create( inst -> inst.group(
-            ConfigFieldReference.INT_CODEC.fieldOf( "value" ).forGetter( ConfigConstantIntProvider::get )
-    ).apply( inst, ConfigConstantIntProvider::new ) );
+    public static final Codec<ConfigConstantHeightProvider> CODEC = RecordCodecBuilder.create( inst -> inst.group(
+            ConfigFieldReference.INT_CODEC.fieldOf( "value" ).forGetter( ConfigConstantHeightProvider::get )
+    ).apply( inst, ConfigConstantHeightProvider::new ) );
     
     
     /** Creates and returns a new instance that references the given field. */
-    public static ConfigConstantIntProvider of( IConfigField<Integer> value ) {
-        return new ConfigConstantIntProvider( new ConfigFieldReference<>( value ) );
+    public static ConfigConstantHeightProvider of( IConfigField<Integer> value ) {
+        return new ConfigConstantHeightProvider( new ConfigFieldReference<>( value ) );
     }
     
     
@@ -35,7 +36,7 @@ public class ConfigConstantIntProvider extends IntProvider {
      *
      * @param val The field reference acting as this provider's value.
      */
-    private ConfigConstantIntProvider( ConfigFieldReference<Integer> val ) { value = val; }
+    private ConfigConstantHeightProvider( ConfigFieldReference<Integer> val ) { value = val; }
     
     /** @return This provider's config field reference. */
     public ConfigFieldReference<Integer> get() { return value; }
@@ -48,19 +49,11 @@ public class ConfigConstantIntProvider extends IntProvider {
     
     /** @return A sample value from this provider. */
     @Override
-    public int sample( RandomSource random ) { return getValue(); }
-    
-    /** @return The minimum value that can be returned by this provider. */
-    @Override
-    public int getMinValue() { return getValue(); }
-    
-    /** @return The maximum value that can be returned by this provider. */
-    @Override
-    public int getMaxValue() { return getValue(); }
+    public int sample( RandomSource random, WorldGenerationContext context ) { return getValue(); }
     
     /** @return This provider's type. */
     @Override
-    public IntProviderType<?> getType() { return CrustObjects.LevelGen.IntProviders.CFG_CONSTANT.get(); }
+    public HeightProviderType<?> getType() { return CrustObjects.LevelGen.HeightProviders.CFG_CONSTANT.get(); }
     
     @Override // Object
     public String toString() { return "@" + value; }

@@ -13,24 +13,25 @@ import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.IntProviderType;
 
 /**
- * Modified copy-paste of {@link net.minecraft.util.valueproviders.UniformInt} that gets
- * its min and max values from two int config fields, or a {@link IntField.RandomRange random range field }.
+ * Modified copy-paste of {@link net.minecraft.world.level.levelgen.heightproviders.TrapezoidHeight} that gets
+ * its min and max values from two int config fields, or a {@link IntField.RandomRange random range field}.
+ * The plateau is hard-locked to 0 so that this provider only uses two fields.
  */
-public class ConfigUniformIntProvider extends IntProvider {
+public class ConfigTriangleIntProvider extends IntProvider {
     
     /** The codec used for this provider's registered provider type. */
-    public static final Codec<ConfigUniformIntProvider> CODEC = RecordCodecBuilder.create( inst -> inst.group(
-            ConfigFieldReference.INT_CODEC.fieldOf( "min_inclusive" ).forGetter( ConfigUniformIntProvider::getMinInclusive ),
-            ConfigFieldReference.INT_CODEC.fieldOf( "max_inclusive" ).forGetter( ConfigUniformIntProvider::getMaxInclusive )
-    ).apply( inst, ConfigUniformIntProvider::new ) );
+    public static final Codec<ConfigTriangleIntProvider> CODEC = RecordCodecBuilder.create( inst -> inst.group(
+            ConfigFieldReference.INT_CODEC.fieldOf( "min_inclusive" ).forGetter( ConfigTriangleIntProvider::getMinInclusive ),
+            ConfigFieldReference.INT_CODEC.fieldOf( "max_inclusive" ).forGetter( ConfigTriangleIntProvider::getMaxInclusive )
+    ).apply( inst, ConfigTriangleIntProvider::new ) );
     
     
     /** Creates and returns a new instance that references the given random-range field. */
-    public static ConfigUniformIntProvider of( IntField.RandomRange range ) { return of( range.getMinField(), range.getMaxField() ); }
+    public static ConfigTriangleIntProvider of( IntField.RandomRange range ) { return of( range.getMinField(), range.getMaxField() ); }
     
     /** Creates and returns a new instance that references the given fields. */
-    public static ConfigUniformIntProvider of( IConfigField<Integer> min, IConfigField<Integer> max ) {
-        return new ConfigUniformIntProvider( new ConfigFieldReference<>( min ), new ConfigFieldReference<>( max ) );
+    public static ConfigTriangleIntProvider of( IConfigField<Integer> min, IConfigField<Integer> max ) {
+        return new ConfigTriangleIntProvider( new ConfigFieldReference<>( min ), new ConfigFieldReference<>( max ) );
     }
     
     
@@ -45,7 +46,7 @@ public class ConfigUniformIntProvider extends IntProvider {
      * @param min The min value field reference.
      * @param max The max value field reference.
      */
-    private ConfigUniformIntProvider( ConfigFieldReference<Integer> min, ConfigFieldReference<Integer> max ) {
+    private ConfigTriangleIntProvider( ConfigFieldReference<Integer> min, ConfigFieldReference<Integer> max ) {
         minInclusive = min;
         maxInclusive = max;
     }
@@ -63,14 +64,18 @@ public class ConfigUniformIntProvider extends IntProvider {
         Integer max = maxInclusive.get();
         
         if( min == null || max == null ) {
-            ConfigUtil.LOG.error( "Invalid uniform int range: {}", this );
+            ConfigUtil.LOG.error( "Invalid triangle int range: {}", this );
             return 0;
         }
         if( min > max ) {
-            ConfigUtil.LOG.warn( "Empty uniform int range: {}", this );
+            ConfigUtil.LOG.warn( "Empty triangle int range: {}", this );
             return min;
         }
-        return Mth.randomBetweenInclusive( random, min, max );
+        int range = max - min;
+        if( 0 >= range ) return min;
+        int midrange = range / 2;
+        return min + Mth.randomBetweenInclusive( random, 0, range - midrange ) +
+                Mth.randomBetweenInclusive( random, 0, midrange );
     }
     
     /** @return The minimum value that can be returned by this provider. */
@@ -83,8 +88,8 @@ public class ConfigUniformIntProvider extends IntProvider {
     
     /** @return This provider's type. */
     @Override
-    public IntProviderType<?> getType() { return CrustObjects.LevelGen.IntProviders.CFG_UNIFORM.get(); }
+    public IntProviderType<?> getType() { return CrustObjects.LevelGen.IntProviders.CFG_TRIANGLE.get(); }
     
     @Override // Object
-    public String toString() { return "[@" + minInclusive + "-@" + maxInclusive + "]"; }
+    public String toString() { return "triangle (@" + minInclusive + "-@" + maxInclusive + ")"; }
 }

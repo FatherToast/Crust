@@ -7,30 +7,31 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.config.common.field.IntField;
 import fathertoast.crust.api.lib.CrustObjects;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.IntProviderType;
 
 /**
- * Modified copy-paste of {@link net.minecraft.util.valueproviders.UniformInt} that gets
+ * Modified copy-paste of {@link net.minecraft.util.valueproviders.BiasedToBottomInt} that gets
  * its min and max values from two int config fields, or a {@link IntField.RandomRange random range field }.
+ * <p>
+ * Note that the int "biased to bottom" is very different from the height (very) "biased to bottom".
  */
-public class ConfigUniformIntProvider extends IntProvider {
+public class ConfigBiasedToBottomIntProvider extends IntProvider {
     
     /** The codec used for this provider's registered provider type. */
-    public static final Codec<ConfigUniformIntProvider> CODEC = RecordCodecBuilder.create( inst -> inst.group(
-            ConfigFieldReference.INT_CODEC.fieldOf( "min_inclusive" ).forGetter( ConfigUniformIntProvider::getMinInclusive ),
-            ConfigFieldReference.INT_CODEC.fieldOf( "max_inclusive" ).forGetter( ConfigUniformIntProvider::getMaxInclusive )
-    ).apply( inst, ConfigUniformIntProvider::new ) );
+    public static final Codec<ConfigBiasedToBottomIntProvider> CODEC = RecordCodecBuilder.create( inst -> inst.group(
+            ConfigFieldReference.INT_CODEC.fieldOf( "min_inclusive" ).forGetter( ConfigBiasedToBottomIntProvider::getMinInclusive ),
+            ConfigFieldReference.INT_CODEC.fieldOf( "max_inclusive" ).forGetter( ConfigBiasedToBottomIntProvider::getMaxInclusive )
+    ).apply( inst, ConfigBiasedToBottomIntProvider::new ) );
     
     
     /** Creates and returns a new instance that references the given random-range field. */
-    public static ConfigUniformIntProvider of( IntField.RandomRange range ) { return of( range.getMinField(), range.getMaxField() ); }
+    public static ConfigBiasedToBottomIntProvider of( IntField.RandomRange range ) { return of( range.getMinField(), range.getMaxField() ); }
     
     /** Creates and returns a new instance that references the given fields. */
-    public static ConfigUniformIntProvider of( IConfigField<Integer> min, IConfigField<Integer> max ) {
-        return new ConfigUniformIntProvider( new ConfigFieldReference<>( min ), new ConfigFieldReference<>( max ) );
+    public static ConfigBiasedToBottomIntProvider of( IConfigField<Integer> min, IConfigField<Integer> max ) {
+        return new ConfigBiasedToBottomIntProvider( new ConfigFieldReference<>( min ), new ConfigFieldReference<>( max ) );
     }
     
     
@@ -45,7 +46,7 @@ public class ConfigUniformIntProvider extends IntProvider {
      * @param min The min value field reference.
      * @param max The max value field reference.
      */
-    private ConfigUniformIntProvider( ConfigFieldReference<Integer> min, ConfigFieldReference<Integer> max ) {
+    private ConfigBiasedToBottomIntProvider( ConfigFieldReference<Integer> min, ConfigFieldReference<Integer> max ) {
         minInclusive = min;
         maxInclusive = max;
     }
@@ -63,14 +64,14 @@ public class ConfigUniformIntProvider extends IntProvider {
         Integer max = maxInclusive.get();
         
         if( min == null || max == null ) {
-            ConfigUtil.LOG.error( "Invalid uniform int range: {}", this );
+            ConfigUtil.LOG.error( "Invalid biased to bottom int range: {}", this );
             return 0;
         }
         if( min > max ) {
-            ConfigUtil.LOG.warn( "Empty uniform int range: {}", this );
+            ConfigUtil.LOG.warn( "Empty biased to bottom int range: {}", this );
             return min;
         }
-        return Mth.randomBetweenInclusive( random, min, max );
+        return min + random.nextInt( random.nextInt( max - min + 1 ) + 1 );
     }
     
     /** @return The minimum value that can be returned by this provider. */
@@ -83,7 +84,7 @@ public class ConfigUniformIntProvider extends IntProvider {
     
     /** @return This provider's type. */
     @Override
-    public IntProviderType<?> getType() { return CrustObjects.LevelGen.IntProviders.CFG_UNIFORM.get(); }
+    public IntProviderType<?> getType() { return CrustObjects.LevelGen.IntProviders.CFG_BIASED_TO_BOTTOM.get(); }
     
     @Override // Object
     public String toString() { return "[@" + minInclusive + "-@" + maxInclusive + "]"; }

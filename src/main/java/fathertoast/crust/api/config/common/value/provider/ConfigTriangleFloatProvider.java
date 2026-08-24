@@ -7,30 +7,30 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.DoubleField;
 import fathertoast.crust.api.config.common.field.IConfigField;
 import fathertoast.crust.api.lib.CrustObjects;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.util.valueproviders.FloatProviderType;
 
 /**
- * Modified copy-paste of {@link net.minecraft.util.valueproviders.UniformFloat} that gets
+ * Modified copy-paste of {@link net.minecraft.util.valueproviders.TrapezoidFloat} that gets
  * its min and max values from two double config fields, or a {@link DoubleField.RandomRange random range field}.
+ * The plateau is hard-locked to 0 so that this provider only uses two fields.
  */
-public class ConfigUniformFloatProvider extends FloatProvider {
+public class ConfigTriangleFloatProvider extends FloatProvider {
     
     /** The codec used for this provider's registered provider type. */
-    public static final Codec<ConfigUniformFloatProvider> CODEC = RecordCodecBuilder.create( inst -> inst.group(
-            ConfigFieldReference.DOUBLE_CODEC.fieldOf( "min_inclusive" ).forGetter( ConfigUniformFloatProvider::getMinInclusive ),
-            ConfigFieldReference.DOUBLE_CODEC.fieldOf( "max_exclusive" ).forGetter( ConfigUniformFloatProvider::getMaxExclusive )
-    ).apply( inst, ConfigUniformFloatProvider::new ) );
+    public static final Codec<ConfigTriangleFloatProvider> CODEC = RecordCodecBuilder.create( inst -> inst.group(
+            ConfigFieldReference.DOUBLE_CODEC.fieldOf( "min_inclusive" ).forGetter( ConfigTriangleFloatProvider::getMinInclusive ),
+            ConfigFieldReference.DOUBLE_CODEC.fieldOf( "max_exclusive" ).forGetter( ConfigTriangleFloatProvider::getMaxExclusive )
+    ).apply( inst, ConfigTriangleFloatProvider::new ) );
     
     
     /** Creates and returns a new instance that references the given random-range field. */
-    public static ConfigUniformFloatProvider of( DoubleField.RandomRange range ) { return of( range.getMinField(), range.getMaxField() ); }
+    public static ConfigTriangleFloatProvider of( DoubleField.RandomRange range ) { return of( range.getMinField(), range.getMaxField() ); }
     
     /** Creates and returns a new instance that references the given fields. */
-    public static ConfigUniformFloatProvider of( IConfigField<Double> min, IConfigField<Double> max ) {
-        return new ConfigUniformFloatProvider( new ConfigFieldReference<>( min ), new ConfigFieldReference<>( max ) );
+    public static ConfigTriangleFloatProvider of( IConfigField<Double> min, IConfigField<Double> max ) {
+        return new ConfigTriangleFloatProvider( new ConfigFieldReference<>( min ), new ConfigFieldReference<>( max ) );
     }
     
     
@@ -45,7 +45,7 @@ public class ConfigUniformFloatProvider extends FloatProvider {
      * @param min The min value field reference.
      * @param max The max value field reference.
      */
-    private ConfigUniformFloatProvider( ConfigFieldReference<Double> min, ConfigFieldReference<Double> max ) {
+    private ConfigTriangleFloatProvider( ConfigFieldReference<Double> min, ConfigFieldReference<Double> max ) {
         minInclusive = min;
         maxExclusive = max;
     }
@@ -63,14 +63,16 @@ public class ConfigUniformFloatProvider extends FloatProvider {
         Double max = maxExclusive.get();
         
         if( min == null || max == null ) {
-            ConfigUtil.LOG.error( "Invalid uniform float range: {}", this );
+            ConfigUtil.LOG.error( "Invalid triangle float range: {}", this );
             return 0.0F;
         }
         if( min > max ) {
-            ConfigUtil.LOG.warn( "Empty uniform float range: {}", this );
+            ConfigUtil.LOG.warn( "Empty triangle float range: {}", this );
             return min.floatValue();
         }
-        return Mth.randomBetween( random, min.floatValue(), max.floatValue() );
+        float range = max.floatValue() - min.floatValue();
+        float midrange = range / 2.0F;
+        return min.floatValue() + random.nextFloat() * (range - midrange) + random.nextFloat() * midrange;
     }
     
     /** @return The minimum value that can be returned by this provider. */
@@ -83,8 +85,8 @@ public class ConfigUniformFloatProvider extends FloatProvider {
     
     /** @return This provider's type. */
     @Override
-    public FloatProviderType<?> getType() { return CrustObjects.LevelGen.FloatProviders.CFG_UNIFORM.get(); }
+    public FloatProviderType<?> getType() { return CrustObjects.LevelGen.FloatProviders.CFG_TRIANGLE.get(); }
     
     @Override // Object
-    public String toString() { return "[@" + minInclusive + "-@" + maxExclusive + "]"; }
+    public String toString() { return "triangle (@" + minInclusive + "-@" + maxExclusive + ")"; }
 }

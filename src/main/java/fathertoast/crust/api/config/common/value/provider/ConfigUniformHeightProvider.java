@@ -9,28 +9,29 @@ import fathertoast.crust.api.config.common.field.IntField;
 import fathertoast.crust.api.lib.CrustObjects;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.valueproviders.IntProvider;
-import net.minecraft.util.valueproviders.IntProviderType;
+import net.minecraft.world.level.levelgen.WorldGenerationContext;
+import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
+import net.minecraft.world.level.levelgen.heightproviders.HeightProviderType;
 
 /**
- * Modified copy-paste of {@link net.minecraft.util.valueproviders.UniformInt} that gets
- * its min and max values from two int config fields, or a {@link IntField.RandomRange random range field }.
- */
-public class ConfigUniformIntProvider extends IntProvider {
+ * Modified copy-paste of {@link net.minecraft.world.level.levelgen.heightproviders.UniformHeight} that gets
+ * its min and max values from two int config fields, or a {@link IntField.RandomRange random range field}.
+ */ // TODO add support for anchors (new config field type?)
+public class ConfigUniformHeightProvider extends HeightProvider {
     
     /** The codec used for this provider's registered provider type. */
-    public static final Codec<ConfigUniformIntProvider> CODEC = RecordCodecBuilder.create( inst -> inst.group(
-            ConfigFieldReference.INT_CODEC.fieldOf( "min_inclusive" ).forGetter( ConfigUniformIntProvider::getMinInclusive ),
-            ConfigFieldReference.INT_CODEC.fieldOf( "max_inclusive" ).forGetter( ConfigUniformIntProvider::getMaxInclusive )
-    ).apply( inst, ConfigUniformIntProvider::new ) );
+    public static final Codec<ConfigUniformHeightProvider> CODEC = RecordCodecBuilder.create( inst -> inst.group(
+            ConfigFieldReference.INT_CODEC.fieldOf( "min_inclusive" ).forGetter( ConfigUniformHeightProvider::getMinInclusive ),
+            ConfigFieldReference.INT_CODEC.fieldOf( "max_inclusive" ).forGetter( ConfigUniformHeightProvider::getMaxInclusive )
+    ).apply( inst, ConfigUniformHeightProvider::new ) );
     
     
     /** Creates and returns a new instance that references the given random-range field. */
-    public static ConfigUniformIntProvider of( IntField.RandomRange range ) { return of( range.getMinField(), range.getMaxField() ); }
+    public static ConfigUniformHeightProvider of( IntField.RandomRange range ) { return of( range.getMinField(), range.getMaxField() ); }
     
     /** Creates and returns a new instance that references the given fields. */
-    public static ConfigUniformIntProvider of( IConfigField<Integer> min, IConfigField<Integer> max ) {
-        return new ConfigUniformIntProvider( new ConfigFieldReference<>( min ), new ConfigFieldReference<>( max ) );
+    public static ConfigUniformHeightProvider of( IConfigField<Integer> min, IConfigField<Integer> max ) {
+        return new ConfigUniformHeightProvider( new ConfigFieldReference<>( min ), new ConfigFieldReference<>( max ) );
     }
     
     
@@ -45,7 +46,7 @@ public class ConfigUniformIntProvider extends IntProvider {
      * @param min The min value field reference.
      * @param max The max value field reference.
      */
-    private ConfigUniformIntProvider( ConfigFieldReference<Integer> min, ConfigFieldReference<Integer> max ) {
+    private ConfigUniformHeightProvider( ConfigFieldReference<Integer> min, ConfigFieldReference<Integer> max ) {
         minInclusive = min;
         maxInclusive = max;
     }
@@ -58,32 +59,24 @@ public class ConfigUniformIntProvider extends IntProvider {
     
     /** @return A sample value from this provider. */
     @Override
-    public int sample( RandomSource random ) {
+    public int sample( RandomSource random, WorldGenerationContext context ) {
         Integer min = minInclusive.get();
         Integer max = maxInclusive.get();
         
         if( min == null || max == null ) {
-            ConfigUtil.LOG.error( "Invalid uniform int range: {}", this );
+            ConfigUtil.LOG.error( "Invalid uniform height range: {}", this );
             return 0;
         }
         if( min > max ) {
-            ConfigUtil.LOG.warn( "Empty uniform int range: {}", this );
+            ConfigUtil.LOG.warn( "Empty uniform height range: {}", this );
             return min;
         }
         return Mth.randomBetweenInclusive( random, min, max );
     }
     
-    /** @return The minimum value that can be returned by this provider. */
-    @Override
-    public int getMinValue() { return minInclusive.getOrElse( 0 ); }
-    
-    /** @return The maximum value that can be returned by this provider. */
-    @Override
-    public int getMaxValue() { return maxInclusive.getOrElse( 0 ); }
-    
     /** @return This provider's type. */
     @Override
-    public IntProviderType<?> getType() { return CrustObjects.LevelGen.IntProviders.CFG_UNIFORM.get(); }
+    public HeightProviderType<?> getType() { return CrustObjects.LevelGen.HeightProviders.CFG_UNIFORM.get(); }
     
     @Override // Object
     public String toString() { return "[@" + minInclusive + "-@" + maxInclusive + "]"; }
