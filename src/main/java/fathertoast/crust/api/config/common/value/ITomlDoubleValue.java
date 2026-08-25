@@ -5,7 +5,7 @@ import fathertoast.crust.api.config.common.file.TomlHelper;
 import java.util.function.Supplier;
 
 /**
- * A TOML value intended to wrap an {@link Double} type to support prettier printing for
+ * A TOML value intended to wrap a {@link Double} type to support prettier printing for
  * {@link TomlHelper#fieldInfoRange(ITomlDoubleValue, ITomlDoubleValue, ITomlDoubleValue)}
  * and config file values.
  */

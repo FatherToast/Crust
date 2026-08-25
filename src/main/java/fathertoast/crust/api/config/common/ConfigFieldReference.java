@@ -102,13 +102,13 @@ public class ConfigFieldReference<V> implements Supplier<V> {
         if( setField != null ) return true;
         IConfigField<?> foundField = getField( modId, file, key );
         if( foundField != null ) {
-            // Try to cast the field so ensure the value type is correct
+            // Try to cast the field to ensure the value type is correct
             try {
                 // noinspection unchecked
                 setField = (IConfigField<V>) foundField;
                 return true;
             }
-            catch( ClassCastException ignored ) {}
+            catch( ClassCastException ignored ) { }
         }
         // Field was either not found or not the correct type
         return false;
