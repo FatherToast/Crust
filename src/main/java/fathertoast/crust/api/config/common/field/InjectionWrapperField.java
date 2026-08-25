@@ -30,4 +30,11 @@ public class InjectionWrapperField<T, F extends IConfigField<T>> extends Abstrac
         super.load( raw );
         injectionCallback.accept( field() );
     }
+    
+    /** Assigns a remote value and makes it 'active'. This is used for syncing values from the server. */
+    @Override
+    public void setSyncValue( @Nullable T value ) {
+        super.setSyncValue( value );
+        injectionCallback.accept( field() );
+    }
 }
