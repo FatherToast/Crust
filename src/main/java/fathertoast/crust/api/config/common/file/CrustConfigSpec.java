@@ -544,8 +544,11 @@ public class CrustConfigSpec {
     public void applyValueListRemote( List<Object> values, boolean forSync ) {
         Iterator<Object> iterator = values.iterator();
         ACTIONS.forEach( action -> {
-            if( action instanceof FieldAction<?> fieldAction && (!forSync || fieldAction.SYNC) )
-                fieldAction.applyRemote( iterator, forSync );
+            if( action instanceof FieldAction<?> fieldAction ) {
+                if( !forSync || fieldAction.SYNC )
+                    fieldAction.applyRemote( iterator, forSync );
+            }
+            else if( forSync ) action.onLoad();
         } );
     }
     
