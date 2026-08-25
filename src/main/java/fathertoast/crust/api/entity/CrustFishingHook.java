@@ -30,7 +30,7 @@ import net.minecraftforge.network.NetworkHooks;
 import javax.annotation.Nullable;
 
 /**
- * A common fish hook projectile to support usage by non-players (entities, block entities, etc.).
+ * A common fishhook projectile to support usage by non-players (entities, block entities, etc.).
  * <p>
  * Supports simple "pull on hit" behavior only, not any actual fishing.
  * <p>
@@ -109,16 +109,16 @@ public class CrustFishingHook extends Projectile implements IEntityAdditionalSpa
         setAngler( angler );
     }
     
-    /** Constructor for using the fish hook implementation provided by Crust. Only suitable for anglers that are entities. */
+    /** Constructor for using the fishhook implementation provided by Crust. Only suitable for anglers that are entities. */
     public <T extends Entity & IAngler> CrustFishingHook( Level level, T angler ) {
         this( CrustObjects.Entities.FISH_HOOK.get(), level, angler );
     }
     
-    /** Called from the Entity.class constructor to define data watcher variables. */
+    /** Called from the {@link Entity Entity.class} constructor to define data watcher variables. */
     @Override
     protected void defineSynchedData() { }
     
-    /** @return True if this fish hook should be discarded if it has no angler. */
+    /** @return True if this fishhook should be discarded if it has no angler. */
     protected boolean requiresAngler() { return true; }
     
     public void playCastSound() { playCastSound( 1.0F, 0.4F / (random.nextFloat() * 0.4F + 0.8F) ); }
@@ -159,7 +159,7 @@ public class CrustFishingHook extends Projectile implements IEntityAdditionalSpa
         else discard();
     }
     
-    /** @return True if this fish hook can continue to exist. */
+    /** @return True if this fishhook can continue to exist. */
     @SuppressWarnings( "resource" )
     protected boolean canContinue() {
         IAngler angler = getAngler();
@@ -207,7 +207,7 @@ public class CrustFishingHook extends Projectile implements IEntityAdditionalSpa
         }
     }
     
-    /** @return True if the entity can be hit by this fish hook. */
+    /** @return True if the entity can be hit by this fishhook. */
     @Override
     protected boolean canHitEntity( Entity entity ) {
         return !entity.isSpectator() && (super.canHitEntity( entity ) || entity.isAlive() && entity instanceof ItemEntity);
@@ -274,7 +274,7 @@ public class CrustFishingHook extends Projectile implements IEntityAdditionalSpa
                 .normalize().scale( -10.0F );
     }
     
-    /** Sets this fish hook's angler. */
+    /** Sets this fishhook's angler. */
     public void setAngler( @Nullable IAngler newAngler ) {
         // Remove self from existing angler
         IAngler oldAngler = getAngler();
@@ -307,14 +307,14 @@ public class CrustFishingHook extends Projectile implements IEntityAdditionalSpa
         newAngler.setHook( this );
     }
     
-    /** @return This fish hook's angler. */
+    /** @return This fishhook's angler. */
     @Nullable
     public IAngler getAngler() { return owner; }
     
-    /** Sets this fish hook's pull strength. */
+    /** Sets this fishhook's pull strength. */
     public void setPower( float newPower ) { power = newPower; }
     
-    /** @return This fish hook's pull strength. */
+    /** @return This fishhook's pull strength. */
     public float getPower() { return power; }
     
     @Override
@@ -360,7 +360,7 @@ public class CrustFishingHook extends Projectile implements IEntityAdditionalSpa
     }
     
     /**
-     * Called by the client when it receives a Entity spawn packet.
+     * Called by the client when it receives an entity spawn packet.
      * Data should be read out of the stream in the same way as it was written.
      *
      * @param additionalData The packet data stream

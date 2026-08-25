@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 
 /**
  * Represents something that exists in a world/level (e.g., and entity or block entity)
- * that can cast Crust fish hook projectiles.
+ * that can cast Crust fishhook projectiles.
  * <p>
  * You may need to handle some client data synchronization yourself.
  *
@@ -70,16 +70,16 @@ public interface IAngler {
         return null;
     }
     
-    /** @return True if the active fish hook can be replaced by a new one. */
+    /** @return True if the active fishhook can be replaced by a new one. */
     default boolean canReplaceHookWith( @Nullable CrustFishingHook newHook ) { return true; }
     
     /** Called when the hook thinks the rod should be damaged (e.g., after pulling a target). */
     default void damageRod( int damage ) { } // By default, does not damage any item
     
     /**
-     * Called each tick on the server side while getHook() is non-null.
+     * Called each tick on the server side while {@link #getHook()} is non-null.
      *
-     * @return True if the active fish hook should be destroyed, false otherwise.
+     * @return True if the active fishhook should be destroyed, false otherwise.
      */
     default boolean shouldStopFishing() {
         if( getHook() == null ) return true;
