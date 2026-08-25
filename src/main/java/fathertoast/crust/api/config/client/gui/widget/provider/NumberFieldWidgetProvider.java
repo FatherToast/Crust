@@ -47,7 +47,7 @@ public class NumberFieldWidgetProvider<T extends Number> implements IConfigField
         editBox.setResponder( text -> {
             Number newValue = TomlHelper.parseNumber( text );
             editBox.setTextColor( newValue != null && VALIDATOR.test( newValue ) ? DEFAULT_COLOR : INVALID_COLOR );
-            listEntry.updateValue( READER.apply( newValue ) );
+            listEntry.updateValue( newValue == null ? null : READER.apply( newValue ) );
         } );
         editBox.active = listEntry.isEditable();
         components.add( editBox );

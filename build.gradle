@@ -104,7 +104,7 @@ dependencies {
     compileOnly fg.deobf("blank:apocalypse:1.20.1-4.11.10-r:api")
 
     // Natural Absorption & API
-    runtimeOnly fg.deobf("blank:naturalabsorption:1.20.1-2.1.8")
+    // runtimeOnly fg.deobf("blank:naturalabsorption:1.20.1-2.1.8")
     compileOnly fg.deobf("blank:naturalabsorption:1.20.1-2.1.8:api")
 
     // Other toasty mods // TODO Re-add later!
