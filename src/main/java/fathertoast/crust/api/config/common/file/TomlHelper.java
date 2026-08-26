@@ -105,6 +105,11 @@ public final class TomlHelper {
         return asNumber( readAsPrimitive( field, raw ) );
     }
     
+    /** @return True if the TOML primitive value is a non-integer (mathematical definition of integer). */
+    public static boolean numberHasDecimal( Number number ) {
+        return !(number instanceof Double || number instanceof Float) || number.doubleValue() == Math.floor( number.doubleValue() );
+    }
+    
     /** @return The object as a boolean, or null if it cannot be. */
     @Nullable
     public static Boolean readAsBoolean( @Nullable IConfigField<?> field, @Nullable Object raw ) {

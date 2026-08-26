@@ -74,14 +74,14 @@ public class LongField extends AbstractConfigField<Long> {
      */
     @Override
     public Long parse( Object raw ) {
-        Number newValue = TomlHelper.readAsNumber( this, raw );
-        if( newValue == null ) {
+        Number value = TomlHelper.readAsNumber( this, raw );
+        if( value == null ) {
             ConfigUtil.warnFor( this );
             ConfigUtil.LOG.warn( "Invalid long! Falling back to default ({}). Invalid value: {}",
                     getDefaultValue(), raw );
             return getDefaultValue();
         }
-        long castValue = newValue.longValue();
+        long castValue = value.longValue();
         if( castValue < minValue() ) {
             ConfigUtil.warnFor( this );
             ConfigUtil.LOG.warn( "Value is below the minimum! Adjusting from {} to {}.", raw, minValue() );
@@ -92,7 +92,7 @@ public class LongField extends AbstractConfigField<Long> {
             ConfigUtil.LOG.warn( "Value is above the maximum! Adjusting from {} to {}.", raw, maxValue() );
             return maxValue();
         }
-        if( (double) castValue != newValue.doubleValue() ) {
+        if( TomlHelper.numberHasDecimal( value ) ) {
             ConfigUtil.warnFor( this );
             ConfigUtil.LOG.warn( "Floating point value given for integer! Truncating value {} to {}.",
                     raw, castValue );
