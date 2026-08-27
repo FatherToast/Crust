@@ -60,7 +60,7 @@ public class AbsorptionElement extends Element {
     /**
      * Calculates the default reserved area of this element.
      * <p>
-     * Modders call {@link #getCachedSize} instead.
+     * Modders should call {@link #getCachedSize} instead.
      */
     @Override
     public Vec2 getSize() {
@@ -113,10 +113,9 @@ public class AbsorptionElement extends Element {
             
             // Draw empty hearts first based on absorption capacity
             for( int i = 1; i <= heartCount; ++i ) {
-                if( i <= Mth.floor( capacity ) ) {
-                    renderHeart( guiGraphics, Gui.HeartType.CONTAINER, x + xOffset, y + yOffset, false );
-                    xOffset += 8;
-                }
+                renderHeart( guiGraphics, Gui.HeartType.CONTAINER, x + xOffset, y + yOffset, false );
+                xOffset += 8;
+                
                 // Increment Y-offset and reset X-offset to start a new row
                 if( i % heartsPerLine == 0 ) {
                     yOffset += 10;
