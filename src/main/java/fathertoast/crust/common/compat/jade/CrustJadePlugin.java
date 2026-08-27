@@ -52,7 +52,7 @@ public final class CrustJadePlugin implements IWailaPlugin {
          * @param parent A resource location whose path should be used as the base path.
          */
         static ResourceLocation id( ResourceLocation parent, String path ) {
-            return Crust.rl( parent.getPath() + "." + path );
+            return id( parent.getPath() + "." + path );
         }
     }
 }
