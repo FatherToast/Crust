@@ -1,6 +1,7 @@
-package fathertoast.crust.common.compat.jade;
+package fathertoast.crust.common.compat.jade.provider;
 
 import fathertoast.crust.api.lib.NBTHelper;
+import fathertoast.crust.common.compat.jade.CrustJadePlugin;
 import fathertoast.crust.common.compat.jade.element.AbsorptionElement;
 import fathertoast.crust.common.compat.naturalabsorption.NaturalAbsorptionPlugin;
 import fathertoast.crust.common.core.Crust;

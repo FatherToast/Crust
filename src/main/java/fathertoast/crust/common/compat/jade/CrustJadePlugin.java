@@ -1,5 +1,6 @@
 package fathertoast.crust.common.compat.jade;
 
+import fathertoast.crust.common.compat.jade.provider.AbsorptionComponentProvider;
 import fathertoast.crust.common.core.Crust;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
