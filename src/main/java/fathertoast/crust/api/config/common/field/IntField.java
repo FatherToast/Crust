@@ -104,7 +104,7 @@ public class IntField extends AbstractConfigField<Integer> {
             ConfigUtil.LOG.warn( "Value is above the maximum! Adjusting from {} to {}.", raw, maxValue() );
             return maxValue();
         }
-        if( (double) castValue != value.doubleValue() ) {
+        if( TomlHelper.numberHasDecimal( value ) ) {
             ConfigUtil.warnFor( this );
             ConfigUtil.LOG.warn( "Floating point value given for integer! Truncating value {} to {}.",
                     raw, castValue );

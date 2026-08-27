@@ -70,7 +70,7 @@ public class IntValueCodec implements IValueCodec<Integer>, IValueCorrector<Inte
         else {
             Object v = TomlHelper.parseStringPrimitive( value );
             if( v instanceof Number numberValue ) {
-                if( field != null && (double) numberValue.intValue() != numberValue.doubleValue() ) {
+                if( field != null && TomlHelper.numberHasDecimal( numberValue ) ) {
                     ConfigUtil.warnFor( field );
                     ConfigUtil.LOG.warn( "Floating point value given for integer! Truncating value {} to {}.",
                             numberValue.doubleValue(), numberValue.intValue() );
