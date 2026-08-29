@@ -18,27 +18,36 @@ import java.util.function.Predicate;
  * wrapper class for multiple independent fields.
  * It sacrifices flexibility for automation, largely to help with the craziness of environment list fields.
  */
+@SuppressWarnings( "unused" )
 public class EnvironmentSensitiveWeightedList<T> {
     
     private final List<Entry<T>> UNDERLYING_LIST;
     
-    /** Links an array of values to two arrays of fields as base weights and exceptions. */
-    public EnvironmentSensitiveWeightedList( T[] values, IntField[] baseWeights, EnvironmentListField<Integer>[] weightExceptions ) {
-        if( values.length != baseWeights.length || values.length != weightExceptions.length )
+    /** Links a list of values to two lists of fields as base weights and exceptions. */
+    public EnvironmentSensitiveWeightedList( List<T> values, List<IntField> baseWeights, List<EnvironmentListField<Integer>> weightExceptions ) {
+        final int size = values.size();
+        if( size != baseWeights.size() || size != weightExceptions.size() )
             throw new IllegalArgumentException( "All arrays must be equal length!" );
         
         final ArrayList<Entry<T>> list = new ArrayList<>();
-        for( int i = 0; i < values.length; i++ ) {
-            list.add( new Entry<>( values[i], new IntField.EnvironmentSensitive( baseWeights[i], weightExceptions[i] ) ) );
+        for( int i = 0; i < size; i++ ) {
+            IntField base = baseWeights.get( i );
+            EnvironmentListField<Integer> exceptions = weightExceptions.get( i );
+            list.add( new Entry<>( values.get( i ), new IntField.EnvironmentSensitive( base, exceptions ) ) );
             
             // Do a bit of error checking; allows us to ignore the possibility of negative weights
-            if( baseWeights[i].minValue() < 0.0 || weightExceptions[i].getDefaultValue().codec() != IntValueCodec.NON_NEGATIVE ) {
+            if( base.minValue() < 0.0 || exceptions.getDefaultValue().codec() != IntValueCodec.NON_NEGATIVE ) {
                 throw new IllegalArgumentException( "Weight is not allowed to be negative! See " +
-                        baseWeights[i].getKey() + " and/or " + weightExceptions[i].getKey() );
+                        base.getKey() + " and/or " + exceptions.getKey() );
             }
         }
         list.trimToSize();
         UNDERLYING_LIST = Collections.unmodifiableList( list );
+    }
+    
+    /** Links an array of values to two lists of fields as base weights and exceptions. */
+    public EnvironmentSensitiveWeightedList( T[] values, List<IntField> baseWeights, List<EnvironmentListField<Integer>> weightExceptions ) {
+        this( List.of( values ), baseWeights, weightExceptions );
     }
     
     /** @return Returns a random item from this weighted list. Null if none of the items have a positive weight. */
