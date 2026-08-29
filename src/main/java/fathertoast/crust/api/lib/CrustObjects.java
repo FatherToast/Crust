@@ -25,9 +25,7 @@ import net.minecraftforge.registries.RegistryObject;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-/**
- * This helper class contains references/getters for all registry objects provided by Crust.
- */
+/** This helper class contains references/getters for all registry objects provided by Crust. */
 public final class CrustObjects {
     /**
      * The Forge registry for Crust portal builders.<br>
@@ -177,12 +175,12 @@ public final class CrustObjects {
         return RegistryObject.createOptional( rl( name ), registryKey, ICrustApi.MOD_ID );
     }
     
-    /** @return A resource location. */
+    /** @return A resource location of Crust's namespace and the given path. */
     private static ResourceLocation rl( String path ) {
         return ResourceLocation.fromNamespaceAndPath( ICrustApi.MOD_ID, path );
     }
     
     
     // Utility class
-    private CrustObjects() {}
+    private CrustObjects() { }
 }

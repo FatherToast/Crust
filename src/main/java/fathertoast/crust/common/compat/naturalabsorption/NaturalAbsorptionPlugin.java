@@ -1,18 +1,18 @@
 package fathertoast.crust.common.compat.naturalabsorption;
 
-import fathertoast.naturalabsorption.api.INaturalAbsorption;
+import fathertoast.naturalabsorption.api.INaturalAbsorptionApi;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.function.Function;
 
 public class NaturalAbsorptionPlugin {
     
-    public static final Function<INaturalAbsorption, Void> RECEIVER = ( apiInstance ) -> {
+    public static final Function<INaturalAbsorptionApi, Void> RECEIVER = ( apiInstance ) -> {
         API_INSTANCE = apiInstance;
         return null;
     };
     
-    public static INaturalAbsorption API_INSTANCE;
+    public static INaturalAbsorptionApi API_INSTANCE;
     
     /**
      * @return The entity's max absorption, from all sources combined.
