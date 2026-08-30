@@ -19,6 +19,7 @@ public class AbsorptionComponentProvider implements IEntityComponentProvider, IS
     /** NBT keys used by this provider to read and write custom data. */
     private static final String TAG_CRUST_DATA = "CrustData";
     private static final String TAG_ABSORPTION = "Absorption";
+    private static final String TAG_CAPACITY = "Capacity";
     
     
     /**
@@ -38,23 +39,15 @@ public class AbsorptionComponentProvider implements IEntityComponentProvider, IS
      */
     @Override
     public void appendTooltip( ITooltip tooltip, EntityAccessor accessor, IPluginConfig cfgAccess ) {
-        if( accessor.getEntity() instanceof LivingEntity livingEntity ) {
+        if( accessor.getEntity() instanceof LivingEntity ) {
             final CompoundTag tag = accessor.getServerData();
             
-            if( NBTHelper.containsCompound( tag, TAG_CRUST_DATA ) && NBTHelper.containsNumber( tag.getCompound( TAG_CRUST_DATA ), TAG_ABSORPTION ) ) {
-                final float absorptionAmount = tag.getCompound( TAG_CRUST_DATA ).getFloat( TAG_ABSORPTION );
-                final float absorptionCapacity;
-                
-                // If Natural Absorption is installed, we fetch the entity's absorption capacity
-                // from the API. Otherwise, we just set the capacity to the same value as current absorption.
-                if( Crust.NA_INSTALLED && cfgAccess.get( CrustJadePlugin.Config.ENTITY_ABSORPTION_SHOW_CAPACITY ) ) {
-                    absorptionCapacity = (float) NaturalAbsorptionPlugin.getMaxAbsorption( livingEntity );
-                }
-                else {
-                    absorptionCapacity = tag.getCompound( TAG_CRUST_DATA ).getFloat( TAG_ABSORPTION );
-                }
-                tooltip.add( new AbsorptionElement( cfgAccess, absorptionAmount, absorptionCapacity ) );
-            }
+            if( !NBTHelper.containsCompound( tag, TAG_CRUST_DATA ) ) return;
+            
+            final CompoundTag crustData = tag.getCompound( TAG_CRUST_DATA );
+            final float absorptionAmount = crustData.getFloat( TAG_ABSORPTION );
+            final float absorptionCapacity = crustData.getFloat( TAG_CAPACITY );
+            tooltip.add( new AbsorptionElement( cfgAccess, absorptionAmount, absorptionCapacity ) );
         }
     }
     
@@ -70,9 +63,21 @@ public class AbsorptionComponentProvider implements IEntityComponentProvider, IS
     @Override
     public void appendServerData( CompoundTag data, EntityAccessor accessor ) {
         if( accessor.getEntity() instanceof LivingEntity livingEntity ) {
-            if( livingEntity.getAbsorptionAmount() > 0.0 ) {
-                CompoundTag modData = NBTHelper.getOrCreateCompound( data, TAG_CRUST_DATA );
-                modData.putFloat( TAG_ABSORPTION, livingEntity.getAbsorptionAmount() );
+            float absorption = livingEntity.getAbsorptionAmount();
+            float capacity = 0;
+            
+            // If Natural Absorption is installed, we fetch the entity's absorption capacity from the API.
+            if( Crust.NA_INSTALLED ) {
+                capacity = (float) NaturalAbsorptionPlugin.getMaxAbsorption( livingEntity );
+            }
+            
+            if( absorption > 0 ) {
+                CompoundTag crustData = NBTHelper.getOrCreateCompound( data, TAG_CRUST_DATA );
+                crustData.putFloat( TAG_ABSORPTION, absorption );
+            }
+            if( capacity > 0 ) {
+                CompoundTag crustData = NBTHelper.getOrCreateCompound( data, TAG_CRUST_DATA );
+                crustData.putFloat( TAG_CAPACITY, capacity );
             }
         }
     }

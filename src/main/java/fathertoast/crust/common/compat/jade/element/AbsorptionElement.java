@@ -67,13 +67,14 @@ public class AbsorptionElement extends Element {
         final float maxAbsorption = cfgAccess.getFloat( CrustJadePlugin.Config.ENTITY_MAX_ABSORPTION_FOR_RENDER );
         final int iconsPerLine = cfgAccess.getInt( CrustJadePlugin.Config.ENTITY_ABSORPTION_ICONS_PER_LINE );
         
-        // Render text instead of icons if absorption amount
+        // Render text instead of icons if amount or capacity
         // is greater than the configured max.
-        if( absorptionCapacity > maxAbsorption ) {
+        final float max = Math.max( absorptionAmount, absorptionCapacity );
+        if( max > maxAbsorption ) {
             return new Vec2( (float) (10 + Minecraft.getInstance().font.width( amountAsText )), 10.0F );
         }
         else {
-            float heartCount = absorptionCapacity * 0.5F;
+            float heartCount = max * 0.5F;
             int heartsPerLine = (int) Math.min( iconsPerLine, Math.ceil( heartCount ) );
             int lineCount = (int) Math.ceil( heartCount / iconsPerLine );
             
@@ -94,7 +95,7 @@ public class AbsorptionElement extends Element {
     public void render( GuiGraphics guiGraphics, float x, float y, float maxX, float maxY ) {
         final float maxHeartIcons = cfgAccess.getFloat( CrustJadePlugin.Config.ENTITY_MAX_ABSORPTION_FOR_RENDER );
         final int iconsPerLine = cfgAccess.getInt( CrustJadePlugin.Config.ENTITY_ABSORPTION_ICONS_PER_LINE );
-        final int heartsPerLine = (int) Math.min( iconsPerLine, Math.ceil( absorptionCapacity ) );
+        final int heartsPerLine = (int) Math.min( iconsPerLine, Math.ceil( Math.max( absorptionCapacity, absorptionAmount ) ) );
         
         // Draw absorption as text if amount is greater than
         // the configured maximum that can be drawn with icons
@@ -106,7 +107,7 @@ public class AbsorptionElement extends Element {
         else {
             final float absorption = absorptionAmount * 0.5F;
             final float capacity = absorptionCapacity * 0.5F;
-            final int heartCount = Mth.ceil( capacity );
+            final int heartCount = Mth.ceil( Math.max( capacity, absorption ) );
             
             float xOffset = 0;
             float yOffset = 0;
