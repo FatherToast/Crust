@@ -159,8 +159,8 @@ public class BlockStateEntryViewRenderer implements EntryViewWidget.EntryViewRen
     public void setup() {
         final Map<BlockEntityType<?>, BlockEntityRendererProvider<?>> providers;
         
-        // TODO - using reflection for now because using AT on the PROVIDERS map in BlockEntityRenderers does not work??
         try {
+            // We can seemingly not AT the provider map, probably because of some transform shenanigans
             Field field = ObfuscationReflectionHelper.findField( BlockEntityRenderers.class, "f_173587_" ); // PROVIDERS
             // noinspection unchecked
             providers = (Map<BlockEntityType<?>, BlockEntityRendererProvider<?>>) field.get( null );
@@ -168,14 +168,20 @@ public class BlockStateEntryViewRenderer implements EntryViewWidget.EntryViewRen
         catch( IllegalAccessException e ) {
             throw new RuntimeException( e );
         }
-        
         // Loop through every single block state for every registered block
         // to find which states provide block entities that have special renderers.
         for( Block block : ForgeRegistries.BLOCKS ) {
             for( BlockState blockState : block.getStateDefinition().getPossibleStates() ) {
                 if( blockState.getBlock() instanceof EntityBlock entityBlock ) {
-                    final BlockEntity blockEntity = entityBlock.newBlockEntity( BlockPos.ZERO, blockState );
+                    final BlockEntity blockEntity;
                     
+                    try {
+                        blockEntity = entityBlock.newBlockEntity( BlockPos.ZERO, blockState );
+                    }
+                    catch( Exception ignored ) {
+                        // If it doesn't work, it doesn't work. Too bad!
+                        continue;
+                    }
                     if( blockEntity == null ) continue;
                     
                     if( !statesWithRenderers.contains( blockState ) && providers.containsKey( blockEntity.getType() ) ) {

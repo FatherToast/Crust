@@ -31,10 +31,9 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingStage;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 
 @Mod.EventBusSubscriber( value = Dist.CLIENT, modid = ICrustApi.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD )
 public final class ClientRegister {
@@ -87,10 +86,13 @@ public final class ClientRegister {
         
         // Tell Forge to open the config editor when our mod's "Config" button is clicked in the Mods screen
         ClientConfigUtil.registerConfigButtonAsEditScreen( Crust.INSTANCE.CONTAINER );
-        
+    }
+    
+    /** Called when mod loading is flagged as complete for the current mod container. */
+    @SubscribeEvent
+    static void onLoadComplete( FMLLoadCompleteEvent event ) {
         // Run setup for all registered item view renderers
-        ModLoadingStage.COMPLETE.getDeferredWorkQueue().enqueueWork( ModList.get().getModContainerById( ICrustApi.MOD_ID ).orElseThrow(),
-                () -> EntryViewRendererRegistry.allRenderers().forEach( EntryViewWidget.EntryViewRenderer::setup ) );
+        event.enqueueWork( () -> EntryViewRendererRegistry.allRenderers().forEach( EntryViewWidget.EntryViewRenderer::setup ) );
     }
     
     /** Registers this mod's additional key bindings. */
@@ -142,5 +144,5 @@ public final class ClientRegister {
     }
     
     // Static listener, no instantiation
-    private ClientRegister() {}
+    private ClientRegister() { }
 }

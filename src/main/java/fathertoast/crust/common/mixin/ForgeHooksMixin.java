@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This mixin exists to preserve {@link fathertoast.crust.api.config.common.value.ConfigDrivenAttributeSupplier} instances
+ * This mixin exists to preserve {@link fathertoast.crust.api.config.common.value.ConfigDrivenAttributeSupplier ConfigDrivenAttributeSupplier} instances
  * that are registered during {@link net.minecraftforge.event.entity.EntityAttributeCreationEvent} but later lost
  * from merging attributes after {@link net.minecraftforge.event.entity.EntityAttributeModificationEvent}.
  */
