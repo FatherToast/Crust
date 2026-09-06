@@ -1,6 +1,7 @@
 1.20.1-5.1.1
     - Updated Natural Absorption compat.
         - Fixed absorption element not displaying the correct amount of empty hearts.
+    - Fixed BlockStateEntryViewRenderer crashing during setup if instantiation of a block entity fails.
     API Changes:
     - Injection wrappers and callbacks now trigger on sync.
     - Made EnvironmentSensitiveWeightedList much more reasonable to create.
