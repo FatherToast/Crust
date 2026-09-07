@@ -29,7 +29,14 @@ public abstract class AbstractWrapperField<T, F extends IConfigField<T>> impleme
     public AbstractWrapperField( F wrapped ) { wrappedField = wrapped; }
     
     /** @return Returns the wrapped config field. */
-    public F field() { return wrappedField; }
+    public F field() {
+        //noinspection ConstantValue
+        if( getSpec() == null ) {
+            throw new IllegalStateException( "Attempted to unwrap the wrapper before defining it in the spec! " +
+                    "Move #field() and #unwrap() calls outside the CrustConfigSpec#define() call." );
+        }
+        return wrappedField;
+    }
     
     /** @return Unwraps this config field (if wrapped) and returns it. */
     @Override

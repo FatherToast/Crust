@@ -1,3 +1,6 @@
+1.20.1-5.1.2
+    API Changes:
+    - Field wrappers now throw an exception if you try to unwrap them before defining them in the spec.
 1.20.1-5.1.1
     - Updated Natural Absorption compat.
         - Fixed absorption element not displaying the correct amount of empty hearts.
