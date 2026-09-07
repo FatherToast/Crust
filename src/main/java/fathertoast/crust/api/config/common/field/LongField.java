@@ -155,8 +155,9 @@ public class LongField extends AbstractConfigField<Long> {
          * Helper method to automatically generate the minimum and maximum long fields and define them in the spec.
          * Appends ".min" and ".max" to the provided key, and only supports comments on the first field.
          */
-        public RandomRange( CrustConfigSpec spec, String keyBase, long defaultMinValue, long defaultMaxValue, LongField.Range range, @Nullable String... description ) {
-            this( spec, keyBase, defaultMinValue, defaultMaxValue, range.MIN, range.MAX, description );
+        public RandomRange( CrustConfigSpec spec, String keyBase, long defaultMinValue, long defaultMaxValue,
+                            LongField.Range range, @Nullable String... description ) {
+            this( spec, keyBase, defaultMinValue, defaultMaxValue, range.MIN, range.MAX, false, description );
         }
         
         /**
@@ -165,7 +166,30 @@ public class LongField extends AbstractConfigField<Long> {
          * Helper method to automatically generate the minimum and maximum long fields and define them in the spec.
          * Appends ".min" and ".max" to the provided key, and only supports comments on the first field.
          */
-        public RandomRange( CrustConfigSpec spec, String keyBase, long defaultMinValue, long defaultMaxValue, long min, long max, @Nullable String... description ) {
+        public RandomRange( CrustConfigSpec spec, String keyBase, long defaultMinValue, long defaultMaxValue,
+                            long min, long max, @Nullable String... description ) {
+            this( spec, keyBase, defaultMinValue, defaultMaxValue, min, max, false, description );
+        }
+        
+        /**
+         * Links two values together as minimum and maximum, optionally flagging the created fields as syncable.
+         * <p>
+         * Helper method to automatically generate the minimum and maximum long fields and define them in the spec.
+         * Appends ".min" and ".max" to the provided key, and only supports comments on the first field.
+         */
+        public RandomRange( CrustConfigSpec spec, String keyBase, long defaultMinValue, long defaultMaxValue,
+                            LongField.Range range, boolean sync, @Nullable String... description ) {
+            this( spec, keyBase, defaultMinValue, defaultMaxValue, range.MIN, range.MAX, sync, description );
+        }
+        
+        /**
+         * Links two values together as minimum and maximum, optionally flagging the created fields as syncable.
+         * <p>
+         * Helper method to automatically generate the minimum and maximum long fields and define them in the spec.
+         * Appends ".min" and ".max" to the provided key, and only supports comments on the first field.
+         */
+        public RandomRange( CrustConfigSpec spec, String keyBase, long defaultMinValue, long defaultMaxValue,
+                            long min, long max, boolean sync, @Nullable String... description ) {
             this(
                     spec.define( new LongField( keyBase + ".min", defaultMinValue, min, max, description ) ),
                     spec.define( new LongField( keyBase + ".max", defaultMaxValue, min, max ) )

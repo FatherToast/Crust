@@ -163,8 +163,9 @@ public class DoubleField extends AbstractConfigField<Double> {
          * Helper method to automatically generate the minimum and maximum double fields and define them in the spec.
          * Appends ".min" and ".max" to the provided key, and only supports comments on the first field.
          */
-        public RandomRange( CrustConfigSpec spec, String keyBase, double defaultMinValue, double defaultMaxValue, Range range, @Nullable String... description ) {
-            this( spec, keyBase, defaultMinValue, defaultMaxValue, range.MIN, range.MAX, description );
+        public RandomRange( CrustConfigSpec spec, String keyBase, double defaultMinValue, double defaultMaxValue,
+                            Range range, @Nullable String... description ) {
+            this( spec, keyBase, defaultMinValue, defaultMaxValue, range.MIN, range.MAX, false, description );
         }
         
         /**
@@ -173,7 +174,30 @@ public class DoubleField extends AbstractConfigField<Double> {
          * Helper method to automatically generate the minimum and maximum double fields and define them in the spec.
          * Appends ".min" and ".max" to the provided key, and only supports comments on the first field.
          */
-        public RandomRange( CrustConfigSpec spec, String keyBase, double defaultMinValue, double defaultMaxValue, double min, double max, @Nullable String... description ) {
+        public RandomRange( CrustConfigSpec spec, String keyBase, double defaultMinValue, double defaultMaxValue,
+                            double min, double max, @Nullable String... description ) {
+            this( spec, keyBase, defaultMinValue, defaultMaxValue, min, max, false, description );
+        }
+        
+        /**
+         * Links two values together as minimum and maximum, optionally flagging the created fields as syncable.
+         * <p>
+         * Helper method to automatically generate the minimum and maximum double fields and define them in the spec.
+         * Appends ".min" and ".max" to the provided key, and only supports comments on the first field.
+         */
+        public RandomRange( CrustConfigSpec spec, String keyBase, double defaultMinValue, double defaultMaxValue,
+                            Range range, boolean sync, @Nullable String... description ) {
+            this( spec, keyBase, defaultMinValue, defaultMaxValue, range.MIN, range.MAX, sync, description );
+        }
+        
+        /**
+         * Links two values together as minimum and maximum, optionally flagging the created fields as syncable.
+         * <p>
+         * Helper method to automatically generate the minimum and maximum double fields and define them in the spec.
+         * Appends ".min" and ".max" to the provided key, and only supports comments on the first field.
+         */
+        public RandomRange( CrustConfigSpec spec, String keyBase, double defaultMinValue, double defaultMaxValue,
+                            double min, double max, boolean sync, @Nullable String... description ) {
             this(
                     spec.define( new DoubleField( keyBase + ".min", defaultMinValue, min, max, description ) ),
                     spec.define( new DoubleField( keyBase + ".max", defaultMaxValue, min, max ) )
@@ -228,7 +252,7 @@ public class DoubleField extends AbstractConfigField<Double> {
      * @param base       The base value.
      * @param exceptions The environment exceptions list.
      */
-    public record EnvironmentSensitive( DoubleField base, EnvironmentListField<Double> exceptions ) {
+    public record EnvironmentSensitive(DoubleField base, EnvironmentListField<Double> exceptions) {
         
         /** @return Returns the config field's value. */
         public double getDouble( EnvironmentContext context ) { return exceptions().getOrElse( context, base() ); }
