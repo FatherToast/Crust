@@ -21,10 +21,10 @@ import java.util.List;
 public class ListValueCodec<V> implements IValueCodec<List<V>> {
     
     /** A codec for a list value with length >= 1. */
-    public static <T> ListValueCodec<T> of( IValueCodec<T> codec ) { return of( 0, codec ); }
+    public static <V> ListValueCodec<V> of( IValueCodec<V> codec ) { return of( 0, codec ); }
     
     /** @param length If >0, the list value will have exactly this length. Otherwise, its length will be >=1. */
-    public static <T> ListValueCodec<T> of( int length, IValueCodec<T> codec ) { return new ListValueCodec<>( length, codec ); }
+    public static <V> ListValueCodec<V> of( int length, IValueCodec<V> codec ) { return new ListValueCodec<>( length, codec ); }
     
     
     // ---- Instance Methods ---- //
