@@ -142,6 +142,7 @@ public class LongField extends AbstractConfigField<Long> {
      * Represents two number fields, a minimum and a maximum, combined into one.
      * This has convenience methods for returning a random value between the min and the max (inclusive).
      */
+    @SuppressWarnings( "ClassCanBeRecord" )
     public static class RandomRange {
         
         /** The minimum. Defines the lower limit of the range (inclusive). */
@@ -191,8 +192,8 @@ public class LongField extends AbstractConfigField<Long> {
         public RandomRange( CrustConfigSpec spec, String keyBase, long defaultMinValue, long defaultMaxValue,
                             long min, long max, boolean sync, @Nullable String... description ) {
             this(
-                    spec.define( new LongField( keyBase + ".min", defaultMinValue, min, max, description ) ),
-                    spec.define( new LongField( keyBase + ".max", defaultMaxValue, min, max ) )
+                    spec.define( new LongField( keyBase + ".min", defaultMinValue, min, max, description ), sync ),
+                    spec.define( new LongField( keyBase + ".max", defaultMaxValue, min, max ), sync )
             );
         }
         
@@ -207,10 +208,10 @@ public class LongField extends AbstractConfigField<Long> {
         }
         
         /** @return The minimum value of this range. */
-        public long getMin() { return MINIMUM.getLong(); }
+        public long getMin() { return getMinField().getLong(); }
         
         /** @return The maximum value of this range. */
-        public long getMax() { return MAXIMUM.getLong(); }
+        public long getMax() { return getMaxField().getLong(); }
         
         /** @return The minimum value field. */
         public LongField getMinField() { return MINIMUM; }

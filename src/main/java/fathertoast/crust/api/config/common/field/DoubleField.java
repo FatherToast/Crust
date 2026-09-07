@@ -18,7 +18,6 @@ import java.util.Random;
 /**
  * Represents a config field with a double value.
  */
-@SuppressWarnings( "unused" )
 public class DoubleField extends AbstractConfigField<Double> {
     
     /** The minimum field value. */
@@ -199,8 +198,8 @@ public class DoubleField extends AbstractConfigField<Double> {
         public RandomRange( CrustConfigSpec spec, String keyBase, double defaultMinValue, double defaultMaxValue,
                             double min, double max, boolean sync, @Nullable String... description ) {
             this(
-                    spec.define( new DoubleField( keyBase + ".min", defaultMinValue, min, max, description ) ),
-                    spec.define( new DoubleField( keyBase + ".max", defaultMaxValue, min, max ) )
+                    spec.define( new DoubleField( keyBase + ".min", defaultMinValue, min, max, description ), sync ),
+                    spec.define( new DoubleField( keyBase + ".max", defaultMaxValue, min, max ), sync )
             );
         }
         
@@ -215,10 +214,10 @@ public class DoubleField extends AbstractConfigField<Double> {
         }
         
         /** @return The minimum value of this range. */
-        public double getMin() { return MINIMUM.getDouble(); }
+        public double getMin() { return getMinField().getDouble(); }
         
         /** @return The maximum value of this range. */
-        public double getMax() { return MAXIMUM.getDouble(); }
+        public double getMax() { return getMaxField().getDouble(); }
         
         /** @return The minimum value field. */
         public DoubleField getMinField() { return MINIMUM; }
@@ -252,7 +251,7 @@ public class DoubleField extends AbstractConfigField<Double> {
      * @param base       The base value.
      * @param exceptions The environment exceptions list.
      */
-    public record EnvironmentSensitive(DoubleField base, EnvironmentListField<Double> exceptions) {
+    public record EnvironmentSensitive( DoubleField base, EnvironmentListField<Double> exceptions ) {
         
         /** @return Returns the config field's value. */
         public double getDouble( EnvironmentContext context ) { return exceptions().getOrElse( context, base() ); }

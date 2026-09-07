@@ -22,7 +22,6 @@ import java.util.Random;
 /**
  * Represents a config field with an integer value.
  */
-@SuppressWarnings( "unused" )
 public class IntField extends AbstractConfigField<Integer> {
     
     /** The minimum field value. */
@@ -261,8 +260,8 @@ public class IntField extends AbstractConfigField<Integer> {
         public RandomRange( CrustConfigSpec spec, String keyBase, int defaultMinValue, int defaultMaxValue,
                             int min, int max, boolean sync, @Nullable String... description ) {
             this(
-                    spec.define( new IntField( keyBase + ".min", defaultMinValue, min, max, description ) ),
-                    spec.define( new IntField( keyBase + ".max", defaultMaxValue, min, max ) )
+                    spec.define( new IntField( keyBase + ".min", defaultMinValue, min, max, description ), sync ),
+                    spec.define( new IntField( keyBase + ".max", defaultMaxValue, min, max ), sync )
             );
         }
         
@@ -277,10 +276,10 @@ public class IntField extends AbstractConfigField<Integer> {
         }
         
         /** @return The minimum value of this range. */
-        public int getMin() { return MINIMUM.getInt(); }
+        public int getMin() { return getMinField().getInt(); }
         
         /** @return The maximum value of this range. */
-        public int getMax() { return MAXIMUM.getInt(); }
+        public int getMax() { return getMaxField().getInt(); }
         
         /** @return The minimum value field. */
         public IntField getMinField() { return MINIMUM; }
@@ -313,7 +312,7 @@ public class IntField extends AbstractConfigField<Integer> {
      * @param base       The base value.
      * @param exceptions The environment exceptions list.
      */
-    public record EnvironmentSensitive(IntField base, EnvironmentListField<Integer> exceptions) {
+    public record EnvironmentSensitive( IntField base, EnvironmentListField<Integer> exceptions ) {
         
         /** @return Returns the config field's value. */
         public int getInt( EnvironmentContext context ) { return exceptions().getOrElse( context, base() ); }
