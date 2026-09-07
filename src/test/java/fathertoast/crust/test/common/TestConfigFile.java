@@ -276,7 +276,7 @@ public class TestConfigFile extends AbstractConfigFile {
                             .putExtends( EntityType.SKELETON, 1, List.of( -0.9, 0.6, 0.9 ) )
                             //.put( EntityType.STRAY, List.of( 0.0, 0.0, 0.0 ) ) // Should crash - dupes not allowed in set/map builders
                             .putWildcard( "minecraft", "ender", List.of( 0.1, 0.2, 0.3 ) )
-                            .buildWithDefault( List.of( -20.0, 10.0, 5.0 ) ) ), General::testCallback ) ).field();
+                            .buildWithDefault( List.of( -1.0, -1.0, -1.0 ) ) ), General::testCallback ) ).field();
             
             blockStateSetField = SPEC.define( new InjectionWrapperField<>(
                     new BlockStateSetField( "block_state_set_field", new BlockStateSet.Builder<>()

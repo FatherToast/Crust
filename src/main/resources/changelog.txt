@@ -1,18 +1,3 @@
-1.20.1-5.1.2
-    API Changes:
-    - Field wrappers now throw an exception if you try to unwrap them before defining them in the spec.
-    - Added optional constructors to IntField.RandomRange, LongField.RandomRange and DoubleField.RandomRange that allow flagging the created fields as syncable.
-    - Added ListValueCodec as a less sketchy drop-in replacement for ArrayValueCodec.
-1.20.1-5.1.1
-    - Updated Natural Absorption compat.
-        - Fixed absorption element not displaying the correct amount of empty hearts.
-    - Fixed BlockStateEntryViewRenderer crashing during setup if instantiation of a block entity fails.
-    API Changes:
-    - Injection wrappers and callbacks now trigger on sync.
-    - Made EnvironmentSensitiveWeightedList much more reasonable to create.
-    - Moved over some config values and fields from Deadly World:
-        - MobEffectList and MobEffectListField
-        - MobEffectWeightedList and MobEffectWeightedListField
 1.20.1-5.0.0
     - Finished the built-in "toggle storm" extra inventory button.
     - Extra inventory buttons should no longer get in the way of JEI menus (e.g., bookmarks).
@@ -28,15 +13,19 @@
     - Extra inventory buttons should no longer get in the way of JEI bookmarks.
     - New Jade compat:
         - Optional entity element for rendering living entities' absorption hearts.
+        - Natural Absorption compat: Renders empty hearts up to absorption capacity (compat-ception).
     API Changes:
     - BREAKING CHANGES, mods made on older Crust versions will NOT work with this version.
-    - Config fields can now be defined in the spec as 'synced', which causes them to be synced to clients automatically.
     - Config files must now be declared as common or client-only.
+    - Config fields can now be defined in the spec as 'synced', which causes them to be synced to clients automatically.
+    - Added optional constructors to IntField.RandomRange, LongField.RandomRange, and DoubleField.RandomRange that allow flagging the created fields as synced.
     - All config field types now implement Supplier.
     - Added and updated verbose descriptions for a variety of the new fuzzy collection fields.
     - Removed deprecated collection fields and corresponding values; fuzzy collections no longer flagged as experimental.
+    - Field wrappers now throw an exception if you try to unwrap them before defining them in the spec.
     - Fixed BlockStateField causing a NPE if attempting to get the value before the field has loaded.
     - Added fuzzy key type and value codec for ResourceLocations.
+    - Added ListValueCodec as a less sketchy drop-in replacement for ArrayValueCodec.
     - Moved the method StringValueCodec#stripInvalidChars() to ResourceLocValueCodec.
     - Added new method ResourceLocationUtils#strictParseOrDefault() and refactored the old method to not do strict parsing.
     - Fully implemented BlockStateField.
@@ -46,6 +35,9 @@
         - Floats: config_constant, config_uniform, config_triangle.
         - Ints: config_constant, config_uniform, config_biased_to_bottom, config_count, config_triangle.
         - Heights: config_constant, config_uniform, config_triangle.
+    - Moved over some config values and fields from Deadly World:
+        - MobEffectList and MobEffectListField
+        - MobEffectWeightedList and MobEffectWeightedListField
 1.20.1-4.17.28
     - Fixed EntityKey.Extends key implementation not checking class inheritance correctly,
       leading to the key not working as intended in config fields that make use of them.
