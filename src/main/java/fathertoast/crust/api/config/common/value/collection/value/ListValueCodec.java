@@ -50,7 +50,7 @@ public class ListValueCodec<V> implements IValueCodec<List<V>> {
         // Determine argument count
         int actualArgs = value.size();
         int expectedArgs;
-        if( varArgs() ) { expectedArgs = Math.max( 1, actualArgs ); }
+        if( varArgs() ) expectedArgs = Math.max( 1, actualArgs );
         else expectedArgs = length;
         
         // Build the TOML string
