@@ -92,7 +92,7 @@ public class EntryViewWidgetProvider<T, V> implements IConfigFieldWidgetProvider
          * @param lineValidator An optional line validator for the text box provided by this provider.
          */
         public Simple( EntryViewWidget.EntryViewRenderer<T> renderer, @Nullable Predicate<String> lineValidator ) {
-            super( value -> value, renderer, lineValidator );
+            super( Function.identity(), renderer, lineValidator );
         }
     }
 }
