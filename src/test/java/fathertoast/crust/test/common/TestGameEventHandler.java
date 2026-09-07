@@ -1,6 +1,7 @@
 package fathertoast.crust.test.common;
 
 import fathertoast.crust.api.ICrustApi;
+import fathertoast.crust.api.config.common.file.TomlHelper;
 import fathertoast.crust.api.config.common.value.environment.EnvironmentContext;
 import fathertoast.crust.api.event.advancement.AdvancementLoadEvent;
 import fathertoast.crust.api.event.advancement.IModifiableAdvancement;
@@ -51,7 +52,6 @@ public class TestGameEventHandler {
     @SuppressWarnings( "LoggingSimilarMessage" )
     @SubscribeEvent( priority = EventPriority.NORMAL )
     public static void onLivingHurt( LivingHurtEvent event ) {
-        // noinspection resource
         final Level level = event.getEntity().level();
         final RandomSource rng = level.getRandom();
         
@@ -68,12 +68,12 @@ public class TestGameEventHandler {
             }
             
             // Test entity map
-            Double[] doubles = TestCrust.CONFIG.GENERAL.entityMapField.get( event.getEntity() );
+            List<Double> doubles = TestCrust.CONFIG.GENERAL.entityMapField.get( event.getEntity() );
             if( doubles == null ) {
                 TestCrust.LOG.debug( "Entity NOT matched: {}", entityType );
             }
             else {
-                TestCrust.LOG.debug( "Values = {} for entity: {}", doubles, entityType );
+                TestCrust.LOG.debug( "Values = {} for entity: {}", TomlHelper.toArrayLiteral( doubles ), entityType );
             }
             
             // Test number weighted list

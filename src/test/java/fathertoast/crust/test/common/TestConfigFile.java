@@ -99,7 +99,7 @@ public class TestConfigFile extends AbstractConfigFile {
         public final FuzzyMapField<Double, String, FuzzyMap<Double, String>> fuzzyMapField;
         
         public final EntitySetField entitySetField;
-        public final EntityMapField<Double[]> entityMapField;
+        public final EntityMapField<List<Double>> entityMapField;
         
         public final BlockStateSetField blockStateSetField;
         public final BlockStateMapField<BiomeCategory> blockStateMapField;
@@ -267,16 +267,16 @@ public class TestConfigFile extends AbstractConfigFile {
             
             entityMapField = SPEC.define( new InjectionWrapperField<>(
                     new EntityMapField<>( "entity_map_field", new EntityMap
-                            .Builder<>( ArrayValueCodec.of( 3, Double.class, DoubleValueCodec.SIGNED_PERCENT ) )
-                            .put( EntityType.DONKEY, new Double[] { -0.420, 0.0001, 0.42042 } )
-                            .put( TestCrustObjects.Obj.TEST_SKELETON, new Double[] { 0.0, -1.0, 1.0 } )
+                            .Builder<>( ListValueCodec.of( 3, DoubleValueCodec.SIGNED_PERCENT ) )
+                            .put( EntityType.DONKEY, List.of( -0.420, 0.0001, 0.42042 ) )
+                            .put( TestCrustObjects.Obj.TEST_SKELETON, List.of( 0.0, -1.0, 1.0 ) )
                             .putBlacklist( EntityType.STRAY ).putBlacklist( EntityType.ZOMBIE )
-                            .putTag( EntityTypeTags.DISMOUNTS_UNDERWATER, new Double[] { 0.666, 0.666, 0.666 } )
-                            .putExtends( EntityType.ZOMBIE, new Double[] { 0.9, 0.6, -0.9 } )
-                            .putExtends( EntityType.SKELETON, 1, new Double[] { -0.9, 0.6, 0.9 } )
-                            //.put( EntityType.STRAY, new Double[3] ) // Should crash - dupes not allowed in set/map builders
-                            .putWildcard( "minecraft", "ender", new Double[] { 0.1, 0.2, 0.3 } )
-                            .buildWithDefault( new Double[3] ) ), General::testCallback ) ).field();
+                            .putTag( EntityTypeTags.DISMOUNTS_UNDERWATER, List.of( 0.666, 0.666, 0.666 ) )
+                            .putExtends( EntityType.ZOMBIE, List.of( 0.9, 0.6, -0.9 ) )
+                            .putExtends( EntityType.SKELETON, 1, List.of( -0.9, 0.6, 0.9 ) )
+                            //.put( EntityType.STRAY, List.of( 0.0, 0.0, 0.0 ) ) // Should crash - dupes not allowed in set/map builders
+                            .putWildcard( "minecraft", "ender", List.of( 0.1, 0.2, 0.3 ) )
+                            .buildWithDefault( List.of( -20.0, 10.0, 5.0 ) ) ), General::testCallback ) ).field();
             
             blockStateSetField = SPEC.define( new InjectionWrapperField<>(
                     new BlockStateSetField( "block_state_set_field", new BlockStateSet.Builder<>()

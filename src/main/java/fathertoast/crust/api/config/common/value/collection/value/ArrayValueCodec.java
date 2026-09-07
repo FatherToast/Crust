@@ -16,6 +16,7 @@ import java.lang.reflect.Array;
  * Legacy "value lists" all use the equivalent of the double array codec.
  *
  * @param <V> The array type.
+ * @see ListValueCodec ListValueCodec for a less sketchy implementation.
  */
 @SuppressWarnings( "ClassCanBeRecord" )
 public class ArrayValueCodec<V> implements IValueCodec<V[]> {
