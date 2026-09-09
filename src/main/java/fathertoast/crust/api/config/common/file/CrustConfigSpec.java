@@ -60,6 +60,12 @@ public class CrustConfigSpec {
     /** @return A read-only map of all keys defined in this spec to their config fields. */
     public Map<String, IConfigField<?>> getFields() { return Collections.unmodifiableMap( FIELD_MAP ); }
     
+    /** @return True if this spec contains a field with the given key. */
+    public boolean hasField( String key ) {
+        Objects.requireNonNull( key );
+        return FIELD_MAP.containsKey( key );
+    }
+    
     /** @return True if the config contains any fields that need to be synced to clients. */
     public boolean isSynced() { return synced; }
     
