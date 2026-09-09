@@ -50,7 +50,6 @@ public class Crust {
      *  - events
      *      - Crust config lifecycle events
      *      - advancement load event
-     *      ? structure generating event
      *  - helpers
      *      - shape renderer (block entity, entity)
      *      - portal registry
