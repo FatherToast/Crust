@@ -18,6 +18,7 @@
     - BREAKING CHANGES, mods made on older Crust versions will NOT work with this version.
     - Config files must now be declared as common or client-only.
     - Config fields can now be defined in the spec as 'synced', which causes them to be synced to clients automatically.
+    - Added hasField() method to CrustConfigSpec to assist in identifying existing fields.
     - Added optional constructors to IntField.RandomRange, LongField.RandomRange, and DoubleField.RandomRange that allow flagging the created fields as synced.
     - All config field types now implement Supplier.
     - Added and updated verbose descriptions for a variety of the new fuzzy collection fields.

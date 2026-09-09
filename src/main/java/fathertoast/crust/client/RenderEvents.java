@@ -29,9 +29,7 @@ import java.util.List;
 @Mod.EventBusSubscriber( value = Dist.CLIENT, modid = ICrustApi.MOD_ID )
 public final class RenderEvents {
     
-    /**
-     * Attempts to draw any shapes in the list at the provided position.
-     */
+    /** Attempts to draw any shapes in the list at the provided position. */
     public static void renderShapes( @Nullable List<IDebugShape> shapes, @Nullable Vec3 pos, RenderLevelStageEvent event ) {
         if( shapes != null && !shapes.isEmpty() ) {
             final PoseStack poseStack = event.getPoseStack();
@@ -81,7 +79,9 @@ public final class RenderEvents {
         // Loop through all entities to check for shape providers
         for( Entity entity : level.entitiesForRendering() ) {
             if( player.distanceToSqr( entity ) < radiusSqr && entity instanceof IDebugShapeProvider shapeProvider ) {
-                renderShapes( shapeProvider.getDebugShapes(), shapeProvider.useWorldPosition() ? entity.position() : null, event );
+                if( ClientRegister.RENDER_SETTINGS.isShapeProviderEnabled( shapeProvider ) ) {
+                    renderShapes( shapeProvider.getDebugShapes(), shapeProvider.useWorldPosition() ? entity.position() : null, event );
+                }
             }
         }
     }
@@ -123,7 +123,9 @@ public final class RenderEvents {
         if( level.hasChunk( chunkX, chunkZ ) ) {
             for( BlockEntity blockEntity : level.getChunk( chunkX, chunkZ ).getBlockEntities().values() ) {
                 if( blockEntity instanceof IDebugShapeProvider shapeProvider ) {
-                    renderShapes( shapeProvider.getDebugShapes(), shapeProvider.useWorldPosition() ? blockEntity.getBlockPos().getCenter() : null, event );
+                    if( ClientRegister.RENDER_SETTINGS.isShapeProviderEnabled( shapeProvider ) ) {
+                        renderShapes( shapeProvider.getDebugShapes(), shapeProvider.useWorldPosition() ? blockEntity.getBlockPos().getCenter() : null, event );
+                    }
                 }
                 
                 // TODO Remove when updating beyond 1.20.1
