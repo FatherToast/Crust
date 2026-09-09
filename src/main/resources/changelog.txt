@@ -2,6 +2,7 @@
     - Finished the built-in "toggle storm" extra inventory button.
     - Extra inventory buttons should no longer get in the way of JEI menus (e.g., bookmarks).
     - Added new entity class hierarchy-climbing functionality for the config entity 'extends' key.
+    - Fixed Feature Generator block not removing itself after attempting generation in some cases.
     - In-game editor improvements:
         - Server configs can now be viewed and/or edited if you have the required permission level
           (config-defined level for viewing, op level for editing).

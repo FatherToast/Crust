@@ -154,22 +154,19 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
     @SuppressWarnings( { "unchecked", "rawtypes", "ConstantConditions" } )
     public static boolean generate( @Nullable LevelAccessor level, @Nullable BlockPos pos, @Nullable FeatureData data ) {
         if( level == null || pos == null || data == null ) return false;
-        
         // Don't do anything on client.
         if( !(level instanceof ServerLevel serverLevel) ) return false;
-        
         final boolean debug = CrustConfig.UTILITIES.FEATURE_GEN.debugMode.get();
+        boolean failed = false;
         
         // Neither feature ID nor tag is present, nothing to generate!
         if( data.configuredFeatureId == null && data.tagKey == null ) {
             if( debug ) {
                 Crust.LOG.debug( "Feature generator at '{}' in dimension '{}' was flagged as ready for placement " +
-                                "but had no feature ID or tag specified!",
-                        pos, serverLevel.dimension().location() );
+                        "but had no feature ID or tag specified!", pos, serverLevel.dimension().location() );
             }
-            return false;
+            failed = true;
         }
-        
         try {
             final RandomSource random = serverLevel.getRandom();
             final Registry<ConfiguredFeature<?, ?>> featureReg = serverLevel.registryAccess().registryOrThrow( Registries.CONFIGURED_FEATURE );
@@ -184,9 +181,7 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
                 if( optionalTag.isPresent() ) {
                     HolderSet.Named<ConfiguredFeature<?, ?>> tag = optionalTag.get();
                     Optional<Holder<ConfiguredFeature<?, ?>>> optionalFeature = tag.getRandomElement( random );
-                    
-                    if( optionalFeature.isPresent() )
-                        feature = optionalFeature.get().get();
+                    if( optionalFeature.isPresent() ) feature = optionalFeature.get().get();
                 }
             }
             // Does the feature exist? If not, try fetching fallback!
@@ -196,9 +191,9 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
                 feature = featureReg.get( data.fallbackId );
             }
             if( feature == null ) {
-                debugMsg( debug, "Feature generator at '{}' in dimension '{}' failed to generate anything!",
+                debugMsg( debug, "Feature generator at '{}' in dimension '{}' had no feature to generate!",
                         pos, serverLevel.dimension().location() );
-                return false;
+                failed = true;
             }
             final int yPos = pos.getY() + data.yOffset;
             
@@ -206,14 +201,21 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
             if( yPos < level.getMinBuildHeight() || yPos > level.getMaxBuildHeight() ) {
                 debugMsg( debug, "Feature generator at '{}' in dimension '{}' is trying to generate out of bounds! Generator's Y-offset: '{}'",
                         pos, serverLevel.dimension().location(), data.yOffset );
+                failed = true;
+            }
+            // If we cannot generate anything, remove the generator block early and return false
+            if( failed ) {
+                // Replace generator with final "turns into" state.
+                serverLevel.setBlock( pos, data.turnsInto, Block.UPDATE_CLIENTS );
                 return false;
             }
             boolean generated = false;
             
+            // Set to air first so we don't accidentally mess up for the potential placement
+            serverLevel.setBlock( pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS );
+            
             // Roll placement chance!
             if( random.nextDouble() <= data.chance ) {
-                // Set to air first so we don't accidentally block the placement.
-                serverLevel.setBlock( pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS );
                 final ChunkGenerator chunkGenerator = serverLevel.getChunkSource().getGenerator();
                 
                 // Check if we are force generating (for a DW feature)
@@ -420,10 +422,7 @@ public class FeatureGeneratorBlockEntity extends BlockEntity {
             }
         }
         
-        /**
-         * @return True if this feature data instance's properties
-         * are all equal to the default values.
-         */
+        /** @return True if this feature data instance's properties are all equal to the default values. */
         public boolean isEmpty() {
             return EMPTY.configuredFeatureId == configuredFeatureId
                     && EMPTY.tagKey == tagKey
