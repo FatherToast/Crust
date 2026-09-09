@@ -56,7 +56,7 @@ public class PopupStringListWidget<T> extends FullScreenPopupListWidget<PopupLis
     private Button bottomRightButton;
     
     public PopupStringListWidget( ConfigFieldGuiEntry<T> listEntry, List<String> displayValue, @Nullable Predicate<String> validator ) {
-        super( title( listEntry ) );
+        super( title( listEntry ), listEntry.getTooltip( 0, 0 ) );
         PARENT = listEntry;
         DISPLAY_VALUE = displayValue;
         VALIDATOR = validator;
