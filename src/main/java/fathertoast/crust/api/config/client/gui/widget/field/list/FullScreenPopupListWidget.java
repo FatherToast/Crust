@@ -6,11 +6,13 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import fathertoast.crust.api.client.util.GuiUtil;
 import fathertoast.crust.api.config.client.gui.widget.field.searchbar.ISearchable;
 import fathertoast.crust.api.config.client.gui.widget.field.searchbar.Searchbar;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -26,14 +28,26 @@ import java.util.List;
 @SuppressWarnings( "unused" )
 public class FullScreenPopupListWidget<E extends AbstractPopupListEntry<E>> extends PopupListWidget<E> {
     
+    @Nullable
+    private final List<FormattedCharSequence> TOOLTIP;
+    
     private final List<AbstractWidget> children = new ArrayList<>();
     
     public FullScreenPopupListWidget( Component message ) {
-        this( DEFAULT_ROW_HEIGHT + ENTRY_PADDING, message );
+        this( message, null );
+    }
+    
+    public FullScreenPopupListWidget( Component message, @Nullable List<FormattedCharSequence> tooltip ) {
+        this( DEFAULT_ROW_HEIGHT + ENTRY_PADDING, message, tooltip );
     }
     
     public FullScreenPopupListWidget( int rowHeight, Component message ) {
+        this( rowHeight, message, null );
+    }
+    
+    public FullScreenPopupListWidget( int rowHeight, Component message, @Nullable List<FormattedCharSequence> tooltip ) {
         super( 0, 0, GuiUtil.getScreenWidth(), GuiUtil.getScreenHeight(), rowHeight, message );
+        TOOLTIP = tooltip;
     }
     
     public List<AbstractWidget> children() { return children; }
@@ -330,6 +344,20 @@ public class FullScreenPopupListWidget<E extends AbstractPopupListEntry<E>> exte
     protected void renderExtras( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Tesselator tesselator, BufferBuilder buf ) {
         for( AbstractWidget widget : children() ) {
             widget.render( graphics, mouseX, mouseY, partialTicks );
+        }
+    }
+    
+    @Override
+    protected void renderDecorations( GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Tesselator tesselator, BufferBuilder buf ) {
+        super.renderDecorations( graphics, mouseX, mouseY, partialTicks, tesselator, buf );
+        
+        // Render the tooltip, if one was set and we're hovering the header
+        if( TOOLTIP != null && headerHeight > 0 && mouseY < headerHeight && (searchbar == null || !searchbar.visible ||
+                mouseX < searchbar.getX() - (Searchbar.ARROW_BUTTON_WIDTH << 1) ||
+                mouseX >= searchbar.getX() + searchbar.getWidth() + (Searchbar.ARROW_BUTTON_WIDTH << 1)) ) {
+            Screen screen = Minecraft.getInstance().screen;
+            if( screen != null ) screen.setTooltipForNextRenderPass( TOOLTIP,
+                    GuiUtil.TooltipPositioner.CENTERED_X, true );
         }
     }
 }
