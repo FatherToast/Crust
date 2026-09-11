@@ -31,7 +31,7 @@ public class TestGameEventHandler {
     
     private static int elCountastico;
     
-    //@SubscribeEvent // Comment the annotation out to 'turn off' this console spam
+    @SubscribeEvent // Comment the annotation out to 'turn off' this console spam
     public static void onServerTick( TickEvent.ServerTickEvent event ) {
         if( event.phase == TickEvent.Phase.END ) {
             if( elCountastico++ > 40 ) {

@@ -11,10 +11,7 @@ import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDi
 import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDifficultyOrTimeEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionPropertyEnvironment;
-import fathertoast.crust.api.config.common.value.environment.position.PositionEnvironment;
-import fathertoast.crust.api.config.common.value.environment.position.StructureEnvironment;
-import fathertoast.crust.api.config.common.value.environment.position.YEnvironment;
-import fathertoast.crust.api.config.common.value.environment.position.YFromSeaEnvironment;
+import fathertoast.crust.api.config.common.value.environment.position.*;
 import fathertoast.crust.api.config.common.value.environment.time.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
@@ -414,6 +411,33 @@ public class EnvironmentEntry<V> implements ITomlStringValue, Predicate<Environm
         
         private OpBuilder<V> aboveSeaLevel( int dY ) { return in( new YFromSeaEnvironment( ComparatorValue.LESS.invert(), dY ) ); }
         
+        /** Check if the brightness level at the position is equal to the given light level value. */
+        public OpBuilder<V> atBrightness( int lightLevel ) { return in( new BrightnessEnvironment( ComparatorValue.EQUAL, lightLevel ) ); }
+        
+        /** Check if the brightness level at the position is greater than the given light level value. */
+        public OpBuilder<V> aboveBrightness( int lightLevel ) { return in( new BrightnessEnvironment( ComparatorValue.GREATER, lightLevel ) ); }
+        
+        /** Check if the brightness level at the position is less than the given light level value. */
+        public OpBuilder<V> belowBrightness( int lightLevel ) { return in( new BrightnessEnvironment( ComparatorValue.LESS, lightLevel ) ); }
+        
+        /** Check if the skylight level at the position is equal to the given light level value. */
+        public OpBuilder<V> atSkylight( int lightLevel ) { return in( new SkylightEnvironment( ComparatorValue.EQUAL, lightLevel ) ); }
+        
+        /** Check if the skylight level at the position is greater than the given light level value. */
+        public OpBuilder<V> aboveSkylight( int lightLevel ) { return in( new SkylightEnvironment( ComparatorValue.GREATER, lightLevel ) ); }
+        
+        /** Check if the skylight level at the position is less than the given light level value. */
+        public OpBuilder<V> belowSkylight( int lightLevel ) { return in( new SkylightEnvironment( ComparatorValue.LESS, lightLevel ) ); }
+        
+        /** Check if the block light level at the position is equal to the given light level value. */
+        public OpBuilder<V> atBlockLight( int lightLevel ) { return in( new BlockLightEnvironment( ComparatorValue.EQUAL, lightLevel ) ); }
+        
+        /** Check if the block light level at the position is greater than the given light level value. */
+        public OpBuilder<V> aboveBlockLight( int lightLevel ) { return in( new BlockLightEnvironment( ComparatorValue.GREATER, lightLevel ) ); }
+        
+        /** Check if the block light level at the position is less than the given light level value. */
+        public OpBuilder<V> belowBlockLight( int lightLevel ) { return in( new BlockLightEnvironment( ComparatorValue.LESS, lightLevel ) ); }
+        
         public OpBuilder<V> canSeeSky() { return inPositionWithState( PositionEnvironment.Value.CAN_SEE_SKY, false ); }
         
         public OpBuilder<V> cannotSeeSky() { return inPositionWithState( PositionEnvironment.Value.CAN_SEE_SKY, true ); }
@@ -427,7 +451,6 @@ public class EnvironmentEntry<V> implements ITomlStringValue, Predicate<Environm
         public OpBuilder<V> isNotNearRaid() { return inPositionWithState( PositionEnvironment.Value.IS_NEAR_RAID, true ); }
         
         private OpBuilder<V> inPositionWithState( PositionEnvironment.Value state, boolean invert ) { return in( new PositionEnvironment( state, invert ) ); }
-        
         
         // ---- Time-based ---- //
         

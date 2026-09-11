@@ -10,10 +10,7 @@ import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDi
 import fathertoast.crust.api.config.common.value.environment.compat.ApocalypseDifficultyOrTimeEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionEnvironment;
 import fathertoast.crust.api.config.common.value.environment.dimension.DimensionPropertyEnvironment;
-import fathertoast.crust.api.config.common.value.environment.position.PositionEnvironment;
-import fathertoast.crust.api.config.common.value.environment.position.StructureEnvironment;
-import fathertoast.crust.api.config.common.value.environment.position.YEnvironment;
-import fathertoast.crust.api.config.common.value.environment.position.YFromSeaEnvironment;
+import fathertoast.crust.api.config.common.value.environment.position.*;
 import fathertoast.crust.api.config.common.value.environment.time.*;
 
 import javax.annotation.Nullable;
@@ -270,6 +267,18 @@ public final class CrustEnvironmentRegistry {
                 "Valid state values: " + TomlHelper.toLiteralList( (Object[]) PositionEnvironment.Value.values() ),
                 "Miscellaneous conditions that generally do what you expect. For reference, 'near' a village is ~3 " +
                         "chunks, and redstone checks weak power." );
+        register( "brightness", BrightnessEnvironment::new, BrightnessEnvironment.class,
+                "op value",
+                "The raw brightness.",
+                "Checks both skylight and block light (light from block sources like torches), and evaluates against whichever value is greater." );
+        register( "skylight", SkylightEnvironment::new, SkylightEnvironment.class,
+                "op value",
+                "The skylight value.",
+                "Only evaluates against skylight and ignores block light." );
+        register( "block_light", BlockLightEnvironment::new, BlockLightEnvironment.class,
+                "op value",
+                "The block light value.",
+                "Only evaluates against block light and ignores skylight." );
         
         // Time-based
         register( "difficulty", DifficultyEnvironment::new, DifficultyEnvironment.class,

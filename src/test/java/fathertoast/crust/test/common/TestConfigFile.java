@@ -501,6 +501,7 @@ public class TestConfigFile extends AbstractConfigFile {
             environmentListField = SPEC.define( new InjectionWrapperField<>(
                     new EnvironmentListField<>( "environment_list_field", EnvironmentList
                             .builder( IntValueCodec.ANY )
+                            .entryBuilder( 123 ).atBrightness( 3 ).build()
                             .entryBuilder( 0 ).belowSeaLevel().or().isRaining().build()
                             .entryBuilder( 1 ).aboveGoldLevel().and().isRaining().or().aboveMountainLevel().build()
                             .entryBuilder( 666 ).inBiome( BiomeTags.IS_FOREST ).and().isThundering().build()

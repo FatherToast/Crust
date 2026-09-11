@@ -40,6 +40,10 @@
     - Moved over some config values and fields from Deadly World:
         - MobEffectList and MobEffectListField
         - MobEffectWeightedList and MobEffectWeightedListField
+    - Added new config environment types:
+        - Block light
+        - Skylight
+        - Brightness (checks both block light and skylight and evaluates against the greater value)
 1.20.1-4.17.28
     - Fixed EntityKey.Extends key implementation not checking class inheritance correctly,
       leading to the key not working as intended in config fields that make use of them.
