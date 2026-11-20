@@ -14,6 +14,7 @@ public class CrustUtilitiesConfigFile extends AbstractConfigFile {
     
     public final Configs CONFIGS;
     public final FeatureGenerator FEATURE_GEN;
+    public final OptionalDataSharing OPTIONAL_DATA_SHARING;
     
     /**
      * @param cfgManager The mod's config manager.
@@ -25,6 +26,7 @@ public class CrustUtilitiesConfigFile extends AbstractConfigFile {
         
         CONFIGS = new Configs( this );
         FEATURE_GEN = new FeatureGenerator( this );
+        OPTIONAL_DATA_SHARING = new OptionalDataSharing( this );
     }
     
     /**
@@ -67,6 +69,39 @@ public class CrustUtilitiesConfigFile extends AbstractConfigFile {
             debugMode = SPEC.define( new BooleanField( "debug_mode", false,
                     "If enabled, the feature generator will print console warnings for debug when " +
                             "something might have gone wrong during placement." ) );
+        }
+    }
+    
+    /**
+     * Category for misc optional data sharing to clients
+     */
+    public static class OptionalDataSharing extends AbstractConfigCategory<CrustUtilitiesConfigFile> {
+        
+        public final BooleanField pathfinderData;
+        public final IntField pathfinderDataInterval;
+        public final IntField pathfinderDataDistance;
+        
+        OptionalDataSharing( CrustUtilitiesConfigFile parent ) {
+            super( parent, "optional_data_sharing",
+                    "Options that apply to various types of optional data being sent from server to clients." );
+            
+            SPEC.category( "pathfinder_data" );
+            pathfinderData = SPEC.define( new BooleanField( "enabled", false,
+                    "If enabled, the server will send pathfinder data to all connected clients that ask for it.",
+                    "This is currently only used for allowing clients to visualize mob's pathfinding for debug purposes.",
+                    "Unless you are actively using Crust's pathfinder visualizer, this option should be disabled as it can be resource intensive." ) );
+            
+            pathfinderDataInterval = SPEC.define( new IntField( "interval", 20, IntField.Range.NON_NEGATIVE,
+                    "If the above option is enabled, this setting determines the interval (in ticks) between each time the server " +
+                            "calculates and sends pathfinder data to clients.",
+                    "Lower numbers result in higher precision, but can cause lag." ) );
+            
+            pathfinderDataDistance = SPEC.define( new IntField( "distance", 128, 16, 1024,
+                    "If 'pathfinder_data.enabled' is true, this setting limits how far away a player can be from " +
+                            "a mob and still receive pathfinder data for it.",
+                    "For example, a value of 64 would mean the player has to be within 64 blocks of a mob to receive data for it.",
+                    "Note that this value is capped by factors such as simulation distance and chunk loading distance; " +
+                            "a mob must be loaded in order to have its data sent." ) );
         }
     }
 }

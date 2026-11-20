@@ -11,10 +11,10 @@
         - List editor now allows reordering of entries.
     - New config setting for permission level needed to view server configs (defaults to mod level).
     - Misc config tweaks.
-    - Extra inventory buttons should no longer get in the way of JEI bookmarks.
     - New Jade compat:
         - Optional entity element for rendering living entities' absorption hearts.
         - Natural Absorption compat: Renders empty hearts up to absorption capacity (compat-ception).
+    - Added a WIP debug tool for visualizing mob pathfinding.
     API Changes:
     - BREAKING CHANGES, mods made on older Crust versions will NOT work with this version.
     - Config files must now be declared as common or client-only.

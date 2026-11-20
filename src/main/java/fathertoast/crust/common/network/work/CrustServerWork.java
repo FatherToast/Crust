@@ -6,10 +6,12 @@ import fathertoast.crust.api.lib.CrustCmdHelper;
 import fathertoast.crust.common.block.entity.FeatureGeneratorBlockEntity;
 import fathertoast.crust.common.config.CrustConfig;
 import fathertoast.crust.common.core.Crust;
+import fathertoast.crust.common.core.CrustForgeEvents;
 import fathertoast.crust.common.network.CrustPacketHandler;
 import fathertoast.crust.common.network.message.serverbound.C2SConfigChangeRequest;
 import fathertoast.crust.common.network.message.serverbound.C2SConfigDataRequest;
 import fathertoast.crust.common.network.message.serverbound.C2SFeatureGeneratorData;
+import fathertoast.crust.common.network.message.serverbound.C2SSimpleRequest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -56,6 +58,7 @@ public final class CrustServerWork {
         }
     }
     
+    /** Sent by clients that have just made changes to a Feature Generator's settings via GUI. */
     public static void handleFeatureGeneratorData( C2SFeatureGeneratorData message ) {
         ServerLevel level = ServerLifecycleHooks.getCurrentServer().getLevel( message.POS.dimension() );
         
@@ -66,10 +69,8 @@ public final class CrustServerWork {
             return;
         }
         final BlockPos pos = message.POS.pos();
-        
         // Make sure we are in a loaded chunk
         if( !level.isLoaded( pos ) ) return;
-        
         final BlockEntity blockEntity = level.getExistingBlockEntity( pos );
         
         if( blockEntity instanceof FeatureGeneratorBlockEntity featureGenerator ) {
@@ -81,6 +82,25 @@ public final class CrustServerWork {
         else {
             Crust.LOG.warn( "Received {} packet for position {}, but no feature generator block entity was found!",
                     C2SFeatureGeneratorData.class.getSimpleName(), message.POS.toString() );
+        }
+    }
+    
+    /** Sent by clients that request a simple task to be executed by the server. */
+    public static void handleSimpleRequest( C2SSimpleRequest message, @Nullable ServerPlayer sender ) {
+        C2SSimpleRequest.Type type = message.type();
+        
+        switch( type ) {
+            case NULL -> {
+                String address = sender == null ? "null" : sender.connection.connection.getRemoteAddress().toString();
+                Crust.LOG.warn( "Received {} packet from client with socket address {} with NULL request. This is likely an error!",
+                        C2SSimpleRequest.class.getSimpleName(), address );
+            }
+            case RECEIVE_PATHFINDER_DATA -> {
+                if( sender != null ) CrustForgeEvents.addPathfinderDataReceiver( sender );
+            }
+            case UNSUBSCRIBE_PATHFINDER_DATA -> {
+                if( sender != null ) CrustForgeEvents.removePathfinderDataReceiver( sender );
+            }
         }
     }
 }

@@ -4,18 +4,22 @@ import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.config.common.ConfigManager;
 import fathertoast.crust.api.config.common.file.CrustConfigSpec;
 import fathertoast.crust.api.event.config.CrustConfigEvent;
+import fathertoast.crust.api.util.OnClient;
+import fathertoast.crust.client.renderer.NavigationPathRenderer;
 import fathertoast.crust.common.block.entity.FeatureGeneratorBlockEntity;
 import fathertoast.crust.common.mode.CrustModesData;
 import fathertoast.crust.common.network.message.clientbound.*;
 import fathertoast.crust.common.network.message.serverbound.C2SConfigChangeRequest;
 import fathertoast.crust.common.network.message.serverbound.C2SConfigDataRequest;
 import fathertoast.crust.common.network.message.serverbound.C2SFeatureGeneratorData;
+import fathertoast.crust.common.network.message.serverbound.C2SSimpleRequest;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.MinecraftForge;
@@ -62,10 +66,12 @@ public final class CrustPacketHandler {
                 S2CConfigData::encode, S2CConfigData::decode, S2CConfigData::handle );
         registerClientboundMessage( ++messageIndex, S2CUpdateCrustModes.class,
                 S2CUpdateCrustModes::encode, S2CUpdateCrustModes::decode, S2CUpdateCrustModes::handle );
-        registerClientboundMessage( ++messageIndex, S2CDestroyItemOnPointer.class,
-                S2CDestroyItemOnPointer::encode, S2CDestroyItemOnPointer::decode, S2CDestroyItemOnPointer::handle );
         registerClientboundMessage( ++messageIndex, S2COpenFeatureGeneratorScreen.class,
                 S2COpenFeatureGeneratorScreen::encode, S2COpenFeatureGeneratorScreen::decode, S2COpenFeatureGeneratorScreen::handle );
+        registerClientboundMessage( ++messageIndex, S2CSendPathfindingData.class,
+                S2CSendPathfindingData::encode, S2CSendPathfindingData::decode, S2CSendPathfindingData::handle );
+        registerClientboundMessage( ++messageIndex, S2CSimpleRequest.class,
+                S2CSimpleRequest::encode, S2CSimpleRequest::decode, S2CSimpleRequest::handle );
         
         // Client -> Server
         registerServerboundMessage( ++messageIndex, C2SConfigDataRequest.class,
@@ -74,6 +80,8 @@ public final class CrustPacketHandler {
                 C2SConfigChangeRequest::encode, C2SConfigChangeRequest::decode, C2SConfigChangeRequest::handle );
         registerServerboundMessage( ++messageIndex, C2SFeatureGeneratorData.class,
                 C2SFeatureGeneratorData::encode, C2SFeatureGeneratorData::decode, C2SFeatureGeneratorData::handle );
+        registerServerboundMessage( ++messageIndex, C2SSimpleRequest.class,
+                C2SSimpleRequest::encode, C2SSimpleRequest::decode, C2SSimpleRequest::handle );
     }
     
     
@@ -109,34 +117,50 @@ public final class CrustPacketHandler {
         sendToClient( new S2CUpdateCrustModes( CrustModesData.of( player ).getSaveTag() ), player );
     }
     
-    /** Sends Crust modes data to its owner's client. */
-    public static void sendDestroyItemOnPointerUpdate( ServerPlayer player ) {
-        sendToClient( S2CDestroyItemOnPointer.INSTANCE, player );
-    }
-    
     /** Requests opening the Feature Generator GUI on the client for the specified player. */
     public static void openFeatureGeneratorScreen( ServerPlayer player, BlockEntity blockEntity ) {
         sendToClient( new S2COpenFeatureGeneratorScreen( blockEntity.getBlockPos() ), player );
     }
     
+    /**
+     * Sends the given pathfinder mob's current path to the client of the specified player,
+     * such that it can be visualized by Crust's {@link NavigationPathRenderer navigation path renderer}.
+     * <br><br>
+     * If the mob's current path is null, the client will be told to stop rendering the path.
+     */
+    public static void sendDebugPath( ServerPlayer player, PathfinderMob mob ) {
+        sendToClient( new S2CSendPathfindingData( mob.getId(), mob.getNavigation().getPath() ), player );
+    }
+    
+    /**
+     * Sends a request to the given player's client to execute a specific task based on the given request ID.
+     *
+     * @see S2CSimpleRequest.Type
+     */
+    @OnClient
+    public static void sendSimpleRequest( ServerPlayer player, S2CSimpleRequest.Type type ) {
+        sendToClient( new S2CSimpleRequest( type ), player );
+    }
     
     // ---- Client -> Server Message Sending ---- //
     
     /** Sends a config data request to the server. */
+    @OnClient
     public static void sendConfigDataRequest( CrustConfigSpec spec ) {
         CHANNEL.sendToServer( new C2SConfigDataRequest( spec ) );
     }
     
     /** Sends a config change request to the server. */
+    @OnClient
     public static void sendConfigChangeRequest( CrustConfigSpec spec ) {
         CHANNEL.sendToServer( new C2SConfigChangeRequest( spec ) );
     }
     
     /** Sends a feature generator data update to the server for the given feature generator block entity. */
+    @OnClient
     public static void sendFeatureGeneratorData( FeatureGeneratorBlockEntity featureGenerator ) {
         Objects.requireNonNull( featureGenerator );
         Objects.requireNonNull( featureGenerator.getLevel() );
-        
         // Construct packet
         final CompoundTag tag = new CompoundTag();
         featureGenerator.getData().saveTo( tag );
@@ -146,6 +170,16 @@ public final class CrustPacketHandler {
                 featureGenerator.getBlockPos()
         );
         CHANNEL.sendToServer( packet );
+    }
+    
+    /**
+     * Sends a request to the server to execute a specific task based on the given request ID.
+     *
+     * @see C2SSimpleRequest.Type
+     */
+    @OnClient
+    public static void sendSimpleRequest( C2SSimpleRequest.Type type ) {
+        CHANNEL.sendToServer( new C2SSimpleRequest( type ) );
     }
     
     

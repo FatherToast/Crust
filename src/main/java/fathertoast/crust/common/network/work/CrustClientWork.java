@@ -4,19 +4,19 @@ import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.event.config.CrustConfigEvent;
 import fathertoast.crust.api.lib.NBTHelper;
 import fathertoast.crust.api.util.OnClient;
+import fathertoast.crust.client.ClientRegister;
+import fathertoast.crust.client.renderer.NavigationPathRenderer;
 import fathertoast.crust.client.screen.CrustConfigFetchScreen;
 import fathertoast.crust.client.screen.FeatureGeneratorScreen;
 import fathertoast.crust.common.block.entity.FeatureGeneratorBlockEntity;
 import fathertoast.crust.common.core.Crust;
 import fathertoast.crust.common.mode.CrustModesData;
-import fathertoast.crust.common.network.message.clientbound.S2CConfigData;
-import fathertoast.crust.common.network.message.clientbound.S2CConfigSync;
-import fathertoast.crust.common.network.message.clientbound.S2COpenFeatureGeneratorScreen;
-import fathertoast.crust.common.network.message.clientbound.S2CUpdateCrustModes;
+import fathertoast.crust.common.network.CrustPacketHandler;
+import fathertoast.crust.common.network.message.clientbound.*;
+import fathertoast.crust.common.network.message.serverbound.C2SSimpleRequest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.MinecraftForge;
 
 @OnClient
@@ -56,18 +56,45 @@ public final class CrustClientWork {
     
     public static void handleOpenFeatureGenScreen( S2COpenFeatureGeneratorScreen message ) {
         ClientLevel level = Minecraft.getInstance().level;
-        
-        // If this happens, something is very strange
         if( level == null ) return;
         
-        BlockEntity blockEntity = level.getExistingBlockEntity( message.POS );
-        
-        if( blockEntity instanceof FeatureGeneratorBlockEntity featureGenerator ) {
+        if( level.getExistingBlockEntity( message.POS ) instanceof FeatureGeneratorBlockEntity featureGenerator ) {
             Minecraft.getInstance().setScreen( new FeatureGeneratorScreen( featureGenerator ) );
         }
         else {
             Crust.LOG.warn( "Received {} packet from server, but there is no Feature Generator block entity at pos {}!",
                     S2COpenFeatureGeneratorScreen.class.getSimpleName(), message.POS );
+        }
+    }
+    
+    public static void handleDebugPath( S2CSendPathfindingData message ) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if( level == null ) return;
+        
+        if( level.getEntity( message.entityId() ) == null ) {
+            Crust.LOG.warn( "Received {} packet from server with entity ID {}, but no entity with said ID exists in the world!",
+                    S2CSendPathfindingData.class.getSimpleName(), message.entityId() );
+        }
+        else {
+            NavigationPathRenderer.putEntry( message.entityId(), message.path() );
+        }
+    }
+    
+    /** Sent by clients that request a simple task to be executed by the server. */
+    public static void handleSimpleRequest( S2CSimpleRequest message ) {
+        S2CSimpleRequest.Type type = message.type();
+        
+        switch( type ) {
+            case NULL -> Crust.LOG.warn( "Received {} packet from server with NULL request. This is likely an error!",
+                    S2CSimpleRequest.class.getSimpleName() );
+            case DESTROY_ITEM_ON_CURSOR -> {
+                Minecraft mc = Minecraft.getInstance();
+                if( mc.player != null ) mc.player.inventoryMenu.setCarried( ItemStack.EMPTY );
+            }
+            case TOGGLE_PATHFINDER_DATA_REQUEST -> {
+                boolean enabled = ClientRegister.RENDER_SETTINGS.renderPathfinding.get();
+                CrustPacketHandler.sendSimpleRequest( enabled ? C2SSimpleRequest.Type.RECEIVE_PATHFINDER_DATA : C2SSimpleRequest.Type.UNSUBSCRIBE_PATHFINDER_DATA );
+            }
         }
     }
 }

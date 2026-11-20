@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import fathertoast.crust.api.ICrustApi;
 import fathertoast.crust.api.lib.CrustCmdHelper;
 import fathertoast.crust.common.network.CrustPacketHandler;
+import fathertoast.crust.common.network.message.clientbound.S2CSimpleRequest;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -31,7 +32,7 @@ public class CrustCleanCommand {
         }
         
         player.containerMenu.setCarried( ItemStack.EMPTY );
-        CrustPacketHandler.sendDestroyItemOnPointerUpdate( player );
+        CrustPacketHandler.sendSimpleRequest( player, S2CSimpleRequest.Type.DESTROY_ITEM_ON_CURSOR );
         CrustCmdHelper.sendSuccess( source, NAME, "pointer", player.getDisplayName() );
         return 1;
     }

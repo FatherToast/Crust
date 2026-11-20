@@ -6,7 +6,10 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.util.IDebugShapeProvider;
 import fathertoast.crust.client.ClientRegister;
+import fathertoast.crust.common.network.CrustPacketHandler;
+import fathertoast.crust.common.network.message.serverbound.C2SSimpleRequest;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -30,6 +33,9 @@ public class RenderSettingsCrustConfig extends AbstractConfigFile.Simple {
     
     public final BooleanField fancyFishing;
     
+    public final BooleanField renderPathfinding;
+    public final IntField renderPathfindingDistance;
+    
     public final BooleanField blockEntityShapes;
     public final IntField blockEntityShapesDistance;
     
@@ -52,6 +58,20 @@ public class RenderSettingsCrustConfig extends AbstractConfigFile.Simple {
                 "Overrides the default fishing rod item animation so that it is compatible with fishing " +
                         "mobs that use Crust's base fishing hook. Set to false if it causes problems with another mod."
         ), RestartNote.GAME );
+        
+        SPEC.category( "pathfinding_visualizer" );
+        renderPathfinding = SPEC.define( new InjectionWrapperField<>( new BooleanField( "enabled", false,
+                "If true, the server will periodically send nearby mobs' path data to the client for visualization.",
+                "This can affect performance heavily when there are many mobs nearby.",
+                "Note that this setting will only work if the server you are connected to has enabled \"pathfinding_data_sharing\"." ),
+                ( field ) -> {
+                    if( Minecraft.getInstance().getConnection() != null ) {
+                        CrustPacketHandler.sendSimpleRequest( C2SSimpleRequest.Type.RECEIVE_PATHFINDER_DATA );
+                    }
+                } ) ).field();
+        renderPathfindingDistance = SPEC.define( new IntField( "distance", 128, IntField.Range.NON_NEGATIVE,
+                "The render distance in blocks for pathfinding visualization.",
+                "Note that this is capped by master render distance, as well as the Crust config settings of the server you are connected to." ) );
         
         SPEC.category( "block_entity_debug_shapes" );
         blockEntityShapes = SPEC.define( new BooleanField( "enabled", true,
