@@ -92,7 +92,7 @@ public final class CrustClientWork {
                 if( mc.player != null ) mc.player.inventoryMenu.setCarried( ItemStack.EMPTY );
             }
             case TOGGLE_PATHFINDER_DATA_REQUEST -> {
-                boolean enabled = ClientRegister.RENDER_SETTINGS.renderPathfinding.get();
+                boolean enabled = ClientRegister.RENDER_SETTINGS.renderPth.get();
                 CrustPacketHandler.sendSimpleRequest( enabled ? C2SSimpleRequest.Type.RECEIVE_PATHFINDER_DATA : C2SSimpleRequest.Type.UNSUBSCRIBE_PATHFINDER_DATA );
             }
         }

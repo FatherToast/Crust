@@ -88,7 +88,6 @@ public final class CrustForgeEvents {
             }
             if( pathfinderUpdateCounter++ >= CrustConfig.UTILITIES.OPTIONAL_DATA_SHARING.pathfinderDataInterval.get() ) {
                 pathfinderUpdateCounter = 0;
-                
                 // Send navigation path debug packets once a second, if enabled.
                 // Don't bother calculating if nobody is asking for the data anyway!
                 if( !CrustConfig.UTILITIES.OPTIONAL_DATA_SHARING.pathfinderData.get()

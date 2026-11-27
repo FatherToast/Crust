@@ -6,6 +6,7 @@ import fathertoast.crust.api.config.common.ConfigUtil;
 import fathertoast.crust.api.config.common.field.*;
 import fathertoast.crust.api.util.IDebugShapeProvider;
 import fathertoast.crust.client.ClientRegister;
+import fathertoast.crust.client.renderer.NavigationPathRenderer;
 import fathertoast.crust.common.network.CrustPacketHandler;
 import fathertoast.crust.common.network.message.serverbound.C2SSimpleRequest;
 import net.minecraft.ChatFormatting;
@@ -31,10 +32,16 @@ import java.util.Map;
  */
 public class RenderSettingsCrustConfig extends AbstractConfigFile.Simple {
     
-    public final BooleanField fancyFishing;
+    public final BooleanField renderPth;
+    public final EnumField<NavigationPathRenderer.DetailMode> renderPthDetailMode;
+    public final IntField renderPthDistance;
+    public final ColorIntField renderPthTargetReachedColor;
+    public final ColorIntField renderPthTargetNotReachedColor;
+    public final ColorIntField renderPthNodeColor;
+    public final ColorIntField renderPthNextNodeColor;
+    public final BooleanField renderPthShowLine;
     
-    public final BooleanField renderPathfinding;
-    public final IntField renderPathfindingDistance;
+    public final BooleanField fancyFishing;
     
     public final BooleanField blockEntityShapes;
     public final IntField blockEntityShapesDistance;
@@ -43,6 +50,7 @@ public class RenderSettingsCrustConfig extends AbstractConfigFile.Simple {
     public final DoubleField entityShapesDistanceSqr;
     
     private final Map<Class<?>, BooleanField> shapeProviderToggles = new HashMap<>();
+    
     
     /**
      * @param cfgManager The mod's config manager.
@@ -53,14 +61,8 @@ public class RenderSettingsCrustConfig extends AbstractConfigFile.Simple {
                 "Settings for features related to in-world rendering." );
         final Map<Class<?>, String> debugShapeProviders = getShapeProviderClasses();
         
-        SPEC.category( "misc" );
-        fancyFishing = SPEC.define( new BooleanField( "fancy_fishing", true,
-                "Overrides the default fishing rod item animation so that it is compatible with fishing " +
-                        "mobs that use Crust's base fishing hook. Set to false if it causes problems with another mod."
-        ), RestartNote.GAME );
-        
         SPEC.category( "pathfinding_visualizer" );
-        renderPathfinding = SPEC.define( new InjectionWrapperField<>( new BooleanField( "enabled", false,
+        renderPth = SPEC.define( new InjectionWrapperField<>( new BooleanField( "enabled", false,
                 "If true, the server will periodically send nearby mobs' path data to the client for visualization.",
                 "This can affect performance heavily when there are many mobs nearby.",
                 "Note that this setting will only work if the server you are connected to has enabled \"pathfinding_data_sharing\"." ),
@@ -69,9 +71,34 @@ public class RenderSettingsCrustConfig extends AbstractConfigFile.Simple {
                         CrustPacketHandler.sendSimpleRequest( C2SSimpleRequest.Type.RECEIVE_PATHFINDER_DATA );
                     }
                 } ) ).field();
-        renderPathfindingDistance = SPEC.define( new IntField( "distance", 128, IntField.Range.NON_NEGATIVE,
+        renderPthDetailMode = SPEC.define( new EnumField<>( "show_details", NavigationPathRenderer.DetailMode.WHEN_SNEAKING,
+                "Depending on this field's value, additional data will either not be displayed, always displayed or displayed only " +
+                        "under certain conditions." ) );
+        SPEC.newLine();
+        renderPthDistance = SPEC.define( new IntField( "distance", 128, IntField.Range.NON_NEGATIVE,
                 "The render distance in blocks for pathfinding visualization.",
                 "Note that this is capped by master render distance, as well as the Crust config settings of the server you are connected to." ) );
+        SPEC.newLine();
+        renderPthTargetReachedColor = SPEC.define( new ColorIntField( "target_color.reached", 0x9500FF00, true,
+                "Used when drawing a colored box at a path's target.",
+                "This field's color is picked when the target is flagged as reachable." ) );
+        renderPthTargetNotReachedColor = SPEC.define( new ColorIntField( "target_color.not_reached", 0x95FF5900, true,
+                "Used when drawing a colored box at a path's target.",
+                "This field's color is picked when the target is considered not reachable or only partially reachable." ) );
+        SPEC.newLine();
+        renderPthNodeColor = SPEC.define( new ColorIntField( "node_color.base", 0x958C00FF, true,
+                "The color to use when drawing a flat colored box for the current next node in a path." ) );
+        renderPthNextNodeColor = SPEC.define( new ColorIntField( "node_color.next", 0x95533DFF, true,
+                "The color to use when drawing a flat colored box for each node in a path." ) );
+        SPEC.newLine();
+        renderPthShowLine = SPEC.define( new BooleanField( "show_line", true,
+                "If true, a color gradient line will be drawn between each node in a path." ) );
+        
+        SPEC.category( "misc" );
+        fancyFishing = SPEC.define( new BooleanField( "fancy_fishing", true,
+                "Overrides the default fishing rod item animation so that it is compatible with fishing " +
+                        "mobs that use Crust's base fishing hook. Set to false if it causes problems with another mod."
+        ), RestartNote.GAME );
         
         SPEC.category( "block_entity_debug_shapes" );
         blockEntityShapes = SPEC.define( new BooleanField( "enabled", true,
