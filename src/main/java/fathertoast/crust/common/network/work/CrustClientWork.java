@@ -41,11 +41,6 @@ public final class CrustClientWork {
         }
     }
     
-    public static void handleDestroyItemOnPointer() {
-        Minecraft mc = Minecraft.getInstance();
-        if( mc.player != null ) mc.player.inventoryMenu.setCarried( ItemStack.EMPTY );
-    }
-    
     public static void handleCrustModesUpdate( S2CUpdateCrustModes message ) {
         Minecraft mc = Minecraft.getInstance();
         if( mc.player != null ) {
